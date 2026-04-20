@@ -192,20 +192,32 @@
   <section class="reference">
     <div>
       <h3>Gate glossary</h3>
-      <dl class="gloss-list">
-        <dt>H — Hadamard</dt>
-        <dd>Turns a definite state into an equal superposition. Press it twice and you're back where you started. The engine of quantum parallelism.</dd>
-        <dt>X — Bit flip</dt>
-        <dd>The quantum NOT gate. 0 becomes 1, 1 becomes 0. Behaves like its classical cousin on definite states.</dd>
-        <dt>Z, S, T — Phase gates</dt>
-        <dd>Invisible on their own (they don't change measurement probabilities), but they rotate how qubits interfere with each other later. Essential for real algorithms.</dd>
-        <dt>Rₓ, R_y, R_z — Rotation gates</dt>
-        <dd>Rotate the Bloch vector by an arbitrary angle θ around the x, y, or z axis. Rₓ(θ) = e<sup>−iθX/2</sup>, etc. They generalize X, Y, Z (which are π-rotations). Essential for NISQ variational algorithms and precise state preparation.</dd>
-        <dt>CNOT — Controlled NOT</dt>
-        <dd>Flips the target qubit only if the control qubit is 1. Combined with H, this is how entanglement is built.</dd>
-        <dt>◎ Measure</dt>
-        <dd>Forces a qubit to commit to a definite 0 or 1. Irreversible. Ends the quantum part of the computation.</dd>
-      </dl>
+      <div class="gloss-grid">
+        <article class="gloss-card">
+          <h4>H — Hadamard</h4>
+          <p>Applies the unitary H = (1/sqrt(2))[[1,1],[1,-1]], mapping computational basis states to X-basis states: |0⟩→|+⟩ and |1⟩→|−⟩. It is self-inverse (H² = I) and converts phase information into measurable population differences, which is why it appears before and after many oracle/query blocks.</p>
+        </article>
+        <article class="gloss-card">
+          <h4>X — Bit flip (Pauli-X)</h4>
+          <p>The Pauli-X operator swaps amplitudes of |0⟩ and |1⟩, acting as a pi rotation about the Bloch x-axis: X = [[0,1],[1,0]]. On basis states it behaves like a classical NOT, but on superpositions it changes relative amplitudes coherently rather than "flipping a stored bit."</p>
+        </article>
+        <article class="gloss-card">
+          <h4>Z, S, T — Phase gates</h4>
+          <p>Diagonal unitaries that preserve populations in the Z basis while changing relative phase: Z = diag(1,-1), S = diag(1,i), T = diag(1,e^(i*pi/4)). Their effect is often invisible in immediate measurement statistics, but they reshape later interference and are essential for universal fault-tolerant gate synthesis.</p>
+        </article>
+        <article class="gloss-card">
+          <h4>Rₓ, R_y, R_z — Rotation gates</h4>
+          <p>Continuous one-qubit rotations Rₙ(θ) = e<sup>-iθσₙ/2</sup> for n in {x,y,z}. They move the Bloch vector by angle θ around the chosen axis, with X/Y/Z recovered at θ = pi (up to global phase). Parameterized rotations are the core trainable primitives in VQE, QAOA, and hardware-efficient ansatz circuits.</p>
+        </article>
+        <article class="gloss-card">
+          <h4>CNOT — Controlled NOT</h4>
+          <p>A two-qubit entangling gate that applies X to the target conditioned on control = |1⟩. Matrix-wise, it is block-diagonal with I on the control-|0⟩ subspace and X on control-|1⟩. Acting on superposed controls, it correlates qubits nonclassically and is the standard primitive for Bell-state generation and many algorithmic oracles.</p>
+        </article>
+        <article class="gloss-card">
+          <h4>◎ Measure</h4>
+          <p>Projective readout in the computational basis. A qubit state α|0⟩+β|1⟩ yields 0 with probability |α|² and 1 with probability |β|², and the post-measurement state collapses to the observed eigenstate. This non-unitary step irreversibly converts quantum amplitude information into classical data.</p>
+        </article>
+      </div>
     </div>
   </section>
   </div><!-- /#view-lab -->
@@ -225,32 +237,47 @@
       </div>
     </section>
 
-    <nav class="subtabs" role="tablist" style="grid-template-columns:repeat(5,1fr)">
-      <button class="subtab active" data-subtab="t1">
-        <span class="subtab-num">Tutorial 1</span>
-        <span class="subtab-name">From bits to qubits</span>
-        <span class="subtab-pill" id="t1-progress">0 / 8</span>
-      </button>
-      <button class="subtab" data-subtab="t2">
-        <span class="subtab-num">Tutorial 2</span>
-        <span class="subtab-name">Entanglement &amp; two-qubit gates</span>
-        <span class="subtab-pill" id="t2-progress">0 / 5</span>
-      </button>
-      <button class="subtab" data-subtab="t3">
-        <span class="subtab-num">Tutorial 3</span>
-        <span class="subtab-name">Mixed states &amp; density matrices</span>
-        <span class="subtab-pill" id="t3-progress">0 / 5</span>
-      </button>
-      <button class="subtab" data-subtab="t4">
-        <span class="subtab-num">Tutorial 4</span>
-        <span class="subtab-name">Why quantum needs error correction</span>
-        <span class="subtab-pill" id="t4-progress">0 / 5</span>
-      </button>
-      <button class="subtab" data-subtab="t5">
-        <span class="subtab-num">Tutorial 5</span>
-        <span class="subtab-name">Deutsch–Jozsa algorithm</span>
-        <span class="subtab-pill" id="t5-progress">0 / 6</span>
-      </button>
+    <nav class="subtabs" role="tablist">
+      <div class="subtab-group intro">
+        <button class="subtab subtab-intro active" data-subtab="t1">
+          <span class="subtab-num">Tutorial 1</span>
+          <span class="subtab-name">From bits to qubits</span>
+          <span class="subtab-pill" id="t1-progress">0 / 8</span>
+        </button>
+        <button class="subtab subtab-intro" data-subtab="t2">
+          <span class="subtab-num">Tutorial 2</span>
+          <span class="subtab-name">Entanglement &amp; two-qubit gates</span>
+          <span class="subtab-pill" id="t2-progress">0 / 5</span>
+        </button>
+        <button class="subtab subtab-intro" data-subtab="t3">
+          <span class="subtab-num">Tutorial 3</span>
+          <span class="subtab-name">Mixed states &amp; density matrices</span>
+          <span class="subtab-pill" id="t3-progress">0 / 5</span>
+        </button>
+        <button class="subtab subtab-intro" data-subtab="t4">
+          <span class="subtab-num">Tutorial 4</span>
+          <span class="subtab-name">Why quantum needs error correction</span>
+          <span class="subtab-pill" id="t4-progress">0 / 5</span>
+        </button>
+      </div>
+      <div class="subtab-row-label alg">Real algorithms</div>
+      <div class="subtab-group alg">
+        <button class="subtab subtab-alg" data-subtab="t5">
+          <span class="subtab-num">Tutorial 5</span>
+          <span class="subtab-name">Deutsch–Jozsa algorithm</span>
+          <span class="subtab-pill" id="t5-progress">0 / 6</span>
+        </button>
+        <button class="subtab subtab-alg" data-subtab="t6">
+          <span class="subtab-num">Tutorial 6</span>
+          <span class="subtab-name">Variational Quantum Eigensolver</span>
+          <span class="subtab-pill" id="t6-progress">0 / 6</span>
+        </button>
+        <button class="subtab subtab-alg" data-subtab="t7">
+          <span class="subtab-num">Tutorial 7</span>
+          <span class="subtab-name">Grover search</span>
+          <span class="subtab-pill" id="t7-progress">0 / 7</span>
+        </button>
+      </div>
     </nav>
 
     <!-- Tutorial 1 -->
@@ -1256,6 +1283,354 @@
       </article>
     </div><!-- /#tut-5 -->
 
+    <!-- ============================================================ Tutorial 6: VQE -->
+    <div class="tutorial" id="tut-6" style="display:none">
+
+      <!-- T6 Step 1 -->
+      <article class="step-card" data-step="t6-1">
+        <header class="step-head">
+          <div class="step-num">Step 01</div>
+          <h2>The variational energy landscape.</h2>
+        </header>
+        <div class="step-body">
+          <p>In VQE, you choose a parameterized circuit (an <em>ansatz</em>), measure the energy of the prepared state, then tune parameters to minimize that energy. Here we use a one-parameter ansatz <code>R<sub>y</sub>(θ)|0⟩</code> and a toy Hamiltonian, so you can see the landscape directly.</p>
+          <div style="margin:22px 0;padding:20px;background:var(--bg-2);border:1px solid var(--line)">
+            <label style="font-family:var(--mono);font-size:10px;color:var(--ink-faint);letter-spacing:0.08em">
+              Ansatz angle θ:
+              <input type="range" id="vqe-theta-slider" min="0" max="6.283185307179586" step="0.01" value="0.3" style="width:220px;accent-color:var(--cyan);vertical-align:middle"/>
+              <span id="vqe-theta-val" style="color:var(--cyan)">0.30 rad</span>
+            </label>
+            <div style="font-family:var(--mono);font-size:11px;color:var(--ink-dim);margin-top:8px;letter-spacing:0.06em">
+              Energy: <span id="vqe-energy-val" style="color:var(--phos)">0.000</span>
+            </div>
+            <svg id="vqe-landscape" viewBox="0 0 420 180" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:420px;margin-top:10px"></svg>
+            <div id="vqe-state-readout" class="bloch-readout" style="margin-top:10px"></div>
+          </div>
+          <div class="step-action">
+            <div class="action-prompt">Move the slider to trace out the energy curve.</div>
+            <button class="btn primary step-next" data-unlocks="t6-2" disabled id="t6-1-next">Next →</button>
+          </div>
+        </div>
+      </article>
+
+      <!-- T6 Step 2 -->
+      <article class="step-card locked" data-step="t6-2">
+        <header class="step-head">
+          <div class="step-num">Step 02</div>
+          <h2>Sample candidate parameters.</h2>
+        </header>
+        <div class="step-body">
+          <p>Real VQE evaluates many parameter settings and keeps the lowest observed energy. Click several θ values and compare the measured expectations and energy estimates.</p>
+          <div style="margin:22px 0;padding:20px;background:var(--bg-2);border:1px solid var(--line)">
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
+              <button class="btn vqe-sample-btn" id="vqe-sample-btn" data-key="a" data-theta="0.30" data-label="0.30">θ = 0.30</button>
+              <button class="btn vqe-sample-btn" data-key="b" data-theta="1.10" data-label="1.10">θ = 1.10</button>
+              <button class="btn vqe-sample-btn" data-key="c" data-theta="2.40" data-label="2.40">θ = 2.40</button>
+              <button class="btn vqe-sample-btn" data-key="d" data-theta="4.80" data-label="4.80">θ = 4.80</button>
+            </div>
+            <div id="vqe-sample-table"></div>
+            <div id="vqe-sample-verdict" style="margin-top:10px;font-family:var(--serif);font-size:14px;color:var(--ink-dim);line-height:1.55"></div>
+          </div>
+          <div class="step-action">
+            <div class="action-prompt">Try at least three parameter samples.</div>
+            <button class="btn primary step-next" data-unlocks="t6-3" disabled id="t6-2-next">Next →</button>
+          </div>
+        </div>
+      </article>
+
+      <!-- T6 Step 3 -->
+      <article class="step-card locked" data-step="t6-3">
+        <header class="step-head">
+          <div class="step-num">Step 03</div>
+          <h2>Run a tiny optimizer loop.</h2>
+        </header>
+        <div class="step-body">
+          <p>Now automate the search: evaluate nearby points, move downhill, shrink the step size, repeat. This mirrors a basic classical optimization pass wrapped around quantum energy estimation.</p>
+          <div style="margin:22px 0;padding:20px;background:var(--bg-2);border:1px solid var(--line)">
+            <button class="btn primary" id="vqe-opt-run">▶ Run optimizer</button>
+            <svg id="vqe-opt-chart" viewBox="0 0 420 150" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:420px;margin:12px 0 10px"></svg>
+            <div id="vqe-opt-trace"></div>
+            <div id="vqe-opt-verdict" style="margin-top:10px;font-family:var(--serif);font-size:14px;color:var(--ink-dim);line-height:1.55"></div>
+          </div>
+          <div class="step-action">
+            <div class="action-prompt">Run the optimizer once and inspect its convergence trace.</div>
+            <button class="btn primary step-next" data-unlocks="t6-4" disabled id="t6-3-next">Next →</button>
+          </div>
+        </div>
+      </article>
+
+      <!-- T6 Step 4 -->
+      <article class="step-card locked" data-step="t6-4">
+        <header class="step-head">
+          <div class="step-num">Step 04</div>
+          <h2>Ansatz quality sets the performance ceiling.</h2>
+        </header>
+        <div class="step-body">
+          <p>Optimization only works within the state family your circuit can represent. Compare a flexible ansatz to restricted forms and see the energy gap that remains even after "best possible" tuning.</p>
+          <div style="margin:22px 0;padding:20px;background:var(--bg-2);border:1px solid var(--line)">
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
+              <button class="btn vqe-ansatz-btn" id="vqe-ansatz-btn" data-mode="good">Flexible R<sub>y</sub>(θ)</button>
+              <button class="btn vqe-ansatz-btn" data-mode="z-only">Basis-only</button>
+              <button class="btn vqe-ansatz-btn" data-mode="rigid">Fixed-angle</button>
+            </div>
+            <div id="vqe-ansatz-results"></div>
+            <div id="vqe-ansatz-verdict" style="margin-top:10px;font-family:var(--serif);font-size:14px;color:var(--ink-dim);line-height:1.55"></div>
+          </div>
+          <div class="step-action">
+            <div class="action-prompt">Compare at least two ansatz choices.</div>
+            <button class="btn primary step-next" data-unlocks="t6-5" disabled id="t6-4-next">Next →</button>
+          </div>
+        </div>
+      </article>
+
+      <!-- T6 Step 5 -->
+      <article class="step-card locked" data-step="t6-5">
+        <header class="step-head">
+          <div class="step-num">Step 05</div>
+          <h2>Finite-shot noise in the cost function.</h2>
+        </header>
+        <div class="step-body">
+          <p>VQE objective values come from measurement statistics. With fewer shots, estimates are noisier and the optimizer sees a rougher landscape. Increase shots to reduce variance.</p>
+          <div style="margin:22px 0;padding:20px;background:var(--bg-2);border:1px solid var(--line)">
+            <label style="font-family:var(--mono);font-size:10px;color:var(--ink-faint);letter-spacing:0.08em">
+              Measurement shots:
+              <input type="range" id="vqe-shots-slider" min="32" max="1024" step="32" value="128" style="width:220px;accent-color:var(--amber);vertical-align:middle"/>
+              <span id="vqe-shots-val" style="color:var(--amber)">128</span>
+            </label>
+            <div style="margin-top:10px">
+              <button class="btn primary" id="vqe-shots-run">▶ Estimate with current shots</button>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:12px">
+              <div>
+                <div style="font-family:var(--mono);font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:var(--phos-dim);margin-bottom:6px">Exact expectations</div>
+                <div id="vqe-shots-exact"></div>
+              </div>
+              <div>
+                <div style="font-family:var(--mono);font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:var(--amber);margin-bottom:6px">Measured estimate</div>
+                <div id="vqe-shots-measured"></div>
+              </div>
+            </div>
+            <div id="vqe-shots-verdict" style="margin-top:10px;font-family:var(--serif);font-size:14px;color:var(--ink-dim);line-height:1.55"></div>
+          </div>
+          <div class="step-action">
+            <div class="action-prompt">Run at three different shot counts.</div>
+            <button class="btn primary step-next" data-unlocks="t6-6" disabled id="t6-5-next">Next →</button>
+          </div>
+        </div>
+      </article>
+
+      <!-- T6 Step 6 -->
+      <article class="step-card locked" data-step="t6-6">
+        <header class="step-head">
+          <div class="step-num">Step 06</div>
+          <h2>VQE in one sentence.</h2>
+        </header>
+        <div class="step-body">
+          <p>VQE is a hybrid loop: prepare a parameterized quantum state, estimate energy from measurements, and let a classical optimizer update parameters to reduce that energy. Its success depends on three things: expressive ansatz design, optimizer robustness, and low-noise measurement statistics.</p>
+          <p>What you just explored — landscape shape, ansatz limitations, and shot noise — is exactly what practitioners tune when running VQE for chemistry and materials models on NISQ-era hardware.</p>
+          <div class="wrap-up">
+            <button class="wrap-card" data-go="lab">
+              <div class="wrap-tag">Lab</div>
+              <div class="wrap-title">Try variational templates</div>
+              <div class="wrap-desc">Load a variational template and experiment with rotation angles and noise.</div>
+              <div class="wrap-cta">Open the Lab →</div>
+            </button>
+            <button class="wrap-card alt" data-go="t5">
+              <div class="wrap-tag">Tutorial 5</div>
+              <div class="wrap-title">Compare with oracle algorithms</div>
+              <div class="wrap-desc">Contrast variational heuristics with deterministic interference-based circuits.</div>
+              <div class="wrap-cta">← Tutorial 5</div>
+            </button>
+          </div>
+        </div>
+      </article>
+    </div><!-- /#tut-6 -->
+
+    <!-- ============================================================ Tutorial 7: Grover Search -->
+    <div class="tutorial" id="tut-7" style="display:none">
+
+      <article class="step-card" data-step="t7-1">
+        <header class="step-head">
+          <div class="step-num">Step 01</div>
+          <h2>Quadratic speedup in search scaling.</h2>
+        </header>
+        <div class="step-body">
+          <p>Grover's algorithm searches an unstructured database of N items in O(sqrt(N)) oracle calls, versus O(N) classically. Sweep the problem size and compare the query growth.</p>
+          <div style="margin:22px 0;padding:20px;background:var(--bg-2);border:1px solid var(--line)">
+            <label style="font-family:var(--mono);font-size:10px;color:var(--ink-faint)">
+              Qubits n:
+              <input type="range" id="grover-n-slider" min="2" max="10" value="2" step="1" style="width:180px;accent-color:var(--phos);vertical-align:middle"/>
+              <span id="grover-n-val" style="color:var(--phos)">2</span>
+            </label>
+            <svg id="grover-scaling-chart" viewBox="0 0 420 140" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:420px;margin-top:10px"></svg>
+            <div id="grover-query-compare" style="font-family:var(--mono);font-size:11px;color:var(--ink-dim);margin-top:8px;letter-spacing:0.06em"></div>
+            <div id="grover-best-iter" style="font-family:var(--serif);font-size:14px;color:var(--ink);margin-top:10px;line-height:1.55"></div>
+          </div>
+          <div class="step-action">
+            <div class="action-prompt">Move the slider and observe classical vs Grover query scaling.</div>
+            <button class="btn primary step-next" data-unlocks="t7-2" disabled id="t7-1-next">Next →</button>
+          </div>
+        </div>
+      </article>
+
+      <article class="step-card locked" data-step="t7-2">
+        <header class="step-head">
+          <div class="step-num">Step 02</div>
+          <h2>Amplitude amplification as geometric rotation.</h2>
+        </header>
+        <div class="step-body">
+          <p>Each Grover iteration is two reflections (oracle then diffusion), which compose into a rotation toward the marked state subspace. Step through the geometry.</p>
+          <div style="margin:22px 0;padding:20px;background:var(--bg-2);border:1px solid var(--line)">
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
+              <button class="btn grover-rot-step-btn" data-groverstep="0">① Start</button>
+              <button class="btn grover-rot-step-btn" data-groverstep="1">② Oracle</button>
+              <button class="btn grover-rot-step-btn" data-groverstep="2">③ Diffusion</button>
+              <button class="btn grover-rot-step-btn" data-groverstep="3">④ After iteration</button>
+            </div>
+            <svg id="grover-rotation-diagram" viewBox="0 0 420 280" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:420px"></svg>
+            <div id="grover-rot-desc" style="font-family:var(--serif);font-size:14px;color:var(--ink-dim);line-height:1.55;margin-top:10px"></div>
+          </div>
+          <div class="step-action">
+            <div class="action-prompt">Step through all four states of one Grover cycle.</div>
+            <button class="btn primary step-next" data-unlocks="t7-3" disabled id="t7-2-next">Next →</button>
+          </div>
+        </div>
+      </article>
+
+      <article class="step-card locked" data-step="t7-3">
+        <header class="step-head">
+          <div class="step-num">Step 03</div>
+          <h2>Choose the marked item (oracle target).</h2>
+        </header>
+        <div class="step-body">
+          <p>Set which basis state is "marked" by the oracle. Running the oracle alone flips phase on the marked state but does not immediately change measurement probabilities.</p>
+          <div style="margin:22px 0;padding:20px;background:var(--bg-2);border:1px solid var(--line)">
+            <div id="grover-oracle-grid" style="display:flex;flex-wrap:wrap;gap:4px"></div>
+            <button class="btn primary" id="grover-oracle-run" style="margin-top:10px">▶ Apply oracle</button>
+            <div id="grover-oracle-explain" style="font-family:var(--serif);font-size:14px;color:var(--ink-dim);line-height:1.55;margin-top:10px"></div>
+            <div id="grover-oracle-probs" style="margin-top:10px"></div>
+            <div id="grover-oracle-verdict" style="font-family:var(--serif);font-size:14px;color:var(--ink);line-height:1.55;margin-top:10px"></div>
+          </div>
+          <div class="step-action">
+            <div class="action-prompt">Pick a marked item and run the oracle demonstration.</div>
+            <button class="btn primary step-next" data-unlocks="t7-4" disabled id="t7-3-next">Next →</button>
+          </div>
+        </div>
+      </article>
+
+      <article class="step-card locked" data-step="t7-4">
+        <header class="step-head">
+          <div class="step-num">Step 04</div>
+          <h2>How iteration count changes success probability.</h2>
+        </header>
+        <div class="step-body">
+          <p>Grover success rises and falls with iteration count. Adjust k and watch probability mass move into and then past the marked state.</p>
+          <div style="margin:22px 0;padding:20px;background:var(--bg-2);border:1px solid var(--line)">
+            <label style="font-family:var(--mono);font-size:10px;color:var(--ink-faint)">
+              Iterations k:
+              <input type="range" id="grover-iter-slider" min="0" max="4" value="0" step="1" style="width:180px;accent-color:var(--cyan);vertical-align:middle"/>
+              <span id="grover-iter-val" style="color:var(--cyan)">0</span>
+            </label>
+            <div id="grover-iter-target" style="font-family:var(--mono);font-size:11px;color:var(--ink-dim);margin-top:8px;letter-spacing:0.06em"></div>
+            <div id="grover-iter-viz" style="margin-top:8px"></div>
+            <div id="grover-iter-probs" style="margin-top:12px"></div>
+            <div id="grover-iter-explain" style="font-family:var(--serif);font-size:14px;color:var(--ink-dim);line-height:1.55;margin-top:10px"></div>
+          </div>
+          <div class="step-action">
+            <div class="action-prompt">Move from k=0 to at least k=1 and inspect the amplification.</div>
+            <button class="btn primary step-next" data-unlocks="t7-5" disabled id="t7-4-next">Next →</button>
+          </div>
+        </div>
+      </article>
+
+      <article class="step-card locked" data-step="t7-5">
+        <header class="step-head">
+          <div class="step-num">Step 05</div>
+          <h2>Overshooting the optimum.</h2>
+        </header>
+        <div class="step-body">
+          <p>Because Grover is a rotation in state space, too many iterations rotate past the target. Click through iterations and watch success peak then decline.</p>
+          <div style="margin:22px 0;padding:20px;background:var(--bg-2);border:1px solid var(--line)">
+            <svg id="grover-overshoot-curve" viewBox="0 0 430 240" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:430px"></svg>
+            <div style="margin-top:10px">
+              <button class="btn" id="grover-overshoot-next">Next iteration marker</button>
+            </div>
+            <div id="grover-overshoot-desc" style="font-family:var(--serif);font-size:14px;color:var(--ink-dim);line-height:1.55;margin-top:10px"></div>
+          </div>
+          <div class="step-action">
+            <div class="action-prompt">Advance the marker until you see overshoot behavior.</div>
+            <button class="btn primary step-next" data-unlocks="t7-6" disabled id="t7-5-next">Next →</button>
+          </div>
+        </div>
+      </article>
+
+      <article class="step-card locked" data-step="t7-6">
+        <header class="step-head">
+          <div class="step-num">Step 06</div>
+          <h2>Noise weakens amplification.</h2>
+        </header>
+        <div class="step-body">
+          <p>In ideal hardware, Grover sharply amplifies the marked state. With noise, the distribution drifts back toward uniform, reducing practical advantage.</p>
+          <div style="margin:22px 0;padding:20px;background:var(--bg-2);border:1px solid var(--line)">
+            <label style="font-family:var(--mono);font-size:10px;color:var(--ink-faint)">
+              Noise level:
+              <input type="range" id="grover-noise-slider" min="0" max="60" value="0" step="5" style="width:200px;accent-color:var(--red);vertical-align:middle"/>
+              <span id="grover-noise-val" style="color:var(--red)">0%</span>
+            </label>
+            <div style="margin-top:10px">
+              <button class="btn primary" id="grover-noise-run">▶ Run noisy Grover</button>
+            </div>
+            <div id="grover-noise-summary" style="font-family:var(--serif);font-size:14px;color:var(--ink-dim);line-height:1.55;margin-top:10px"></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:12px">
+              <div>
+                <div style="font-family:var(--mono);font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:var(--phos-dim);margin-bottom:6px">Ideal</div>
+                <div id="grover-noise-ideal-probs"></div>
+              </div>
+              <div>
+                <div style="font-family:var(--mono);font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:var(--red);margin-bottom:6px">Noisy</div>
+                <div id="grover-noise-noisy-probs"></div>
+              </div>
+            </div>
+          </div>
+          <div class="step-action">
+            <div class="action-prompt">Try at least three noise levels and compare ideal vs noisy outputs.</div>
+            <button class="btn primary step-next" data-unlocks="t7-7" disabled id="t7-6-next">Next →</button>
+          </div>
+        </div>
+      </article>
+
+      <!-- T7 Step 7: wrap-up -->
+      <article class="step-card locked" data-step="t7-7">
+        <header class="step-head">
+          <div class="step-num">Step 07</div>
+          <h2>What Grover taught the field.</h2>
+        </header>
+        <div class="step-body">
+          <p>Grover showed that unstructured search is one of the cleanest places where quantum mechanics gives a provable asymptotic advantage: from <b>O(N)</b> classical queries down to <b>O(√N)</b> oracle calls.</p>
+          <p>The mechanism is geometric: repeated oracle-plus-diffusion steps perform a controlled rotation of the state vector toward the marked subspace. The gain comes from <b>interference</b> and <b>phase structure</b>, not from reading all answers at once.</p>
+          <p>Just as importantly, Grover teaches limits. The speedup is quadratic, not exponential, and practical performance is sensitive to noise and to choosing the right number of iterations before overshoot.</p>
+          <div class="insight-box">
+            <div class="insight-label">Historical note</div>
+            <p class="insight-text">Lov Grover published the algorithm in 1996, and it became a cornerstone result in quantum complexity theory. It is still the canonical baseline for "black-box" search and appears as a subroutine in many larger quantum algorithms.</p>
+          </div>
+          <div class="wrap-up">
+            <button class="wrap-card" data-go="t5">
+              <div class="wrap-tag">Tutorial 5</div>
+              <div class="wrap-title">Deutsch-Jozsa algorithm</div>
+              <div class="wrap-desc">Compare two classic oracle algorithms side-by-side and connect their interference patterns.</div>
+              <div class="wrap-cta">← Tutorial 5</div>
+            </button>
+            <button class="wrap-card alt" data-go="lab">
+              <div class="wrap-tag">Lab</div>
+              <div class="wrap-title">Build your own Grover variant</div>
+              <div class="wrap-desc">Load templates, alter the oracle structure, and inspect probabilities, amplitudes, and density matrix views.</div>
+              <div class="wrap-cta">Open the Lab →</div>
+            </button>
+          </div>
+        </div>
+      </article>
+    </div><!-- /#tut-7 -->
+
   </div><!-- /#view-learn -->
 
   <!-- ============================================================
@@ -1866,6 +2241,7 @@
 <script src="js/tutorials/tutorial-4-noise-qec.js"></script>
 <script src="js/tutorials/tutorial-5-deutsch-jozsa.js"></script>
 <script src="js/tutorials/tutorial-6-vqe.js"></script>
+<script src="js/tutorials/tutorial-7-grover-search.js"></script>
 <script src="js/tutorials/bootstrap.js"></script>
 </body>
 </html>

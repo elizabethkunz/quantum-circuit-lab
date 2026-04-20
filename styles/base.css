@@ -847,7 +847,7 @@
     padding-top: 32px;
     border-top: 1px solid var(--line);
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: 1fr;
     gap: 40px;
   }
   .reference h3 {
@@ -858,18 +858,26 @@
     color: var(--phos-dim);
     margin-bottom: 14px;
   }
-  .gloss-list dt {
+  .gloss-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+  .gloss-card {
+    background: var(--bg-1);
+    border: 1px solid var(--line);
+    padding: 12px 14px;
+  }
+  .gloss-card h4 {
     font-family: var(--serif);
     font-style: italic;
     font-size: 15px;
     color: var(--ink);
-    margin-top: 10px;
+    margin-bottom: 6px;
   }
-  .gloss-list dt:first-child { margin-top: 0; }
-  .gloss-list dd {
+  .gloss-card p {
     color: var(--ink-dim);
     font-size: 13px;
-    margin-top: 2px;
     line-height: 1.55;
   }
 
@@ -891,6 +899,8 @@
     .intro, .lab, .output, .ex-grid, .reference {
       grid-template-columns: 1fr;
     }
+    .subtab-group.intro, .subtab-group.alg { grid-template-columns: 1fr; }
+    .gloss-grid { grid-template-columns: 1fr; }
     .palette { position: static; }
     .intro h1 { font-size: 32px; }
   }
@@ -1014,15 +1024,33 @@
      SUBTABS (Tutorial 1 vs Tutorial 2)
      ========================================================= */
   .subtabs {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
     margin-bottom: 28px;
   }
+  .subtab-row-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0;
+    padding: 2px 2px 1px;
+  }
+  .subtab-row-label.intro { color: var(--phos-dim); }
+  .subtab-row-label.alg { color: var(--magenta); }
+  .subtab-group {
+    display: grid;
+    gap: 12px;
+  }
+  .subtab-group.intro { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .subtab-group.alg { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .subtab {
     background: var(--bg-1);
     border: 1px solid var(--line);
     padding: 18px 22px;
+  min-height: 122px;
     cursor: pointer;
     text-align: left;
     display: flex;
@@ -1032,6 +1060,12 @@
     position: relative;
     overflow: hidden;
   }
+  .subtab-intro .subtab-num { color: var(--phos-dim); }
+  .subtab-intro::after { background: var(--phos); }
+  .subtab-intro.active .subtab-pill { color: var(--phos); border-color: var(--phos-dim); }
+  .subtab-alg .subtab-num { color: var(--magenta); }
+  .subtab-alg::after { background: var(--magenta); }
+  .subtab-alg.active .subtab-pill { color: var(--magenta); border-color: var(--magenta); }
   .subtab::after {
     content: '';
     position: absolute;
