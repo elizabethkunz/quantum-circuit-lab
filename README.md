@@ -1,23 +1,23 @@
-# quantum_lab-8 split source
+# Quantum Lab 8 (split source)
 
-Edit smaller files in `tabs/` instead of one giant HTML file.
+This folder is ready to upload directly to GitHub.
 
-## Files
+## Structure
 - `tabs/view-lab.html`
 - `tabs/view-learn.html`
 - `tabs/view-templates.html`
 - `tabs/view-docs.html`
-- `quantum_lab-8.template.html` (main shell with placeholders)
-- `build.py` (rebuild full runnable html)
+- `quantum_lab-8.template.html`
+- `build.py`
+- `index.html` (generated, publishable entry file)
 
-## Build
-Run:
+## Edit workflow
+1. Edit one or more files in `tabs/`.
+2. Rebuild:
+   ```bash
+   python3 build.py
+   ```
+3. Commit and push.
 
-```bash
-python3 build.py
-```
-
-This regenerates:
-- `quantum_lab-8 copy.html` (inside this folder)
-
-If you want it in Downloads root, copy or move that file after build.
+## GitHub Pages
+If you enable GitHub Pages for this repo, set it to deploy from the branch/folder containing `index.html` (repo root).

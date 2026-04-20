@@ -9,6 +9,13 @@ for k in keys:
     frag = (root / "tabs" / f"{k}.html").read_text().rstrip()
     out = out.replace(f"{{{{{k}}}}}", frag)
 
-output = root / "quantum_lab-8 copy.html"
-output.write_text(out + "\n")
-print(f"Built: {output}")
+# GitHub-friendly primary output
+index_out = root / "index.html"
+index_out.write_text(out + "\n")
+
+# Keep legacy filename for local continuity
+legacy_out = root / "quantum_lab-8 copy.html"
+legacy_out.write_text(out + "\n")
+
+print(f"Built: {index_out}")
+print(f"Built: {legacy_out}")
