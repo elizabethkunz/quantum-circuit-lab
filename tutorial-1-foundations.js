@@ -1,0 +1,757 @@
+/* =========================================================================
+   STEP 1 — classical bit switch
+   ========================================================================= */
+(function initStep1() {
+  const sw = document.getElementById('bit-switch');
+  const val = document.getElementById('bit-value');
+  let state = 0, flips = 0;
+  sw.addEventListener('click', () => {
+    state = 1 - state;
+    val.textContent = state;
+    sw.classList.toggle('on', state === 1);
+    flips++;
+    if (flips >= 2) markDone('t1-1');
+  });
+})();
+
+/* =========================================================================
+   BLOCH SPHERE — shared component
+   ========================================================================= */
+const blochInstances = {};
+
+function createBloch(hostId, readoutId, options = {}) {
+  const host = document.getElementById(hostId);
+  if (!host) return null;
+
+  // Qubit state: α|0⟩ + β|1⟩, stored as complex amplitudes.
+  // Initial state = |0⟩ → α=1, β=0.
+  let alpha = { re: 1, im: 0 };
+  let beta  = { re: 0, im: 0 };
+
+  // Camera rotation (viewer angles around x and y axes)
+  let camRotX = -0.2;  // slight tilt down
+  let camRotY = 0.4;   // slight turn
+
+  // Derive Bloch-sphere coordinates (x,y,z) from (α,β).
+  // Using the mixed-state-free pure-state formula:
+  //   x = 2 Re(α* β),  y = 2 Im(α* β),  z = |α|² - |β|²
+  function currentVec() {
+    // α*β
+    const aStarB_re =  alpha.re * beta.re + alpha.im * beta.im;
+    const aStarB_im =  alpha.re * beta.im - alpha.im * beta.re;
+    const x = 2 * aStarB_re;
+    const y = 2 * aStarB_im;
+    const z = (alpha.re*alpha.re + alpha.im*alpha.im)
+            - (beta.re*beta.re  + beta.im*beta.im);
+    return { x, y, z };
+  }
+
+  // Apply a 2x2 gate matrix to (α, β)
+  function applyGate(g) {
+    const newA = Cadd(Cmul(g[0][0], alpha), Cmul(g[0][1], beta));
+    const newB = Cadd(Cmul(g[1][0], alpha), Cmul(g[1][1], beta));
+    alpha = newA;
+    beta = newB;
+    draw();
+    return { alpha, beta };
+  }
+  function Cmul(a,b) { return { re: a.re*b.re - a.im*b.im, im: a.re*b.im + a.im*b.re }; }
+  function Cadd(a,b) { return { re: a.re+b.re, im: a.im+b.im }; }
+
+  // Set to a named preset state
+  function setPreset(name) {
+    const S2 = 1/Math.SQRT2;
+    switch(name) {
+      case '0':  alpha = {re:1,im:0};  beta = {re:0,im:0}; break;
+      case '1':  alpha = {re:0,im:0};  beta = {re:1,im:0}; break;
+      case '+':  alpha = {re:S2,im:0}; beta = {re:S2,im:0}; break;
+      case '-':  alpha = {re:S2,im:0}; beta = {re:-S2,im:0}; break;
+      case '+i': alpha = {re:S2,im:0}; beta = {re:0,im:S2}; break;
+      case '-i': alpha = {re:S2,im:0}; beta = {re:0,im:-S2}; break;
+    }
+    draw();
+  }
+
+  function reset() {
+    alpha = {re:1,im:0}; beta = {re:0,im:0};
+    draw();
+  }
+
+  // Project 3D (x,y,z) on the unit sphere to 2D SVG coordinates using current camera.
+  // x-axis rotation first (pitch), then y-axis rotation (yaw).
+  function project(x, y, z) {
+    // Rotate around x-axis (tilt)
+    let y1 = y * Math.cos(camRotX) - z * Math.sin(camRotX);
+    let z1 = y * Math.sin(camRotX) + z * Math.cos(camRotX);
+    let x1 = x;
+    // Rotate around y-axis (turn)
+    let x2 = x1 * Math.cos(camRotY) + z1 * Math.sin(camRotY);
+    let z2 = -x1 * Math.sin(camRotY) + z1 * Math.cos(camRotY);
+    let y2 = y1;
+    // Orthographic: just drop z2 for screen coords
+    return { sx: x2, sy: -y2, depth: z2 };  // depth>0 → in front
+  }
+
+  // Identify which named state we're closest to (for readout)
+  function nearestState() {
+    const v = currentVec();
+    const states = {
+      '|0⟩':  { x:0, y:0, z:1 },
+      '|1⟩':  { x:0, y:0, z:-1 },
+      '|+⟩':  { x:1, y:0, z:0 },
+      '|−⟩':  { x:-1, y:0, z:0 },
+      '|+i⟩': { x:0, y:1, z:0 },
+      '|−i⟩': { x:0, y:-1, z:0 },
+    };
+    let best = null, bestDist = Infinity;
+    for (const k in states) {
+      const s = states[k];
+      const d = (v.x-s.x)**2 + (v.y-s.y)**2 + (v.z-s.z)**2;
+      if (d < bestDist) { bestDist = d; best = k; }
+    }
+    return { name: best, dist: Math.sqrt(bestDist) };
+  }
+
+  // Measurement probabilities  P(|0⟩) = |α|²,  P(|1⟩) = |β|²
+  function measureProbs() {
+    return {
+      p0: alpha.re*alpha.re + alpha.im*alpha.im,
+      p1: beta.re*beta.re + beta.im*beta.im
+    };
+  }
+
+  function fmtC(c) {
+    const r = Math.abs(c.re) < 1e-9 ? 0 : c.re;
+    const i = Math.abs(c.im) < 1e-9 ? 0 : c.im;
+    if (i === 0) return r.toFixed(3);
+    if (r === 0) return `${i.toFixed(3)}i`;
+    return `${r.toFixed(3)}${i>=0?'+':'−'}${Math.abs(i).toFixed(3)}i`;
+  }
+
+  // Draw the Bloch sphere SVG
+  function draw() {
+    const W = 320, H = 320, R = 120;
+    const cx = W/2, cy = H/2;
+    const v = currentVec();
+
+    // Key points to draw: axis endpoints
+    const axes = [
+      { name:'|0⟩', x:0, y:0, z:1,  color:'var(--phos)',    isPole:true },
+      { name:'|1⟩', x:0, y:0, z:-1, color:'var(--phos)',    isPole:true },
+      { name:'|+⟩', x:1, y:0, z:0,  color:'var(--cyan)',    isPole:false },
+      { name:'|−⟩', x:-1,y:0, z:0,  color:'var(--cyan)',    isPole:false },
+      { name:'|+i⟩',x:0, y:1, z:0,  color:'var(--magenta)', isPole:false },
+      { name:'|−i⟩',x:0, y:-1,z:0,  color:'var(--magenta)', isPole:false },
+    ];
+
+    // Project axis endpoints
+    const pAxes = axes.map(a => ({ ...a, p: project(a.x, a.y, a.z) }));
+
+    // Equator circle points (project many and connect)
+    const equator = [];
+    for (let i = 0; i <= 64; i++) {
+      const t = (i/64) * 2*Math.PI;
+      equator.push(project(Math.cos(t), Math.sin(t), 0));
+    }
+    // Meridian (x-z) circle
+    const meridianXZ = [];
+    for (let i = 0; i <= 64; i++) {
+      const t = (i/64) * 2*Math.PI;
+      meridianXZ.push(project(Math.sin(t), 0, Math.cos(t)));
+    }
+
+    // Build path strings with front/back distinction
+    function pathForCircle(points) {
+      // Split into front (depth >= 0) and back (depth < 0) segments
+      const front = []; const back = [];
+      let curF = []; let curB = [];
+      for (const p of points) {
+        if (p.depth >= 0) {
+          if (curB.length) { back.push(curB); curB = []; }
+          curF.push(p);
+        } else {
+          if (curF.length) { front.push(curF); curF = []; }
+          curB.push(p);
+        }
+      }
+      if (curF.length) front.push(curF);
+      if (curB.length) back.push(curB);
+      const toPath = (segs) => segs.map(seg => 'M ' + seg.map(p => `${cx + p.sx*R} ${cy + p.sy*R}`).join(' L ')).join(' ');
+      return { front: toPath(front), back: toPath(back) };
+    }
+
+    const eqPath = pathForCircle(equator);
+    const mePath = pathForCircle(meridianXZ);
+
+    // State vector endpoint
+    const vp = project(v.x, v.y, v.z);
+    const vx = cx + vp.sx * R;
+    const vy = cy + vp.sy * R;
+    const stateInFront = vp.depth >= 0;
+
+    // Arrow color based on proximity to |0> or |1>
+    const arrowColor = 'var(--amber)';
+
+    let svg = `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">
+      <!-- back hemisphere glow -->
+      <circle cx="${cx}" cy="${cy}" r="${R}" fill="var(--bg-0)" stroke="var(--line)" stroke-width="1" />
+      <circle cx="${cx}" cy="${cy}" r="${R}" fill="url(#bloch-glow-${hostId})" opacity="0.35" />
+      <defs>
+        <radialGradient id="bloch-glow-${hostId}" cx="50%" cy="40%" r="60%">
+          <stop offset="0%" stop-color="rgba(127,255,196,0.08)" />
+          <stop offset="100%" stop-color="rgba(0,0,0,0)" />
+        </radialGradient>
+      </defs>
+
+      <!-- back equator & meridian (dashed/dim) -->
+      <path d="${eqPath.back}" stroke="var(--line-bright)" stroke-width="1" fill="none" stroke-dasharray="2 3" opacity="0.5" />
+      <path d="${mePath.back}" stroke="var(--line-bright)" stroke-width="1" fill="none" stroke-dasharray="2 3" opacity="0.5" />`;
+
+    // Back-hemisphere axis labels (dim)
+    pAxes.filter(a => a.p.depth < 0).forEach(a => {
+      const ax = cx + a.p.sx * R;
+      const ay = cy + a.p.sy * R;
+      const off = labelOffset(a, a.p);
+      svg += `<text x="${ax + off.dx}" y="${ay + off.dy}" fill="${a.color}" opacity="0.35" font-family="var(--mono)" font-size="11" text-anchor="middle">${a.name}</text>`;
+    });
+
+    // Front equator & meridian
+    svg += `<path d="${eqPath.front}" stroke="var(--line-bright)" stroke-width="1" fill="none" />`;
+    svg += `<path d="${mePath.front}" stroke="var(--line-bright)" stroke-width="1" fill="none" />`;
+
+    // Arrow from center to state (only show if stateInFront)
+    if (stateInFront) {
+      svg += `<line x1="${cx}" y1="${cy}" x2="${vx}" y2="${vy}" stroke="${arrowColor}" stroke-width="2.5" stroke-linecap="round" />`;
+      svg += `<circle cx="${vx}" cy="${vy}" r="6" fill="${arrowColor}" />`;
+      svg += `<circle cx="${vx}" cy="${vy}" r="11" fill="none" stroke="${arrowColor}" stroke-width="1" opacity="0.4" />`;
+    } else {
+      // dim arrow if pointing back
+      svg += `<line x1="${cx}" y1="${cy}" x2="${vx}" y2="${vy}" stroke="${arrowColor}" stroke-width="1.5" stroke-dasharray="3 3" opacity="0.55" />`;
+      svg += `<circle cx="${vx}" cy="${vy}" r="5" fill="${arrowColor}" opacity="0.55" />`;
+    }
+
+    // Front-hemisphere axis labels (bright)
+    pAxes.filter(a => a.p.depth >= 0).forEach(a => {
+      const ax = cx + a.p.sx * R;
+      const ay = cy + a.p.sy * R;
+      const off = labelOffset(a, a.p);
+      svg += `<text x="${ax + off.dx}" y="${ay + off.dy}" fill="${a.color}" font-family="var(--mono)" font-size="11" text-anchor="middle" font-weight="500">${a.name}</text>`;
+    });
+
+    // Center dot
+    svg += `<circle cx="${cx}" cy="${cy}" r="1.5" fill="var(--ink-dim)" />`;
+
+    svg += `</svg>`;
+
+    host.innerHTML = svg;
+
+    // Update readout
+    if (readoutId) {
+      const readEl = document.getElementById(readoutId);
+      const near = nearestState();
+      const probs = measureProbs();
+      const sp = (alpha.re*alpha.re+alpha.im*alpha.im > 0.99) ? 'definite |0⟩' :
+                 (beta.re*beta.re+beta.im*beta.im > 0.99) ? 'definite |1⟩' :
+                 'superposition';
+      readEl.innerHTML = `
+        <div><span class="rlabel">State</span> <span class="rval">α|0⟩ + β|1⟩</span></div>
+        <div><span class="rlabel">α =</span> ${fmtC(alpha)}</div>
+        <div><span class="rlabel">β =</span> ${fmtC(beta)}</div>
+        <div><span class="rlabel">Nearest</span> <span class="rmini">${near.name}</span></div>
+        <div><span class="rlabel">P(0) = </span> ${(probs.p0*100).toFixed(1)}%   <span class="rlabel">P(1) = </span> ${(probs.p1*100).toFixed(1)}%</div>
+        <div><span class="rlabel">Type</span> ${sp}</div>
+      `;
+    }
+  }
+
+  function labelOffset(axis, p) {
+    // push labels outward from sphere center along projected direction
+    const len = Math.sqrt(p.sx*p.sx + p.sy*p.sy) || 1;
+    const pad = 16;
+    return { dx: (p.sx/len) * pad, dy: (p.sy/len) * pad + 4 };
+  }
+
+  // Drag to rotate view
+  let dragging = false, dragStartX = 0, dragStartY = 0, startRotX = 0, startRotY = 0;
+  host.addEventListener('pointerdown', (e) => {
+    dragging = true;
+    dragStartX = e.clientX;
+    dragStartY = e.clientY;
+    startRotX = camRotX;
+    startRotY = camRotY;
+    host.setPointerCapture(e.pointerId);
+    if (options.onDrag) options.onDrag();
+  });
+  host.addEventListener('pointermove', (e) => {
+    if (!dragging) return;
+    const dx = e.clientX - dragStartX;
+    const dy = e.clientY - dragStartY;
+    camRotY = startRotY + dx * 0.008;
+    camRotX = Math.max(-Math.PI/2, Math.min(Math.PI/2, startRotX - dy * 0.008));
+    draw();
+  });
+  host.addEventListener('pointerup', () => { dragging = false; });
+  host.addEventListener('pointercancel', () => { dragging = false; });
+
+  draw();
+
+  return {
+    draw,
+    setPreset,
+    applyGate,
+    reset,
+    getState: () => ({ alpha: {...alpha}, beta: {...beta} })
+  };
+}
+
+/* =========================================================================
+   STEP 2 — Bloch sphere explorer
+   ========================================================================= */
+(function initStep2() {
+  const presetsVisited = new Set();
+  const bloch = createBloch('bloch-1', 'bloch-1-readout', {
+    onDrag: () => {
+      presetsVisited.add('drag');
+      if (presetsVisited.size >= 3) markDone('t1-2');
+    }
+  });
+  blochInstances['bloch-1'] = bloch;
+  document.querySelectorAll('[data-bloch="1"]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const state = btn.dataset.state;
+      bloch.setPreset(state);
+      presetsVisited.add(state);
+      if (presetsVisited.size >= 3) markDone('t1-2');
+    });
+  });
+})();
+
+/* =========================================================================
+   STEP 3 — gate application on Bloch sphere
+   ========================================================================= */
+(function initStep3() {
+  let gateApplications = 0;
+  const bloch = createBloch('bloch-2', 'bloch-2-readout');
+  blochInstances['bloch-2'] = bloch;
+  document.querySelectorAll('[data-bloch="2"]').forEach(btn => {
+    if (btn.dataset.gate) {
+      btn.addEventListener('click', () => {
+        const g = GATES[btn.dataset.gate];
+        bloch.applyGate(g);
+        gateApplications++;
+        if (gateApplications >= 4) markDone('t1-3');
+      });
+    }
+  });
+  document.querySelectorAll('.reset-gate-btn[data-bloch="2"]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      bloch.reset();
+    });
+  });
+})();
+
+/* =========================================================================
+   MINI CIRCUIT RENDERER (read-only visual for tutorial steps)
+   ========================================================================= */
+function renderMiniCircuit(containerId, config) {
+  // config = { nQubits, columns: Column[] }, where Column is same model as the Lab
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  container.innerHTML = '';
+
+  const wires = document.createElement('div');
+  wires.className = 'mini-wires';
+
+  const nCols = config.columns.length;
+
+  for (let q = config.nQubits - 1; q >= 0; q--) {
+    const row = document.createElement('div');
+    row.className = 'mini-wire-row';
+
+    const label = document.createElement('div');
+    label.className = 'mini-wire-label';
+    label.innerHTML = `q<sub>${q}</sub>`;
+    row.appendChild(label);
+
+    const track = document.createElement('div');
+    track.className = 'mini-track';
+    const line = document.createElement('div');
+    line.className = 'mini-line';
+    track.appendChild(line);
+
+    const slots = document.createElement('div');
+    slots.className = 'mini-slots';
+
+    for (let c = 0; c < nCols; c++) {
+      const slot = document.createElement('div');
+      slot.className = 'mini-slot';
+      slot.dataset.col = c;
+      slot.dataset.q = q;
+      const entry = config.columns[c][q];
+      if (entry) {
+        const el = document.createElement('div');
+        if (entry.type === 'single') {
+          el.className = 'mini-gate';
+          const g = entry.gate;
+          if (g === 'RX' || g === 'RY' || g === 'RZ') {
+            el.style.fontFamily = 'var(--mono)';
+            el.style.fontSize = '9px';
+            el.style.lineHeight = '1';
+            el.style.color = 'var(--cyan)';
+            el.style.borderColor = 'var(--cyan)';
+            const sub = g[1].toLowerCase();
+            const deg = entry.angleDeg !== undefined ? entry.angleDeg : 90;
+            el.innerHTML = `R${sub}<br><span style="font-size:7px;color:var(--cyan)">${deg}°</span>`;
+          } else {
+            el.textContent = g;
+          }
+        } else if (entry.type === 'ctrl') {
+          el.className = 'mini-gate ctrl-dot';
+        } else if (entry.type === 'target') {
+          el.className = entry.gate === 'X' ? 'mini-gate target-x' : 'mini-gate';
+          el.textContent = entry.gate === 'X' ? '⊕' : entry.gate;
+        } else if (entry.type === 'meas') {
+          el.className = 'mini-gate meas'; el.textContent = '◎';
+        }
+        slot.appendChild(el);
+      }
+      slots.appendChild(slot);
+    }
+    track.appendChild(slots);
+    row.appendChild(track);
+    wires.appendChild(row);
+  }
+
+  container.appendChild(wires);
+
+  // Draw ctrl links
+  const refresh = () => {
+    container.querySelectorAll('.mini-ctrl-link').forEach(e => e.remove());
+    const containerRect = container.getBoundingClientRect();
+    for (let c = 0; c < nCols; c++) {
+      const col = config.columns[c];
+      const ctrlQs = [], tgtQs = [];
+      col.forEach((e, q) => {
+        if (e && e.type === 'ctrl') ctrlQs.push(q);
+        if (e && e.type === 'target') tgtQs.push(q);
+      });
+      if (ctrlQs.length && tgtQs.length) {
+        const qA = Math.min(...ctrlQs, ...tgtQs);
+        const qB = Math.max(...ctrlQs, ...tgtQs);
+        const slotA = container.querySelector(`.mini-slot[data-col="${c}"][data-q="${qA}"]`);
+        const slotB = container.querySelector(`.mini-slot[data-col="${c}"][data-q="${qB}"]`);
+        if (slotA && slotB) {
+          const rA = slotA.getBoundingClientRect();
+          const rB = slotB.getBoundingClientRect();
+          const link = document.createElement('div');
+          link.className = 'mini-ctrl-link';
+          const topY = Math.min(rA.top, rB.top) - containerRect.top + rA.height/2;
+          const bottomY = Math.max(rA.top, rB.top) - containerRect.top + rA.height/2;
+          link.style.top = topY + 'px';
+          link.style.height = (bottomY - topY) + 'px';
+          link.style.left = (rA.left - containerRect.left + rA.width/2) + 'px';
+          link.style.transform = 'translateX(-50%)';
+          container.appendChild(link);
+        }
+      }
+    }
+  };
+  container._refreshLinks = refresh;
+  requestAnimationFrame(refresh);
+}
+
+/* Run a config (not the live Lab circuit). Returns probability vector. */
+function simulateConfig(config, noise = 0, shots = 1024) {
+  const n = config.nQubits;
+  const runOnceCfg = () => {
+    let state = new Array(1<<n).fill(0).map(() => ({re:0,im:0}));
+    state[0] = {re:1,im:0};
+    for (let c = 0; c < config.columns.length; c++) {
+      const col = config.columns[c];
+      const processed = new Set();
+      for (let q = 0; q < n; q++) {
+        const e = col[q];
+        if (!e || processed.has(q)) continue;
+        if (e.type === 'ctrl') {
+          const target = e.partner;
+          const tgt = col[target];
+          if (tgt && tgt.type === 'target') {
+            state = applyControlled(state, GATES[tgt.gate], q, target, n);
+            processed.add(q); processed.add(target);
+            if (noise > 0) {
+              if (Math.random() < noise) state = applySingle(state, randomPauli(), q, n);
+              if (Math.random() < noise) state = applySingle(state, randomPauli(), target, n);
+            }
+          }
+        }
+      }
+      for (let q = 0; q < n; q++) {
+        if (processed.has(q)) continue;
+        const e = col[q];
+        if (!e) continue;
+        if (e.type === 'single') {
+          let mtx;
+          if (e.gate === 'RX') mtx = makeRxGate(e.angleDeg || 90);
+          else if (e.gate === 'RY') mtx = makeRyGate(e.angleDeg || 90);
+          else if (e.gate === 'RZ') mtx = makeRzGate(e.angleDeg || 90);
+          else mtx = GATES[e.gate];
+          state = applySingle(state, mtx, q, n);
+          if (noise > 0 && Math.random() < noise) state = applySingle(state, randomPauli(), q, n);
+        }
+      }
+    }
+    return state;
+  };
+  if (noise === 0) {
+    const state = runOnceCfg();
+    return state.map(a => a.re*a.re + a.im*a.im);
+  }
+  // shot-based
+  const dim = 1 << n;
+  const counts = new Array(dim).fill(0);
+  for (let s = 0; s < shots; s++) {
+    const state = runOnceCfg();
+    const ps = state.map(a => a.re*a.re + a.im*a.im);
+    let r = Math.random(), cum = 0;
+    for (let i = 0; i < dim; i++) {
+      cum += ps[i];
+      if (r <= cum) { counts[i]++; break; }
+    }
+  }
+  return counts.map(c => c / shots);
+}
+
+function formatBasisLabelN(i, n) {
+  let s = '';
+  for (let q = n-1; q >= 0; q--) s += ((i>>q)&1);
+  return '|' + s + '⟩';
+}
+
+function renderMiniProbs(containerId, probs, n, maxShow = 6) {
+  const el = document.getElementById(containerId);
+  const entries = probs.map((p,i) => ({p,i})).sort((a,b) => b.p - a.p);
+  const show = entries.slice(0, maxShow);
+  el.innerHTML = '<div class="prob-list">' + show.map(({i,p}) => {
+    const pct = (p*100).toFixed(1);
+    const zero = p < 0.005 ? ' zero' : '';
+    return `<div class="prob-row${zero}">
+      <div class="prob-label">${formatBasisLabelN(i,n)}</div>
+      <div class="prob-bar-wrap"><div class="prob-bar" style="width:${Math.max(p*100, p>0.001?1:0)}%"></div></div>
+      <div class="prob-val">${pct}%</div>
+    </div>`;
+  }).join('') + '</div>';
+}
+
+/* =========================================================================
+   STEP 4 — coin flip circuit (single H + measure)
+   ========================================================================= */
+(function initStep4() {
+  const cfg = {
+    nQubits: 1,
+    columns: [
+      [null],
+      [{type:'single',gate:'H'}],
+      [null],
+      [{type:'meas'}],
+      [null],
+    ]
+  };
+  renderMiniCircuit('mini-coin-circuit', cfg);
+
+  const history = [];
+  const shotEl = document.getElementById('mini-coin-shot');
+  const histEl = document.getElementById('mini-coin-history');
+
+  document.getElementById('mini-coin-run').addEventListener('click', () => {
+    // H on |0> → |+> → measure
+    const r = Math.random() < 0.5 ? 0 : 1;
+    shotEl.textContent = r;
+    shotEl.style.color = r === 0 ? 'var(--cyan)' : 'var(--amber)';
+    history.push(r);
+    histEl.innerHTML = history.slice(-40).map(x => `<span class="h${x}">${x}</span>`).join(' ');
+    if (history.length >= 5) markDone('t1-4');
+  });
+  document.getElementById('mini-coin-reset').addEventListener('click', () => {
+    history.length = 0;
+    shotEl.textContent = '—';
+    shotEl.style.color = 'var(--phos)';
+    histEl.innerHTML = '';
+  });
+})();
+
+/* =========================================================================
+   STEP 5 — two Hadamards (product state, uniform over 4 outcomes)
+   ========================================================================= */
+(function initStep5() {
+  const cfg = {
+    nQubits: 2,
+    columns: [
+      [null, null],
+      [{type:'single',gate:'H'}, {type:'single',gate:'H'}],
+      [null, null],
+      [{type:'meas'}, {type:'meas'}],
+      [null, null],
+    ]
+  };
+  renderMiniCircuit('mini-two-circuit', cfg);
+  let runCount = 0;
+
+  document.getElementById('mini-two-run').addEventListener('click', () => {
+    const probs = simulateConfig(cfg, 0);
+    renderMiniProbs('mini-two-probs', probs, 2, 4);
+    runCount++;
+    if (runCount >= 1) markDone('t1-5');
+  });
+})();
+
+/* =========================================================================
+   STEP 6 — Bell pair, show paired outcomes
+   ========================================================================= */
+(function initStep6() {
+  const cfg = {
+    nQubits: 2,
+    columns: [
+      [null, null],
+      [{type:'single',gate:'H'}, null],
+      [{type:'ctrl',partner:1}, {type:'target',gate:'X',partner:0}],
+      [null, null],
+      [{type:'meas'}, {type:'meas'}],
+      [null, null],
+    ]
+  };
+  renderMiniCircuit('mini-bell-circuit', cfg);
+
+  document.getElementById('mini-bell-run').addEventListener('click', () => {
+    const pairGrid = document.getElementById('mini-bell-pairs');
+    // 20 shots, each a fresh simulation
+    pairGrid.innerHTML = '';
+    for (let i = 0; i < 20; i++) {
+      // Bell state: 50% 00, 50% 11
+      const r = Math.random() < 0.5 ? 0 : 3; // |00> or |11>
+      const b1 = (r >> 1) & 1;
+      const b0 = r & 1;
+      const cell = document.createElement('div');
+      cell.className = 'pair-cell ' + (b0 === b1 ? 'match' : 'mismatch');
+      cell.textContent = `${b1}${b0}`;
+      pairGrid.appendChild(cell);
+    }
+    markDone('t1-6');
+  });
+})();
+
+/* =========================================================================
+   STEP 7 — Bell pair with noise slider
+   ========================================================================= */
+(function initStep7() {
+  const slider = document.getElementById('t1-noise-slider');
+  const valEl  = document.getElementById('t1-noise-val');
+  const usedLevels = new Set();
+
+  slider.addEventListener('input', () => {
+    valEl.textContent = parseFloat(slider.value).toFixed(1) + '%';
+  });
+
+  const cfg = {
+    nQubits: 2,
+    columns: [
+      [null, null],
+      [{type:'single',gate:'H'}, null],
+      [{type:'ctrl',partner:1}, {type:'target',gate:'X',partner:0}],
+      [null, null],
+    ]
+  };
+
+  document.getElementById('mini-noise-run').addEventListener('click', () => {
+    const p = parseFloat(slider.value) / 100;
+    const probs = simulateConfig(cfg, p, 1024);
+    renderMiniProbs('mini-noise-probs', probs, 2, 4);
+    usedLevels.add(slider.value);
+    if (usedLevels.size >= 2) markDone('t1-7');
+  });
+})();
+
+/* =========================================================================
+   STEP 8 — wrap-up cards navigate to Lab or Tutorial 2
+   ========================================================================= */
+document.querySelectorAll('.wrap-card').forEach(card => {
+  card.addEventListener('click', () => {
+    const dest = card.dataset.go;
+    if (dest === 'lab') switchTab('lab');
+    else if (dest === 't1') { switchTab('learn'); switchSubtab('t1'); }
+    else if (dest === 't2') { switchTab('learn'); switchSubtab('t2'); }
+    else if (dest === 't3') { switchTab('learn'); switchSubtab('t3'); }
+    else if (dest === 't4') { switchTab('learn'); switchSubtab('t4'); }
+    else if (dest === 't5') { switchTab('learn'); switchSubtab('t5'); }
+  });
+});
+
+/* =========================================================================
+   TUTORIAL 2
+   ========================================================================= */
+
+/* Step t2-1: X·X under noise */
+(function initT4Step1() {
+  const slider = document.getElementById('t4-noise-slider');
+  const valEl  = document.getElementById('t4-noise-val');
+  const usedLevels = new Set();
+
+  slider.addEventListener('input', () => {
+    valEl.textContent = parseFloat(slider.value).toFixed(1) + '%';
+  });
+
+  const cfg = {
+    nQubits: 1,
+    columns: [
+      [null],
+      [{type:'single',gate:'X'}],
+      [{type:'single',gate:'X'}],
+      [null],
+    ]
+  };
+
+  document.getElementById('t4-xx-run').addEventListener('click', () => {
+    const p = parseFloat(slider.value) / 100;
+    const probs = simulateConfig(cfg, p, 1024);
+    renderMiniProbs('t4-xx-probs', probs, 1, 2);
+    usedLevels.add(slider.value);
+    if (usedLevels.size >= 2) markDone('t4-1');
+  });
+})();
+
+/* Step t2-2: reading step — unlocked by button, no task */
+// marked done when user clicks "I got it" which auto-unlocks t2-3
+document.querySelector('[data-step="t4-2"] .step-next').addEventListener('click', () => {
+  markDone('t4-2');
+});
+
+/* Step t2-3: repetition code (GHZ-style encoding) */
+(function initT4Step3() {
+  const cfg = {
+    nQubits: 3,
+    columns: [
+      [null, null, null],
+      [{type:'single',gate:'H'}, null, null],   // put logical qubit in superposition
+      [{type:'ctrl',partner:1}, {type:'target',gate:'X',partner:0}, null],
+      [{type:'ctrl',partner:2}, null, {type:'target',gate:'X',partner:0}],
+      [null, null, null],
+      [{type:'meas'}, {type:'meas'}, {type:'meas'}],
+    ]
+  };
+  renderMiniCircuit('mini-repcode-circuit', cfg);
+
+  document.getElementById('mini-repcode-run').addEventListener('click', () => {
+    const probs = simulateConfig(cfg, 0);
+    renderMiniProbs('mini-repcode-probs', probs, 3, 8);
+    markDone('t4-3');
+  });
+})();
+
+/* Step t4-4 done is handled by the surface code grid interaction above */
+
+/* ---------------- Initial render passes ---------------- */
+// make sure mini ctrl links get drawn even if hidden at first
+window.addEventListener('resize', () => {
+  document.querySelectorAll('.mini-circuit').forEach(c => {
+    if (c._refreshLinks) c._refreshLinks();
+  });
+});
