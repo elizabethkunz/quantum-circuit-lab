@@ -632,6 +632,60 @@
   .cat-noise { --cat-accent: var(--amber); --cat-accent-dim: var(--amber-dim); }
   .cat-rotations { --cat-accent: var(--cyan); --cat-accent-dim: #5ab2bd; }
   .cat-variational { --cat-accent: var(--magenta); --cat-accent-dim: #a85a86; }
+  .tutorial-sources {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 14px;
+    padding: 8px 10px;
+    border: 1px dashed var(--line);
+    background: var(--bg-1);
+  }
+  .tutorial-sources-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-right: 2px;
+  }
+  .tpl-filter-wrap {
+    margin: 4px 0 22px;
+    display: grid;
+    gap: 8px;
+  }
+  .tpl-filter-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+  .tpl-filter-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+  }
+  .tpl-filter-btn {
+    background: var(--bg-2);
+    border: 1px solid var(--line);
+    color: var(--ink-faint);
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 4px 8px;
+    cursor: pointer;
+  }
+  .tpl-filter-btn:hover {
+    border-color: var(--line-bright);
+    color: var(--ink);
+  }
+  .tpl-filter-btn.active {
+    border-color: var(--phos-dim);
+    color: var(--phos);
+  }
 
   .tpl-grid {
     display: grid;
@@ -729,6 +783,19 @@
     font-family: var(--serif);
     font-style: italic;
     font-size: 13.5px;
+  }
+  .tpl-cite {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.08em;
+    text-decoration: none;
+    color: var(--cat-accent-dim);
+    border-bottom: 1px dotted var(--cat-accent-dim);
+    margin-left: 4px;
+  }
+  .tpl-cite:hover {
+    color: var(--cat-accent);
+    border-bottom-color: var(--cat-accent);
   }
   .tpl-tags {
     display: flex;
@@ -967,19 +1034,97 @@
   .ctx-why b { color: var(--ink); font-weight: 500; }
   .ctx-why em { color: var(--ctx-color, var(--phos)); font-style: italic; }
   .ctx-facts {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
+    display: grid;
+    gap: 8px;
+    margin-top: 2px;
   }
-  .ctx-fact {
+  .ctx-fact-dropdown {
+    border: 1px solid var(--line-bright);
+    background: rgba(0, 0, 0, 0.2);
+  }
+  .ctx-fact-toggle {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    border: none;
+    background: transparent;
+    color: var(--ctx-color, var(--phos));
+    padding: 8px 10px;
+    cursor: pointer;
     font-family: var(--mono);
     font-size: 10px;
     letter-spacing: 0.08em;
+    text-align: left;
+  }
+  .ctx-fact-chevron {
+    color: var(--ink-faint);
+    transition: transform 0.15s ease;
+    flex: 0 0 auto;
+  }
+  .ctx-fact-body {
+    display: none;
+    border-top: 1px solid var(--line);
+    padding: 10px;
+    color: var(--ink-dim);
+    font-family: var(--serif);
+    font-size: 13px;
+    line-height: 1.55;
+  }
+  .ctx-cite {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.06em;
     color: var(--ctx-color, var(--phos));
-    padding: 3px 10px;
-    border: 1px solid var(--ctx-color, var(--phos));
-    background: rgba(0,0,0,0.2);
-    opacity: 0.85;
+    text-decoration: none;
+    border-bottom: 1px dotted var(--ctx-color, var(--phos));
+    margin-left: 6px;
+  }
+  .ctx-fact-dropdown.open {
+    border-color: var(--ctx-color, var(--phos));
+  }
+  .ctx-fact-dropdown.open .ctx-fact-body {
+    display: block;
+  }
+  .ctx-fact-dropdown.open .ctx-fact-chevron {
+    transform: rotate(180deg);
+  }
+  .ctx-actions {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px dashed var(--line);
+    display: none;
+  }
+  .ctx-actions.active { display: block; }
+  .ctx-actions-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 8px;
+  }
+  .ctx-actions-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .ctx-action-btn {
+    background: var(--bg-0);
+    border: 1px solid var(--line-bright);
+    color: var(--ink-dim);
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    padding: 6px 10px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .ctx-action-btn:hover {
+    border-color: var(--ctx-color, var(--phos));
+    color: var(--ctx-color, var(--phos));
+    box-shadow: 0 0 8px rgba(127,255,196,0.12);
   }
   .ctx-dismiss {
     position: absolute;

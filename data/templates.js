@@ -380,14 +380,18 @@ const TEMPLATE_CONTEXT = {
     title: 'Why superposition matters',
     color: 'var(--phos)',
     why: `This is the simplest quantum circuit that does something <em>genuinely impossible</em> for a classical bit. A classical coin is either heads or tails — even before you look. A qubit in superposition is <b>both at once</b>, with amplitudes that can interfere constructively or destructively before any measurement collapses them. Almost every quantum algorithm starts here.`,
-    facts: ['50% |0⟩, 50% |1⟩ — every run', 'Measurement destroys the superposition', 'Basis of quantum parallelism']
+    facts: ['50% |0⟩, 50% |1⟩ — every run', 'Measurement destroys the superposition', 'Basis of quantum parallelism'],
+    variations: [
+      { label: 'Ideal reference (0% noise)', action: { type: 'set-noise', value: 0 } },
+      { label: 'Noisy readout (5% noise)', action: { type: 'set-noise', value: 5 } }
+    ]
   },
   'gate-identity': {
     eyebrow: 'Foundations · F·02',
-    title: 'H·Z·H = X: same result, different path',
+    title: '\\(H\\cdot Z\\cdot H = X\\): same result, different path',
     color: 'var(--phos)',
-    why: `The same logical operation can be built from different combinations of gates — a concept called <b>gate synthesis</b>. The identity H·Z·H = X says "a Z gate, viewed from the X basis, looks like an X gate." This kind of basis-change reasoning is how quantum algorithms are compiled to real hardware, where some gates are native and others must be emulated.`,
-    facts: ['Output: |1⟩ with certainty', 'Z and X are related by a basis rotation', 'Used in hardware-aware compilation']
+    why: `The same logical operation can be built from different combinations of gates — a concept called <b>gate synthesis</b>. The identity \\(H\\cdot Z\\cdot H = X\\) says "a Z gate, viewed from the X basis, looks like an X gate." This kind of basis-change reasoning is how quantum algorithms are compiled to real hardware, where some gates are native and others must be emulated.`,
+    facts: ['Output: \\(|1\\rangle\\) with certainty', '\\(Z\\) and \\(X\\) are related by a basis rotation', 'Used in hardware-aware compilation']
   },
   'phase-kickback': {
     eyebrow: 'Foundations · F·03',
@@ -408,13 +412,13 @@ const TEMPLATE_CONTEXT = {
     title: 'GHZ: entanglement at scale',
     color: 'var(--cyan)',
     why: `The GHZ state (Greenberger–Horne–Zeilinger) extends Bell entanglement to three qubits. The key property: measuring <em>any one</em> qubit instantly determines the others, even though each one alone is completely random. GHZ states are used in <b>quantum sensing</b> (they beat the classical precision limit), foundational tests of reality, and as building blocks for many error-correction codes.`,
-    facts: ['|000⟩ + |111⟩ — all or nothing', 'Resource state for quantum sensing', 'Maximally entangled across 3 qubits']
+    facts: ['\\(|000\\rangle + |111\\rangle\\) — all or nothing', 'Resource state for quantum sensing', 'Maximally entangled across 3 qubits']
   },
   'cz-entangler': {
     eyebrow: 'Entanglement · E·03',
     title: 'CZ entangler: hardware matters',
     color: 'var(--cyan)',
-    why: `On most <b>superconducting qubit</b> processors (Google, IBM, Rigetti), the CZ gate is native — meaning it's directly implemented by the hardware without any overhead. CNOT is not native; it's emulated as <code>(I⊗H)·CZ·(I⊗H)</code>. This circuit shows exactly that decomposition, producing an identical Bell state via the hardware-preferred route. Understanding native gate sets is essential for low-overhead quantum compilation.`,
+    why: `On most <b>superconducting qubit</b> processors (Google, IBM, Rigetti), the CZ gate is native — meaning it's directly implemented by the hardware without any overhead. CNOT is not native; it's emulated as \\((I\\otimes H)\\cdot CZ\\cdot(I\\otimes H)\\). This circuit shows exactly that decomposition, producing an identical Bell state via the hardware-preferred route. Understanding native gate sets is essential for low-overhead quantum compilation.`,
     facts: ['Same Bell state as CNOT version', 'CZ is native on superconducting hardware', 'Relevant for circuit compilation & optimization']
   },
   teleport: {
@@ -443,44 +447,64 @@ const TEMPLATE_CONTEXT = {
     title: 'What noise does to entanglement',
     color: 'var(--amber)',
     why: `A perfect Bell pair <em>never</em> produces |01⟩ or |10⟩. But real quantum hardware introduces small errors on every gate, and those errors accumulate. At 3% depolarizing noise you can already see the forbidden outcomes seeping in. This "leakage" into wrong states is called <b>decoherence</b>, and closing the gap between a clean simulation and a noisy real device is the central engineering challenge of the field — the reason <b>quantum error correction</b> exists.`,
-    facts: ['Forbidden outcomes appear with noise', 'Noise rate ~0.1–1% on best hardware today', 'Try cranking the slider to 10%']
+    facts: ['Forbidden outcomes appear with noise', 'Noise rate ~0.1–1% on best hardware today', 'Try cranking the slider to 10%'],
+    variations: [
+      { label: 'Ideal reference (0% noise)', action: { type: 'set-noise', value: 0 } },
+      { label: 'Template default (3%)', action: { type: 'set-noise', value: 3 } },
+      { label: 'Stress test (10%)', action: { type: 'set-noise', value: 10 } }
+    ]
   },
   echo: {
     eyebrow: 'Noise & Hardware · N·02',
     title: 'The X·X echo: when trivial circuits fail',
     color: 'var(--amber)',
     why: `Two X gates in sequence are logically an identity — they should always return |0⟩ with certainty. With no noise, they do. <b>Crank the noise slider</b> and watch a "trivially correct" circuit silently accumulate errors until its output is indistinguishable from a random guess. Real quantum benchmarking uses exactly this kind of echo sequence — called <em>randomized benchmarking</em> — to measure a device's gate fidelity.`,
-    facts: ['Should always output |0⟩', 'Used in randomized benchmarking', 'Try noise at 5%, 10%, 15%']
+    facts: ['Should always output |0⟩', 'Used in randomized benchmarking', 'Try noise at 5%, 10%, 15%'],
+    variations: [
+      { label: 'Clean baseline (0%)', action: { type: 'set-noise', value: 0 } },
+      { label: 'Benchmark point (5%)', action: { type: 'set-noise', value: 5 } },
+      { label: 'Heavy noise (15%)', action: { type: 'set-noise', value: 15 } }
+    ]
   },
   'bitflip-encode': {
     eyebrow: 'Noise & Hardware · N·03',
     title: 'A logical qubit: spreading information to protect it',
     color: 'var(--amber)',
-    why: `Classical error correction works by copying bits. Quantum mechanics forbids copying — but it allows <b>entangling</b>. Here a single logical qubit (in superposition) is spread across three physical qubits as |000⟩ + |111⟩. The information lives in the <em>correlations</em>, not in any individual qubit. A single bit-flip error on any one qubit can then be detected and corrected by measuring parity without ever learning the underlying state. This is the seed idea behind the <b>surface code</b> used by Google and IBM.`,
+    why: `Classical error correction works by copying bits. Quantum mechanics forbids copying — but it allows <b>entangling</b>. Here a single logical qubit (in superposition) is spread across three physical qubits as \\(|000\\rangle + |111\\rangle\\). The information lives in the <em>correlations</em>, not in any individual qubit. A single bit-flip error on any one qubit can then be detected and corrected by measuring parity without ever learning the underlying state. This is the seed idea behind the <b>surface code</b> used by Google and IBM.`,
     facts: ['Logical qubit encoded across 3 physical', 'Detects single bit-flip errors', 'Seed of the surface code']
   },
 
   /* --- Rotation gate contexts --- */
   'ry-super': {
     eyebrow: 'Rotations · R·01',
-    title: 'Ry(90°) = Hadamard without the phase',
+    title: '\\(R_y(90^\\circ)=\\) Hadamard without the phase',
     color: 'var(--cyan)',
-    why: `The Hadamard gate maps |0⟩ → (|0⟩+|1⟩)/√2, but it also carries a <em>phase</em> structure that isn't always wanted. <b>Ry(90°)</b> produces the same measurement distribution — 50/50 — but lands the Bloch vector on the positive y-axis with no phase baggage. This cleaner rotation is the default building block in most variational and ansatz circuits, where you want precise geometric control over states.`,
-    facts: ['50% |0⟩, 50% |1⟩ (like H)', 'Real-valued amplitudes only', 'Standard block for VQE / QAOA']
+    why: `The Hadamard gate maps \\(|0\\rangle \\to (|0\\rangle+|1\\rangle)/\\sqrt{2}\\), but it also carries a <em>phase</em> structure that isn't always wanted. <b>\\(R_y(90^\\circ)\\)</b> produces the same measurement distribution — 50/50 — but lands the Bloch vector on the positive y-axis with no phase baggage. This cleaner rotation is the default building block in most variational and ansatz circuits, where you want precise geometric control over states.`,
+    facts: ['50% \\(|0\\rangle\\), 50% \\(|1\\rangle\\) (like H)', 'Real-valued amplitudes only', 'Standard block for VQE / QAOA']
   },
   'biased-coin': {
     eyebrow: 'Rotations · R·02',
     title: 'A biased quantum coin',
     color: 'var(--cyan)',
-    why: `Unlike the H gate, rotation gates accept an arbitrary angle. <b>Ry(60°)</b> produces an <em>asymmetric</em> superposition — roughly 25% |1⟩, 75% |0⟩. This parameterized control is the engine behind amplitude-encoding schemes: you can represent any probability distribution on a qubit by choosing the right angle. <em>Drag the angle slider in the palette and re-drop</em> to try other ratios.`,
-    facts: ['~25% |1⟩ at θ=60°', 'cos²(θ/2) gives P(|0⟩)', 'Parameterized amplitude encoding']
+    why: `Unlike the H gate, rotation gates accept an arbitrary angle. <b>\\(R_y(60^\\circ)\\)</b> produces an <em>asymmetric</em> superposition — roughly 25% \\(|1\\rangle\\), 75% \\(|0\\rangle\\). This parameterized control is the engine behind amplitude-encoding schemes: you can represent any probability distribution on a qubit by choosing the right angle. <em>Drag the angle slider in the palette and re-drop</em> to try other ratios.`,
+    facts: ['~25% \\(|1\\rangle\\) at \\(\\theta=60^\\circ\\)', '\\(\\cos^2(\\theta/2)\\) gives \\(P(|0\\rangle)\\)', 'Parameterized amplitude encoding'],
+    variations: [
+      { label: '\\(\\theta=30^\\circ\\) (~6.7% |1⟩)', action: { type: 'set-gate-angle', col: 1, qubit: 0, gate: 'RY', angleDeg: 30 } },
+      { label: '\\(\\theta=60^\\circ\\) (~25% |1⟩)', action: { type: 'set-gate-angle', col: 1, qubit: 0, gate: 'RY', angleDeg: 60 } },
+      { label: '\\(\\theta=120^\\circ\\) (~75% |1⟩)', action: { type: 'set-gate-angle', col: 1, qubit: 0, gate: 'RY', angleDeg: 120 } }
+    ]
   },
   'rot-chain': {
     eyebrow: 'Rotations · R·03',
     title: 'Any gate, built from Ry and Rz',
     color: 'var(--cyan)',
-    why: `A fundamental result in quantum computing: <b>any single-qubit unitary</b> can be written as Rz(γ)·Ry(β)·Rz(α) — three rotations are enough to reach any point on the Bloch sphere. This template demonstrates a specific case: Ry(90°)·Rz(180°)·Ry(−90°) = X (up to global phase). Real hardware compilers use this decomposition to translate arbitrary gates into the machine's native rotation primitives.`,
-    facts: ['Euler-angle decomposition', 'Produces X equivalent', 'Used by real compilers (Qiskit, Cirq)']
+    why: `A fundamental result in quantum computing: <b>any single-qubit unitary</b> can be written as \\(R_z(\\gamma)\\cdot R_y(\\beta)\\cdot R_z(\\alpha)\\) — three rotations are enough to reach any point on the Bloch sphere. This template demonstrates a specific case: \\(R_y(90^\\circ)\\cdot R_z(180^\\circ)\\cdot R_y(-90^\\circ)=X\\) (up to global phase). Real hardware compilers use this decomposition to translate arbitrary gates into the machine's native rotation primitives.`,
+    facts: ['Euler-angle decomposition', 'Produces X equivalent', 'Used by real compilers (Qiskit, Cirq)'],
+    variations: [
+      { label: 'Exact chain (Rz = 180°)', action: { type: 'set-gate-angle', col: 2, qubit: 0, gate: 'RZ', angleDeg: 180 } },
+      { label: 'Perturbed (Rz = 160°)', action: { type: 'set-gate-angle', col: 2, qubit: 0, gate: 'RZ', angleDeg: 160 } },
+      { label: 'Strong perturbation (Rz = 120°)', action: { type: 'set-gate-angle', col: 2, qubit: 0, gate: 'RZ', angleDeg: 120 } }
+    ]
   },
 
   /* --- DJ full contexts --- */
@@ -488,15 +512,15 @@ const TEMPLATE_CONTEXT = {
     eyebrow: 'Algorithms · A·04',
     title: 'Deutsch–Jozsa: constant oracle (full)',
     color: 'var(--phos)',
-    why: `The full 3-qubit Deutsch–Jozsa circuit with a <b>constant</b> oracle (f(x) = 0 for all x). The oracle here is the identity — it does nothing. After the final Hadamard layer, the input register always measures <code>|00⟩</code>. A classical algorithm needs at least 3 queries in the worst case to be sure; this finishes in <b>1 oracle call</b>. See Tutorial 5 for a full walkthrough.`,
-    facts: ['Input register → |00⟩ with certainty', 'Oracle = identity (f is constant)', 'Classical needs 3 queries; quantum needs 1']
+    why: `The full 3-qubit Deutsch–Jozsa circuit with a <b>constant</b> oracle (\\(f(x)=0\\) for all \\(x\\)). The oracle here is the identity — it does nothing. After the final Hadamard layer, the input register always measures <code>|00⟩</code>. A classical algorithm needs at least 3 queries in the worst case to be sure; this finishes in <b>1 oracle call</b>. See Tutorial 5 for a full walkthrough.`,
+    facts: ['Input register → \\(|00\\rangle\\) with certainty', 'Oracle = identity (\\(f\\) is constant)', 'Classical needs 3 queries; quantum needs 1']
   },
   'dj-balanced': {
     eyebrow: 'Algorithms · A·05',
     title: 'Deutsch–Jozsa: balanced oracle (full)',
     color: 'var(--phos)',
-    why: `The same D-J circuit with a <b>balanced</b> oracle: f(x) = x₀ ⊕ x₁ (two CNOTs onto the ancilla). After the final Hadamard layer, the input register collapses to <code>|11⟩</code> — at least one bit is 1, confirming the function is not constant. The phase kickback through the |−⟩ ancilla is the mechanism that encodes f's structure as interference.`,
-    facts: ['Input register → |11⟩ with certainty', 'Oracle = two CNOTs (f = x₀ ⊕ x₁)', 'Any non-zero output → balanced']
+    why: `The same D-J circuit with a <b>balanced</b> oracle: \\(f(x)=x_0\\oplus x_1\\) (two CNOTs onto the ancilla). After the final Hadamard layer, the input register collapses to <code>|11⟩</code> — at least one bit is 1, confirming the function is not constant. The phase kickback through the \\(|-\\rangle\\) ancilla is the mechanism that encodes \\(f\\)'s structure as interference.`,
+    facts: ['Input register → \\(|11\\rangle\\) with certainty', 'Oracle = two CNOTs (\\(f=x_0\\oplus x_1\\))', 'Any non-zero output → balanced']
   },
 
   /* --- Bernstein–Vazirani --- */
@@ -504,8 +528,8 @@ const TEMPLATE_CONTEXT = {
     eyebrow: 'Algorithms · A·06',
     title: 'Bernstein–Vazirani: recovering a secret string',
     color: 'var(--phos)',
-    why: `Given an oracle f(x) = x · s (mod 2) where s is a hidden n-bit string, how quickly can you find s? Classically you need n queries — one for each bit. <b>Bernstein–Vazirani recovers s in a single query</b>. Here the secret is s = 101; after running, the input register measures exactly <code>|101⟩</code> with certainty. A subtle but important sharpening of Deutsch–Jozsa, often taught as its direct successor.`,
-    facts: ['Secret s = 101 recovered in 1 query', 'Classical needs n queries', 'Same phase-kickback mechanism as D-J']
+    why: `Given an oracle \\(f(x)=x\\cdot s\\pmod 2\\) where \\(s\\) is a hidden \\(n\\)-bit string, how quickly can you find \\(s\\)? Classically you need \\(n\\) queries — one for each bit. <b>Bernstein–Vazirani recovers \\(s\\) in a single query</b>. Here the secret is \\(s=101\\); after running, the input register measures exactly <code>|101⟩</code> with certainty. A subtle but important sharpening of Deutsch–Jozsa, often taught as its direct successor.`,
+    facts: ['Secret \\(s=101\\) recovered in 1 query', 'Classical needs \\(n\\) queries', 'Same phase-kickback mechanism as D-J']
   },
 
   /* --- Variational contexts --- */
@@ -514,7 +538,11 @@ const TEMPLATE_CONTEXT = {
     title: 'A two-qubit VQE ansatz',
     color: 'var(--magenta)',
     why: `Variational quantum eigensolvers (<b>VQE</b>) minimize a cost function by tuning gate angles in a parameterized circuit. This is the simplest useful structure: Ry rotations, a CNOT entangler, then more Ry rotations. Real VQE runs stack many such blocks and use a classical optimizer (Adam, SPSA, COBYLA) to update the angles each iteration. <em>Change the angles in the palette slider</em> to explore different output distributions.`,
-    facts: ['Parameterized Ry + CNOT + Ry', 'Core building block of VQE', 'Tunable via classical optimizer']
+    facts: ['Parameterized Ry + CNOT + Ry', 'Core building block of VQE', 'Tunable via classical optimizer'],
+    variations: [
+      { label: 'Cleaner run (0% noise)', action: { type: 'set-noise', value: 0 } },
+      { label: 'NISQ-like run (2%)', action: { type: 'set-noise', value: 2 } }
+    ]
   },
   'qaoa-layer': {
     eyebrow: 'Variational · V·02',

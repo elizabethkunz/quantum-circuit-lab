@@ -486,6 +486,115 @@ function formatBasisLabel(i, n) {
 let lastResult = null;
 let currentView = 'probs'; // 'probs' | 'amps' | 'density'
 
+function purityFromDensity(rho) {
+  const dim = rho.length;
+  let purity = 0;
+  for (let i = 0; i < dim; i++) {
+    for (let j = 0; j < dim; j++) {
+      const z = rho[i][j];
+      purity += z.re * z.re + z.im * z.im;
+    }
+  }
+  return purity;
+}
+
+function expectationPauliFromDensity(rho, n, qubit, pauli) {
+  const dim = 1 << n;
+  const mask = 1 << qubit;
+  let value = 0;
+
+  if (pauli === 'Z') {
+    for (let i = 0; i < dim; i++) {
+      const bit = (i >> qubit) & 1;
+      value += (bit === 0 ? 1 : -1) * rho[i][i].re;
+    }
+    return value;
+  }
+
+  if (pauli === 'X') {
+    for (let i = 0; i < dim; i++) {
+      const j = i ^ mask;
+      value += rho[i][j].re;
+    }
+    return value;
+  }
+
+  // pauli === 'Y'
+  for (let i = 0; i < dim; i++) {
+    const j = i ^ mask;
+    const bit = (i >> qubit) & 1;
+    const sign = bit === 0 ? -1 : 1;
+    value += sign * rho[i][j].im;
+  }
+  return value;
+}
+
+function updateAnalysisSelectors() {
+  const qubitSel = document.getElementById('analysis-qubit-select');
+  const targetSel = document.getElementById('analysis-target-select');
+  if (!qubitSel || !targetSel) return;
+
+  qubitSel.innerHTML = '';
+  for (let q = 0; q < circuit.nQubits; q++) {
+    const opt = document.createElement('option');
+    opt.value = String(q);
+    opt.textContent = `q${q}`;
+    qubitSel.appendChild(opt);
+  }
+
+  targetSel.innerHTML = '';
+  const dim = 1 << circuit.nQubits;
+  for (let i = 0; i < dim; i++) {
+    const opt = document.createElement('option');
+    opt.value = String(i);
+    opt.textContent = formatBasisLabel(i, circuit.nQubits);
+    targetSel.appendChild(opt);
+  }
+}
+
+function renderAnalysis(result, n) {
+  const expEl = document.getElementById('analysis-expvals');
+  const fidEl = document.getElementById('analysis-fidelity');
+  const purityEl = document.getElementById('analysis-purity');
+  const qubitSel = document.getElementById('analysis-qubit-select');
+  const targetSel = document.getElementById('analysis-target-select');
+  if (!expEl || !fidEl || !purityEl || !qubitSel || !targetSel) return;
+
+  if (!result) {
+    expEl.innerHTML = '<div class="placeholder-output">Run a circuit to compute expectation values.</div>';
+    fidEl.innerHTML = '<div class="placeholder-output">Run a circuit to compute fidelity.</div>';
+    purityEl.innerHTML = '<div class="placeholder-output">Run a circuit to compute purity.</div>';
+    return;
+  }
+
+  const rho = result.density;
+  const qubit = Math.max(0, Math.min(n - 1, parseInt(qubitSel.value, 10) || 0));
+  const targetIndex = Math.max(0, Math.min((1 << n) - 1, parseInt(targetSel.value, 10) || 0));
+
+  const ex = expectationPauliFromDensity(rho, n, qubit, 'X');
+  const ey = expectationPauliFromDensity(rho, n, qubit, 'Y');
+  const ez = expectationPauliFromDensity(rho, n, qubit, 'Z');
+  const fidelity = rho[targetIndex][targetIndex].re;
+  const purity = purityFromDensity(rho);
+
+  expEl.innerHTML = `
+    <div class="analysis-kv"><span>\\(\\langle X \\rangle\\) on q${qubit}</span><b>${fmtNum(ex)}</b></div>
+    <div class="analysis-kv"><span>\\(\\langle Y \\rangle\\) on q${qubit}</span><b>${fmtNum(ey)}</b></div>
+    <div class="analysis-kv"><span>\\(\\langle Z \\rangle\\) on q${qubit}</span><b>${fmtNum(ez)}</b></div>
+    <div class="analysis-note">Range is [−1, +1] for each expectation value.</div>
+  `;
+
+  fidEl.innerHTML = `
+    <div class="analysis-kv"><span>Fidelity to ${formatBasisLabel(targetIndex, n)}</span><b>${fidelity.toFixed(4)}</b></div>
+    <div class="analysis-note">Using \\(F=\\langle \\psi_{\\mathrm{target}}|\\rho|\\psi_{\\mathrm{target}}\\rangle\\) for basis target states.</div>
+  `;
+
+  purityEl.innerHTML = `
+    <div class="analysis-kv"><span>\\(\\mathrm{Tr}(\\rho^2)\\)</span><b>${purity.toFixed(4)}</b></div>
+    <div class="analysis-note">${purity < 0.999 ? 'Mixed state (purity < 1).' : 'Pure state (purity = 1).'}</div>
+  `;
+}
+
 function renderOutput() {
   if (!lastResult) {
     document.getElementById('prob-output').innerHTML = '<div class="placeholder-output">Build a circuit and press run to see the outcome distribution.</div>';
@@ -629,7 +738,7 @@ function renderDensityMatrix(result, n) {
   if (result.noise > 0) {
     parts.push(`<div class="view-note">Noise is on. ρ was averaged over ${result.shots} stochastic realizations; off-diagonal (coherence) entries decay toward zero as noise grows.</div>`);
   } else {
-    parts.push(`<div style="font-family:var(--mono);font-size:10px;color:var(--ink-faint);letter-spacing:0.1em;margin-bottom:12px">Pure state: ρ = |ψ⟩⟨ψ| · Tr(ρ²) = 1.000</div>`);
+    parts.push(`<div style="font-family:var(--mono);font-size:10px;color:var(--ink-faint);letter-spacing:0.1em;margin-bottom:12px">Pure state: \\(\\rho=|\\psi\\rangle\\langle\\psi|\\) · \\(\\mathrm{Tr}(\\rho^2)=1.000\\)</div>`);
   }
 
   // Build grid
@@ -675,7 +784,7 @@ function renderDensityMatrix(result, n) {
     purity += z.re*z.re + z.im*z.im;
   }
   parts.push(`<div style="font-family:var(--mono);font-size:10px;color:var(--ink-faint);letter-spacing:0.1em;text-align:center;margin-top:12px">
-    Tr(ρ) = ${trace.toFixed(3)} · Tr(ρ²) = ${purity.toFixed(3)} ${purity < 0.99 ? '· <span style="color:var(--amber)">mixed state</span>' : '· pure state'}
+    \\(\\mathrm{Tr}(\\rho)\\) = ${trace.toFixed(3)} · \\(\\mathrm{Tr}(\\rho^2)\\) = ${purity.toFixed(3)} ${purity < 0.99 ? '· <span style="color:var(--amber)">mixed state</span>' : '· pure state'}
   </div>`);
 
   parts.push(`</div>`);
@@ -898,6 +1007,7 @@ document.getElementById('btn-run').addEventListener('click', () => {
   lastResult = result;
   renderOutput();
   renderNarrative(result, circuit.nQubits);
+  renderAnalysis(result, circuit.nQubits);
   // Auto-expand narrative panel on run
   const narrative = document.getElementById('narrative');
   const chevron = document.getElementById('narrative-chevron');
@@ -932,11 +1042,15 @@ document.getElementById('btn-clear').addEventListener('click', () => {
   document.getElementById('narrative').style.display = 'none';
   document.getElementById('narrative-chevron').style.transform = 'rotate(0deg)';
   document.getElementById('shots-label').textContent = '1024 shots · simulated';
+  updateAnalysisSelectors();
+  renderAnalysis(null, circuit.nQubits);
 });
 
 document.getElementById('qubit-plus').addEventListener('click', () => {
   if (circuit.nQubits < MAX_QUBITS) {
     resizeQubits(circuit.nQubits + 1);
+    updateAnalysisSelectors();
+    renderAnalysis(lastResult, circuit.nQubits);
   } else {
     toast('Max ' + MAX_QUBITS + ' qubits (simulator limit).', true);
   }
@@ -944,5 +1058,17 @@ document.getElementById('qubit-plus').addEventListener('click', () => {
 document.getElementById('qubit-minus').addEventListener('click', () => {
   if (circuit.nQubits > MIN_QUBITS) {
     resizeQubits(circuit.nQubits - 1);
+    updateAnalysisSelectors();
+    renderAnalysis(lastResult, circuit.nQubits);
   }
 });
+
+document.getElementById('analysis-qubit-select').addEventListener('change', () => {
+  renderAnalysis(lastResult, circuit.nQubits);
+});
+document.getElementById('analysis-target-select').addEventListener('change', () => {
+  renderAnalysis(lastResult, circuit.nQubits);
+});
+
+updateAnalysisSelectors();
+renderAnalysis(null, circuit.nQubits);

@@ -841,6 +841,134 @@
     .noise-aside { grid-template-columns: 1fr; gap: 14px; padding: 22px; }
   }
 
+  /* Analysis */
+  .analysis-section {
+    margin-top: 36px;
+    padding: 24px 28px;
+    background: var(--bg-1);
+    border: 1px solid var(--line);
+    border-left: 2px solid var(--cyan);
+  }
+  .analysis-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--line);
+  }
+  .analysis-head h3 {
+    font-family: var(--serif);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 22px;
+    color: var(--ink);
+  }
+  .analysis-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+  }
+  .analysis-card {
+    background: var(--bg-2);
+    border: 1px solid var(--line);
+    padding: 14px 14px 12px;
+  }
+  .analysis-card h4 {
+    font-family: var(--serif);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 17px;
+    color: var(--ink);
+    margin-bottom: 6px;
+  }
+  .analysis-card p {
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--ink-dim);
+    margin-bottom: 10px;
+  }
+  .analysis-label {
+    display: block;
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 6px;
+  }
+  .analysis-select {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    background: var(--bg-0);
+    border: 1px solid var(--line-bright);
+    color: var(--ink);
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.05em;
+    padding: 7px 9px;
+    padding-right: 30px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: border-color 0.15s, box-shadow 0.15s, color 0.15s;
+    background-image:
+      linear-gradient(45deg, transparent 50%, var(--phos-dim) 50%),
+      linear-gradient(135deg, var(--phos-dim) 50%, transparent 50%);
+    background-position:
+      calc(100% - 16px) 50%,
+      calc(100% - 11px) 50%;
+    background-size: 5px 5px, 5px 5px;
+    background-repeat: no-repeat;
+  }
+  .analysis-select:hover {
+    border-color: var(--phos-dim);
+    color: var(--ink);
+  }
+  .analysis-select:focus {
+    outline: none;
+    border-color: var(--phos);
+    box-shadow: 0 0 0 1px var(--phos-dim), 0 0 10px rgba(127,255,196,0.15);
+  }
+  .analysis-select option {
+    background: var(--bg-1);
+    color: var(--ink);
+    font-family: var(--mono);
+  }
+  .analysis-values {
+    background: var(--bg-0);
+    border: 1px solid var(--line);
+    min-height: 72px;
+    padding: 10px;
+  }
+  .analysis-values .placeholder-output {
+    padding: 6px 0;
+    font-size: 13px;
+  }
+  .analysis-kv {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    color: var(--ink-dim);
+    padding: 4px 0;
+    border-bottom: 1px dotted var(--line);
+  }
+  .analysis-kv:last-child { border-bottom: none; }
+  .analysis-kv b {
+    color: var(--phos);
+    font-weight: 500;
+  }
+  .analysis-note {
+    margin-top: 8px;
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.08em;
+    color: var(--ink-faint);
+  }
+
   /* Reference / footer */
   .reference {
     margin-top: 52px;
@@ -899,7 +1027,8 @@
     .intro, .lab, .output, .ex-grid, .reference {
       grid-template-columns: 1fr;
     }
-    .subtab-group.intro, .subtab-group.alg { grid-template-columns: 1fr; }
+    .analysis-grid { grid-template-columns: 1fr; }
+    .subtab-group.intro, .subtab-group.alg, .subtab-group.noise { grid-template-columns: 1fr; }
     .gloss-grid { grid-template-columns: 1fr; }
     .palette { position: static; }
     .intro h1 { font-size: 32px; }
@@ -1040,12 +1169,14 @@
   }
   .subtab-row-label.intro { color: var(--phos-dim); }
   .subtab-row-label.alg { color: var(--magenta); }
+  .subtab-row-label.noise { color: var(--amber); }
   .subtab-group {
     display: grid;
     gap: 12px;
   }
   .subtab-group.intro { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   .subtab-group.alg { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .subtab-group.noise { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .subtab {
     background: var(--bg-1);
     border: 1px solid var(--line);
@@ -1066,6 +1197,9 @@
   .subtab-alg .subtab-num { color: var(--magenta); }
   .subtab-alg::after { background: var(--magenta); }
   .subtab-alg.active .subtab-pill { color: var(--magenta); border-color: var(--magenta); }
+  .subtab-noise .subtab-num { color: var(--amber); }
+  .subtab-noise::after { background: var(--amber); }
+  .subtab-noise.active .subtab-pill { color: var(--amber); border-color: var(--amber); }
   .subtab::after {
     content: '';
     position: absolute;

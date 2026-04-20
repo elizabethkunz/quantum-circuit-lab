@@ -134,7 +134,7 @@ function renderHist(containerId, p0, p1, barClass, label0, label1) {
     const purity = 0.5*0.5 + 0.5*0.5 + 2*offdiag*offdiag;
 
     const purEl = document.getElementById('t3-dm-purity');
-    if (purEl) purEl.textContent = `Tr(ρ) = 1.000  ·  Tr(ρ²) = ${purity.toFixed(3)}  ·  ${purity > 0.99 ? 'pure state' : purity < 0.51 ? 'maximally mixed' : 'partially mixed'}`;
+    if (purEl) purEl.innerHTML = `\\(\\mathrm{Tr}(\\rho)=1.000\\)  ·  \\(\\mathrm{Tr}(\\rho^2)=${purity.toFixed(3)}\\)  ·  ${purity > 0.99 ? 'pure state' : purity < 0.51 ? 'maximally mixed' : 'partially mixed'}`;
 
     const expEl = document.getElementById('t3-dm-explain');
     if (expEl) {
@@ -285,7 +285,7 @@ function renderHist(containerId, p0, p1, barClass, label0, label1) {
     const readEl = document.getElementById('bloch-ball-readout');
     if (readEl) readEl.innerHTML = `
       <div><span style="color:var(--ink-faint)">Bloch vector r = </span><span style="color:var(--amber)">${blochLen.toFixed(3)}</span></div>
-      <div><span style="color:var(--ink-faint)">Tr(ρ²) = </span><span style="color:var(--phos)">${purity.toFixed(3)}</span></div>
+      <div><span style="color:var(--ink-faint)">\\(\\mathrm{Tr}(\\rho^2)=\\)</span><span style="color:var(--phos)">${purity.toFixed(3)}</span></div>
       <div><span style="color:var(--ink-faint)">State type: </span>${blochLen > 0.98 ? '<span style="color:var(--phos)">pure (surface)</span>' : blochLen < 0.02 ? '<span style="color:var(--red)">maximally mixed (centre)</span>' : '<span style="color:var(--amber)">mixed (interior)</span>'}</div>
       <div style="margin-top:8px;font-size:10px;color:var(--ink-faint)">T₂ decay moves the vector from surface → centre</div>`;
   }

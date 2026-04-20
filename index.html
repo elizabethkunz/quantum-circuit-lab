@@ -3,20 +3,21 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Quantum Lab — A Visual Circuit Builder</title>
+<title>Quantum Lab — Interactive Quantum Circuit Analysis</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,700;1,9..144,400&family=JetBrains+Mono:wght@300;400;500;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles/base.css" />
 <link rel="stylesheet" href="styles/tutorials.css" />
 <link rel="stylesheet" href="styles/docs.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" />
 </head>
 <body>
 <div class="app">
   <header class="masthead">
     <div class="brand">
       <div class="brand-mark">Quantum <span class="amp">&</span> Lab</div>
-      <div class="brand-tag">A visual circuit workbench · v0.1</div>
+      <div class="brand-tag">Interactive circuit analysis environment · v0.1</div>
     </div>
     <div class="meta-stack">
       <div><span class="live">Simulator online</span></div>
@@ -27,35 +28,35 @@
   <nav class="tabs" role="tablist">
     <button class="tab-btn active" data-tab="lab" role="tab">
       <span class="tab-num">01</span>
-      <span class="tab-name">The Lab</span>
-      <span class="tab-sub">Build & simulate</span>
+      <span class="tab-name">Laboratory</span>
+      <span class="tab-sub">Construct and simulate circuits</span>
     </button>
     <button class="tab-btn" data-tab="learn" role="tab">
       <span class="tab-num">02</span>
-      <span class="tab-name">Learn</span>
-      <span class="tab-sub">Interactive tutorials</span>
+      <span class="tab-name">Tutorials</span>
+      <span class="tab-sub">Structured interactive modules</span>
     </button>
     <button class="tab-btn" data-tab="templates" role="tab">
       <span class="tab-num">03</span>
-      <span class="tab-name">Templates</span>
-      <span class="tab-sub">Curated circuits · load &amp; explore</span>
+      <span class="tab-name">Template Library</span>
+      <span class="tab-sub">Reference circuits · load and analyze</span>
     </button>
     <button class="tab-btn" data-tab="docs" role="tab">
       <span class="tab-num">04</span>
-      <span class="tab-name">Docs</span>
-      <span class="tab-sub">Papers, books &amp; references</span>
+      <span class="tab-name">References</span>
+      <span class="tab-sub">Papers, texts, and technical notes</span>
     </button>
   </nav>
 
   <div id="view-lab" class="view active">
   <section class="intro">
     <div>
-      <h1>Build quantum circuits the way you'd<br/>sketch them <em>on a napkin.</em></h1>
-      <p>Drag gates onto wires. Press run. Get probabilities and a plain-English reading of what your circuit actually did — no Python, no linear algebra homework, no cloud account.</p>
+      <h1>Design and evaluate quantum circuits<br/>in an <em>interactive environment.</em></h1>
+      <p>Assemble gate sequences on qubit wires, run state evolution, and inspect probability, amplitude, and density-matrix outputs with explanatory diagnostics.</p>
     </div>
     <div class="rules">
-      <b>How to read a circuit</b><br/>
-      Each horizontal line is a qubit's timeline. Time moves left → right. A gate is an operation applied at that moment. A vertical line between two gates means they act together — that's entanglement forming.
+      <b>Circuit notation primer</b><br/>
+      Each horizontal line represents a qubit worldline. Time advances left to right. A gate denotes an operation at a specific step, and vertical connectors indicate multi-qubit interactions that can generate entanglement.
     </div>
   </section>
 
@@ -138,6 +139,7 @@
             <div class="ctx-title" id="ctx-title"></div>
             <p class="ctx-why" id="ctx-why"></p>
             <div class="ctx-facts" id="ctx-facts"></div>
+            <div class="ctx-actions" id="ctx-actions"></div>
           </div>
           <button class="ctx-dismiss" id="ctx-dismiss" title="Dismiss">×</button>
         </div>
@@ -180,13 +182,51 @@
   <aside class="noise-aside lab-noise-aside" id="lab-noise-aside" style="display:none">
     <div>
       <div class="tag">A note on noise</div>
-      <h3>Try the <em>noise slider</em>.</h3>
+      <h3>Explore the <em>noise model</em>.</h3>
     </div>
     <div>
       <p>Real quantum computers are not the idealized machines these diagrams imply. Every physical gate is a short pulse of laser light or microwave — a tiny, error-prone operation. Over a circuit's lifetime, those errors pile up and smear clean results into a murky distribution.</p>
       <p>The slider simulates <b>depolarizing noise</b>, the simplest useful error model: after each gate, with some probability, a random Pauli error (X, Y, or Z) is applied in place of nothing. Load the Bell pair from <b>Templates</b>, set noise to <code>2%</code>, and run — you'll see the forbidden outcomes <code>|01⟩</code> and <code>|10⟩</code> quietly appear. <span class="punch-amber">That gap between the ideal and the noisy is what quantum error correction is trying to close.</span></p>
     </div>
   </aside>
+
+  <!-- Analysis -->
+  <section class="analysis-section" id="lab-analysis">
+    <div class="analysis-head">
+      <h3>Analysis</h3>
+      <div class="num">Optional state diagnostics</div>
+    </div>
+
+    <div class="analysis-grid">
+      <article class="analysis-card">
+        <h4>Expectation values</h4>
+        <p>Single-qubit Pauli expectations for a selected qubit: ⟨X⟩, ⟨Y⟩, ⟨Z⟩.</p>
+        <label class="analysis-label" for="analysis-qubit-select">Qubit</label>
+        <select id="analysis-qubit-select" class="analysis-select"></select>
+        <div id="analysis-expvals" class="analysis-values">
+          <div class="placeholder-output">Run a circuit to compute expectation values.</div>
+        </div>
+      </article>
+
+      <article class="analysis-card">
+        <h4>Fidelity</h4>
+        <p>Fidelity to a chosen target basis state.</p>
+        <label class="analysis-label" for="analysis-target-select">Target state</label>
+        <select id="analysis-target-select" class="analysis-select"></select>
+        <div id="analysis-fidelity" class="analysis-values">
+          <div class="placeholder-output">Run a circuit to compute fidelity.</div>
+        </div>
+      </article>
+
+      <article class="analysis-card">
+        <h4>Purity</h4>
+        <p>Purity of the current state, computed as \( \mathrm{Tr}(\rho^2) \).</p>
+        <div id="analysis-purity" class="analysis-values">
+          <div class="placeholder-output">Run a circuit to compute purity.</div>
+        </div>
+      </article>
+    </div>
+  </section>
 
   <!-- Reference -->
   <section class="reference">
@@ -195,23 +235,23 @@
       <div class="gloss-grid">
         <article class="gloss-card">
           <h4>H — Hadamard</h4>
-          <p>Applies the unitary H = (1/sqrt(2))[[1,1],[1,-1]], mapping computational basis states to X-basis states: |0⟩→|+⟩ and |1⟩→|−⟩. It is self-inverse (H² = I) and converts phase information into measurable population differences, which is why it appears before and after many oracle/query blocks.</p>
+          <p>Applies the unitary \( H=\frac{1}{\sqrt{2}}\begin{bmatrix}1&1\\1&-1\end{bmatrix} \), mapping computational basis states to X-basis states: \( |0\rangle \to |+\rangle \) and \( |1\rangle \to |-\rangle \). It is self-inverse (\( H^2=I \)) and converts phase information into measurable population differences, which is why it appears before and after many oracle/query blocks.</p>
         </article>
         <article class="gloss-card">
           <h4>X — Bit flip (Pauli-X)</h4>
-          <p>The Pauli-X operator swaps amplitudes of |0⟩ and |1⟩, acting as a pi rotation about the Bloch x-axis: X = [[0,1],[1,0]]. On basis states it behaves like a classical NOT, but on superpositions it changes relative amplitudes coherently rather than "flipping a stored bit."</p>
+          <p>The Pauli-X operator swaps amplitudes of \( |0\rangle \) and \( |1\rangle \), acting as a \( \pi \) rotation about the Bloch x-axis: \( X=\begin{bmatrix}0&1\\1&0\end{bmatrix} \). On basis states it behaves like a classical NOT, but on superpositions it changes relative amplitudes coherently rather than "flipping a stored bit."</p>
         </article>
         <article class="gloss-card">
           <h4>Z, S, T — Phase gates</h4>
-          <p>Diagonal unitaries that preserve populations in the Z basis while changing relative phase: Z = diag(1,-1), S = diag(1,i), T = diag(1,e^(i*pi/4)). Their effect is often invisible in immediate measurement statistics, but they reshape later interference and are essential for universal fault-tolerant gate synthesis.</p>
+          <p>Diagonal unitaries that preserve populations in the Z basis while changing relative phase: \( Z=\mathrm{diag}(1,-1) \), \( S=\mathrm{diag}(1,i) \), \( T=\mathrm{diag}(1,e^{i\pi/4}) \). Their effect is often invisible in immediate measurement statistics, but they reshape later interference and are essential for universal fault-tolerant gate synthesis.</p>
         </article>
         <article class="gloss-card">
           <h4>Rₓ, R_y, R_z — Rotation gates</h4>
-          <p>Continuous one-qubit rotations Rₙ(θ) = e<sup>-iθσₙ/2</sup> for n in {x,y,z}. They move the Bloch vector by angle θ around the chosen axis, with X/Y/Z recovered at θ = pi (up to global phase). Parameterized rotations are the core trainable primitives in VQE, QAOA, and hardware-efficient ansatz circuits.</p>
+          <p>Continuous one-qubit rotations \( R_n(\theta)=e^{-i\theta\sigma_n/2} \) for \( n\in\{x,y,z\} \). They move the Bloch vector by angle \( \theta \) around the chosen axis, with X/Y/Z recovered at \( \theta=\pi \) (up to global phase). Parameterized rotations are the core trainable primitives in VQE, QAOA, and hardware-efficient ansatz circuits.</p>
         </article>
         <article class="gloss-card">
           <h4>CNOT — Controlled NOT</h4>
-          <p>A two-qubit entangling gate that applies X to the target conditioned on control = |1⟩. Matrix-wise, it is block-diagonal with I on the control-|0⟩ subspace and X on control-|1⟩. Acting on superposed controls, it correlates qubits nonclassically and is the standard primitive for Bell-state generation and many algorithmic oracles.</p>
+          <p>A two-qubit entangling gate that applies \( X \) to the target conditioned on \( \mathrm{control}=|1\rangle \). Matrix-wise, it is block-diagonal with \( I \) on the control-\( |0\rangle \) subspace and \( X \) on control-\( |1\rangle \). Acting on superposed controls, it correlates qubits nonclassically and is the standard primitive for Bell-state generation and many algorithmic oracles.</p>
         </article>
         <article class="gloss-card">
           <h4>◎ Measure</h4>
@@ -228,12 +268,12 @@
   <div id="view-learn" class="view">
     <section class="learn-intro">
       <div>
-        <h1>Quantum, from <em>first principles.</em></h1>
-        <p>Two guided walkthroughs. Each step has something to try — a sphere to spin, a circuit to run, a slider to drag. Later steps unlock as you complete the earlier ones.</p>
+        <h1>Quantum computing, developed from <em>first principles.</em></h1>
+        <p>These guided walkthroughs pair conceptual derivation with hands-on interaction. Complete each task sequence to unlock progressively more advanced material.</p>
       </div>
       <div class="rules">
-        <b>How it works</b><br/>
-        Each step has a small task: run a pre-built circuit, drag the Bloch arrow, or flip a switch. When you've done it, the next step opens up. There's no scoring and no grading — the goal is to <em>feel</em> what the gates do.
+        <b>Instruction flow</b><br/>
+        Each step includes a focused activity, such as executing a prepared circuit, manipulating a Bloch-state control, or sweeping a physical parameter. Completing the task unlocks the next stage; the objective is conceptual mastery through experimentation.
       </div>
     </section>
 
@@ -260,7 +300,7 @@
           <span class="subtab-pill" id="t4-progress">0 / 5</span>
         </button>
       </div>
-      <div class="subtab-row-label alg">Real algorithms</div>
+      <div class="subtab-row-label alg">Algorithmic modules</div>
       <div class="subtab-group alg">
         <button class="subtab subtab-alg" data-subtab="t5">
           <span class="subtab-num">Tutorial 5</span>
@@ -278,10 +318,29 @@
           <span class="subtab-pill" id="t7-progress">0 / 7</span>
         </button>
       </div>
+      <div class="subtab-row-label noise">Noise and hardware characterization</div>
+      <div class="subtab-group noise">
+        <button class="subtab subtab-noise" data-subtab="t8">
+          <span class="subtab-num">Tutorial 8</span>
+          <span class="subtab-name">Quantum channels</span>
+          <span class="subtab-pill" id="t8-progress">0 / 6</span>
+        </button>
+        <button class="subtab subtab-noise" data-subtab="t9">
+          <span class="subtab-num">Tutorial 9</span>
+          <span class="subtab-name">Hardware noise timescales</span>
+          <span class="subtab-pill" id="t9-progress">0 / 6</span>
+        </button>
+      </div>
     </nav>
 
     <!-- Tutorial 1 -->
     <div class="tutorial" id="tut-1">
+      <div class="tutorial-sources">
+        <span class="tutorial-sources-label">Sources</span>
+        <a href="#ref-nc2000" class="tpl-cite" data-doc-ref="ref-nc2000">[Nielsen &amp; Chuang]</a>
+        <a href="#ref-bell1964" class="tpl-cite" data-doc-ref="ref-bell1964">[Bell]</a>
+        <a href="#ref-preskill2018" class="tpl-cite" data-doc-ref="ref-preskill2018">[Preskill]</a>
+      </div>
 
       <!-- Step 1: classical bit -->
       <article class="step-card" data-step="t1-1">
@@ -500,6 +559,13 @@
 
     <!-- ============================================================ Tutorial 2 -->
     <div class="tutorial" id="tut-2" style="display:none">
+      <div class="tutorial-sources">
+        <span class="tutorial-sources-label">Sources</span>
+        <a href="#ref-bell1964" class="tpl-cite" data-doc-ref="ref-bell1964">[Bell]</a>
+        <a href="#ref-ghz1989" class="tpl-cite" data-doc-ref="ref-ghz1989">[GHZ]</a>
+        <a href="#ref-teleport1993" class="tpl-cite" data-doc-ref="ref-teleport1993">[Teleportation]</a>
+        <a href="#ref-superdense1992" class="tpl-cite" data-doc-ref="ref-superdense1992">[Superdense Coding]</a>
+      </div>
 
       <!-- T2 Step 1: product state -->
       <article class="step-card" data-step="t2-1">
@@ -576,7 +642,7 @@
           <!-- Part C: phase kickback visualizer -->
           <div style="margin:22px 0;padding:20px;background:var(--bg-2);border:1px solid var(--line)">
             <div style="font-family:var(--mono);font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:6px">Part C — phase kickback <span style="color:var(--amber)">(advanced)</span></div>
-            <p style="font-family:var(--serif);font-size:14px;color:var(--ink-dim);line-height:1.55;margin-bottom:14px">If the <em>target</em> is prepared in the <code>|−⟩</code> eigenstate of X (i.e. <code>|−⟩ = (|0⟩−|1⟩)/√2</code>), a CNOT's phase kicks back onto the <em>control</em> qubit instead of flipping the target. This is the core trick behind Deutsch–Jozsa, phase estimation, and Shor's algorithm. Watch the control qubit's phase change.</p>
+            <p style="font-family:var(--serif);font-size:14px;color:var(--ink-dim);line-height:1.55;margin-bottom:14px">If the <em>target</em> is prepared in the \( |-\rangle \) eigenstate of \(X\) (i.e. \( |-\rangle = (|0\rangle-|1\rangle)/\sqrt{2} \)), a CNOT's phase kicks back onto the <em>control</em> qubit instead of flipping the target. This is the core trick behind Deutsch–Jozsa, phase estimation, and Shor's algorithm. Watch the control qubit's phase change.</p>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:center">
               <div>
                 <div style="font-family:var(--mono);font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:8px">Target state</div>
@@ -607,7 +673,7 @@
           <h2>Building a Bell state, one gate at a time.</h2>
         </header>
         <div class="step-body">
-          <p>The Bell state <code>(|00⟩ + |11⟩)/√2</code> is made in exactly two steps. Watch the joint state after each one — the Hadamard creates the superposition on q0, then the CNOT "spreads" it into both qubits, creating entanglement. Press Next after each gate to step through it.</p>
+          <p>The Bell state \( (|00\rangle + |11\rangle)/\sqrt{2} \) is made in exactly two steps. Watch the joint state after each one — the Hadamard creates the superposition on q0, then the CNOT "spreads" it into both qubits, creating entanglement. Press Next after each gate to step through it.</p>
           <div class="bell-builder">
             <div class="bell-steps-nav">
               <button class="bell-step-btn active" data-bell-step="0">① Start</button>
@@ -649,7 +715,7 @@
             <div style="font-family:var(--mono);font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:10px">Part A — spooky correlations</div>
             <div class="mini-runner">
               <div>
-                <div style="font-family:var(--mono);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:10px">|Ψ⟩ = (|00⟩ + |11⟩)/√2</div>
+                <div style="font-family:var(--mono);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:10px">\( |\Psi\rangle = (|00\rangle + |11\rangle)/\sqrt{2} \)</div>
                 <div class="pair-grid" id="t2-collapse-grid"></div>
                 <div style="font-family:var(--mono);font-size:10px;color:var(--ink-faint);letter-spacing:0.08em;margin-top:10px" id="t2-collapse-count">0 measurements</div>
               </div>
@@ -666,7 +732,7 @@
           <div style="margin:22px 0;padding:20px;background:var(--bg-2);border:1px solid var(--line)">
             <div style="font-family:var(--mono);font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:8px">Part B — Bell inequality tester <span style="color:var(--amber)">(interactive)</span></div>
             <p style="font-family:var(--serif);font-size:14px;color:var(--ink-dim);line-height:1.55;margin-bottom:14px">
-              The <b>CHSH inequality</b> says any local-hidden-variable theory must satisfy <em>|⟨CHSH⟩| ≤ 2</em>. Quantum mechanics can reach <em>2√2 ≈ 2.828</em>. Run many measurements at different angle pairs and watch the CHSH correlator accumulate — if it exceeds 2, no classical explanation works.
+              The <b>CHSH inequality</b> says any local-hidden-variable theory must satisfy <em>\( |\langle \mathrm{CHSH}\rangle| \le 2 \)</em>. Quantum mechanics can reach <em>\( 2\sqrt{2} \approx 2.828 \)</em>. Run many measurements at different angle pairs and watch the CHSH correlator accumulate — if it exceeds 2, no classical explanation works.
             </p>
             <div style="display:grid;grid-template-columns:1fr auto;gap:14px;align-items:center">
               <div>
@@ -730,6 +796,12 @@
 
     <!-- ============================================================ Tutorial 3 -->
     <div class="tutorial" id="tut-3" style="display:none">
+      <div class="tutorial-sources">
+        <span class="tutorial-sources-label">Sources</span>
+        <a href="#ref-nc2000" class="tpl-cite" data-doc-ref="ref-nc2000">[Nielsen &amp; Chuang]</a>
+        <a href="#ref-holevo1973" class="tpl-cite" data-doc-ref="ref-holevo1973">[Holevo]</a>
+        <a href="#ref-noclone1982" class="tpl-cite" data-doc-ref="ref-noclone1982">[No-Cloning]</a>
+      </div>
 
       <!-- T3 Step 1: two kinds of 50/50 -->
       <article class="step-card" data-step="t3-1">
@@ -743,7 +815,7 @@
           <div class="two-states-compare">
             <div class="compare-side">
               <div class="compare-label superpos">Quantum superposition</div>
-              <div class="compare-formula">H|0⟩ = (|0⟩ + |1⟩)/√2</div>
+              <div class="compare-formula">\( H|0\rangle = (|0\rangle + |1\rangle)/\sqrt{2} \)</div>
               <div class="compare-basis-toggle">
                 <button class="basis-btn active" data-side="super" data-basis="Z">Z-basis (standard)</button>
                 <button class="basis-btn" data-side="super" data-basis="X">X-basis (after H)</button>
@@ -777,7 +849,7 @@
           <h2>The density matrix: one object to rule them all.</h2>
         </header>
         <div class="step-body">
-          <p>A pure state can be written as a vector <code>|ψ⟩</code>. A mixed state cannot — it's a <b>probability distribution over pure states</b>. The <em>density matrix</em> ρ handles both cases in one framework: for a pure state, ρ = |ψ⟩⟨ψ|. For a mixture of states with probabilities pᵢ, ρ = Σ pᵢ |ψᵢ⟩⟨ψᵢ|.</p>
+          <p>A pure state can be written as a vector \( |\psi\rangle \). A mixed state cannot — it's a <b>probability distribution over pure states</b>. The <em>density matrix</em> \( \rho \) handles both cases in one framework: for a pure state, \( \rho = |\psi\rangle\langle\psi| \). For a mixture of states with probabilities \( p_i \), \( \rho = \sum_i p_i |\psi_i\rangle\langle\psi_i| \).</p>
           <p>The 2×2 matrices below update live as you move the slider. Watch what changes — and what doesn't — as you blend from pure superposition to the classical mixture. The diagonal entries (called <b>populations</b>) tell you measurement probabilities. The off-diagonal entries (called <b>coherences</b>) encode the quantum interference that pure states have and mixtures don't.</p>
           <div class="dm-compare-wrap">
             <div class="dm-slider-row">
@@ -811,18 +883,18 @@
           <h2>Off-diagonals are physically real.</h2>
         </header>
         <div class="step-body">
-          <p>The off-diagonal entry ρ₀₁ isn't just a mathematical object — it's physically measurable. It's the amplitude for interference between the <code>|0⟩</code> and <code>|1⟩</code> components. When you measure in the <b>X-basis</b> (apply H, then measure), you're directly probing this interference:</p>
+          <p>The off-diagonal entry \( \rho_{01} \) isn't just a mathematical object — it's physically measurable. It's the amplitude for interference between the <code>|0⟩</code> and <code>|1⟩</code> components. When you measure in the <b>X-basis</b> (apply H, then measure), you're directly probing this interference:</p>
           <ul style="font-family:var(--serif);font-size:15px;color:var(--ink);margin:12px 0 12px 24px;line-height:1.7;list-style:disc">
-            <li>Pure <code>|+⟩</code>: ρ₀₁ = 0.5 — X-basis always gives <code>0</code></li>
-            <li>Classical mixture: ρ₀₁ = 0 — X-basis gives 50/50 random</li>
+            <li>Pure <code>|+⟩</code>: \( \rho_{01}=0.5 \) — X-basis always gives <code>0</code></li>
+            <li>Classical mixture: \( \rho_{01}=0 \) — X-basis gives 50/50 random</li>
           </ul>
           <p>Select a state and run measurements in both bases. The X-basis result directly tells you whether <b>coherence</b> is present — you can't fake it with classical probability.</p>
           <div class="coherence-explorer">
             <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
-              <button class="btn coherence-state-btn active" data-cstate="pure_plus">Pure |+⟩ (ρ₀₁ = 0.5)</button>
-              <button class="btn coherence-state-btn" data-cstate="pure_minus">Pure |−⟩ (ρ₀₁ = −0.5)</button>
-              <button class="btn coherence-state-btn" data-cstate="mixture">Classical mixture (ρ₀₁ = 0)</button>
-              <button class="btn coherence-state-btn" data-cstate="partial">Half-decohered (ρ₀₁ = 0.25)</button>
+              <button class="btn coherence-state-btn active" data-cstate="pure_plus">Pure |+⟩ (\( \rho_{01}=0.5 \))</button>
+              <button class="btn coherence-state-btn" data-cstate="pure_minus">Pure |−⟩ (\( \rho_{01}=-0.5 \))</button>
+              <button class="btn coherence-state-btn" data-cstate="mixture">Classical mixture (\( \rho_{01}=0 \))</button>
+              <button class="btn coherence-state-btn" data-cstate="partial">Half-decohered (\( \rho_{01}=0.25 \))</button>
             </div>
             <div class="coherence-display">
               <div>
@@ -855,8 +927,8 @@
           <h2>Mixed states live inside the sphere.</h2>
         </header>
         <div class="step-body">
-          <p>In Tutorial 1, the Bloch sphere showed pure states as points on the <em>surface</em>. But mixed states aren't pure — they're convex combinations of pure states, and their Bloch vector has <b>length less than 1</b>. The maximally mixed state ρ = I/2 sits exactly at the <em>center</em>.</p>
-          <p>Drag the decoherence slider and watch the Bloch vector shrink from the surface toward the origin. The length of the vector is exactly √(Tr(ρ²) × 2 − 1) — a direct measure of <em>purity</em>. When hardware engineers say "T₂ time" (coherence time), they're measuring how long before their qubit's Bloch vector reaches the center.</p>
+          <p>In Tutorial 1, the Bloch sphere showed pure states as points on the <em>surface</em>. But mixed states aren't pure — they're convex combinations of pure states, and their Bloch vector has <b>length less than 1</b>. The maximally mixed state \( \rho = I/2 \) sits exactly at the <em>center</em>.</p>
+          <p>Drag the decoherence slider and watch the Bloch vector shrink from the surface toward the origin. The length of the vector is exactly \( \sqrt{2\,\mathrm{Tr}(\rho^2)-1} \) — a direct measure of <em>purity</em>. When hardware engineers say "T₂ time" (coherence time), they're measuring how long before their qubit's Bloch vector reaches the center.</p>
           <div class="bloch-ball-wrap">
             <div class="bloch-ball-host" id="bloch-ball-svg"></div>
             <div class="bloch-ball-side">
@@ -904,6 +976,13 @@
 
     <!-- ============================================================ Tutorial 4 (was Tutorial 2) -->
     <div class="tutorial" id="tut-4" style="display:none">
+      <div class="tutorial-sources">
+        <span class="tutorial-sources-label">Sources</span>
+        <a href="#ref-noclone1982" class="tpl-cite" data-doc-ref="ref-noclone1982">[No-Cloning]</a>
+        <a href="#ref-shor1995" class="tpl-cite" data-doc-ref="ref-shor1995">[Shor QEC]</a>
+        <a href="#ref-kitaev2003" class="tpl-cite" data-doc-ref="ref-kitaev2003">[Kitaev]</a>
+        <a href="#ref-fowler2012" class="tpl-cite" data-doc-ref="ref-fowler2012">[Fowler et al.]</a>
+      </div>
 
       <article class="step-card" data-step="t4-1">
         <header class="step-head">
@@ -1060,6 +1139,13 @@
 
     <!-- ============================================================ Tutorial 5: Deutsch–Jozsa -->
     <div class="tutorial" id="tut-5" style="display:none">
+      <div class="tutorial-sources">
+        <span class="tutorial-sources-label">Sources</span>
+        <a href="#ref-deutsch1985" class="tpl-cite" data-doc-ref="ref-deutsch1985">[Deutsch]</a>
+        <a href="#ref-dj1992" class="tpl-cite" data-doc-ref="ref-dj1992">[Deutsch–Jozsa]</a>
+        <a href="#ref-bv1993" class="tpl-cite" data-doc-ref="ref-bv1993">[Bernstein–Vazirani]</a>
+        <a href="#ref-nc2000" class="tpl-cite" data-doc-ref="ref-nc2000">[Nielsen &amp; Chuang]</a>
+      </div>
 
       <!-- T5 Step 1: the problem -->
       <article class="step-card" data-step="t5-1">
@@ -1285,6 +1371,13 @@
 
     <!-- ============================================================ Tutorial 6: VQE -->
     <div class="tutorial" id="tut-6" style="display:none">
+      <div class="tutorial-sources">
+        <span class="tutorial-sources-label">Sources</span>
+        <a href="#ref-vqe2014" class="tpl-cite" data-doc-ref="ref-vqe2014">[Peruzzo et al.]</a>
+        <a href="#ref-kandala2017" class="tpl-cite" data-doc-ref="ref-kandala2017">[Kandala et al.]</a>
+        <a href="#ref-barren2018" class="tpl-cite" data-doc-ref="ref-barren2018">[McClean et al.]</a>
+        <a href="#ref-nc2000" class="tpl-cite" data-doc-ref="ref-nc2000">[Nielsen &amp; Chuang]</a>
+      </div>
 
       <!-- T6 Step 1 -->
       <article class="step-card" data-step="t6-1">
@@ -1293,7 +1386,7 @@
           <h2>The variational energy landscape.</h2>
         </header>
         <div class="step-body">
-          <p>In VQE, you choose a parameterized circuit (an <em>ansatz</em>), measure the energy of the prepared state, then tune parameters to minimize that energy. Here we use a one-parameter ansatz <code>R<sub>y</sub>(θ)|0⟩</code> and a toy Hamiltonian, so you can see the landscape directly.</p>
+          <p>In VQE, you choose a parameterized circuit (an <em>ansatz</em>), measure the energy of the prepared state, then tune parameters to minimize that energy. Here we use a one-parameter ansatz \( R_y(\theta)|0\rangle \) and a toy Hamiltonian, so you can see the landscape directly.</p>
           <div style="margin:22px 0;padding:20px;background:var(--bg-2);border:1px solid var(--line)">
             <label style="font-family:var(--mono);font-size:10px;color:var(--ink-faint);letter-spacing:0.08em">
               Ansatz angle θ:
@@ -1448,6 +1541,12 @@
 
     <!-- ============================================================ Tutorial 7: Grover Search -->
     <div class="tutorial" id="tut-7" style="display:none">
+      <div class="tutorial-sources">
+        <span class="tutorial-sources-label">Sources</span>
+        <a href="#ref-grover1996" class="tpl-cite" data-doc-ref="ref-grover1996">[Grover]</a>
+        <a href="#ref-nc2000" class="tpl-cite" data-doc-ref="ref-nc2000">[Nielsen &amp; Chuang]</a>
+        <a href="#ref-preskill2018" class="tpl-cite" data-doc-ref="ref-preskill2018">[Preskill]</a>
+      </div>
 
       <article class="step-card" data-step="t7-1">
         <header class="step-head">
@@ -1631,6 +1730,229 @@
       </article>
     </div><!-- /#tut-7 -->
 
+    <!-- ============================================================ Tutorial 8: Quantum Channels -->
+    <div class="tutorial" id="tut-8" style="display:none">
+      <div class="tutorial-sources">
+        <span class="tutorial-sources-label">Sources</span>
+        <a href="#ref-nc2000" class="tpl-cite" data-doc-ref="ref-nc2000">[Nielsen &amp; Chuang]</a>
+        <a href="#ref-kraus1983" class="tpl-cite" data-doc-ref="ref-kraus1983">[Kraus]</a>
+        <a href="#ref-lindblad1976" class="tpl-cite" data-doc-ref="ref-lindblad1976">[Lindblad]</a>
+        <a href="#ref-preskill2018" class="tpl-cite" data-doc-ref="ref-preskill2018">[Preskill]</a>
+      </div>
+      <article class="step-card" data-step="t8-1">
+        <header class="step-head"><div class="step-num">Step 01</div><h2>A channel acts on states, not just amplitudes.</h2></header>
+        <div class="step-body">
+          <p>In a closed system, evolution is unitary: a pure state stays pure and simply rotates on the Bloch sphere. Real devices are open systems. They leak information to the environment, and that means the correct object to evolve is the <em>density matrix</em> \( \rho \), not just a state vector.</p>
+          <p>Pick a channel and noise strength, then compare input vs output on a Bloch-disk slice. Watch how different channels either preserve geometry, shrink coherence, or pull the state toward a preferred direction.</p>
+          <div style="margin:22px 0;padding:20px;background:var(--bg-2);border:1px solid var(--line)">
+            <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center">
+              <select id="t8-map-select" class="analysis-select" style="max-width:220px">
+                <option value="identity">Identity</option>
+                <option value="dephasing">Dephasing</option>
+                <option value="amplitude">Amplitude damping</option>
+                <option value="depolarizing">Depolarizing</option>
+              </select>
+              <label style="font-family:var(--mono);font-size:10px;color:var(--ink-faint)">Strength:
+                <input type="range" id="t8-lambda" min="0" max="1" step="0.05" value="0.35" style="width:180px;accent-color:var(--amber);vertical-align:middle"/>
+                <span id="t8-lambda-val" style="color:var(--amber)">35%</span>
+              </label>
+            </div>
+            <svg id="t8-bloch-svg" viewBox="0 0 360 220" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:360px;margin-top:10px"></svg>
+            <div id="t8-map-caption" style="font-family:var(--serif);font-size:14px;color:var(--ink-dim);line-height:1.55;margin-top:8px"></div>
+          </div>
+          <div class="step-action"><div class="action-prompt">Try at least two channel types and strengths.</div><button class="btn primary step-next" data-unlocks="t8-2" disabled id="t8-1-next">Next →</button></div>
+        </div>
+      </article>
+
+      <article class="step-card locked" data-step="t8-2">
+        <header class="step-head"><div class="step-num">Step 02</div><h2>Same channel, different input states.</h2></header>
+        <div class="step-body">
+          <p>Noise is not equally destructive to every state. Some states are "aligned" with the channel and survive longer; others lose coherence quickly.</p>
+          <p>Use the buttons to test several inputs. Compare probabilities and coherence to see why benchmarking only one state can hide important failure modes.</p>
+          <div id="t8-state-buttons" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
+            <button class="btn" data-state="0">|0⟩</button><button class="btn" data-state="1">|1⟩</button><button class="btn" data-state="+">|+⟩</button><button class="btn" data-state="-">|−⟩</button><button class="btn" data-state="+i">|+i⟩</button><button class="btn" data-state="mixed">I/2</button>
+          </div>
+          <div id="t8-state-readout" style="font-family:var(--serif);font-size:14px;color:var(--ink-dim);line-height:1.55;margin-bottom:8px"></div>
+          <div id="t8-state-probs"></div>
+          <div id="t8-state-coh" style="margin-top:10px;font-family:var(--mono);font-size:11px;color:var(--ink-dim)"></div>
+          <div class="step-action"><div class="action-prompt">Check at least three distinct inputs.</div><button class="btn primary step-next" data-unlocks="t8-3" disabled id="t8-2-next">Next →</button></div>
+        </div>
+      </article>
+
+      <article class="step-card locked" data-step="t8-3">
+        <header class="step-head"><div class="step-num">Step 03</div><h2>Kraus operators and CPTP consistency.</h2></header>
+        <div class="step-body">
+          <p>Every physically valid quantum noise process is a <b>CPTP map</b> (completely positive, trace preserving). Kraus operators are the standard practical representation: \( \rho'=\sum_k K_k \rho K_k^\dagger \).</p>
+          <p>The crucial sanity check is \( \sum_k K_k^\dagger K_k = I \). Change the map and parameter, and verify the check stays near identity.</p>
+          <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:8px">
+            <select id="t8-kraus-select" class="analysis-select" style="max-width:220px">
+              <option value="dephasing">Dephasing</option>
+              <option value="amplitude">Amplitude damping</option>
+              <option value="depolarizing">Depolarizing</option>
+            </select>
+            <label style="font-family:var(--mono);font-size:10px;color:var(--ink-faint)">γ:
+              <input type="range" id="t8-kraus-gamma" min="0" max="1" step="0.05" value="0.3" style="width:180px;accent-color:var(--cyan);vertical-align:middle"/>
+              <span id="t8-kraus-gamma-val" style="color:var(--cyan)">30%</span>
+            </label>
+          </div>
+          <div id="t8-kraus-box" style="padding:12px;background:var(--bg-2);border:1px solid var(--line)"></div>
+          <div id="t8-kraus-check" style="margin-top:10px;font-family:var(--serif);font-size:14px;color:var(--ink-dim)"></div>
+          <div class="step-action"><div class="action-prompt">Switch map families and inspect ΣK†K.</div><button class="btn primary step-next" data-unlocks="t8-4" disabled id="t8-3-next">Next →</button></div>
+        </div>
+      </article>
+
+      <article class="step-card locked" data-step="t8-4">
+        <header class="step-head"><div class="step-num">Step 04</div><h2>Unital vs non-unital channels.</h2></header>
+        <div class="step-body">
+          <p>Unital channels keep the maximally mixed state fixed; non-unital channels do not. This distinction matters physically: some noise just "blurs" states, while other noise also introduces a preferred direction (often energy relaxation toward \( |0\rangle \)).</p>
+          <button class="btn primary" id="t8-unital-run">Run comparison</button>
+          <div id="t8-unital-compare" style="margin-top:10px"></div>
+          <div id="t8-unital-caption" style="margin-top:10px;font-family:var(--serif);font-size:14px;color:var(--ink-dim);line-height:1.55"></div>
+          <div class="step-action"><div class="action-prompt">Run once and compare both outputs.</div><button class="btn primary step-next" data-unlocks="t8-5" disabled id="t8-4-next">Next →</button></div>
+        </div>
+      </article>
+
+      <article class="step-card locked" data-step="t8-5">
+        <header class="step-head"><div class="step-num">Step 05</div><h2>Composing channels.</h2></header>
+        <div class="step-body">
+          <p>Hardware does not experience one isolated error at the end of a circuit. It experiences a sequence of noisy processes. In open-system language, those processes compose as maps acting on \( \rho \).</p>
+          <p>Run both orders and compare. When channels do not commute, order changes the final state — another reason realistic noise modeling is richer than a single "error rate" number.</p>
+          <label style="font-family:var(--mono);font-size:10px;color:var(--ink-faint)">p:
+            <input type="range" id="t8-compose-p" min="0" max="1" step="0.05" value="0.35" style="width:200px;accent-color:var(--magenta);vertical-align:middle"/>
+            <span id="t8-compose-p-val" style="color:var(--magenta)">35%</span>
+          </label>
+          <div style="margin-top:10px"><button class="btn primary" id="t8-compose-run">Compose maps</button></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px">
+            <div id="t8-compose-a-then-d" style="padding:12px;background:var(--bg-2);border:1px solid var(--line)"></div>
+            <div id="t8-compose-d-then-a" style="padding:12px;background:var(--bg-2);border:1px solid var(--line)"></div>
+          </div>
+          <div id="t8-compose-note" style="margin-top:8px;font-family:var(--serif);font-size:14px;color:var(--ink-dim)"></div>
+          <div class="step-action"><div class="action-prompt">Run and compare both orders.</div><button class="btn primary step-next" data-unlocks="t8-6" disabled id="t8-5-next">Next →</button></div>
+        </div>
+      </article>
+
+      <article class="step-card locked" data-step="t8-6">
+        <header class="step-head"><div class="step-num">Step 06</div><h2>Channel family summary.</h2></header>
+        <div class="step-body">
+          <p>This final card consolidates the three workhorse channels used across quantum engineering papers and simulators. Think of it as a quick mental lookup table before you move to hardware-level timescales in Tutorial 9.</p>
+          <button class="btn primary" id="t8-summary-run">Generate summary</button>
+          <div id="t8-summary-grid" style="margin-top:10px"></div>
+        </div>
+      </article>
+    </div><!-- /#tut-8 -->
+
+    <!-- ============================================================ Tutorial 9: Hardware Noise -->
+    <div class="tutorial" id="tut-9" style="display:none">
+      <div class="tutorial-sources">
+        <span class="tutorial-sources-label">Sources</span>
+        <a href="#ref-redfield1957" class="tpl-cite" data-doc-ref="ref-redfield1957">[Redfield]</a>
+        <a href="#ref-hahn1950" class="tpl-cite" data-doc-ref="ref-hahn1950">[Hahn echo]</a>
+        <a href="#ref-ramsey1950" class="tpl-cite" data-doc-ref="ref-ramsey1950">[Ramsey]</a>
+        <a href="#ref-preskill2018" class="tpl-cite" data-doc-ref="ref-preskill2018">[Preskill]</a>
+      </div>
+      <article class="step-card" data-step="t9-1">
+        <header class="step-head"><div class="step-num">Step 01</div><h2>T1 relaxation curve.</h2></header>
+        <div class="step-body">
+          <p>\(T_1\) is the energy-relaxation timescale: how quickly excited population decays toward the ground state. In superconducting hardware this is often linked to dielectric loss, Purcell loss, quasiparticles, and other dissipative channels.</p>
+          <p>Move the slider and watch the decay envelope. Longer \(T_1\) means population persists longer, which generally improves algorithm depth before energy loss dominates.</p>
+          <label style="font-family:var(--mono);font-size:10px;color:var(--ink-faint)">T1:
+            <input type="range" id="t9-t1-slider" min="5" max="120" step="1" value="40" style="width:210px;accent-color:var(--phos);vertical-align:middle"/>
+            <span id="t9-t1-val" style="color:var(--phos)">40 μs</span>
+          </label>
+          <svg id="t9-t1-plot" viewBox="0 0 360 210" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:360px;margin-top:8px"></svg>
+          <div id="t9-t1-caption" style="font-family:var(--serif);font-size:14px;color:var(--ink-dim);line-height:1.55"></div>
+          <div class="step-action"><div class="action-prompt">Move the slider and inspect decay rate.</div><button class="btn primary step-next" data-unlocks="t9-2" disabled id="t9-1-next">Next →</button></div>
+        </div>
+      </article>
+
+      <article class="step-card locked" data-step="t9-2">
+        <header class="step-head"><div class="step-num">Step 02</div><h2>Pure dephasing.</h2></header>
+        <div class="step-body">
+          <p>Not all errors exchange energy. Pure dephasing keeps populations similar while scrambling relative phase, so interference fades even when \( |1\rangle \) population is not rapidly draining.</p>
+          <p>This is why a qubit can look fine in Z-basis readout but still perform poorly in phase-sensitive algorithms.</p>
+          <label style="font-family:var(--mono);font-size:10px;color:var(--ink-faint)">Tφ:
+            <input type="range" id="t9-dephase-slider" min="5" max="120" step="1" value="35" style="width:210px;accent-color:var(--amber);vertical-align:middle"/>
+            <span id="t9-dephase-val" style="color:var(--amber)">35 μs</span>
+          </label>
+          <svg id="t9-dephase-plot" viewBox="0 0 360 210" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:360px;margin-top:8px"></svg>
+          <div id="t9-dephase-caption" style="font-family:var(--serif);font-size:14px;color:var(--ink-dim);line-height:1.55"></div>
+          <div class="step-action"><div class="action-prompt">Compare with Step 1 behavior.</div><button class="btn primary step-next" data-unlocks="t9-3" disabled id="t9-2-next">Next →</button></div>
+        </div>
+      </article>
+
+      <article class="step-card locked" data-step="t9-3">
+        <header class="step-head"><div class="step-num">Step 03</div><h2>The T2 relation.</h2></header>
+        <div class="step-body">
+          <p>Coherence decay combines both mechanisms. The standard relation
+          \( \frac{1}{T_2}=\frac{1}{2T_1}+\frac{1}{T_\phi} \)
+          shows that even perfect phase stability cannot beat the \(T_1\)-imposed floor.</p>
+          <p>Adjust \(T_1\) and \(T_\phi\) together and see how \(T_2\) responds. This coupling is central to interpreting device-characterization reports.</p>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <label style="font-family:var(--mono);font-size:10px;color:var(--ink-faint)">T1
+              <input type="range" id="t9-T1" min="5" max="120" step="1" value="40" style="width:100%;accent-color:var(--phos)"/>
+              <span id="t9-T1-val" style="color:var(--phos)">40 μs</span>
+            </label>
+            <label style="font-family:var(--mono);font-size:10px;color:var(--ink-faint)">Tφ
+              <input type="range" id="t9-Tphi" min="5" max="120" step="1" value="35" style="width:100%;accent-color:var(--amber)"/>
+              <span id="t9-Tphi-val" style="color:var(--amber)">35 μs</span>
+            </label>
+          </div>
+          <div style="font-family:var(--mono);font-size:11px;color:var(--cyan);margin-top:6px">Computed T2: <span id="t9-T2-val">—</span></div>
+          <svg id="t9-t2-plot" viewBox="0 0 360 210" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:360px;margin-top:8px"></svg>
+          <div id="t9-t2-caption" style="font-family:var(--serif);font-size:14px;color:var(--ink-dim);line-height:1.55"></div>
+          <div class="step-action"><div class="action-prompt">Adjust both sliders and track T2.</div><button class="btn primary step-next" data-unlocks="t9-4" disabled id="t9-3-next">Next →</button></div>
+        </div>
+      </article>
+
+      <article class="step-card locked" data-step="t9-4">
+        <header class="step-head"><div class="step-num">Step 04</div><h2>Spectral-density intuition.</h2></header>
+        <div class="step-body">
+          <p>Noise is best understood in frequency space via a spectral density \(S(\omega)\). Different shapes emphasize different physical processes and therefore different failure signatures in experiments.</p>
+          <p>Try several spectra and compare where they place power relative to \( \omega_q \) and low frequency. That separation maps directly onto "mostly relaxation" vs "mostly dephasing" behavior.</p>
+          <select id="t9-spectrum-select" class="analysis-select" style="max-width:240px">
+            <option value="white">White-like</option>
+            <option value="oneoverf">1/f-like</option>
+            <option value="narrowband">Narrowband peak</option>
+            <option value="ohmicish">Ohmic-like</option>
+          </select>
+          <button class="btn primary" id="t9-spectrum-run">Update spectrum</button>
+          <svg id="t9-spectrum-svg" viewBox="0 0 360 220" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:360px;margin-top:8px"></svg>
+          <div id="t9-spectrum-note" style="font-family:var(--serif);font-size:14px;color:var(--ink-dim)"></div>
+          <div class="step-action"><div class="action-prompt">Check at least one spectrum shape.</div><button class="btn primary step-next" data-unlocks="t9-5" disabled id="t9-4-next">Next →</button></div>
+        </div>
+      </article>
+
+      <article class="step-card locked" data-step="t9-5">
+        <header class="step-head"><div class="step-num">Step 05</div><h2>Ramsey vs echo.</h2></header>
+        <div class="step-body">
+          <p>Ramsey and echo are two complementary probes of phase noise. Ramsey is highly sensitive to slow drift; echo can refocus some of that drift and reveal what remains from faster components.</p>
+          <p>Compare the traces across noise models to build intuition for why papers often report both \(T_2^\*\) (Ramsey) and \(T_2^{\mathrm{echo}}\).</p>
+          <select id="t9-echo-select" class="analysis-select" style="max-width:240px">
+            <option value="oneoverf">1/f-like drift</option>
+            <option value="white">White-like noise</option>
+            <option value="structured">Structured spectrum</option>
+          </select>
+          <button class="btn primary" id="t9-echo-run">Run comparison</button>
+          <svg id="t9-echo-svg" viewBox="0 0 360 210" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:360px;margin-top:8px"></svg>
+          <div id="t9-echo-note" style="font-family:var(--serif);font-size:14px;color:var(--ink-dim)"></div>
+          <div class="step-action"><div class="action-prompt">Compare at least one noise model.</div><button class="btn primary step-next" data-unlocks="t9-6" disabled id="t9-5-next">Next →</button></div>
+        </div>
+      </article>
+
+      <article class="step-card locked" data-step="t9-6">
+        <header class="step-head"><div class="step-num">Step 06</div><h2>Device-level intuition cards.</h2></header>
+        <div class="step-body">
+          <p>Different hardware modalities have different dominant noise sources and tradeoffs. These cards are not exhaustive, but they capture the practical "first-order" intuition experimentalists use when diagnosing device behavior.</p>
+          <div id="t9-device-buttons" style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn" data-device="transmon">Transmon</button>
+            <button class="btn" data-device="flux">Flux-tunable</button>
+            <button class="btn" data-device="generic">Big picture</button>
+          </div>
+          <div id="t9-device-out" style="margin-top:10px;padding:12px;background:var(--bg-2);border:1px solid var(--line);font-family:var(--serif);font-size:14px;color:var(--ink-dim);line-height:1.55"></div>
+        </div>
+      </article>
+    </div><!-- /#tut-9 -->
+
   </div><!-- /#view-learn -->
 
   <!-- ============================================================
@@ -1639,14 +1961,18 @@
   <div id="view-templates" class="view">
     <section class="templates-intro">
       <div>
-        <h1>A shelf of <em>curated circuits.</em></h1>
-        <p>Each template loads into the Lab ready to run. Some are classics. Some demonstrate a single idea crisply. Some are good starting points for research.</p>
+        <h1>A curated <em>quantum circuit library.</em></h1>
+        <p>Each template loads directly into the Laboratory for immediate execution. The collection spans foundational examples, canonical algorithms, and hardware-aware diagnostic circuits.</p>
       </div>
       <div class="rules">
-        <b>How to use</b><br/>
-        Tap any card to load it into the Lab. From there, press <b>Run</b>, toggle between probabilities / amplitudes / density matrix, or add your own gates to tweak the experiment.
+        <b>Usage</b><br/>
+        Select any card to load the circuit into the Laboratory. Then run simulation, switch among probability/amplitude/density views, and modify the circuit to test variations.
       </div>
     </section>
+    <div class="tpl-filter-wrap">
+      <div class="tpl-filter-label">Filter by tag</div>
+      <div id="template-tag-filter" class="tpl-filter-row"></div>
+    </div>
 
     <!-- Foundations -->
     <section class="tpl-section">
@@ -1663,7 +1989,7 @@
           </div>
           <h3>The quantum coin</h3>
           <div class="tpl-one-liner">Superposition</div>
-          <p class="tpl-desc">A single Hadamard turns a definite <code>|0⟩</code> into a 50/50 mix of <code>|0⟩</code> and <code>|1⟩</code>. Not hidden randomness — a real blend of states that only reveals itself when measured.</p>
+          <p class="tpl-desc">A single Hadamard turns a definite <code>|0⟩</code> into a 50/50 mix of <code>|0⟩</code> and <code>|1⟩</code>. Not hidden randomness — a real blend of states that only reveals itself when measured. <a href="#ref-nc2000" class="tpl-cite" data-doc-ref="ref-nc2000">[Nielsen &amp; Chuang]</a></p>
           <div class="tpl-tags">
             <span class="tpl-tag">superposition</span><span class="tpl-tag">hadamard</span>
           </div>
@@ -1677,7 +2003,7 @@
           </div>
           <h3>Gate identity: H Z H = X</h3>
           <div class="tpl-one-liner">Basis change</div>
-          <p class="tpl-desc">Sandwiching a Z between two Hadamards produces exactly the same effect as a single X. An identity that quietly powers much of quantum algorithm design — rotating into the right basis is half the work.</p>
+          <p class="tpl-desc">Sandwiching a Z between two Hadamards produces exactly the same effect as a single X. An identity that quietly powers much of quantum algorithm design — rotating into the right basis is half the work. <a href="#ref-nc2000" class="tpl-cite" data-doc-ref="ref-nc2000">[Nielsen &amp; Chuang]</a></p>
           <div class="tpl-tags">
             <span class="tpl-tag">identity</span><span class="tpl-tag">basis</span><span class="tpl-tag">pauli</span>
           </div>
@@ -1691,7 +2017,7 @@
           </div>
           <h3>Phase kickback</h3>
           <div class="tpl-one-liner">Control flips the controller</div>
-          <p class="tpl-desc">A controlled gate acts on the target — but when the target is in an eigenstate of that gate, the phase <em>kicks back</em> onto the control. Foundational for phase estimation, Deutsch–Jozsa, and Shor's algorithm.</p>
+          <p class="tpl-desc">A controlled gate acts on the target — but when the target is in an eigenstate of that gate, the phase <em>kicks back</em> onto the control. Foundational for phase estimation, Deutsch–Jozsa, and Shor's algorithm. <a href="#ref-dj1992" class="tpl-cite" data-doc-ref="ref-dj1992">[Deutsch–Jozsa]</a></p>
           <div class="tpl-tags">
             <span class="tpl-tag">phase</span><span class="tpl-tag">eigenstate</span><span class="tpl-tag">algorithm building block</span>
           </div>
@@ -1715,7 +2041,7 @@
           </div>
           <h3>The Bell pair</h3>
           <div class="tpl-one-liner">Two-qubit entanglement</div>
-          <p class="tpl-desc">H then CNOT yields <code>|00⟩ + |11⟩</code> (normalized). The outcomes are always correlated — never <code>|01⟩</code> or <code>|10⟩</code> — even though neither qubit has a definite value alone. The experiment behind the 2022 physics Nobel.</p>
+          <p class="tpl-desc">H then CNOT yields <code>|00⟩ + |11⟩</code> (normalized). The outcomes are always correlated — never <code>|01⟩</code> or <code>|10⟩</code> — even though neither qubit has a definite value alone. The experiment behind the 2022 physics Nobel. <a href="#ref-bell1964" class="tpl-cite" data-doc-ref="ref-bell1964">[Bell]</a></p>
           <div class="tpl-tags">
             <span class="tpl-tag">bell state</span><span class="tpl-tag">cnot</span><span class="tpl-tag">nonlocality</span>
           </div>
@@ -1729,7 +2055,7 @@
           </div>
           <h3>The GHZ triplet</h3>
           <div class="tpl-one-liner">Multi-qubit entanglement</div>
-          <p class="tpl-desc">Three qubits in <code>|000⟩ + |111⟩</code>. Used as a resource state for quantum sensing, foundational tests of local realism, and the seed of many error-correction codes. Entanglement that scales.</p>
+          <p class="tpl-desc">Three qubits in <code>|000⟩ + |111⟩</code>. Used as a resource state for quantum sensing, foundational tests of local realism, and the seed of many error-correction codes. Entanglement that scales. <a href="#ref-ghz1989" class="tpl-cite" data-doc-ref="ref-ghz1989">[GHZ]</a></p>
           <div class="tpl-tags">
             <span class="tpl-tag">ghz</span><span class="tpl-tag">multipartite</span><span class="tpl-tag">sensing</span>
           </div>
@@ -1743,7 +2069,7 @@
           </div>
           <h3>Controlled-phase entangler</h3>
           <div class="tpl-one-liner">CNOT, rebuilt from CZ</div>
-          <p class="tpl-desc">On many real hardware platforms (especially superconducting qubits), CZ is native and CNOT is emulated. The identity <code>CNOT = (I⊗H)·CZ·(I⊗H)</code> is how it's done. Same Bell state, different route — useful for understanding hardware-aware compilation.</p>
+          <p class="tpl-desc">On many real hardware platforms (especially superconducting qubits), CZ is native and CNOT is emulated. The identity <code>CNOT = (I⊗H)·CZ·(I⊗H)</code> is how it's done. Same Bell state, different route — useful for understanding hardware-aware compilation. <a href="#ref-nc2000" class="tpl-cite" data-doc-ref="ref-nc2000">[Nielsen &amp; Chuang]</a></p>
           <div class="tpl-tags">
             <span class="tpl-tag">cz</span><span class="tpl-tag">gate synthesis</span><span class="tpl-tag">hardware</span>
           </div>
@@ -1767,7 +2093,7 @@
           </div>
           <h3>Quantum teleportation</h3>
           <div class="tpl-one-liner">Moving state with entanglement</div>
-          <p class="tpl-desc">Prepare a state on q0, share a Bell pair between q1 and q2, then run the teleport protocol with deferred Pauli corrections. The state ends up on q2 while q0 and q1 become uniformly random byproducts. Nothing travels faster than light.</p>
+          <p class="tpl-desc">Prepare a state on q0, share a Bell pair between q1 and q2, then run the teleport protocol with deferred Pauli corrections. The state ends up on q2 while q0 and q1 become uniformly random byproducts. Nothing travels faster than light. <a href="#ref-teleport1993" class="tpl-cite" data-doc-ref="ref-teleport1993">[Bennett et al.]</a></p>
           <div class="tpl-tags">
             <span class="tpl-tag">teleportation</span><span class="tpl-tag">protocol</span><span class="tpl-tag">deferred measurement</span>
           </div>
@@ -1781,7 +2107,7 @@
           </div>
           <h3>Deutsch's algorithm (balanced)</h3>
           <div class="tpl-one-liner">First quantum speedup</div>
-          <p class="tpl-desc">Determines whether a one-bit function is constant or balanced in a <em>single</em> query to the oracle — classically impossible. Here the oracle (a CNOT) implements a balanced function; running the circuit outputs <code>1</code> on q0 with certainty.</p>
+          <p class="tpl-desc">Determines whether a one-bit function is constant or balanced in a <em>single</em> query to the oracle — classically impossible. Here the oracle (a CNOT) implements a balanced function; running the circuit outputs <code>1</code> on q0 with certainty. <a href="#ref-deutsch1985" class="tpl-cite" data-doc-ref="ref-deutsch1985">[Deutsch]</a></p>
           <div class="tpl-tags">
             <span class="tpl-tag">oracle</span><span class="tpl-tag">speedup</span><span class="tpl-tag">deutsch</span>
           </div>
@@ -1795,7 +2121,7 @@
           </div>
           <h3>Superdense coding</h3>
           <div class="tpl-one-liner">Two bits in one qubit</div>
-          <p class="tpl-desc">Given a pre-shared Bell pair, Alice encodes two classical bits (here: <code>11</code>) into a single qubit by applying one of {I, X, Z, XZ}, then sends it to Bob, who decodes. The dual of teleportation — one qubit of communication carries two classical bits.</p>
+          <p class="tpl-desc">Given a pre-shared Bell pair, Alice encodes two classical bits (here: <code>11</code>) into a single qubit by applying one of {I, X, Z, XZ}, then sends it to Bob, who decodes. The dual of teleportation — one qubit of communication carries two classical bits. <a href="#ref-superdense1992" class="tpl-cite" data-doc-ref="ref-superdense1992">[Bennett &amp; Wiesner]</a> <a href="#ref-holevo1973" class="tpl-cite" data-doc-ref="ref-holevo1973">[Holevo]</a></p>
           <div class="tpl-tags">
             <span class="tpl-tag">communication</span><span class="tpl-tag">bell basis</span><span class="tpl-tag">protocol</span>
           </div>
@@ -1809,7 +2135,7 @@
           </div>
           <h3>Deutsch–Jozsa (constant)</h3>
           <div class="tpl-one-liner">Full n=2 DJ with identity oracle</div>
-          <p class="tpl-desc">The full 3-qubit Deutsch–Jozsa circuit with a constant oracle (f(x) = 0). The input register always measures <code>|00⟩</code>, revealing the function is constant in a single oracle query. A classical algorithm needs up to 3 queries. Walkthrough: Tutorial 5.</p>
+          <p class="tpl-desc">The full 3-qubit Deutsch–Jozsa circuit with a constant oracle (f(x) = 0). The input register always measures <code>|00⟩</code>, revealing the function is constant in a single oracle query. A classical algorithm needs up to 3 queries. Walkthrough: Tutorial 5. <a href="#ref-dj1992" class="tpl-cite" data-doc-ref="ref-dj1992">[Deutsch–Jozsa]</a></p>
           <div class="tpl-tags">
             <span class="tpl-tag">deutsch–jozsa</span><span class="tpl-tag">oracle</span><span class="tpl-tag">exponential speedup</span>
           </div>
@@ -1823,7 +2149,7 @@
           </div>
           <h3>Deutsch–Jozsa (balanced)</h3>
           <div class="tpl-one-liner">Full n=2 DJ with XOR oracle</div>
-          <p class="tpl-desc">The same D-J circuit with a balanced oracle f(x) = x₀⊕x₁ (two CNOTs onto the ancilla). The input register collapses to <code>|11⟩</code> — any non-zero output proves the function is not constant. Phase kickback through the |−⟩ ancilla drives the interference.</p>
+          <p class="tpl-desc">The same D-J circuit with a balanced oracle f(x) = x₀⊕x₁ (two CNOTs onto the ancilla). The input register collapses to <code>|11⟩</code> — any non-zero output proves the function is not constant. Phase kickback through the |−⟩ ancilla drives the interference. <a href="#ref-dj1992" class="tpl-cite" data-doc-ref="ref-dj1992">[Deutsch–Jozsa]</a></p>
           <div class="tpl-tags">
             <span class="tpl-tag">deutsch–jozsa</span><span class="tpl-tag">phase kickback</span><span class="tpl-tag">balanced oracle</span>
           </div>
@@ -1837,7 +2163,7 @@
           </div>
           <h3>Bernstein–Vazirani</h3>
           <div class="tpl-one-liner">Recover a secret string in one query</div>
-          <p class="tpl-desc">Given an oracle f(x) = x · s (mod 2), the Bernstein–Vazirani algorithm finds the secret n-bit string <em>s</em> in a single oracle query — versus n queries classically. Here s = <code>101</code>; the input register measures exactly <code>|101⟩</code>. A direct successor of Deutsch–Jozsa.</p>
+          <p class="tpl-desc">Given an oracle f(x) = x · s (mod 2), the Bernstein–Vazirani algorithm finds the secret n-bit string <em>s</em> in a single oracle query — versus n queries classically. Here s = <code>101</code>; the input register measures exactly <code>|101⟩</code>. A direct successor of Deutsch–Jozsa. <a href="#ref-bv1993" class="tpl-cite" data-doc-ref="ref-bv1993">[Bernstein–Vazirani]</a></p>
           <div class="tpl-tags">
             <span class="tpl-tag">bernstein–vazirani</span><span class="tpl-tag">oracle</span><span class="tpl-tag">secret string</span>
           </div>
@@ -1861,7 +2187,7 @@
           </div>
           <h3>Noisy Bell pair</h3>
           <div class="tpl-one-liner">Auto-loads noise preset</div>
-          <p class="tpl-desc">A standard Bell pair loaded with noise preset to 3%. The clean <code>|00⟩ + |11⟩</code> signature gets smeared with forbidden outcomes — a quick demonstration of how quickly entanglement decays under realistic gate error rates.</p>
+          <p class="tpl-desc">A standard Bell pair loaded with noise preset to 3%. The clean <code>|00⟩ + |11⟩</code> signature gets smeared with forbidden outcomes — a quick demonstration of how quickly entanglement decays under realistic gate error rates. <a href="#ref-preskill2018" class="tpl-cite" data-doc-ref="ref-preskill2018">[Preskill]</a></p>
           <div class="tpl-tags">
             <span class="tpl-tag">noise</span><span class="tpl-tag">decoherence</span><span class="tpl-tag">depolarizing</span>
           </div>
@@ -1875,7 +2201,7 @@
           </div>
           <h3>The X·X echo</h3>
           <div class="tpl-one-liner">Two wrongs should make a right</div>
-          <p class="tpl-desc">Two X gates in a row — algorithmically an identity. With zero noise, you get <code>|0⟩</code> with certainty. Crank the noise and a "trivially correct" circuit silently turns into random guessing. The simplest possible illustration of error accumulation.</p>
+          <p class="tpl-desc">Two X gates in a row — algorithmically an identity. With zero noise, you get <code>|0⟩</code> with certainty. Crank the noise and a "trivially correct" circuit silently turns into random guessing. The simplest possible illustration of error accumulation. <a href="#ref-rb2011" class="tpl-cite" data-doc-ref="ref-rb2011">[Randomized Benchmarking]</a></p>
           <div class="tpl-tags">
             <span class="tpl-tag">error accumulation</span><span class="tpl-tag">benchmark</span>
           </div>
@@ -1889,7 +2215,7 @@
           </div>
           <h3>Bit-flip encoder</h3>
           <div class="tpl-one-liner">Toy error-correction code</div>
-          <p class="tpl-desc">Encodes a logical qubit into three physical qubits: <code>α|0⟩ + β|1⟩</code> → <code>α|000⟩ + β|111⟩</code>. The information lives in the correlations, not in any single qubit. Run with noise on to see the three-qubit state resist single-qubit errors.</p>
+          <p class="tpl-desc">Encodes a logical qubit into three physical qubits: <code>α|0⟩ + β|1⟩</code> → <code>α|000⟩ + β|111⟩</code>. The information lives in the correlations, not in any single qubit. Run with noise on to see the three-qubit state resist single-qubit errors. <a href="#ref-shor1995" class="tpl-cite" data-doc-ref="ref-shor1995">[Shor QEC]</a></p>
           <div class="tpl-tags">
             <span class="tpl-tag">qec</span><span class="tpl-tag">repetition code</span><span class="tpl-tag">logical qubit</span>
           </div>
@@ -1913,7 +2239,7 @@
           </div>
           <h3>Ry(90°) = Hadamard, cleaner</h3>
           <div class="tpl-one-liner">Real-valued superposition</div>
-          <p class="tpl-desc">Ry(90°) lands the Bloch vector on the positive y-axis — same 50/50 measurement distribution as H, but with purely real amplitudes and no phase baggage. The cleaner rotation preferred for variational circuits and state preparation.</p>
+          <p class="tpl-desc">Ry(90°) lands the Bloch vector on the positive y-axis — same 50/50 measurement distribution as H, but with purely real amplitudes and no phase baggage. The cleaner rotation preferred for variational circuits and state preparation. <a href="#ref-nc2000" class="tpl-cite" data-doc-ref="ref-nc2000">[Nielsen &amp; Chuang]</a></p>
           <div class="tpl-tags">
             <span class="tpl-tag">ry</span><span class="tpl-tag">superposition</span><span class="tpl-tag">no phase</span>
           </div>
@@ -1927,7 +2253,7 @@
           </div>
           <h3>A biased quantum coin</h3>
           <div class="tpl-one-liner">Amplitude encoding</div>
-          <p class="tpl-desc">Ry(60°) produces an asymmetric ~75/25 superposition — P(|0⟩) = cos²(θ/2). Any probability distribution on one qubit can be set by choosing the angle. The basis of <em>amplitude encoding</em> in quantum machine learning.</p>
+          <p class="tpl-desc">Ry(60°) produces an asymmetric ~75/25 superposition — P(|0⟩) = cos²(θ/2). Any probability distribution on one qubit can be set by choosing the angle. The basis of <em>amplitude encoding</em> in quantum machine learning. <a href="#ref-nc2000" class="tpl-cite" data-doc-ref="ref-nc2000">[Nielsen &amp; Chuang]</a></p>
           <div class="tpl-tags">
             <span class="tpl-tag">ry</span><span class="tpl-tag">amplitude encoding</span><span class="tpl-tag">qml</span>
           </div>
@@ -1941,7 +2267,7 @@
           </div>
           <h3>Euler decomposition</h3>
           <div class="tpl-one-liner">Any gate from Ry · Rz · Ry</div>
-          <p class="tpl-desc">Any single-qubit unitary can be written as three rotations. Here Ry(90°)·Rz(180°)·Ry(−90°) produces an X equivalent (up to global phase). Real compilers use exactly this decomposition to map arbitrary gates to hardware primitives.</p>
+          <p class="tpl-desc">Any single-qubit unitary can be written as three rotations. Here Ry(90°)·Rz(180°)·Ry(−90°) produces an X equivalent (up to global phase). Real compilers use exactly this decomposition to map arbitrary gates to hardware primitives. <a href="#ref-nc2000" class="tpl-cite" data-doc-ref="ref-nc2000">[Nielsen &amp; Chuang]</a></p>
           <div class="tpl-tags">
             <span class="tpl-tag">euler angles</span><span class="tpl-tag">compilation</span><span class="tpl-tag">decomposition</span>
           </div>
@@ -1965,7 +2291,7 @@
           </div>
           <h3>Two-qubit VQE ansatz</h3>
           <div class="tpl-one-liner">Ry · CNOT · Ry</div>
-          <p class="tpl-desc">The simplest useful variational structure: Ry rotations, a CNOT entangler, then more Ry rotations. Production VQE stacks many such blocks and uses a classical optimizer (Adam, SPSA, COBYLA) to tune the angles for each iteration. Used for quantum chemistry and ground-state problems.</p>
+          <p class="tpl-desc">The simplest useful variational structure: Ry rotations, a CNOT entangler, then more Ry rotations. Production VQE stacks many such blocks and uses a classical optimizer (Adam, SPSA, COBYLA) to tune the angles for each iteration. Used for quantum chemistry and ground-state problems. <a href="#ref-vqe2014" class="tpl-cite" data-doc-ref="ref-vqe2014">[VQE]</a></p>
           <div class="tpl-tags">
             <span class="tpl-tag">vqe</span><span class="tpl-tag">ansatz</span><span class="tpl-tag">chemistry</span>
           </div>
@@ -1979,7 +2305,7 @@
           </div>
           <h3>One QAOA layer</h3>
           <div class="tpl-one-liner">Cost + mixer alternation</div>
-          <p class="tpl-desc">Quantum Approximate Optimization alternates a <em>cost</em> layer (CNOT · Rz · CNOT on pairs) with a <em>mixer</em> layer (Rx on all qubits). Here's one pair of layers; production QAOA stacks p ≈ 5–10 such pairs. Applied to MaxCut, scheduling, and combinatorial optimization.</p>
+          <p class="tpl-desc">Quantum Approximate Optimization alternates a <em>cost</em> layer (CNOT · Rz · CNOT on pairs) with a <em>mixer</em> layer (Rx on all qubits). Here's one pair of layers; production QAOA stacks p ≈ 5–10 such pairs. Applied to MaxCut, scheduling, and combinatorial optimization. <a href="#ref-qaoa2014" class="tpl-cite" data-doc-ref="ref-qaoa2014">[QAOA]</a></p>
           <div class="tpl-tags">
             <span class="tpl-tag">qaoa</span><span class="tpl-tag">optimization</span><span class="tpl-tag">maxcut</span>
           </div>
@@ -1993,7 +2319,7 @@
           </div>
           <h3>Hardware-efficient ansatz</h3>
           <div class="tpl-one-liner">Native-gate VQE block</div>
-          <p class="tpl-desc">Uses only gates native to real hardware — Ry, Rz, and a linear chain of CNOTs. Expressive enough for small chemistry and optimization problems, but prone to <em>barren plateaus</em> at depth. The standard starting point for IBM Qiskit and Google Cirq tutorials.</p>
+          <p class="tpl-desc">Uses only gates native to real hardware — Ry, Rz, and a linear chain of CNOTs. Expressive enough for small chemistry and optimization problems, but prone to <em>barren plateaus</em> at depth. The standard starting point for IBM Qiskit and Google Cirq tutorials. <a href="#ref-kandala2017" class="tpl-cite" data-doc-ref="ref-kandala2017">[Hardware-efficient VQE]</a> <a href="#ref-barren2018" class="tpl-cite" data-doc-ref="ref-barren2018">[Barren Plateaus]</a></p>
           <div class="tpl-tags">
             <span class="tpl-tag">hea</span><span class="tpl-tag">native gates</span><span class="tpl-tag">barren plateaus</span>
           </div>
@@ -2147,7 +2473,7 @@
         <div>
           <h3 style="font-family:var(--mono);font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:14px">Cited in tutorials</h3>
 
-          <div class="docs-entry">
+          <div class="docs-entry" id="ref-nc2000">
             <div class="docs-meta">Nielsen &amp; Chuang · 2000 ·
               <button onclick="switchTab('learn');switchSubtab('t1')" style="background:none;border:none;color:var(--phos-dim);font-family:var(--mono);font-size:10px;cursor:pointer;padding:0;letter-spacing:0.06em">→ Tutorials 1–4</button>
             </div>
@@ -2156,7 +2482,7 @@
             <div class="docs-tags"><span class="docs-tag">textbook</span><span class="docs-tag">gate definitions</span><span class="docs-tag">density matrix</span></div>
           </div>
 
-          <div class="docs-entry">
+          <div class="docs-entry" id="ref-dj1992">
             <div class="docs-meta">Deutsch &amp; Jozsa · 1992 ·
               <button onclick="switchTab('learn');switchSubtab('t5')" style="background:none;border:none;color:var(--phos-dim);font-family:var(--mono);font-size:10px;cursor:pointer;padding:0;letter-spacing:0.06em">→ Tutorial 5</button>
             </div>
@@ -2165,7 +2491,7 @@
             <div class="docs-tags"><span class="docs-tag">original D-J paper</span><span class="docs-tag">oracle circuits</span></div>
           </div>
 
-          <div class="docs-entry">
+          <div class="docs-entry" id="ref-bell1964">
             <div class="docs-meta">Bell · 1964 ·
               <button onclick="switchTab('learn');switchSubtab('t2')" style="background:none;border:none;color:var(--phos-dim);font-family:var(--mono);font-size:10px;cursor:pointer;padding:0;letter-spacing:0.06em">→ Tutorial 2 Steps 4–5</button>
             </div>
@@ -2174,7 +2500,7 @@
             <div class="docs-tags"><span class="docs-tag">bell inequality</span><span class="docs-tag">chsh</span><span class="docs-tag">entanglement</span></div>
           </div>
 
-          <div class="docs-entry">
+          <div class="docs-entry" id="ref-noclone1982">
             <div class="docs-meta">Wootters &amp; Zurek · 1982 ·
               <button onclick="switchTab('learn');switchSubtab('t4')" style="background:none;border:none;color:var(--phos-dim);font-family:var(--mono);font-size:10px;cursor:pointer;padding:0;letter-spacing:0.06em">→ Tutorial 4 Step 2</button>
             </div>
@@ -2183,21 +2509,8 @@
             <div class="docs-tags"><span class="docs-tag">no-cloning theorem</span><span class="docs-tag">error correction</span></div>
           </div>
 
-        </div>
 
-        <div>
-          <h3 style="font-family:var(--mono);font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:14px">Cited in the Lab &amp; simulator</h3>
-
-          <div class="docs-entry">
-            <div class="docs-meta">Preskill · 2018 ·
-              <button onclick="switchTab('lab')" style="background:none;border:none;color:var(--phos-dim);font-family:var(--mono);font-size:10px;cursor:pointer;padding:0;letter-spacing:0.06em">→ Lab noise sidebar</button>
-            </div>
-            <a class="docs-title" href="https://arxiv.org/abs/1801.00862" target="_blank" rel="noopener">Quantum Computing in the NISQ Era and Beyond</a>
-            <p class="docs-note">Source of the NISQ framing in the Lab noise sidebar. The depolarizing-error description ("each gate has this chance of randomly misfiring") follows Preskill's description of current-era hardware. The "gap between where we are and where we need to be is mostly a matter of quality, not raw quantity" in Tutorial 4 Step 4 is drawn from Preskill's assessment.</p>
-            <div class="docs-tags"><span class="docs-tag">nisq</span><span class="docs-tag">noise model</span><span class="docs-tag">perspective</span></div>
-          </div>
-
-          <div class="docs-entry">
+          <div class="docs-entry" id="ref-kitaev2003">
             <div class="docs-meta">Kitaev · 2003 ·
               <button onclick="switchTab('learn');switchSubtab('t4')" style="background:none;border:none;color:var(--phos-dim);font-family:var(--mono);font-size:10px;cursor:pointer;padding:0;letter-spacing:0.06em">→ Tutorial 4 Step 4</button>
             </div>
@@ -2206,13 +2519,211 @@
             <div class="docs-tags"><span class="docs-tag">surface code</span><span class="docs-tag">topological qec</span><span class="docs-tag">anyons</span></div>
           </div>
 
-          <div class="docs-entry">
+          <div class="docs-entry" id="ref-fowler2012">
             <div class="docs-meta">Fowler et al. · 2012 ·
               <button onclick="switchTab('learn');switchSubtab('t4')" style="background:none;border:none;color:var(--phos-dim);font-family:var(--mono);font-size:10px;cursor:pointer;padding:0;letter-spacing:0.06em">→ Tutorial 4 Step 4</button>
             </div>
             <a class="docs-title" href="https://arxiv.org/abs/1208.0928" target="_blank" rel="noopener">Surface Codes: Towards Practical Large-Scale Quantum Computation</a>
             <p class="docs-note">Source for the overhead numbers in Tutorial 4 Step 4. The overhead chart uses the formula 2d²−1 from Fowler et al. equation (1). The note about d=21 requiring ~881 physical qubits per logical qubit to target RSA-2048 security comes from the resource estimates in Section V of this paper.</p>
             <div class="docs-tags"><span class="docs-tag">surface code</span><span class="docs-tag">resource estimates</span><span class="docs-tag">hardware</span></div>
+          </div>
+
+
+
+
+
+        </div>
+
+        <div>
+          <h3 style="font-family:var(--mono);font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:14px">Cited in the Lab &amp; simulator</h3>
+
+          <div class="docs-entry" id="ref-preskill2018">
+            <div class="docs-meta">Preskill · 2018 ·
+              <button onclick="switchTab('lab')" style="background:none;border:none;color:var(--phos-dim);font-family:var(--mono);font-size:10px;cursor:pointer;padding:0;letter-spacing:0.06em">→ Lab noise sidebar</button>
+            </div>
+            <a class="docs-title" href="https://arxiv.org/abs/1801.00862" target="_blank" rel="noopener">Quantum Computing in the NISQ Era and Beyond</a>
+            <p class="docs-note">Source of the NISQ framing in the Lab noise sidebar. The depolarizing-error description ("each gate has this chance of randomly misfiring") follows Preskill's description of current-era hardware. The "gap between where we are and where we need to be is mostly a matter of quality, not raw quantity" in Tutorial 4 Step 4 is drawn from Preskill's assessment.</p>
+            <div class="docs-tags"><span class="docs-tag">nisq</span><span class="docs-tag">noise model</span><span class="docs-tag">perspective</span></div>
+          </div>
+
+          <div class="docs-entry" id="ref-kitaev2003">
+            <div class="docs-meta">Kitaev · 2003 ·
+              <button onclick="switchTab('learn');switchSubtab('t4')" style="background:none;border:none;color:var(--phos-dim);font-family:var(--mono);font-size:10px;cursor:pointer;padding:0;letter-spacing:0.06em">→ Tutorial 4 Step 4</button>
+            </div>
+            <a class="docs-title" href="https://arxiv.org/abs/quant-ph/0303042" target="_blank" rel="noopener">Fault-Tolerant Quantum Computation by Anyons</a>
+            <p class="docs-note">Source of the surface code grid in Tutorial 4. The anyon-pairing model — inject an error, observe the syndrome (a defect in the parity pattern), pair and annihilate anyons to correct — is Kitaev's topological framework. The formula 2d²−1 physical qubits per logical qubit for a distance-d surface code is the planar variant of the toric code described here.</p>
+            <div class="docs-tags"><span class="docs-tag">surface code</span><span class="docs-tag">topological qec</span><span class="docs-tag">anyons</span></div>
+          </div>
+
+          <div class="docs-entry" id="ref-fowler2012">
+            <div class="docs-meta">Fowler et al. · 2012 ·
+              <button onclick="switchTab('learn');switchSubtab('t4')" style="background:none;border:none;color:var(--phos-dim);font-family:var(--mono);font-size:10px;cursor:pointer;padding:0;letter-spacing:0.06em">→ Tutorial 4 Step 4</button>
+            </div>
+            <a class="docs-title" href="https://arxiv.org/abs/1208.0928" target="_blank" rel="noopener">Surface Codes: Towards Practical Large-Scale Quantum Computation</a>
+            <p class="docs-note">Source for the overhead numbers in Tutorial 4 Step 4. The overhead chart uses the formula 2d²−1 from Fowler et al. equation (1). The note about d=21 requiring ~881 physical qubits per logical qubit to target RSA-2048 security comes from the resource estimates in Section V of this paper.</p>
+            <div class="docs-tags"><span class="docs-tag">surface code</span><span class="docs-tag">resource estimates</span><span class="docs-tag">hardware</span></div>
+          </div>
+
+          <div class="docs-entry" id="ref-deutsch1985">
+            <div class="docs-meta">Deutsch · 1985 ·
+              <button onclick="switchTab('templates')" style="background:none;border:none;color:var(--phos-dim);font-family:var(--mono);font-size:10px;cursor:pointer;padding:0;letter-spacing:0.06em">→ Template library</button>
+            </div>
+            <a class="docs-title" href="https://royalsocietypublishing.org/doi/10.1098/rspa.1985.0070" target="_blank" rel="noopener">Quantum theory, the Church–Turing principle and the universal quantum computer</a>
+            <p class="docs-note">Primary source for the original Deutsch oracle separation and the first formal quantum query advantage used by the Deutsch template.</p>
+            <div class="docs-tags"><span class="docs-tag">algorithms</span><span class="docs-tag">oracle model</span></div>
+          </div>
+
+          <div class="docs-entry" id="ref-shor1995">
+            <div class="docs-meta">Shor · 1995 ·
+              <button onclick="switchTab('templates')" style="background:none;border:none;color:var(--phos-dim);font-family:var(--mono);font-size:10px;cursor:pointer;padding:0;letter-spacing:0.06em">→ Template library</button>
+            </div>
+            <a class="docs-title" href="https://arxiv.org/abs/quant-ph/9605011" target="_blank" rel="noopener">Scheme for reducing decoherence in quantum computer memory</a>
+            <p class="docs-note">Foundational quantum error-correction paper motivating logical encoding ideas used in repetition-code style templates.</p>
+            <div class="docs-tags"><span class="docs-tag">qec</span><span class="docs-tag">fault tolerance</span></div>
+          </div>
+
+          <div class="docs-entry" id="ref-teleport1993">
+            <div class="docs-meta">Bennett et al. · 1993 ·
+              <button onclick="switchTab('templates')" style="background:none;border:none;color:var(--phos-dim);font-family:var(--mono);font-size:10px;cursor:pointer;padding:0;letter-spacing:0.06em">→ Template library</button>
+            </div>
+            <a class="docs-title" href="https://doi.org/10.1103/PhysRevLett.70.1895" target="_blank" rel="noopener">Teleporting an unknown quantum state via dual classical and Einstein-Podolsky-Rosen channels</a>
+            <p class="docs-note">Original quantum teleportation protocol using shared entanglement plus two classical bits.</p>
+            <div class="docs-tags"><span class="docs-tag">quantum communication</span><span class="docs-tag">entanglement</span></div>
+          </div>
+
+          <div class="docs-entry" id="ref-superdense1992">
+            <div class="docs-meta">Bennett &amp; Wiesner · 1992 ·
+              <button onclick="switchTab('templates')" style="background:none;border:none;color:var(--phos-dim);font-family:var(--mono);font-size:10px;cursor:pointer;padding:0;letter-spacing:0.06em">→ Template library</button>
+            </div>
+            <a class="docs-title" href="https://doi.org/10.1103/PhysRevLett.69.2881" target="_blank" rel="noopener">Communication via one- and two-particle operators on Einstein-Podolsky-Rosen states</a>
+            <p class="docs-note">Seminal superdense coding paper proving two classical bits can be transmitted by sending one qubit with pre-shared entanglement.</p>
+            <div class="docs-tags"><span class="docs-tag">superdense coding</span><span class="docs-tag">communication</span></div>
+          </div>
+
+          <div class="docs-entry" id="ref-holevo1973">
+            <div class="docs-meta">Holevo · 1973 ·
+              <button onclick="switchTab('templates')" style="background:none;border:none;color:var(--phos-dim);font-family:var(--mono);font-size:10px;cursor:pointer;padding:0;letter-spacing:0.06em">→ Template library</button>
+            </div>
+            <a class="docs-title" href="https://www.mathnet.ru/eng/ppi903" target="_blank" rel="noopener">Bounds for the quantity of information transmitted by a quantum communication channel</a>
+            <p class="docs-note">Introduces the Holevo bound, limiting accessible classical information from quantum states and framing superdense coding capacity claims.</p>
+            <div class="docs-tags"><span class="docs-tag">information theory</span><span class="docs-tag">channel capacity</span></div>
+          </div>
+
+          <div class="docs-entry" id="ref-bv1993">
+            <div class="docs-meta">Bernstein &amp; Vazirani · 1993 ·
+              <button onclick="switchTab('templates')" style="background:none;border:none;color:var(--phos-dim);font-family:var(--mono);font-size:10px;cursor:pointer;padding:0;letter-spacing:0.06em">→ Template library</button>
+            </div>
+            <a class="docs-title" href="https://doi.org/10.1137/S0097539796300921" target="_blank" rel="noopener">Quantum complexity theory</a>
+            <p class="docs-note">Contains the Bernstein–Vazirani hidden-string result demonstrating one-query recovery under the oracle model.</p>
+            <div class="docs-tags"><span class="docs-tag">query complexity</span><span class="docs-tag">algorithms</span></div>
+          </div>
+
+          <div class="docs-entry" id="ref-vqe2014">
+            <div class="docs-meta">Peruzzo et al. · 2014 ·
+              <button onclick="switchTab('templates')" style="background:none;border:none;color:var(--phos-dim);font-family:var(--mono);font-size:10px;cursor:pointer;padding:0;letter-spacing:0.06em">→ Template library</button>
+            </div>
+            <a class="docs-title" href="https://doi.org/10.1038/ncomms5213" target="_blank" rel="noopener">A variational eigenvalue solver on a photonic quantum processor</a>
+            <p class="docs-note">Introduces VQE, the hybrid variational loop architecture used by modern chemistry-focused NISQ workflows.</p>
+            <div class="docs-tags"><span class="docs-tag">vqe</span><span class="docs-tag">variational</span></div>
+          </div>
+
+          <div class="docs-entry" id="ref-qaoa2014">
+            <div class="docs-meta">Farhi, Goldstone &amp; Gutmann · 2014 ·
+              <button onclick="switchTab('templates')" style="background:none;border:none;color:var(--phos-dim);font-family:var(--mono);font-size:10px;cursor:pointer;padding:0;letter-spacing:0.06em">→ Template library</button>
+            </div>
+            <a class="docs-title" href="https://arxiv.org/abs/1411.4028" target="_blank" rel="noopener">A quantum approximate optimization algorithm</a>
+            <p class="docs-note">Original QAOA proposal defining alternating cost/mixer layers for combinatorial optimization.</p>
+            <div class="docs-tags"><span class="docs-tag">qaoa</span><span class="docs-tag">optimization</span></div>
+          </div>
+
+          <div class="docs-entry" id="ref-kandala2017">
+            <div class="docs-meta">Kandala et al. · 2017 ·
+              <button onclick="switchTab('templates')" style="background:none;border:none;color:var(--phos-dim);font-family:var(--mono);font-size:10px;cursor:pointer;padding:0;letter-spacing:0.06em">→ Template library</button>
+            </div>
+            <a class="docs-title" href="https://doi.org/10.1038/nature23879" target="_blank" rel="noopener">Hardware-efficient variational quantum eigensolver for small molecules and quantum magnets</a>
+            <p class="docs-note">Canonical hardware-efficient ansatz reference for low-depth native-gate variational circuits.</p>
+            <div class="docs-tags"><span class="docs-tag">ansatz</span><span class="docs-tag">nisq</span></div>
+          </div>
+
+          <div class="docs-entry" id="ref-barren2018">
+            <div class="docs-meta">McClean et al. · 2018 ·
+              <button onclick="switchTab('templates')" style="background:none;border:none;color:var(--phos-dim);font-family:var(--mono);font-size:10px;cursor:pointer;padding:0;letter-spacing:0.06em">→ Template library</button>
+            </div>
+            <a class="docs-title" href="https://doi.org/10.1038/s41467-018-07090-4" target="_blank" rel="noopener">Barren plateaus in quantum neural network training landscapes</a>
+            <p class="docs-note">Defines barren plateau gradient suppression, a key trainability limitation for deep variational circuits.</p>
+            <div class="docs-tags"><span class="docs-tag">trainability</span><span class="docs-tag">variational</span></div>
+          </div>
+
+          <div class="docs-entry" id="ref-rb2011">
+            <div class="docs-meta">Magesan, Gambetta &amp; Emerson · 2011 ·
+              <button onclick="switchTab('templates')" style="background:none;border:none;color:var(--phos-dim);font-family:var(--mono);font-size:10px;cursor:pointer;padding:0;letter-spacing:0.06em">→ Template library</button>
+            </div>
+            <a class="docs-title" href="https://doi.org/10.1103/PhysRevLett.106.180504" target="_blank" rel="noopener">Scalable and robust randomized benchmarking of quantum processes</a>
+            <p class="docs-note">Standard randomized benchmarking reference underlying identity/echo sensitivity diagnostics in noisy gate characterization.</p>
+            <div class="docs-tags"><span class="docs-tag">benchmarking</span><span class="docs-tag">noise</span></div>
+          </div>
+
+          <div class="docs-entry" id="ref-ghz1989">
+            <div class="docs-meta">Greenberger, Horne &amp; Zeilinger · 1989 ·
+              <button onclick="switchTab('templates')" style="background:none;border:none;color:var(--phos-dim);font-family:var(--mono);font-size:10px;cursor:pointer;padding:0;letter-spacing:0.06em">→ Template library</button>
+            </div>
+            <a class="docs-title" href="https://doi.org/10.1007/978-94-017-0849-4_10" target="_blank" rel="noopener">Going Beyond Bell’s Theorem</a>
+            <p class="docs-note">Foundational multipartite entanglement reference introducing GHZ-style nonlocal correlations used by GHZ-state templates.</p>
+            <div class="docs-tags"><span class="docs-tag">ghz</span><span class="docs-tag">entanglement</span></div>
+          </div>
+
+          <div class="docs-entry" id="ref-grover1996">
+            <div class="docs-meta">Grover · 1996 ·
+              <button onclick="switchTab('learn');switchSubtab('t7')" style="background:none;border:none;color:var(--phos-dim);font-family:var(--mono);font-size:10px;cursor:pointer;padding:0;letter-spacing:0.06em">→ Tutorial 7</button>
+            </div>
+            <a class="docs-title" href="https://arxiv.org/abs/quant-ph/9605043" target="_blank" rel="noopener">A fast quantum mechanical algorithm for database search</a>
+            <p class="docs-note">Original Grover search paper proving the quadratic O(sqrt(N)) oracle-query advantage for unstructured search.</p>
+            <div class="docs-tags"><span class="docs-tag">grover</span><span class="docs-tag">query complexity</span></div>
+          </div>
+
+          <div class="docs-entry" id="ref-kraus1983">
+            <div class="docs-meta">Kraus · 1983 ·
+              <button onclick="switchTab('learn');switchSubtab('t8')" style="background:none;border:none;color:var(--phos-dim);font-family:var(--mono);font-size:10px;cursor:pointer;padding:0;letter-spacing:0.06em">→ Tutorial 8</button>
+            </div>
+            <a class="docs-title" href="https://link.springer.com/book/10.1007/978-3-642-70436-4" target="_blank" rel="noopener">States, Effects, and Operations</a>
+            <p class="docs-note">Classical source for the Kraus-operator representation of completely positive trace-preserving quantum channels.</p>
+            <div class="docs-tags"><span class="docs-tag">quantum channels</span><span class="docs-tag">cptp maps</span></div>
+          </div>
+
+          <div class="docs-entry" id="ref-lindblad1976">
+            <div class="docs-meta">Lindblad · 1976 ·
+              <button onclick="switchTab('learn');switchSubtab('t8')" style="background:none;border:none;color:var(--phos-dim);font-family:var(--mono);font-size:10px;cursor:pointer;padding:0;letter-spacing:0.06em">→ Tutorial 8</button>
+            </div>
+            <a class="docs-title" href="https://doi.org/10.1007/BF01608499" target="_blank" rel="noopener">On the generators of quantum dynamical semigroups</a>
+            <p class="docs-note">Foundational Markovian open-system dynamics paper underlying Lindblad-form master equations and channel semigroup intuition.</p>
+            <div class="docs-tags"><span class="docs-tag">open quantum systems</span><span class="docs-tag">lindblad</span></div>
+          </div>
+
+          <div class="docs-entry" id="ref-redfield1957">
+            <div class="docs-meta">Redfield · 1957 ·
+              <button onclick="switchTab('learn');switchSubtab('t9')" style="background:none;border:none;color:var(--phos-dim);font-family:var(--mono);font-size:10px;cursor:pointer;padding:0;letter-spacing:0.06em">→ Tutorial 9</button>
+            </div>
+            <a class="docs-title" href="https://doi.org/10.1147/rd.112.0019" target="_blank" rel="noopener">On the theory of relaxation processes</a>
+            <p class="docs-note">Early microscopic relaxation/dephasing treatment that motivates Redfield-style rates and the T1/T2 separation used in hardware modeling.</p>
+            <div class="docs-tags"><span class="docs-tag">relaxation</span><span class="docs-tag">decoherence</span></div>
+          </div>
+
+          <div class="docs-entry" id="ref-hahn1950">
+            <div class="docs-meta">Hahn · 1950 ·
+              <button onclick="switchTab('learn');switchSubtab('t9')" style="background:none;border:none;color:var(--phos-dim);font-family:var(--mono);font-size:10px;cursor:pointer;padding:0;letter-spacing:0.06em">→ Tutorial 9</button>
+            </div>
+            <a class="docs-title" href="https://doi.org/10.1103/PhysRev.80.580" target="_blank" rel="noopener">Spin echoes</a>
+            <p class="docs-note">Canonical reference for echo refocusing, forming the experimental basis of Ramsey-vs-echo comparisons in qubit dephasing studies.</p>
+            <div class="docs-tags"><span class="docs-tag">echo</span><span class="docs-tag">coherence</span></div>
+          </div>
+
+          <div class="docs-entry" id="ref-ramsey1950">
+            <div class="docs-meta">Ramsey · 1950 ·
+              <button onclick="switchTab('learn');switchSubtab('t9')" style="background:none;border:none;color:var(--phos-dim);font-family:var(--mono);font-size:10px;cursor:pointer;padding:0;letter-spacing:0.06em">→ Tutorial 9</button>
+            </div>
+            <a class="docs-title" href="https://doi.org/10.1103/PhysRev.78.695" target="_blank" rel="noopener">A molecular beam resonance method with separated oscillating fields</a>
+            <p class="docs-note">Seminal Ramsey spectroscopy framework underlying modern free-induction phase-coherence measurements (T2* protocols).</p>
+            <div class="docs-tags"><span class="docs-tag">ramsey</span><span class="docs-tag">spectroscopy</span></div>
           </div>
 
         </div>
@@ -2230,6 +2741,9 @@
 <div class="toast" id="toast"></div>
 
 <script src="js/core/math.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script src="js/core/latex.js"></script>
 <script src="js/lab/circuit.js"></script>
 <script src="data/templates.js"></script>
 <script src="data/docs.js"></script>
@@ -2242,6 +2756,8 @@
 <script src="js/tutorials/tutorial-5-deutsch-jozsa.js"></script>
 <script src="js/tutorials/tutorial-6-vqe.js"></script>
 <script src="js/tutorials/tutorial-7-grover-search.js"></script>
+<script src="js/tutorials/tutorial-8-quantum-channels.js"></script>
+<script src="js/tutorials/tutorial-9-hardware-noise.js"></script>
 <script src="js/tutorials/bootstrap.js"></script>
 </body>
 </html>

@@ -5,10 +5,10 @@
 /* ---- T2 Step 1: product state explorer ---- */
 (function initT2Step1() {
   const configs = {
-    none: { probs: [1,0,0,0], formula: '|0⟩ ⊗ |0⟩ = |00⟩', note: 'Both qubits definite. Product state.' },
-    h0:   { probs: [0.5,0,0.5,0], formula: '(|0⟩+|1⟩)/√2 ⊗ |0⟩ = (|00⟩+|10⟩)/√2', note: 'q0 in superposition, q1 definite.' },
-    h1:   { probs: [0.5,0.5,0,0], formula: '|0⟩ ⊗ (|0⟩+|1⟩)/√2 = (|00⟩+|01⟩)/√2', note: 'q1 in superposition, q0 definite.' },
-    hh:   { probs: [0.25,0.25,0.25,0.25], formula: '(|0⟩+|1⟩)/√2 ⊗ (|0⟩+|1⟩)/√2 = (|00⟩+|01⟩+|10⟩+|11⟩)/2', note: 'Both in superposition. All four outcomes equally likely.' }
+    none: { probs: [1,0,0,0], formula: '\\(|0\\rangle \\otimes |0\\rangle = |00\\rangle\\)', note: 'Both qubits definite. Product state.' },
+    h0:   { probs: [0.5,0,0.5,0], formula: '\\((|0\\rangle+|1\\rangle)/\\sqrt{2} \\otimes |0\\rangle = (|00\\rangle+|10\\rangle)/\\sqrt{2}\\)', note: 'q0 in superposition, q1 definite.' },
+    h1:   { probs: [0.5,0.5,0,0], formula: '\\(|0\\rangle \\otimes (|0\\rangle+|1\\rangle)/\\sqrt{2} = (|00\\rangle+|01\\rangle)/\\sqrt{2}\\)', note: 'q1 in superposition, q0 definite.' },
+    hh:   { probs: [0.25,0.25,0.25,0.25], formula: '\\((|0\\rangle+|1\\rangle)/\\sqrt{2} \\otimes (|0\\rangle+|1\\rangle)/\\sqrt{2} = (|00\\rangle+|01\\rangle+|10\\rangle+|11\\rangle)/2\\)', note: 'Both in superposition. All four outcomes equally likely.' }
   };
   const seen = new Set();
   let current = 'h0';
@@ -83,8 +83,8 @@
   const states = {
     '0': { output:'|00⟩', note:'Control is |0⟩ — CNOT does nothing. Target stays |0⟩.', entangled:false },
     '1': { output:'|11⟩', note:'Control is |1⟩ — CNOT flips the target. Definite outcome, no superposition.', entangled:false },
-    '+': { output:'(|00⟩ + |11⟩)/√2', note:'Control in superposition → CNOT spreads it to both qubits. Entanglement forms.', entangled:true },
-    '-': { output:'(|00⟩ − |11⟩)/√2', note:'Phase kickback signature: minus phase on whole state. Entangled with phase difference.', entangled:true }
+    '+': { output:'\\((|00\\rangle + |11\\rangle)/\\sqrt{2}\\)', note:'Control in superposition → CNOT spreads it to both qubits. Entanglement forms.', entangled:true },
+    '-': { output:'\\((|00\\rangle - |11\\rangle)/\\sqrt{2}\\)', note:'Phase kickback signature: minus phase on whole state. Entangled with phase difference.', entangled:true }
   };
   const superSeen = new Set();
   document.querySelectorAll('.cnot-ctrl-btn').forEach(btn => {
@@ -145,17 +145,17 @@
 (function initT2Step3() {
   const bellSteps = [
     {
-      formula: '|q1⟩|q0⟩ = |0⟩|0⟩ = |00⟩',
+      formula: '\\(|q1\\rangle|q0\\rangle = |0\\rangle|0\\rangle = |00\\rangle\\)',
       probs: [1,0,0,0],
       desc: 'Both qubits start in |0⟩. The state is fully definite — no superposition, no entanglement.'
     },
     {
-      formula: '(|0⟩+|1⟩)/√2 ⊗ |0⟩ = (|00⟩+|10⟩)/√2',
+      formula: '\\((|0\\rangle+|1\\rangle)/\\sqrt{2} \\otimes |0\\rangle = (|00\\rangle+|10\\rangle)/\\sqrt{2}\\)',
       probs: [0.5,0,0.5,0],
       desc: 'Hadamard on q0 creates superposition. q0 is now 50/50, but the two qubits are still independent — this is a product state.'
     },
     {
-      formula: '(|00⟩ + |11⟩)/√2',
+      formula: '\\((|00\\rangle + |11\\rangle)/\\sqrt{2}\\)',
       probs: [0.5,0,0,0.5],
       desc: 'CNOT entangles. The target (q1) flips when q0=|1⟩. The two possible outcomes — |00⟩ and |11⟩ — are now locked together. This is a Bell state.'
     }
