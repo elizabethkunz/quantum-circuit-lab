@@ -1,0 +1,746 @@
+<div id="view-learn" class="view">
+    <section class="learn-intro">
+      <div>
+        <h1>Quantum, from <em>first principles.</em></h1>
+        <p>Two guided walkthroughs. Each step has something to try — a sphere to spin, a circuit to run, a slider to drag. Later steps unlock as you complete the earlier ones.</p>
+      </div>
+      <div class="rules">
+        <b>How it works</b><br/>
+        Each step has a small task: run a pre-built circuit, drag the Bloch arrow, or flip a switch. When you've done it, the next step opens up. There's no scoring and no grading — the goal is to <em>feel</em> what the gates do.
+      </div>
+    </section>
+
+    <nav class="subtabs" role="tablist">
+      <button class="subtab active" data-subtab="t1">
+        <span class="subtab-num">Tutorial 1</span>
+        <span class="subtab-name">From bits to qubits</span>
+        <span class="subtab-pill" id="t1-progress">0 / 8</span>
+      </button>
+      <button class="subtab" data-subtab="t2">
+        <span class="subtab-num">Tutorial 2</span>
+        <span class="subtab-name">Entanglement &amp; two-qubit gates</span>
+        <span class="subtab-pill" id="t2-progress">0 / 5</span>
+      </button>
+      <button class="subtab" data-subtab="t3">
+        <span class="subtab-num">Tutorial 3</span>
+        <span class="subtab-name">Mixed states &amp; density matrices</span>
+        <span class="subtab-pill" id="t3-progress">0 / 5</span>
+      </button>
+      <button class="subtab" data-subtab="t4">
+        <span class="subtab-num">Tutorial 4</span>
+        <span class="subtab-name">Why quantum needs error correction</span>
+        <span class="subtab-pill" id="t4-progress">0 / 5</span>
+      </button>
+    </nav>
+
+    <!-- Tutorial 1 -->
+    <div class="tutorial" id="tut-1">
+
+      <!-- Step 1: classical bit -->
+      <article class="step-card" data-step="t1-1">
+        <header class="step-head">
+          <div class="step-num">Step 01</div>
+          <h2>A classical bit is a switch.</h2>
+        </header>
+        <div class="step-body">
+          <p>Before we get to quantum, let's agree on the classical starting point. A <b>bit</b> is a switch with two positions: <code>0</code> or <code>1</code>. Off or on. No in-between.</p>
+          <p>Click the switch a few times to see it flip. This is the entire vocabulary of classical computing, repeated a billion times a second.</p>
+          <div class="classical-bit">
+            <div class="bit-switch" id="bit-switch">
+              <div class="bit-glow"></div>
+              <div class="bit-value" id="bit-value">0</div>
+            </div>
+            <div class="bit-hint">Click to flip</div>
+          </div>
+          <div class="step-action">
+            <div class="action-prompt">Flip the switch at least twice, then continue.</div>
+            <button class="btn primary step-next" data-unlocks="t1-2" disabled id="t1-1-next">Next →</button>
+          </div>
+        </div>
+      </article>
+
+      <!-- Step 2: Bloch sphere / qubit state space -->
+      <article class="step-card locked" data-step="t1-2">
+        <header class="step-head">
+          <div class="step-num">Step 02</div>
+          <h2>A qubit lives on a sphere.</h2>
+        </header>
+        <div class="step-body">
+          <p>A <b>qubit</b> is the quantum analogue of a bit — but its state isn't just <code>0</code> or <code>1</code>. It's any point on the surface of a sphere, called the <em>Bloch sphere</em>. The north pole is <code>|0⟩</code>. The south pole is <code>|1⟩</code>. Everything in between is a <span class="punch">superposition</span> — a genuine blend of the two.</p>
+          <p>Drag the arrow below, or click one of the preset states. Notice that points around the equator are <em>equal</em> superpositions of <code>|0⟩</code> and <code>|1⟩</code> — they differ only in their <em>phase</em>, which matters later but is invisible to a simple measurement.</p>
+          <div class="bloch-wrap">
+            <div class="bloch-host" id="bloch-1"></div>
+            <div class="bloch-side">
+              <div class="bloch-readout" id="bloch-1-readout"></div>
+              <div class="bloch-presets">
+                <div class="bloch-presets-label">Preset states</div>
+                <button class="preset-btn" data-bloch="1" data-state="0">|0⟩</button>
+                <button class="preset-btn" data-bloch="1" data-state="1">|1⟩</button>
+                <button class="preset-btn" data-bloch="1" data-state="+">|+⟩</button>
+                <button class="preset-btn" data-bloch="1" data-state="-">|−⟩</button>
+                <button class="preset-btn" data-bloch="1" data-state="+i">|+i⟩</button>
+                <button class="preset-btn" data-bloch="1" data-state="-i">|−i⟩</button>
+              </div>
+            </div>
+          </div>
+          <div class="step-action">
+            <div class="action-prompt">Visit at least three different preset states (or drag the arrow) to continue.</div>
+            <button class="btn primary step-next" data-unlocks="t1-3" disabled id="t1-2-next">Next →</button>
+          </div>
+        </div>
+      </article>
+
+      <!-- Step 3: gates as rotations -->
+      <article class="step-card locked" data-step="t1-3">
+        <header class="step-head">
+          <div class="step-num">Step 03</div>
+          <h2>Gates are rotations.</h2>
+        </header>
+        <div class="step-body">
+          <p>On the Bloch sphere, every single-qubit gate is a <b>rotation</b>. The <code>X</code> gate rotates 180° around the x-axis — it flips <code>|0⟩</code> to <code>|1⟩</code>. The <code>Z</code> gate rotates 180° around the z-axis. The <code>H</code> (Hadamard) gate takes <code>|0⟩</code> to <code>|+⟩</code> — halfway to the equator, the birthplace of superposition.</p>
+          <p>Reset the qubit to <code>|0⟩</code>, then press gates in different orders. <em>Gate order matters</em> — XH is not the same as HX. This is one of the clearest ways quantum differs from classical logic.</p>
+          <div class="bloch-wrap">
+            <div class="bloch-host" id="bloch-2"></div>
+            <div class="bloch-side">
+              <div class="bloch-readout" id="bloch-2-readout"></div>
+              <div class="gate-apply">
+                <div class="bloch-presets-label">Apply a gate</div>
+                <button class="apply-gate-btn" data-bloch="2" data-gate="H">H</button>
+                <button class="apply-gate-btn" data-bloch="2" data-gate="X">X</button>
+                <button class="apply-gate-btn" data-bloch="2" data-gate="Y">Y</button>
+                <button class="apply-gate-btn" data-bloch="2" data-gate="Z">Z</button>
+                <button class="apply-gate-btn" data-bloch="2" data-gate="S">S</button>
+                <button class="apply-gate-btn" data-bloch="2" data-gate="T">T</button>
+              </div>
+              <button class="reset-gate-btn" data-bloch="2">↻ Reset to |0⟩</button>
+            </div>
+          </div>
+          <div class="step-action">
+            <div class="action-prompt">Apply at least four gates to see how they stack.</div>
+            <button class="btn primary step-next" data-unlocks="t1-4" disabled id="t1-3-next">Next →</button>
+          </div>
+        </div>
+      </article>
+
+      <!-- Step 4: measurement -->
+      <article class="step-card locked" data-step="t1-4">
+        <header class="step-head">
+          <div class="step-num">Step 04</div>
+          <h2>Measurement destroys superposition.</h2>
+        </header>
+        <div class="step-body">
+          <p>On the sphere, a qubit can be anywhere. But when you <b>measure</b> it, you only ever get a classical answer: <code>0</code> or <code>1</code>. The probability of each is set by the arrow's position — specifically, how far it leans toward the north or south pole.</p>
+          <p>Below is the simplest quantum circuit: a single Hadamard, then a measurement. It's a true quantum coin flip. Run it a few times. The outcome is different each time — but the long-run frequency is always 50/50. Unlike the classical bit, there's no hidden value before you look.</p>
+          <div class="mini-runner">
+            <div class="mini-circuit" id="mini-coin-circuit"></div>
+            <div class="mini-result">
+              <div class="mini-result-head">Last shot</div>
+              <div class="mini-shot" id="mini-coin-shot">—</div>
+              <div class="mini-history" id="mini-coin-history"></div>
+              <button class="btn primary mini-run-btn" id="mini-coin-run">▶ Run one shot</button>
+              <button class="btn mini-reset-btn" id="mini-coin-reset">Reset history</button>
+            </div>
+          </div>
+          <div class="step-action">
+            <div class="action-prompt">Run at least 5 shots to see the randomness for yourself.</div>
+            <button class="btn primary step-next" data-unlocks="t1-5" disabled id="t1-4-next">Next →</button>
+          </div>
+        </div>
+      </article>
+
+      <!-- Step 5: two qubits -->
+      <article class="step-card locked" data-step="t1-5">
+        <header class="step-head">
+          <div class="step-num">Step 05</div>
+          <h2>Two qubits, four possibilities.</h2>
+        </header>
+        <div class="step-body">
+          <p>Two classical bits have four states: <code>00</code>, <code>01</code>, <code>10</code>, <code>11</code>. Two qubits also have four basis states — but a qubit system can be in a weighted combination of <em>all four at once</em>. That's the real reason quantum computers can explore large state spaces so efficiently.</p>
+          <p>The circuit below puts Hadamard on <em>both</em> qubits. The result: all four outcomes appear with equal probability. This is a <b>product state</b> — each qubit is independent. Run it and see.</p>
+          <div class="mini-runner">
+            <div class="mini-circuit" id="mini-two-circuit"></div>
+            <div class="mini-result">
+              <div class="mini-result-head">Probabilities</div>
+              <div class="mini-probs" id="mini-two-probs"></div>
+              <button class="btn primary mini-run-btn" id="mini-two-run">▶ Run simulation</button>
+            </div>
+          </div>
+          <div class="step-action">
+            <div class="action-prompt">Run the circuit and observe the uniform distribution.</div>
+            <button class="btn primary step-next" data-unlocks="t1-6" disabled id="t1-5-next">Next →</button>
+          </div>
+        </div>
+      </article>
+
+      <!-- Step 6: entanglement -->
+      <article class="step-card locked" data-step="t1-6">
+        <header class="step-head">
+          <div class="step-num">Step 06</div>
+          <h2>Entanglement: two qubits, one fate.</h2>
+        </header>
+        <div class="step-body">
+          <p>Now add a <code>CNOT</code> between the two qubits, right after the first Hadamard. The circuit is suddenly doing something no classical system can. Run it — only <code>00</code> and <code>11</code> appear, <em>never</em> <code>01</code> or <code>10</code>. The two qubits always agree, even though each one individually is random.</p>
+          <p>This is <b>entanglement</b>. Not "correlated" in the everyday sense — <em>linked</em> in a way that can't be reproduced by hidden prior agreement. Bell's theorem, proven in the 1960s and experimentally confirmed many times (most recently earning a Nobel prize in 2022), shows this is a genuinely new kind of relationship.</p>
+          <div class="mini-runner">
+            <div class="mini-circuit" id="mini-bell-circuit"></div>
+            <div class="mini-result">
+              <div class="mini-result-head">Paired outcomes (20 shots)</div>
+              <div class="pair-grid" id="mini-bell-pairs"></div>
+              <button class="btn primary mini-run-btn" id="mini-bell-run">▶ Run 20 shots</button>
+            </div>
+          </div>
+          <div class="step-action">
+            <div class="action-prompt">Run the 20 shots and watch the qubits always agree.</div>
+            <button class="btn primary step-next" data-unlocks="t1-7" disabled id="t1-6-next">Next →</button>
+          </div>
+        </div>
+      </article>
+
+      <!-- Step 7: noise preview -->
+      <article class="step-card locked" data-step="t1-7">
+        <header class="step-head">
+          <div class="step-num">Step 07</div>
+          <h2>Real machines make mistakes.</h2>
+        </header>
+        <div class="step-body">
+          <p>Everything above has assumed perfect gates. Real quantum computers are short pulses of laser light, microwaves, or magnetic fields, and every pulse is slightly imperfect. Over a circuit's lifetime, tiny errors accumulate and the clean peaks smear.</p>
+          <p>Drag the noise slider and watch the Bell pair distribution drift. At 0%, only <code>00</code> and <code>11</code> appear. At 5%, the forbidden outcomes start leaking in. This is why quantum error correction is the central engineering problem of the field — and the subject of Tutorial 2.</p>
+          <div class="mini-runner">
+            <div class="noise-demo">
+              <div class="noise-demo-label">Noise level: <span id="t1-noise-val">0.0%</span></div>
+              <input type="range" min="0" max="10" step="0.5" value="0" id="t1-noise-slider" class="t1-noise-slider" />
+              <div class="noise-demo-sublabel">Depolarizing: each gate has this chance of misfiring.</div>
+            </div>
+            <div class="mini-result">
+              <div class="mini-result-head">Bell pair outcomes (1024 shots)</div>
+              <div class="mini-probs" id="mini-noise-probs"></div>
+              <button class="btn primary mini-run-btn" id="mini-noise-run">▶ Run with noise</button>
+            </div>
+          </div>
+          <div class="step-action">
+            <div class="action-prompt">Try at least two different noise levels.</div>
+            <button class="btn primary step-next" data-unlocks="t1-8" disabled id="t1-7-next">Next →</button>
+          </div>
+        </div>
+      </article>
+
+      <!-- Step 8: wrap-up -->
+      <article class="step-card locked" data-step="t1-8">
+        <header class="step-head">
+          <div class="step-num">Step 08</div>
+          <h2>You have the vocabulary.</h2>
+        </header>
+        <div class="step-body">
+          <p>You've met the core ideas: superposition (a qubit in between), gates (rotations on the sphere), measurement (the collapse to a classical bit), entanglement (qubits sharing a fate), and noise (why it's all so hard).</p>
+          <p>Everything else in quantum computing — teleportation, Grover's search, Shor's factoring, phase estimation, error correction — is built out of these five. The Lab has a playground where you can drag gates and try things yourself. Tutorial 2 explains how error correction works its way around the noise problem.</p>
+          <div class="wrap-up">
+            <button class="wrap-card" data-go="lab">
+              <div class="wrap-tag">Lab</div>
+              <div class="wrap-title">Build your own circuits</div>
+              <div class="wrap-desc">Drag gates, try experiments, see probabilities and plain-English explanations.</div>
+              <div class="wrap-cta">Open the Lab →</div>
+            </button>
+            <button class="wrap-card alt" data-go="t2">
+              <div class="wrap-tag">Tutorial 2</div>
+              <div class="wrap-title">Why QC needs error correction</div>
+              <div class="wrap-desc">A short sequel on noise, the no-cloning theorem, and how qubits protect each other.</div>
+              <div class="wrap-cta">Start Tutorial 2 →</div>
+            </button>
+          </div>
+        </div>
+      </article>
+    </div><!-- /#tut-1 -->
+
+    <!-- ============================================================ Tutorial 2 -->
+    <div class="tutorial" id="tut-2" style="display:none">
+
+      <!-- T2 Step 1: product state -->
+      <article class="step-card" data-step="t2-1">
+        <header class="step-head">
+          <div class="step-num">Step 01</div>
+          <h2>Two qubits: four outcomes, one tensor product.</h2>
+        </header>
+        <div class="step-body">
+          <p>Two classical bits can be in four states: <code>00</code>, <code>01</code>, <code>10</code>, <code>11</code>. Two qubits also span four basis states — but a quantum system can be in a <b>superposition of all four simultaneously</b>. The state space grows as 2ⁿ: each qubit you add doubles the dimensions.</p>
+          <p>When two qubits are <em>independent</em> (a product state), you can describe them separately. Put H on q0 only and see what happens — q0 is 50/50, q1 stays at |0⟩, so the joint outcomes are 50% <code>|00⟩</code> and 50% <code>|10⟩</code>. Now put H on both and all four outcomes appear equally.</p>
+          <div class="mini-runner">
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <div style="font-family:var(--mono);font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:var(--ink-faint)">Choose configuration</div>
+              <div style="display:flex;gap:8px;flex-wrap:wrap">
+                <button class="btn t2-product-btn active" data-config="h0">H on q0 only</button>
+                <button class="btn t2-product-btn" data-config="h1">H on q1 only</button>
+                <button class="btn t2-product-btn" data-config="hh">H on both</button>
+                <button class="btn t2-product-btn" data-config="none">No gates</button>
+              </div>
+              <div class="mini-probs" id="t2-product-probs" style="margin-top:6px"></div>
+              <div class="t2-product-strip" id="t2-product-strip"></div>
+            </div>
+            <div class="mini-result">
+              <div class="mini-result-head">Product state formula</div>
+              <div id="t2-product-formula" style="font-family:var(--serif);font-style:italic;font-size:15px;color:var(--phos);padding:14px;background:var(--bg-0);border:1px solid var(--line);line-height:1.6"></div>
+              <button class="btn primary mini-run-btn" id="t2-product-run100" style="margin-top:10px">Run 100 shots</button>
+              <div style="font-family:var(--mono);font-size:10px;letter-spacing:0.08em;color:var(--ink-faint);margin-top:8px" id="t2-product-sample">Click run to generate sampled counts.</div>
+            </div>
+          </div>
+          <div class="step-action">
+            <div class="action-prompt">Try all four configurations.</div>
+            <button class="btn primary step-next" data-unlocks="t2-2" disabled id="t2-1-next">Next →</button>
+          </div>
+        </div>
+      </article>
+
+      <!-- T2 Step 2: CNOT gate -->
+      <article class="step-card locked" data-step="t2-2">
+        <header class="step-head">
+          <div class="step-num">Step 02</div>
+          <h2>The CNOT gate: conditional logic.</h2>
+        </header>
+        <div class="step-body">
+          <p>The <b>CNOT</b> (controlled-NOT) gate takes two qubits: a <em>control</em> and a <em>target</em>. The rule: flip the target if and only if the control is <code>|1⟩</code>. On classical definite states, it's just conditional logic. But when the control is in <b>superposition</b>, something stranger happens.</p>
+          <p>Try each input state below. With control=|0⟩, nothing happens. With control=|1⟩, the target flips. With control=|+⟩ (superposition), the outcome is a correlated pair — neither qubit has a definite value alone. <span class="punch">This is the moment entanglement is created.</span></p>
+          <div class="cnot-explorer">
+            <div class="cnot-inputs">
+              <div style="font-family:var(--mono);font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:8px">Control qubit state</div>
+              <div style="display:flex;gap:6px;flex-wrap:wrap">
+                <button class="btn cnot-ctrl-btn active" data-ctrl="0">|0⟩</button>
+                <button class="btn cnot-ctrl-btn" data-ctrl="1">|1⟩</button>
+                <button class="btn cnot-ctrl-btn" data-ctrl="+">|+⟩</button>
+                <button class="btn cnot-ctrl-btn" data-ctrl="-">|−⟩</button>
+              </div>
+            </div>
+            <div class="cnot-arrow">CNOT →</div>
+            <div class="cnot-output">
+              <div style="font-family:var(--mono);font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:8px">Joint output state</div>
+              <div id="cnot-result-state" style="font-family:var(--serif);font-style:italic;font-size:16px;color:var(--phos);padding:12px;background:var(--bg-0);border:1px solid var(--line);min-height:60px;line-height:1.6"></div>
+              <div id="cnot-result-note" style="font-family:var(--serif);font-size:13px;color:var(--ink-dim);margin-top:8px;line-height:1.5"></div>
+            </div>
+          </div>
+          <div class="step-action">
+            <div class="action-prompt">Try all four control states to see when entanglement forms.</div>
+            <button class="btn primary step-next" data-unlocks="t2-3" disabled id="t2-2-next">Next →</button>
+          </div>
+        </div>
+      </article>
+
+      <!-- T2 Step 3: building the Bell state -->
+      <article class="step-card locked" data-step="t2-3">
+        <header class="step-head">
+          <div class="step-num">Step 03</div>
+          <h2>Building a Bell state, one gate at a time.</h2>
+        </header>
+        <div class="step-body">
+          <p>The Bell state <code>(|00⟩ + |11⟩)/√2</code> is made in exactly two steps. Watch the joint state after each one — the Hadamard creates the superposition on q0, then the CNOT "spreads" it into both qubits, creating entanglement. Press Next after each gate to step through it.</p>
+          <div class="bell-builder">
+            <div class="bell-steps-nav">
+              <button class="bell-step-btn active" data-bell-step="0">① Start</button>
+              <button class="bell-step-btn" data-bell-step="1">② After H</button>
+              <button class="bell-step-btn" data-bell-step="2">③ After CNOT</button>
+            </div>
+            <div class="bell-display">
+              <div class="bell-state-box">
+                <div style="font-family:var(--mono);font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:8px">State</div>
+                <div id="bell-state-formula" style="font-family:var(--serif);font-style:italic;font-size:18px;color:var(--phos);line-height:1.5"></div>
+              </div>
+              <div class="bell-probs-box">
+                <div style="font-family:var(--mono);font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:8px">Measurement odds</div>
+                <div class="mini-probs" id="bell-builder-probs"></div>
+              </div>
+              <div class="bell-desc-box">
+                <div id="bell-step-desc" style="font-family:var(--serif);font-size:14px;color:var(--ink-dim);line-height:1.6"></div>
+              </div>
+            </div>
+          </div>
+          <div class="step-action">
+            <div class="action-prompt">Step through all three stages.</div>
+            <button class="btn primary step-next" data-unlocks="t2-4" disabled id="t2-3-next">Next →</button>
+          </div>
+        </div>
+      </article>
+
+      <!-- T2 Step 4: measuring one qubit -->
+      <article class="step-card locked" data-step="t2-4">
+        <header class="step-head">
+          <div class="step-num">Step 04</div>
+          <h2>Measuring one qubit collapses the other.</h2>
+        </header>
+        <div class="step-body">
+          <p>In a Bell pair, neither qubit has a definite value — but they're correlated. When you <b>measure q0</b>, two things happen at once: q0 becomes a definite 0 or 1, and q1 <em>instantly</em> settles to the same value, no matter how far apart they are. This is what Einstein called "spooky action at a distance."</p>
+          <p>Press "Measure q0" below. Each time, a random collapse happens. Notice: whenever q0 = 0, q1 = 0. Whenever q0 = 1, q1 = 1. No exceptions. Run it 20 times.</p>
+          <div class="mini-runner">
+            <div>
+              <div style="font-family:var(--mono);font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:10px">Bell state |Ψ⟩ = (|00⟩ + |11⟩)/√2</div>
+              <div class="pair-grid" id="t2-collapse-grid"></div>
+              <div style="font-family:var(--mono);font-size:10px;color:var(--ink-faint);letter-spacing:0.08em;margin-top:10px" id="t2-collapse-count">0 measurements</div>
+            </div>
+            <div class="mini-result">
+              <div class="mini-result-head">Last collapse</div>
+              <div class="mini-shot" id="t2-collapse-shot" style="font-size:36px;letter-spacing:0.1em">—</div>
+              <button class="btn primary mini-run-btn" id="t2-measure-btn">Measure q0</button>
+              <button class="btn mini-reset-btn" id="t2-collapse-reset">Reset</button>
+            </div>
+          </div>
+          <div class="step-action">
+            <div class="action-prompt">Run at least 10 measurements and observe the perfect correlation.</div>
+            <button class="btn primary step-next" data-unlocks="t2-5" disabled id="t2-4-next">Next →</button>
+          </div>
+        </div>
+      </article>
+
+      <!-- T2 Step 5: wrap-up -->
+      <article class="step-card locked" data-step="t2-5">
+        <header class="step-head">
+          <div class="step-num">Step 05</div>
+          <h2>What you've learned about entanglement.</h2>
+        </header>
+        <div class="step-body">
+          <p>Two-qubit state space is 4-dimensional, not 2+2. Product states can be described by their parts; entangled states <b>cannot</b>. The CNOT gate creates entanglement when its control is in superposition. Measuring one qubit of an entangled pair collapses the other — instantaneously, always, perfectly.</p>
+          <p>These aren't philosophical curiosities. Entanglement is the <em>resource</em> that gives quantum computers and networks their power. The density matrix tutorial (next) shows how to distinguish genuine superposition from classical randomness — a distinction that matters enormously for quantum hardware.</p>
+          <div class="wrap-up">
+            <button class="wrap-card" data-go="t3">
+              <div class="wrap-tag">Tutorial 3</div>
+              <div class="wrap-title">Mixed states & density matrices</div>
+              <div class="wrap-desc">Learn why superposition and classical mixture look different — and where entanglement goes when noise hits.</div>
+              <div class="wrap-cta">Next tutorial →</div>
+            </button>
+            <button class="wrap-card alt" data-go="lab">
+              <div class="wrap-tag">Lab</div>
+              <div class="wrap-title">Explore entanglement yourself</div>
+              <div class="wrap-desc">Load the Bell pair or GHZ template, switch to Density ρ view, and inspect the off-diagonals.</div>
+              <div class="wrap-cta">Open the Lab →</div>
+            </button>
+          </div>
+        </div>
+      </article>
+    </div><!-- /#tut-2 -->
+
+    <!-- ============================================================ Tutorial 3 -->
+    <div class="tutorial" id="tut-3" style="display:none">
+
+      <!-- T3 Step 1: same probabilities, different state challenge -->
+      <article class="step-card" data-step="t3-1">
+        <header class="step-head">
+          <div class="step-num">Step 01</div>
+          <h2>Same probabilities, different state.</h2>
+        </header>
+        <div class="step-body">
+          <p>Hidden state A and hidden state B are prepared behind the scenes. One is a coherent superposition (<code>|+⟩</code>), the other is a classical 50/50 mixture. In the Z basis they look the same. In the X basis they split apart.</p>
+          <p>Switch between Z/X basis, run shots for A and B, then guess which hidden label is the true superposition. This is the core density-matrix idea: <b>same populations, different coherence</b>.</p>
+          <div class="hidden-state-challenge">
+            <div class="hidden-toolbar">
+              <div style="font-family:var(--mono);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--ink-faint)">Measurement basis</div>
+              <button class="basis-btn active" data-hidden-basis="Z">Z basis</button>
+              <button class="basis-btn" data-hidden-basis="X">X basis</button>
+              <button class="btn" id="hidden-new-round">New hidden round</button>
+            </div>
+            <div class="hidden-grid">
+              <div class="hidden-card">
+                <div class="hidden-title">Hidden state A</div>
+                <div class="compare-hist" id="hidden-hist-a"></div>
+                <button class="btn primary" id="hidden-run-a" style="margin-top:8px">Run A (200 shots)</button>
+              </div>
+              <div class="hidden-card">
+                <div class="hidden-title">Hidden state B</div>
+                <div class="compare-hist" id="hidden-hist-b"></div>
+                <button class="btn primary" id="hidden-run-b" style="margin-top:8px">Run B (200 shots)</button>
+              </div>
+            </div>
+            <div class="hidden-guess-row">
+              <div style="font-family:var(--mono);font-size:10px;letter-spacing:0.08em;color:var(--ink-faint);align-self:center">Guess the superposition:</div>
+              <button class="btn" data-hidden-guess="A">A is superposition</button>
+              <button class="btn" data-hidden-guess="B">B is superposition</button>
+            </div>
+            <div class="hidden-feedback" id="hidden-feedback">Run both A and B, especially in X basis, then make your guess.</div>
+          </div>
+          <div class="step-action">
+            <div class="action-prompt">Complete at least one correct guess after checking X-basis data.</div>
+            <button class="btn primary step-next" data-unlocks="t3-2" disabled id="t3-1-next">Next →</button>
+          </div>
+        </div>
+      </article>
+
+      <!-- T3 Step 2: the density matrix introduced -->
+      <article class="step-card locked" data-step="t3-2">
+        <header class="step-head">
+          <div class="step-num">Step 02</div>
+          <h2>The density matrix: one object to rule them all.</h2>
+        </header>
+        <div class="step-body">
+          <p>A pure state can be written as a vector <code>|ψ⟩</code>. A mixed state cannot — it's a <b>probability distribution over pure states</b>. The <em>density matrix</em> ρ handles both cases in one framework: for a pure state, ρ = |ψ⟩⟨ψ|. For a mixture of states with probabilities pᵢ, ρ = Σ pᵢ |ψᵢ⟩⟨ψᵢ|.</p>
+          <p>The 2×2 matrices below update live as you move the slider. Watch what changes — and what doesn't — as you blend from pure superposition to the classical mixture. The diagonal entries (called <b>populations</b>) tell you measurement probabilities. The off-diagonal entries (called <b>coherences</b>) encode the quantum interference that pure states have and mixtures don't.</p>
+          <div class="dm-compare-wrap">
+            <div class="dm-slider-row">
+              <span style="font-family:var(--mono);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--ink-faint)">Decoherence: pure → mixed</span>
+              <input type="range" min="0" max="100" value="0" id="t3-decohere-slider" class="t1-noise-slider" style="width:200px"/>
+              <span id="t3-decohere-val" style="font-family:var(--mono);font-size:11px;color:var(--amber);min-width:32px">0%</span>
+            </div>
+            <div class="dm-side-by-side">
+              <div class="dm-live-panel">
+                <div class="dm-live-label superpos">Current state (interpolated)</div>
+                <div id="t3-dm-live"></div>
+                <div id="t3-dm-purity" style="font-family:var(--mono);font-size:10px;color:var(--ink-faint);letter-spacing:0.08em;margin-top:10px;text-align:center"></div>
+              </div>
+              <div class="dm-live-panel">
+                <div class="dm-live-label">What the numbers mean</div>
+                <div id="t3-dm-explain" style="font-family:var(--serif);font-size:14px;color:var(--ink-dim);line-height:1.65;padding:14px;background:var(--bg-0);border:1px solid var(--line)"></div>
+              </div>
+            </div>
+          </div>
+          <div class="step-action">
+            <div class="action-prompt">Drag the slider from 0% to 100% to watch coherences decay.</div>
+            <button class="btn primary step-next" data-unlocks="t3-3" disabled id="t3-2-next">Next →</button>
+          </div>
+        </div>
+      </article>
+
+      <!-- T3 Step 3: off-diagonals are real -->
+      <article class="step-card locked" data-step="t3-3">
+        <header class="step-head">
+          <div class="step-num">Step 03</div>
+          <h2>Off-diagonals are physically real.</h2>
+        </header>
+        <div class="step-body">
+          <p>The off-diagonal entry ρ₀₁ isn't just a mathematical object — it's physically measurable. It's the amplitude for interference between the <code>|0⟩</code> and <code>|1⟩</code> components. When you measure in the <b>X-basis</b> (apply H, then measure), you're directly probing this interference:</p>
+          <ul style="font-family:var(--serif);font-size:15px;color:var(--ink);margin:12px 0 12px 24px;line-height:1.7;list-style:disc">
+            <li>Pure <code>|+⟩</code>: ρ₀₁ = 0.5 — X-basis always gives <code>0</code></li>
+            <li>Classical mixture: ρ₀₁ = 0 — X-basis gives 50/50 random</li>
+          </ul>
+          <p>Select a state and run measurements in both bases. The X-basis result directly tells you whether <b>coherence</b> is present — you can't fake it with classical probability.</p>
+          <div class="coherence-explorer">
+            <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
+              <button class="btn coherence-state-btn active" data-cstate="pure_plus">Pure |+⟩ (ρ₀₁ = 0.5)</button>
+              <button class="btn coherence-state-btn" data-cstate="pure_minus">Pure |−⟩ (ρ₀₁ = −0.5)</button>
+              <button class="btn coherence-state-btn" data-cstate="mixture">Classical mixture (ρ₀₁ = 0)</button>
+              <button class="btn coherence-state-btn" data-cstate="partial">Half-decohered (ρ₀₁ = 0.25)</button>
+            </div>
+            <div class="coherence-display">
+              <div>
+                <div style="font-family:var(--mono);font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:8px">Density matrix ρ</div>
+                <div id="coherence-dm"></div>
+              </div>
+              <div>
+                <div style="font-family:var(--mono);font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:8px">Z-basis (100 shots)</div>
+                <div class="compare-hist" id="coherence-z-hist"></div>
+                <button class="btn" id="coherence-z-run" style="margin-top:8px;font-size:9px;padding:5px 10px">Run Z</button>
+              </div>
+              <div>
+                <div style="font-family:var(--mono);font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:8px">X-basis (100 shots)</div>
+                <div class="compare-hist" id="coherence-x-hist"></div>
+                <button class="btn" id="coherence-x-run" style="margin-top:8px;font-size:9px;padding:5px 10px">Run X</button>
+              </div>
+            </div>
+          </div>
+          <div class="step-action">
+            <div class="action-prompt">Try all four states in both bases — confirm the X-basis detects coherence.</div>
+            <button class="btn primary step-next" data-unlocks="t3-4" disabled id="t3-3-next">Next →</button>
+          </div>
+        </div>
+      </article>
+
+      <!-- T3 Step 4: Bloch ball -->
+      <article class="step-card locked" data-step="t3-4">
+        <header class="step-head">
+          <div class="step-num">Step 04</div>
+          <h2>Mixed states live inside the sphere.</h2>
+        </header>
+        <div class="step-body">
+          <p>In Tutorial 1, the Bloch sphere showed pure states as points on the <em>surface</em>. But mixed states aren't pure — they're convex combinations of pure states, and their Bloch vector has <b>length less than 1</b>. The maximally mixed state ρ = I/2 sits exactly at the <em>center</em>.</p>
+          <p>Drag the decoherence slider and watch the Bloch vector shrink from the surface toward the origin. The length of the vector is exactly √(Tr(ρ²) × 2 − 1) — a direct measure of <em>purity</em>. When hardware engineers say "T₂ time" (coherence time), they're measuring how long before their qubit's Bloch vector reaches the center.</p>
+          <div class="bloch-ball-wrap">
+            <div class="bloch-ball-host" id="bloch-ball-svg"></div>
+            <div class="bloch-ball-side">
+              <div class="noise-demo">
+                <div class="noise-demo-label">Decoherence: <span id="bloch-ball-decohere-val">0%</span></div>
+                <input type="range" min="0" max="100" value="0" id="bloch-ball-slider" class="t1-noise-slider"/>
+                <div class="noise-demo-sublabel">Bloch vector length = purity indicator</div>
+              </div>
+              <div id="bloch-ball-readout" style="font-family:var(--mono);font-size:11px;line-height:1.8;color:var(--ink-dim);margin-top:14px;padding:12px;background:var(--bg-0);border:1px solid var(--line)"></div>
+            </div>
+          </div>
+          <div class="step-action">
+            <div class="action-prompt">Drag to 100% decoherence — watch the vector reach the centre.</div>
+            <button class="btn primary step-next" data-unlocks="t3-5" disabled id="t3-4-next">Next →</button>
+          </div>
+        </div>
+      </article>
+
+      <!-- T3 Step 5: wrap-up -->
+      <article class="step-card locked" data-step="t3-5">
+        <header class="step-head">
+          <div class="step-num">Step 05</div>
+          <h2>What you now understand about quantum state description.</h2>
+        </header>
+        <div class="step-body">
+          <p>Pure states and mixed states both exist in quantum mechanics. They can produce identical Z-basis statistics but differ in every other basis — the difference is entirely in the off-diagonal elements of ρ. The density matrix is the <b>complete description</b> of any quantum state, pure or mixed.</p>
+          <p>Decoherence is the physical process by which off-diagonals decay. When a qubit interacts with its environment, the environment effectively "measures" it continuously — the Bloch vector shrinks from the surface toward the centre, and the quantum advantage erodes. <span class="punch">Fighting this is the entire engineering challenge of quantum computing.</span></p>
+          <div class="wrap-up">
+            <button class="wrap-card" data-go="t4">
+              <div class="wrap-tag">Tutorial 4</div>
+              <div class="wrap-title">Why quantum needs error correction</div>
+              <div class="wrap-desc">Now that you understand decoherence, see how error correction fights back against it.</div>
+              <div class="wrap-cta">Next tutorial →</div>
+            </button>
+            <button class="wrap-card alt" data-go="lab">
+              <div class="wrap-tag">Lab</div>
+              <div class="wrap-title">Inspect ρ yourself</div>
+              <div class="wrap-desc">Load any template, run with and without noise, and flip to the Density ρ view to watch the off-diagonals respond.</div>
+              <div class="wrap-cta">Open the Lab →</div>
+            </button>
+          </div>
+        </div>
+      </article>
+    </div><!-- /#tut-3 -->
+
+    <!-- ============================================================ Tutorial 4 (was Tutorial 2) -->
+    <div class="tutorial" id="tut-4" style="display:none">
+
+      <article class="step-card" data-step="t4-1">
+        <header class="step-head">
+          <div class="step-num">Step 01</div>
+          <h2>Noise, revisited.</h2>
+        </header>
+        <div class="step-body">
+          <p>In Tutorial 1 you watched a Bell pair smear under noise. The underlying problem: every quantum gate is a small physical operation — a laser pulse, a microwave tone, a magnetic field — and none of them are perfect. Each has a small probability of doing the wrong thing.</p>
+          <p>Here's a tangible version of the issue. Below is a simple circuit that should <em>always</em> produce <code>0</code>: just an X gate followed by another X gate (two flips, back to start). With no noise, you see 100% <code>0</code>. Crank the noise and watch a perfectly correct algorithm turn into random guessing.</p>
+          <div class="mini-runner">
+            <div class="noise-demo">
+              <div class="noise-demo-label">Noise level: <span id="t4-noise-val">0.0%</span></div>
+              <input type="range" min="0" max="15" step="0.5" value="0" id="t4-noise-slider" class="t1-noise-slider" />
+              <div class="noise-demo-sublabel">Each X-gate has this chance of being silently wrong.</div>
+            </div>
+            <div class="mini-result">
+              <div class="mini-result-head">X · X circuit outcomes</div>
+              <div class="mini-probs" id="t4-xx-probs"></div>
+              <button class="btn primary mini-run-btn" id="t4-xx-run">▶ Run with noise</button>
+            </div>
+          </div>
+          <div class="step-action">
+            <div class="action-prompt">Run with at least two different noise levels.</div>
+            <button class="btn primary step-next" data-unlocks="t4-2" disabled id="t4-1-next">Next →</button>
+          </div>
+        </div>
+      </article>
+
+      <article class="step-card locked" data-step="t4-2">
+        <header class="step-head">
+          <div class="step-num">Step 02</div>
+          <h2>Why you can't just copy.</h2>
+        </header>
+        <div class="step-body">
+          <p>Classical computers handle noise by <b>redundancy</b>. If a hard drive bit might flip, store it three times: <code>000</code>. Later, check all three — majority rules.</p>
+          <p>Quantum computers can't do this directly. The <b>no-cloning theorem</b> says there is no machine that, given an unknown qubit, produces an independent copy of it. This is a consequence of how quantum gates work — they're reversible linear operations, and a cloning operation would not be linear. The theorem was proved in 1982 and is completely airtight.</p>
+          <div class="insight-box">
+            <div class="insight-label">Implication</div>
+            <p class="insight-text">Quantum error correction cannot copy a qubit. It has to protect it some other way — by <em>entangling it with helper qubits</em> so the information is spread across many physical qubits that can be measured safely.</p>
+          </div>
+          <div class="step-action">
+            <div class="action-prompt">Read and continue.</div>
+            <button class="btn primary step-next" data-unlocks="t4-3" id="t4-2-next">I got it →</button>
+          </div>
+        </div>
+      </article>
+
+      <article class="step-card locked" data-step="t4-3">
+        <header class="step-head">
+          <div class="step-num">Step 03</div>
+          <h2>Inject errors manually: 1 vs 2 errors.</h2>
+        </header>
+        <div class="step-body">
+          <p>Encode a logical qubit into three physical qubits: <code>α|000⟩ + β|111⟩</code>. This repetition code corrects a <b>single bit flip</b>, but it does not correct phase flips, and two bit flips are too many for majority voting.</p>
+          <p>Choose an error type and qubits, inject one error and then two errors, and then answer: can the logical qubit still be recovered?</p>
+          <div class="repcode-challenge">
+            <div class="mini-circuit" id="mini-repcode-circuit"></div>
+            <div class="repcode-controls">
+              <div class="repcode-panel">
+                <div class="repcode-row">
+                  <div style="font-family:var(--mono);font-size:10px;letter-spacing:0.1em;color:var(--ink-faint);text-transform:uppercase">Error type</div>
+                  <button class="btn cnot-ctrl-btn active" data-err-type="bit">Bit flip (X)</button>
+                  <button class="btn cnot-ctrl-btn" data-err-type="phase">Phase flip (Z)</button>
+                </div>
+                <div class="repcode-row">
+                  <label style="font-family:var(--mono);font-size:10px;color:var(--ink-faint)">1-error qubit:</label>
+                  <select class="repcode-select" id="rep-one-q">
+                    <option value="0">q0</option><option value="1">q1</option><option value="2">q2</option>
+                  </select>
+                  <button class="btn primary" id="rep-run-one">Run 1-error case</button>
+                </div>
+                <div class="repcode-row">
+                  <label style="font-family:var(--mono);font-size:10px;color:var(--ink-faint)">2-error qubits:</label>
+                  <select class="repcode-select" id="rep-two-a">
+                    <option value="0">q0</option><option value="1" selected>q1</option><option value="2">q2</option>
+                  </select>
+                  <select class="repcode-select" id="rep-two-b">
+                    <option value="0" selected>q0</option><option value="1">q1</option><option value="2">q2</option>
+                  </select>
+                  <button class="btn primary" id="rep-run-two">Run 2-error case</button>
+                </div>
+              </div>
+              <div class="repcode-panel">
+                <div class="mini-result-head">Recovery challenge</div>
+                <div class="repcode-comparison" id="rep-compare">
+                  <div class="repcode-case">Case 1 and Case 2 not run yet.</div>
+                </div>
+                <div class="repcode-guess">
+                  <button class="btn" data-rep-guess="one-yes">1-error recoverable</button>
+                  <button class="btn" data-rep-guess="one-no">1-error not recoverable</button>
+                </div>
+                <div class="repcode-guess">
+                  <button class="btn" data-rep-guess="two-yes">2-error recoverable</button>
+                  <button class="btn" data-rep-guess="two-no">2-error not recoverable</button>
+                </div>
+                <div class="hidden-feedback" id="rep-feedback" style="margin-top:10px">Run both cases, then answer both recovery questions.</div>
+              </div>
+            </div>
+          </div>
+          <div class="step-action">
+            <div class="action-prompt">Compare 1 error vs 2 errors and answer both recovery prompts.</div>
+            <button class="btn primary step-next" data-unlocks="t4-4" disabled id="t4-3-next">Next →</button>
+          </div>
+        </div>
+      </article>
+
+      <article class="step-card locked" data-step="t4-4">
+        <header class="step-head">
+          <div class="step-num">Step 04</div>
+          <h2>Surface codes and the overhead problem.</h2>
+        </header>
+        <div class="step-body">
+          <p>Real error correction uses codes like the <b>surface code</b>, where a grid of physical qubits protects a single "logical qubit" against both bit flips and phase flips. Roughly speaking, each extra unit of protection doubles the reliability — but also multiplies the physical qubit count.</p>
+          <p>Current estimates for running algorithms like Shor's on 2048-bit RSA suggest you'd need millions of physical qubits protecting a few thousand logical ones. Today's largest machines have a few hundred physical qubits. <span class="punch">The gap between where we are and where we need to be is mostly a matter of quality, not raw quantity.</span></p>
+          <div class="insight-box amber">
+            <div class="insight-label">The threshold theorem</div>
+            <p class="insight-text">If the error rate per gate is below a certain threshold (roughly 1%, give or take depending on the code), then you can use enough redundancy to drive the logical error rate <em>arbitrarily low</em>. Machines today are just starting to cross this threshold. That's why this is the decade when things start to get interesting.</p>
+          </div>
+          <div class="step-action">
+            <div class="action-prompt">Almost there.</div>
+            <button class="btn primary step-next" data-unlocks="t4-5" id="t4-4-next">Next →</button>
+          </div>
+        </div>
+      </article>
+
+      <article class="step-card locked" data-step="t4-5">
+        <header class="step-head">
+          <div class="step-num">Step 05</div>
+          <h2>What you now know.</h2>
+        </header>
+        <div class="step-body">
+          <p>You know that quantum computers can't use classical redundancy because of the no-cloning theorem. You know that information can instead be spread across many physical qubits by entanglement. You know that real codes like the surface code add substantial overhead — and that the threshold theorem promises this is worth it once gates are good enough.</p>
+          <p>This is real, current frontier-of-the-field material. Every major quantum company — IBM, Google, Quantinuum, PsiQuantum, IonQ — is racing not for more qubits, but for better ones. The ones that cross the threshold first will run the first useful algorithms.</p>
+          <div class="wrap-up">
+            <button class="wrap-card" data-go="lab">
+              <div class="wrap-tag">Lab</div>
+              <div class="wrap-title">Try your own circuits</div>
+              <div class="wrap-desc">Now that you understand what noise does, see what happens when you crank the slider on your own designs.</div>
+              <div class="wrap-cta">Open the Lab →</div>
+            </button>
+            <button class="wrap-card alt" data-go="t1">
+              <div class="wrap-tag">Tutorial 1</div>
+              <div class="wrap-title">Revisit the basics</div>
+              <div class="wrap-desc">Replay the interactive tour from the top if you want to lock it in.</div>
+              <div class="wrap-cta">Start over →</div>
+            </button>
+          </div>
+        </div>
+      </article>
+    </div><!-- /#tut-4 -->
+
+  </div><!-- /#view-learn -->

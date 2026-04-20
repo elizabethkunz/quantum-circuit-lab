@@ -1,0 +1,221 @@
+<div id="view-templates" class="view">
+    <section class="templates-intro">
+      <div>
+        <h1>A shelf of <em>curated circuits.</em></h1>
+        <p>Each template loads into the Lab ready to run. Some are classics. Some demonstrate a single idea crisply. Some are good starting points for research.</p>
+      </div>
+      <div class="rules">
+        <b>How to use</b><br/>
+        Tap any card to load it into the Lab. From there, press <b>Run</b>, toggle between probabilities / amplitudes / density matrix, or add your own gates to tweak the experiment.
+      </div>
+    </section>
+
+    <!-- Foundations -->
+    <section class="tpl-section">
+      <div class="tpl-section-head cat-foundations">
+        <div class="tpl-section-num">Category 01</div>
+        <h2>Foundations</h2>
+        <div class="tpl-section-desc">The smallest circuits that demonstrate one core idea each. Good warm-ups for building intuition.</div>
+      </div>
+      <div class="tpl-grid">
+        <article class="tpl-card cat-foundations" data-template="superposition">
+          <div class="tpl-card-head">
+            <div class="tpl-id">F · 01</div>
+            <div class="tpl-qubits">1 qubit · 1 gate</div>
+          </div>
+          <h3>The quantum coin</h3>
+          <div class="tpl-one-liner">Superposition</div>
+          <p class="tpl-desc">A single Hadamard turns a definite <code>|0⟩</code> into a 50/50 mix of <code>|0⟩</code> and <code>|1⟩</code>. Not hidden randomness — a real blend of states that only reveals itself when measured.</p>
+          <div class="tpl-tags">
+            <span class="tpl-tag">superposition</span><span class="tpl-tag">hadamard</span>
+          </div>
+          <div class="tpl-cta">Load in Lab →</div>
+        </article>
+
+        <article class="tpl-card cat-foundations" data-template="gate-identity">
+          <div class="tpl-card-head">
+            <div class="tpl-id">F · 02</div>
+            <div class="tpl-qubits">1 qubit · 4 gates</div>
+          </div>
+          <h3>Gate identity: H Z H = X</h3>
+          <div class="tpl-one-liner">Basis change</div>
+          <p class="tpl-desc">Sandwiching a Z between two Hadamards produces exactly the same effect as a single X. An identity that quietly powers much of quantum algorithm design — rotating into the right basis is half the work.</p>
+          <div class="tpl-tags">
+            <span class="tpl-tag">identity</span><span class="tpl-tag">basis</span><span class="tpl-tag">pauli</span>
+          </div>
+          <div class="tpl-cta">Load in Lab →</div>
+        </article>
+
+        <article class="tpl-card cat-foundations" data-template="phase-kickback">
+          <div class="tpl-card-head">
+            <div class="tpl-id">F · 03</div>
+            <div class="tpl-qubits">2 qubits · 4 gates</div>
+          </div>
+          <h3>Phase kickback</h3>
+          <div class="tpl-one-liner">Control flips the controller</div>
+          <p class="tpl-desc">A controlled gate acts on the target — but when the target is in an eigenstate of that gate, the phase <em>kicks back</em> onto the control. Foundational for phase estimation, Deutsch–Jozsa, and Shor's algorithm.</p>
+          <div class="tpl-tags">
+            <span class="tpl-tag">phase</span><span class="tpl-tag">eigenstate</span><span class="tpl-tag">algorithm building block</span>
+          </div>
+          <div class="tpl-cta">Load in Lab →</div>
+        </article>
+      </div>
+    </section>
+
+    <!-- Entanglement -->
+    <section class="tpl-section">
+      <div class="tpl-section-head cat-entanglement">
+        <div class="tpl-section-num">Category 02</div>
+        <h2>Entanglement</h2>
+        <div class="tpl-section-desc">Circuits where the whole is more than the sum of its parts. Qubits share outcomes in ways no classical system can.</div>
+      </div>
+      <div class="tpl-grid">
+        <article class="tpl-card cat-entanglement" data-template="bell">
+          <div class="tpl-card-head">
+            <div class="tpl-id">E · 01</div>
+            <div class="tpl-qubits">2 qubits · 3 gates</div>
+          </div>
+          <h3>The Bell pair</h3>
+          <div class="tpl-one-liner">Two-qubit entanglement</div>
+          <p class="tpl-desc">H then CNOT yields <code>|00⟩ + |11⟩</code> (normalized). The outcomes are always correlated — never <code>|01⟩</code> or <code>|10⟩</code> — even though neither qubit has a definite value alone. The experiment behind the 2022 physics Nobel.</p>
+          <div class="tpl-tags">
+            <span class="tpl-tag">bell state</span><span class="tpl-tag">cnot</span><span class="tpl-tag">nonlocality</span>
+          </div>
+          <div class="tpl-cta">Load in Lab →</div>
+        </article>
+
+        <article class="tpl-card cat-entanglement" data-template="ghz">
+          <div class="tpl-card-head">
+            <div class="tpl-id">E · 02</div>
+            <div class="tpl-qubits">3 qubits · 5 gates</div>
+          </div>
+          <h3>The GHZ triplet</h3>
+          <div class="tpl-one-liner">Multi-qubit entanglement</div>
+          <p class="tpl-desc">Three qubits in <code>|000⟩ + |111⟩</code>. Used as a resource state for quantum sensing, foundational tests of local realism, and the seed of many error-correction codes. Entanglement that scales.</p>
+          <div class="tpl-tags">
+            <span class="tpl-tag">ghz</span><span class="tpl-tag">multipartite</span><span class="tpl-tag">sensing</span>
+          </div>
+          <div class="tpl-cta">Load in Lab →</div>
+        </article>
+
+        <article class="tpl-card cat-entanglement" data-template="cz-entangler">
+          <div class="tpl-card-head">
+            <div class="tpl-id">E · 03</div>
+            <div class="tpl-qubits">2 qubits · 4 gates</div>
+          </div>
+          <h3>Controlled-phase entangler</h3>
+          <div class="tpl-one-liner">CNOT, rebuilt from CZ</div>
+          <p class="tpl-desc">On many real hardware platforms (especially superconducting qubits), CZ is native and CNOT is emulated. The identity <code>CNOT = (I⊗H)·CZ·(I⊗H)</code> is how it's done. Same Bell state, different route — useful for understanding hardware-aware compilation.</p>
+          <div class="tpl-tags">
+            <span class="tpl-tag">cz</span><span class="tpl-tag">gate synthesis</span><span class="tpl-tag">hardware</span>
+          </div>
+          <div class="tpl-cta">Load in Lab →</div>
+        </article>
+      </div>
+    </section>
+
+    <!-- Algorithms -->
+    <section class="tpl-section">
+      <div class="tpl-section-head cat-algorithms">
+        <div class="tpl-section-num">Category 03</div>
+        <h2>Algorithms &amp; protocols</h2>
+        <div class="tpl-section-desc">Recognizable quantum algorithms and communication protocols, distilled to their essence.</div>
+      </div>
+      <div class="tpl-grid">
+        <article class="tpl-card cat-algorithms" data-template="teleport">
+          <div class="tpl-card-head">
+            <div class="tpl-id">A · 01</div>
+            <div class="tpl-qubits">3 qubits · 8 gates</div>
+          </div>
+          <h3>Quantum teleportation</h3>
+          <div class="tpl-one-liner">Moving state with entanglement</div>
+          <p class="tpl-desc">Prepare a state on q0, share a Bell pair between q1 and q2, then run the teleport protocol with deferred Pauli corrections. The state ends up on q2 while q0 and q1 become uniformly random byproducts. Nothing travels faster than light.</p>
+          <div class="tpl-tags">
+            <span class="tpl-tag">teleportation</span><span class="tpl-tag">protocol</span><span class="tpl-tag">deferred measurement</span>
+          </div>
+          <div class="tpl-cta">Load in Lab →</div>
+        </article>
+
+        <article class="tpl-card cat-algorithms" data-template="deutsch">
+          <div class="tpl-card-head">
+            <div class="tpl-id">A · 02</div>
+            <div class="tpl-qubits">2 qubits · 5 gates</div>
+          </div>
+          <h3>Deutsch's algorithm (balanced)</h3>
+          <div class="tpl-one-liner">First quantum speedup</div>
+          <p class="tpl-desc">Determines whether a one-bit function is constant or balanced in a <em>single</em> query to the oracle — classically impossible. Here the oracle (a CNOT) implements a balanced function; running the circuit outputs <code>1</code> on q0 with certainty.</p>
+          <div class="tpl-tags">
+            <span class="tpl-tag">oracle</span><span class="tpl-tag">speedup</span><span class="tpl-tag">deutsch</span>
+          </div>
+          <div class="tpl-cta">Load in Lab →</div>
+        </article>
+
+        <article class="tpl-card cat-algorithms" data-template="superdense">
+          <div class="tpl-card-head">
+            <div class="tpl-id">A · 03</div>
+            <div class="tpl-qubits">2 qubits · 5 gates</div>
+          </div>
+          <h3>Superdense coding</h3>
+          <div class="tpl-one-liner">Two bits in one qubit</div>
+          <p class="tpl-desc">Given a pre-shared Bell pair, Alice encodes two classical bits (here: <code>11</code>) into a single qubit by applying one of {I, X, Z, XZ}, then sends it to Bob, who decodes. The dual of teleportation — one qubit of communication carries two classical bits.</p>
+          <div class="tpl-tags">
+            <span class="tpl-tag">communication</span><span class="tpl-tag">bell basis</span><span class="tpl-tag">protocol</span>
+          </div>
+          <div class="tpl-cta">Load in Lab →</div>
+        </article>
+      </div>
+    </section>
+
+    <!-- Noise & Hardware -->
+    <section class="tpl-section">
+      <div class="tpl-section-head cat-noise">
+        <div class="tpl-section-num">Category 04</div>
+        <h2>Noise &amp; hardware</h2>
+        <div class="tpl-section-desc">Circuits designed to be run with the noise slider on. They show how errors accumulate and why error correction matters.</div>
+      </div>
+      <div class="tpl-grid">
+        <article class="tpl-card cat-noise" data-template="noisy-bell">
+          <div class="tpl-card-head">
+            <div class="tpl-id">N · 01</div>
+            <div class="tpl-qubits">2 qubits · 3 gates</div>
+          </div>
+          <h3>Noisy Bell pair</h3>
+          <div class="tpl-one-liner">Auto-loads noise preset</div>
+          <p class="tpl-desc">A standard Bell pair loaded with noise preset to 3%. The clean <code>|00⟩ + |11⟩</code> signature gets smeared with forbidden outcomes — a quick demonstration of how quickly entanglement decays under realistic gate error rates.</p>
+          <div class="tpl-tags">
+            <span class="tpl-tag">noise</span><span class="tpl-tag">decoherence</span><span class="tpl-tag">depolarizing</span>
+          </div>
+          <div class="tpl-cta">Load in Lab →</div>
+        </article>
+
+        <article class="tpl-card cat-noise" data-template="echo">
+          <div class="tpl-card-head">
+            <div class="tpl-id">N · 02</div>
+            <div class="tpl-qubits">1 qubit · 2 gates</div>
+          </div>
+          <h3>The X·X echo</h3>
+          <div class="tpl-one-liner">Two wrongs should make a right</div>
+          <p class="tpl-desc">Two X gates in a row — algorithmically an identity. With zero noise, you get <code>|0⟩</code> with certainty. Crank the noise and a "trivially correct" circuit silently turns into random guessing. The simplest possible illustration of error accumulation.</p>
+          <div class="tpl-tags">
+            <span class="tpl-tag">error accumulation</span><span class="tpl-tag">benchmark</span>
+          </div>
+          <div class="tpl-cta">Load in Lab →</div>
+        </article>
+
+        <article class="tpl-card cat-noise" data-template="bitflip-encode">
+          <div class="tpl-card-head">
+            <div class="tpl-id">N · 03</div>
+            <div class="tpl-qubits">3 qubits · 5 gates</div>
+          </div>
+          <h3>Bit-flip encoder</h3>
+          <div class="tpl-one-liner">Toy error-correction code</div>
+          <p class="tpl-desc">Encodes a logical qubit into three physical qubits: <code>α|0⟩ + β|1⟩</code> → <code>α|000⟩ + β|111⟩</code>. The information lives in the correlations, not in any single qubit. Run with noise on to see the three-qubit state resist single-qubit errors.</p>
+          <div class="tpl-tags">
+            <span class="tpl-tag">qec</span><span class="tpl-tag">repetition code</span><span class="tpl-tag">logical qubit</span>
+          </div>
+          <div class="tpl-cta">Load in Lab →</div>
+        </article>
+      </div>
+    </section>
+
+  </div><!-- /#view-templates -->

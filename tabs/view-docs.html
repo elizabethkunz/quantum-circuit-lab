@@ -1,0 +1,209 @@
+<div id="view-docs" class="view">
+
+    <section class="docs-intro">
+      <div>
+        <h1>The literature, <em>briefly annotated.</em></h1>
+        <p>The canonical papers, standard textbooks, and a few key online resources. Organised by theme — start anywhere.</p>
+      </div>
+    </section>
+
+    <div class="docs-grid">
+
+      <!-- COLUMN 1 -->
+      <div class="docs-col">
+
+        <section class="docs-section">
+          <h2 class="docs-section-title">Foundations</h2>
+          <div class="docs-entries">
+
+            <div class="docs-entry">
+              <div class="docs-meta">Feynman · 1982</div>
+              <a class="docs-title" href="https://link.springer.com/article/10.1007/BF02650179" target="_blank" rel="noopener">Simulating Physics with Computers</a>
+              <p class="docs-note">The paper that started it all. Feynman argues that classical computers cannot efficiently simulate quantum systems, and that a quantum computer could. The seed of the entire field.</p>
+              <div class="docs-tags"><span class="docs-tag">foundational</span><span class="docs-tag">simulation</span></div>
+            </div>
+
+            <div class="docs-entry">
+              <div class="docs-meta">Deutsch · 1985</div>
+              <a class="docs-title" href="https://royalsocietypublishing.org/doi/10.1098/rspa.1985.0070" target="_blank" rel="noopener">Quantum Theory, the Church-Turing Principle and the Universal Quantum Computer</a>
+              <p class="docs-note">Formalises the quantum Turing machine and presents the first quantum algorithm — a simple problem solved in one query where classical computers need two.</p>
+              <div class="docs-tags"><span class="docs-tag">foundational</span><span class="docs-tag">algorithms</span></div>
+            </div>
+
+            <div class="docs-entry">
+              <div class="docs-meta">Bell · 1964</div>
+              <a class="docs-title" href="https://cds.cern.ch/record/111654/files/vol1p195-200_001.pdf" target="_blank" rel="noopener">On the Einstein Podolsky Rosen Paradox</a>
+              <p class="docs-note">Bell proves that no local hidden-variable theory can reproduce all predictions of quantum mechanics. Entanglement is not just a bookkeeping trick — it's physically real.</p>
+              <div class="docs-tags"><span class="docs-tag">entanglement</span><span class="docs-tag">nonlocality</span></div>
+            </div>
+
+            <div class="docs-entry">
+              <div class="docs-meta">Wootters &amp; Zurek · 1982</div>
+              <a class="docs-title" href="https://www.nature.com/articles/299802a0" target="_blank" rel="noopener">A Single Quantum Cannot Be Cloned</a>
+              <p class="docs-note">The no-cloning theorem, proved in one page. An unknown quantum state cannot be duplicated — with direct consequences for error correction, cryptography, and quantum networking.</p>
+              <div class="docs-tags"><span class="docs-tag">no-cloning</span><span class="docs-tag">theorem</span></div>
+            </div>
+
+          </div>
+        </section>
+
+        <section class="docs-section">
+          <h2 class="docs-section-title">Algorithms</h2>
+          <div class="docs-entries">
+
+            <div class="docs-entry">
+              <div class="docs-meta">Shor · 1994</div>
+              <a class="docs-title" href="https://arxiv.org/abs/quant-ph/9508027" target="_blank" rel="noopener">Algorithms for Quantum Computation: Discrete Logarithms and Factoring</a>
+              <p class="docs-note">Exponential speedup for integer factorisation. If a fault-tolerant quantum computer is ever built at scale, RSA encryption becomes obsolete. The paper that made governments pay attention.</p>
+              <div class="docs-tags"><span class="docs-tag">factoring</span><span class="docs-tag">cryptography</span><span class="docs-tag">exponential speedup</span></div>
+            </div>
+
+            <div class="docs-entry">
+              <div class="docs-meta">Grover · 1996</div>
+              <a class="docs-title" href="https://arxiv.org/abs/quant-ph/9605043" target="_blank" rel="noopener">A Fast Quantum Mechanical Algorithm for Database Search</a>
+              <p class="docs-note">Quadratic speedup for unstructured search: finds an item in N possibilities using only √N queries. The canonical example of amplitude amplification, now a standard subroutine in larger algorithms.</p>
+              <div class="docs-tags"><span class="docs-tag">search</span><span class="docs-tag">quadratic speedup</span></div>
+            </div>
+
+            <div class="docs-entry">
+              <div class="docs-meta">Harrow, Hassidim &amp; Lloyd · 2009</div>
+              <a class="docs-title" href="https://arxiv.org/abs/0811.3171" target="_blank" rel="noopener">Quantum Algorithm for Linear Systems of Equations (HHL)</a>
+              <p class="docs-note">Exponential speedup for solving sparse linear systems under certain conditions. Foundational for proposed quantum speedups in machine learning and optimisation, though the caveats are steep.</p>
+              <div class="docs-tags"><span class="docs-tag">linear algebra</span><span class="docs-tag">hhl</span></div>
+            </div>
+
+          </div>
+        </section>
+
+      </div>
+
+      <!-- COLUMN 2 -->
+      <div class="docs-col">
+
+        <section class="docs-section">
+          <h2 class="docs-section-title">Error correction</h2>
+          <div class="docs-entries">
+
+            <div class="docs-entry">
+              <div class="docs-meta">Shor · 1995</div>
+              <a class="docs-title" href="https://arxiv.org/abs/quant-ph/9605011" target="_blank" rel="noopener">Scheme for Reducing Decoherence in Quantum Computer Memory</a>
+              <p class="docs-note">The first quantum error-correcting code. Encodes one logical qubit in nine physical qubits and corrects arbitrary single-qubit errors — proving fault-tolerant quantum computing is not in principle impossible.</p>
+              <div class="docs-tags"><span class="docs-tag">qec</span><span class="docs-tag">shor code</span></div>
+            </div>
+
+            <div class="docs-entry">
+              <div class="docs-meta">Kitaev · 2003</div>
+              <a class="docs-title" href="https://arxiv.org/abs/quant-ph/0303042" target="_blank" rel="noopener">Fault-Tolerant Quantum Computation by Anyons</a>
+              <p class="docs-note">Introduces the toric code and topological quantum error correction. The surface code — used by Google and IBM — is its planar variant. The idea: encode information in global topology, not local physical bits.</p>
+              <div class="docs-tags"><span class="docs-tag">surface code</span><span class="docs-tag">topological</span></div>
+            </div>
+
+            <div class="docs-entry">
+              <div class="docs-meta">Fowler et al. · 2012</div>
+              <a class="docs-title" href="https://arxiv.org/abs/1208.0928" target="_blank" rel="noopener">Surface Codes: Towards Practical Large-Scale Quantum Computation</a>
+              <p class="docs-note">The definitive reference for the surface code. Covers thresholds, resource estimates, and logical gate sets. If you want to understand what IBM and Google are actually building, start here.</p>
+              <div class="docs-tags"><span class="docs-tag">surface code</span><span class="docs-tag">hardware</span><span class="docs-tag">review</span></div>
+            </div>
+
+            <div class="docs-entry">
+              <div class="docs-meta">Google Quantum AI · 2023</div>
+              <a class="docs-title" href="https://www.nature.com/articles/s41586-023-06927-3" target="_blank" rel="noopener">Suppressing quantum errors by scaling a surface code logical qubit</a>
+              <p class="docs-note">First experimental demonstration that increasing code distance actually reduces logical error rates — the key requirement for scalable fault tolerance. A landmark result in the field's history.</p>
+              <div class="docs-tags"><span class="docs-tag">experiment</span><span class="docs-tag">milestone</span><span class="docs-tag">2023</span></div>
+            </div>
+
+          </div>
+        </section>
+
+        <section class="docs-section">
+          <h2 class="docs-section-title">Textbooks &amp; courses</h2>
+          <div class="docs-entries">
+
+            <div class="docs-entry">
+              <div class="docs-meta">Nielsen &amp; Chuang · 2000</div>
+              <a class="docs-title" href="https://www.cambridge.org/highereducation/books/quantum-computation-and-quantum-information/01E10196D0A682A6AEFFEA52D53BE9AE" target="_blank" rel="noopener">Quantum Computation and Quantum Information</a>
+              <p class="docs-note">The textbook. Comprehensive, rigorous, and thorough. Universally known as "Mike and Ike." If you only read one book on quantum computing, it's this one — though the pace demands real commitment.</p>
+              <div class="docs-tags"><span class="docs-tag">textbook</span><span class="docs-tag">comprehensive</span></div>
+            </div>
+
+            <div class="docs-entry">
+              <div class="docs-meta">Preskill · ongoing</div>
+              <a class="docs-title" href="http://theory.caltech.edu/~preskill/ph229/" target="_blank" rel="noopener">Lecture Notes on Quantum Computation (Ph219, Caltech)</a>
+              <p class="docs-note">John Preskill's course notes, freely available. Some of the clearest explanations in the field, and regularly updated. Chapter 7 on quantum error correction is particularly authoritative.</p>
+              <div class="docs-tags"><span class="docs-tag">lecture notes</span><span class="docs-tag">free</span></div>
+            </div>
+
+            <div class="docs-entry">
+              <div class="docs-meta">Aaronson · 2013</div>
+              <a class="docs-title" href="https://www.cambridge.org/core/books/quantum-computing-since-democritus/197A4CD13E9F2B9B48E0E1C64AC294B9" target="_blank" rel="noopener">Quantum Computing Since Democritus</a>
+              <p class="docs-note">A wide-ranging and unusually readable exploration of computation, complexity, and quantum mechanics. Less formal than Nielsen &amp; Chuang — good for building intuition and understanding the <em>why</em>.</p>
+              <div class="docs-tags"><span class="docs-tag">accessible</span><span class="docs-tag">complexity theory</span></div>
+            </div>
+
+          </div>
+        </section>
+
+      </div>
+
+      <!-- COLUMN 3 -->
+      <div class="docs-col">
+
+        <section class="docs-section">
+          <h2 class="docs-section-title">Protocols &amp; information theory</h2>
+          <div class="docs-entries">
+
+            <div class="docs-entry">
+              <div class="docs-meta">Bennett &amp; Brassard · 1984</div>
+              <a class="docs-title" href="https://arxiv.org/abs/2003.06557" target="_blank" rel="noopener">Quantum Cryptography: Public Key Distribution and Coin Tossing (BB84)</a>
+              <p class="docs-note">The first quantum key distribution protocol. Uses the no-cloning theorem to detect eavesdroppers. BB84 is now deployed in commercial quantum cryptography systems around the world.</p>
+              <div class="docs-tags"><span class="docs-tag">cryptography</span><span class="docs-tag">qkd</span></div>
+            </div>
+
+            <div class="docs-entry">
+              <div class="docs-meta">Bennett et al. · 1993</div>
+              <a class="docs-title" href="https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.70.1895" target="_blank" rel="noopener">Teleporting an Unknown Quantum State via Dual Classical and Einstein-Podolsky-Rosen Channels</a>
+              <p class="docs-note">The original teleportation paper. Shows that an unknown qubit state can be transferred using a pre-shared Bell pair plus two classical bits of communication — no faster-than-light signalling required.</p>
+              <div class="docs-tags"><span class="docs-tag">teleportation</span><span class="docs-tag">entanglement</span></div>
+            </div>
+
+            <div class="docs-entry">
+              <div class="docs-meta">Bennett &amp; Wiesner · 1992</div>
+              <a class="docs-title" href="https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.69.2881" target="_blank" rel="noopener">Communication via One- and Two-Particle Operators on Einstein-Podolsky-Rosen States</a>
+              <p class="docs-note">Introduces superdense coding: two classical bits transmitted by sending a single qubit, given pre-shared entanglement. The dual of teleportation, and a clean proof that entanglement has operational value.</p>
+              <div class="docs-tags"><span class="docs-tag">superdense coding</span><span class="docs-tag">communication</span></div>
+            </div>
+
+          </div>
+        </section>
+
+        <section class="docs-section">
+          <h2 class="docs-section-title">Hardware milestones</h2>
+          <div class="docs-entries">
+
+            <div class="docs-entry">
+              <div class="docs-meta">Google Quantum AI · 2019</div>
+              <a class="docs-title" href="https://www.nature.com/articles/s41586-019-1666-5" target="_blank" rel="noopener">Quantum supremacy using a programmable superconducting processor</a>
+              <p class="docs-note">First claimed quantum advantage: a 53-qubit processor completes a sampling task in 200 seconds estimated to take 10,000 years classically. The claim is contested, but the engineering is not.</p>
+              <div class="docs-tags"><span class="docs-tag">superconducting</span><span class="docs-tag">milestone</span><span class="docs-tag">supremacy</span></div>
+            </div>
+
+            <div class="docs-entry">
+              <div class="docs-meta">Aspect, Clauser, Zeilinger · 2022</div>
+              <a class="docs-title" href="https://www.nobelprize.org/prizes/physics/2022/summary/" target="_blank" rel="noopener">Nobel Prize in Physics — experiments with entangled photons</a>
+              <p class="docs-note">Awarded for experimental tests of Bell inequalities, definitively ruling out local hidden variables. The physics underlying every quantum cryptography and networking system built today.</p>
+              <div class="docs-tags"><span class="docs-tag">nobel prize</span><span class="docs-tag">bell inequalities</span></div>
+            </div>
+
+            <div class="docs-entry">
+              <div class="docs-meta">Preskill · 2018</div>
+              <a class="docs-title" href="https://arxiv.org/abs/1801.00862" target="_blank" rel="noopener">Quantum Computing in the NISQ Era and Beyond</a>
+              <p class="docs-note">Coined the term NISQ (Noisy Intermediate-Scale Quantum). A clear-eyed assessment of where quantum computing actually is and what it might achieve in the near term — required reading for practitioners.</p>
+              <div class="docs-tags"><span class="docs-tag">nisq</span><span class="docs-tag">perspective</span><span class="docs-tag">near-term</span></div>
+            </div>
+
+          </div>
+        </section>
+
+      </div>
+    </div><!-- /.docs-grid -->
+  </div><!-- /#view-docs -->
