@@ -1107,183 +1107,226 @@
   .view.active { display: block; }
 
   /* =========================================================
-     HOME (landing) VIEW
+     HOME (landing) VIEW — matches intro / learn / lab motifs
      ========================================================= */
   #view-home {
-    padding-bottom: 48px;
+    padding-bottom: 52px;
   }
-  .home-hero {
-    border: 1px solid var(--line);
-    padding: 40px 36px 44px;
-    margin-bottom: 36px;
-    background: linear-gradient(165deg, rgba(127,255,196,0.07), transparent 55%);
-    position: relative;
+  #view-home .intro {
+    margin-bottom: 28px; /* align spacing with learn/labs intros */
   }
-  .home-hero h1 {
-    font-family: var(--serif);
-    font-weight: 300;
-    font-size: clamp(32px, 4.5vw, 48px);
-    line-height: 1.08;
-    letter-spacing: -0.02em;
-    color: var(--ink);
-    margin: 0 0 18px;
-    max-width: 18ch;
-  }
-  .home-hero h1 em {
-    font-style: italic;
+  #view-home .intro h1 em {
     color: var(--phos-dim);
   }
-  .home-hero .home-lede {
-    max-width: 52ch;
-    font-size: 16px;
-    line-height: 1.65;
-    color: var(--ink-dim);
-    margin: 0 0 22px;
+  #view-home .intro p {
+    max-width: 58ch;
   }
-  .home-hero-actions {
+  #view-home .rules {
+    border-left-color: var(--line-bright);
+  }
+  #view-home .home-hero-actions {
     display: flex;
     flex-wrap: wrap;
     gap: 12px;
     align-items: center;
+    margin-top: 18px;
   }
-  .home-section {
-    margin-bottom: 40px;
-    max-width: 58ch;
+  /* Decorative “instrument readout” strip */
+  #view-home .home-vignette {
+    margin: 0 0 34px;
+    border: 1px solid var(--line);
+    background:
+      radial-gradient(ellipse 70% 90% at 78% 40%, rgba(111,212,224,0.08), transparent 55%),
+      radial-gradient(ellipse 50% 80% at 18% 55%, rgba(230,127,184,0.06), transparent 50%),
+      linear-gradient(180deg, var(--bg-1), var(--bg-0));
+    padding: 12px 16px 8px;
+    position: relative;
+    overflow: hidden;
   }
-  .home-section h2 {
-    font-family: var(--serif);
-    font-weight: 400;
-    font-style: italic;
-    font-size: 26px;
-    color: var(--ink);
-    margin: 0 0 14px;
-    line-height: 1.2;
+  #view-home .home-vignette::before {
+    content: 'READOUT · schematic (not to scale)';
+    position: absolute;
+    top: 10px;
+    right: 14px;
+    font-family: var(--mono);
+    font-size: 8px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    opacity: 0.85;
+    pointer-events: none;
   }
-  .home-section p {
-    font-size: 15px;
-    line-height: 1.65;
-    color: var(--ink-dim);
-    margin: 0 0 12px;
+  #view-home .home-vignette svg {
+    display: block;
+    width: 100%;
+    max-height: 220px;
+    height: auto;
+    pointer-events: none;
   }
-  .home-section p:last-child { margin-bottom: 0; }
-  .home-aside {
-    margin-top: 16px;
-    padding: 14px 18px;
+  #view-home .home-concepts {
+    margin-bottom: 30px;
+  }
+  #view-home .home-concepts .gloss-card h4 {
+    font-size: 17px;
+  }
+  #view-home .home-concepts .gloss-card h4 .home-kicker {
+    display: block;
+    font-family: var(--mono);
+    font-size: 9px;
+    font-style: normal;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 6px;
+  }
+  #view-home .home-concepts .gloss-card--signal {
+    border-left: 2px solid var(--amber);
+  }
+  #view-home .home-concepts .gloss-card--phase {
+    border-left: 2px solid var(--cyan);
+  }
+  #view-home .home-pullquote {
+    margin: 8px 0 28px;
+    padding: 16px 20px;
     border-left: 2px solid var(--line-bright);
     font-family: var(--serif);
     font-size: 14px;
     font-style: italic;
     color: var(--ink-faint);
     line-height: 1.55;
+    max-width: 58ch;
+    background: linear-gradient(90deg, rgba(127,255,196,0.03), transparent 75%);
   }
-  .home-demo-wrap {
-    margin: 22px 0 28px;
-    padding: 28px 24px;
-    background: var(--bg-1);
+  #view-home .home-demo-body {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 28px;
+    align-items: center;
+  }
+  #view-home .home-demo-copy p {
+    font-size: 14px;
+    line-height: 1.65;
+    color: var(--ink-dim);
+    margin: 0 0 10px;
+  }
+  #view-home .home-demo-copy p:last-child { margin-bottom: 0; }
+  #view-home .home-demo-panel {
+    padding: 18px 20px;
+    background: var(--bg-2);
     border: 1px solid var(--line);
-    max-width: 420px;
+    border-left: 2px solid var(--cyan);
+    min-width: 200px;
   }
-  .home-demo-wrap .home-demo-label {
+  #view-home .home-demo-panel .home-demo-label {
     font-family: var(--mono);
-    font-size: 10px;
+    font-size: 9px;
     letter-spacing: 0.14em;
     text-transform: uppercase;
     color: var(--ink-faint);
-    margin-bottom: 14px;
+    margin-bottom: 12px;
   }
-  .home-cta-band {
-    margin: 44px 0 40px;
-    padding: 28px 26px;
-    border: 1px solid var(--line-bright);
+  #view-home .home-lab-blurb {
+    margin: 28px 0 24px;
+    padding: 22px 24px;
     background: var(--bg-1);
-    display: flex;
-    flex-wrap: wrap;
-    gap: 14px;
-    align-items: center;
-    justify-content: space-between;
+    border: 1px solid var(--line);
+    border-left: 2px solid var(--phos-dim);
   }
-  .home-cta-band p {
+  #view-home .home-lab-blurb p {
     margin: 0;
-    font-family: var(--serif);
-    font-size: 17px;
-    font-style: italic;
-    color: var(--ink);
-    flex: 1 1 220px;
+    font-size: 15px;
+    line-height: 1.65;
+    color: var(--ink-dim);
+    max-width: 62ch;
   }
-  .home-cta-band .home-cta-btns {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-  }
-  .home-learn {
+  #view-home .home-learn-wrap {
     margin-top: 8px;
-    padding-top: 36px;
-    border-top: 1px solid var(--line);
   }
-  .home-learn h2 {
-    font-family: var(--serif);
-    font-weight: 300;
-    font-size: 32px;
-    margin: 0 0 10px;
-    color: var(--ink);
-  }
-  .home-learn .home-learn-sub {
+  #view-home .home-learn-sub {
     font-size: 14px;
     color: var(--ink-dim);
-    margin: 0 0 28px;
-    max-width: 52ch;
+    margin: 0 0 22px;
+    max-width: 56ch;
     line-height: 1.6;
   }
-  .home-learn-grid {
+  #view-home .home-learn-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: 16px;
+    grid-template-columns: repeat(auto-fill, minmax(248px, 1fr));
+    gap: 14px;
   }
-  .home-learn-card {
+  #view-home .home-learn-card {
     border: 1px solid var(--line);
-    padding: 18px 18px 16px;
+    padding: 18px;
     background: var(--bg-1);
     text-align: left;
     cursor: pointer;
     font: inherit;
     color: inherit;
-    transition: border-color 0.15s, transform 0.15s;
+    transition: border-color 0.18s ease, transform 0.18s ease;
     display: block;
     width: 100%;
+    position: relative;
+    overflow: hidden;
   }
-  .home-learn-card:hover {
-    border-color: var(--phos-dim);
+  #view-home .home-learn-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--magenta), var(--cyan));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.25s ease;
+  }
+  #view-home .home-learn-card:hover {
+    border-color: var(--line-bright);
     transform: translateY(-2px);
   }
-  .home-learn-card .tag {
+  #view-home .home-learn-card:hover::before {
+    transform: scaleX(1);
+  }
+  #view-home .home-learn-card .tag {
     font-family: var(--mono);
     font-size: 9px;
     letter-spacing: 0.16em;
     text-transform: uppercase;
-    color: var(--phos-dim);
+    color: var(--cyan);
     margin-bottom: 8px;
   }
-  .home-learn-card h3 {
+  #view-home .home-learn-card h3 {
     font-family: var(--serif);
     font-style: italic;
     font-weight: 400;
-    font-size: 18px;
+    font-size: 20px;
     margin: 0 0 8px;
     color: var(--ink);
+    line-height: 1.2;
   }
-  .home-learn-card p {
+  #view-home .home-learn-card p {
     font-size: 13px;
     line-height: 1.55;
     color: var(--ink-dim);
     margin: 0;
   }
-  .home-learn-card .go {
-    margin-top: 12px;
+  #view-home .home-learn-card .go {
+    margin-top: 14px;
+    padding-top: 10px;
+    border-top: 1px dashed var(--line);
     font-family: var(--mono);
     font-size: 10px;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
-    color: var(--phos);
+    color: var(--magenta);
+  }
+  @media (max-width: 900px) {
+    #view-home .home-demo-body {
+      grid-template-columns: 1fr;
+    }
+    #view-home .home-demo-panel {
+      justify-self: start;
+    }
   }
 
   /* =========================================================
