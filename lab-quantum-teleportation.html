@@ -1,0 +1,1870 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lab — Quantum Teleportation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,400&family=JetBrains+Mono:wght@300;400;500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles/base.css" />
+  <style>
+
+    /* ── Lab hero ── */
+    .lab-hero {
+      border: 1px solid var(--line);
+      padding: 32px 28px;
+      margin: 28px 0 36px;
+      background: linear-gradient(180deg, rgba(92,190,156,0.035), transparent 80%);
+      position: relative;
+    }
+    .lab-hero::before {
+      content: 'LAB';
+      position: absolute;
+      top: 14px;
+      right: 18px;
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      color: var(--phos);
+      border: 1px solid var(--phos);
+      padding: 2px 8px;
+      opacity: 0.85;
+      pointer-events: none;
+    }
+    .lab-hero h1 {
+      font-family: var(--serif);
+      font-weight: 300;
+      font-size: 36px;
+      line-height: 1.15;
+      margin: 0 0 16px;
+      max-width: 760px;
+    }
+    .lab-hero h1 em {
+      font-style: italic;
+      color: var(--phos);
+    }
+    .lab-hero .lede {
+      max-width: 720px;
+      font-size: 15px;
+      line-height: 1.6;
+      color: var(--ink-soft);
+    }
+    .lab-hero .lede + .lede { margin-top: 12px; }
+    .lab-hero .historical {
+      font-family: var(--serif);
+      font-style: italic;
+      color: var(--ink-faint);
+      font-size: 13.5px;
+      margin-top: 22px;
+      padding-left: 16px;
+      border-left: 2px solid var(--line-bright);
+      max-width: 680px;
+    }
+
+    /* ── Setup block ── */
+    .setup-block {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin: 32px 0;
+    }
+    @media (max-width: 780px) { .setup-block { grid-template-columns: 1fr; } }
+    .setup-card {
+      border: 1px solid var(--line);
+      padding: 20px;
+      background: var(--bg-1);
+    }
+    .setup-card h3 {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      margin: 0 0 14px;
+      font-weight: 500;
+    }
+    .setup-card ul {
+      margin: 0;
+      padding-left: 18px;
+      font-size: 13.5px;
+      line-height: 1.7;
+      color: var(--ink-soft);
+    }
+    .setup-card li + li { margin-top: 4px; }
+    .setup-card code {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--phos);
+    }
+
+    /* ── Task structure ── */
+    .task {
+      border: 1px solid var(--line);
+      margin: 28px 0;
+      position: relative;
+    }
+    .task-head {
+      padding: 18px 24px 14px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: baseline;
+      gap: 18px;
+    }
+    .task-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--phos);
+    }
+    .task-title {
+      font-family: var(--serif);
+      font-style: italic;
+      font-weight: 400;
+      font-size: 22px;
+      margin: 0;
+      color: var(--ink);
+    }
+    .task-body { padding: 22px 24px; }
+    .task-body p {
+      font-size: 13.5px;
+      line-height: 1.65;
+      color: var(--ink-soft);
+      margin: 0 0 14px;
+    }
+    .task-body p:last-child { margin-bottom: 0; }
+
+    /* ── Bench layout ── */
+    .bench {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 24px;
+      margin-top: 8px;
+    }
+    @media (max-width: 900px) { .bench { grid-template-columns: 1fr; } }
+
+    .knobs {
+      border: 1px solid var(--line);
+      padding: 18px;
+      background: var(--bg-2);
+    }
+    .knob-group { margin-bottom: 18px; }
+    .knob-group:last-child { margin-bottom: 0; }
+    .knob-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+    .knob-val {
+      color: var(--phos);
+      font-family: var(--mono);
+    }
+    .knob-group input[type="range"] {
+      width: 100%;
+      accent-color: var(--phos);
+    }
+    .radio-row {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .radio-btn {
+      flex: 1 1 auto;
+      min-width: 0;
+      padding: 7px 10px;
+      font-family: var(--mono);
+      font-size: 11px;
+      background: var(--bg-1);
+      border: 1px solid var(--line-bright);
+      color: var(--ink-soft);
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.15s;
+    }
+    .radio-btn:hover { border-color: var(--phos); color: var(--ink); }
+    .radio-btn.active {
+      background: rgba(92,190,156,0.12);
+      border-color: var(--phos);
+      color: var(--phos);
+    }
+
+    .run-bar {
+      display: flex;
+      gap: 10px;
+      margin-top: 18px;
+    }
+    .run-btn {
+      flex: 1;
+      padding: 10px 14px;
+      font-family: var(--mono);
+      font-size: 12px;
+      letter-spacing: 0.05em;
+      background: var(--phos);
+      color: var(--bg-0);
+      border: none;
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+    .run-btn:hover { opacity: 0.85; }
+    .run-btn.secondary {
+      background: transparent;
+      color: var(--ink-faint);
+      border: 1px solid var(--line-bright);
+    }
+    .run-btn.secondary:hover { color: var(--ink); border-color: var(--phos); }
+
+    /* ── Readouts ── */
+    .readouts {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+    .readout-card {
+      border: 1px solid var(--line);
+      padding: 16px 18px;
+      background: var(--bg-1);
+    }
+    .readout-head {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+    }
+    .readout-sub {
+      color: var(--ink-faint);
+      font-size: 10px;
+      letter-spacing: 0.05em;
+      text-transform: none;
+    }
+
+    /* ── Protocol circuit diagram ── */
+    .circuit-diagram { width: 100%; height: 160px; margin-bottom: 4px; }
+
+    /* ── Step-through controls ── */
+    .step-controls {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin-top: 14px;
+      flex-wrap: wrap;
+    }
+    .step-btn {
+      padding: 6px 14px;
+      font-family: var(--mono);
+      font-size: 11px;
+      background: transparent;
+      border: 1px solid var(--line-bright);
+      color: var(--ink-faint);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .step-btn:hover { border-color: var(--phos); color: var(--phos); }
+    .step-btn.active { border-color: var(--phos); color: var(--phos); background: rgba(92,190,156,0.1); }
+    .step-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      color: var(--ink-faint);
+      text-transform: uppercase;
+    }
+
+    /* ── State panel ── */
+    .state-panel {
+      margin-top: 14px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      background: var(--bg-2);
+      min-height: 80px;
+    }
+    .state-label {
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      margin-bottom: 8px;
+    }
+    .state-expr {
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--phos);
+      line-height: 1.7;
+    }
+    .state-expr .hi { color: var(--magenta); }
+    .state-expr .amber { color: var(--amber); }
+    .state-narr {
+      font-size: 12.5px;
+      color: var(--ink-soft);
+      margin-top: 8px;
+      line-height: 1.55;
+    }
+    .state-narr code {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--phos);
+    }
+
+    /* ── Amplitude bars (Task 2) ── */
+    .amp-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .amp-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--mono);
+      font-size: 11px;
+    }
+    .amp-label {
+      width: 36px;
+      color: var(--ink-faint);
+      flex-shrink: 0;
+    }
+    .amp-bar-wrap {
+      flex: 1;
+      height: 12px;
+      background: var(--bg-2);
+      border: 1px solid var(--line);
+      overflow: hidden;
+    }
+    .amp-bar {
+      height: 100%;
+      background: var(--phos);
+      transition: width 0.35s;
+    }
+    .amp-val {
+      width: 44px;
+      text-align: right;
+      color: var(--phos);
+    }
+
+    /* ── Fidelity bar ── */
+    .fidelity-wrap {
+      margin-top: 10px;
+    }
+    .fidelity-track {
+      height: 22px;
+      background: var(--bg-2);
+      border: 1px solid var(--line);
+      position: relative;
+      overflow: hidden;
+    }
+    .fidelity-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--phos), var(--magenta));
+      transition: width 0.4s;
+    }
+    .fidelity-mark {
+      position: absolute;
+      top: 0; bottom: 0;
+      width: 1px;
+      background: var(--amber);
+    }
+    .fidelity-mark::after {
+      content: '50%';
+      position: absolute;
+      top: -14px;
+      left: -12px;
+      font-family: var(--mono);
+      font-size: 9px;
+      color: var(--amber);
+    }
+    .fidelity-num {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--phos);
+      margin-top: 6px;
+    }
+
+    /* ── Classical bits display ── */
+    .cbit-row {
+      display: flex;
+      gap: 14px;
+      margin-top: 10px;
+      align-items: center;
+    }
+    .cbit-box {
+      width: 52px;
+      height: 52px;
+      border: 1px solid var(--line-bright);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-2);
+      transition: all 0.2s;
+    }
+    .cbit-box.revealed {
+      border-color: var(--amber);
+      background: rgba(255,183,77,0.08);
+    }
+    .cbit-val {
+      font-family: var(--mono);
+      font-size: 22px;
+      color: var(--amber);
+      line-height: 1;
+    }
+    .cbit-tag {
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      margin-top: 3px;
+    }
+    .cbit-arrow {
+      font-family: var(--mono);
+      font-size: 18px;
+      color: var(--amber);
+    }
+    .cbit-label {
+      font-size: 12px;
+      color: var(--ink-faint);
+      font-family: var(--mono);
+    }
+
+    /* ── Correction table ── */
+    table.corr-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: var(--mono);
+      font-size: 12px;
+      margin-top: 10px;
+    }
+    .corr-table th, .corr-table td {
+      padding: 8px 10px;
+      border-bottom: 1px solid var(--line);
+      text-align: center;
+    }
+    .corr-table th {
+      color: var(--ink-faint);
+      font-weight: 400;
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .corr-table tr:last-child td { border-bottom: none; }
+    .corr-table td:first-child { text-align: left; color: var(--ink-faint); }
+    .corr-table .hi-row td { color: var(--phos); }
+    .corr-table .hi-row { background: rgba(92,190,156,0.07); }
+
+    /* ── Noise & fidelity experiment (Task 4) ── */
+    .fid-compare {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      margin-top: 14px;
+    }
+    @media (max-width: 780px) { .fid-compare { grid-template-columns: 1fr; } }
+    .fid-col {
+      border: 1px solid var(--line);
+      padding: 14px;
+      background: var(--bg-1);
+    }
+    .fid-col-head {
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      margin-bottom: 10px;
+    }
+    .fid-big {
+      font-family: var(--serif);
+      font-size: 40px;
+      font-weight: 300;
+      line-height: 1;
+      color: var(--ink);
+      margin: 8px 0 4px;
+    }
+    .fid-big.good { color: var(--phos); }
+    .fid-big.bad  { color: var(--amber); }
+    .fid-sub {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--ink-faint);
+    }
+
+    /* ── Conclusion box ── */
+    .conclusion {
+      border: 1px solid var(--phos);
+      background: linear-gradient(180deg, rgba(92,190,156,0.05), transparent);
+      padding: 24px 26px;
+      margin-top: 18px;
+    }
+    .conclusion .tag {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--phos);
+      margin-bottom: 10px;
+    }
+    .conclusion h3 {
+      font-family: var(--serif);
+      font-weight: 400;
+      font-size: 20px;
+      margin: 0 0 10px;
+      color: var(--ink);
+      line-height: 1.35;
+    }
+    .conclusion p {
+      font-size: 13.5px;
+      line-height: 1.65;
+      color: var(--ink-soft);
+      margin: 0 0 10px;
+    }
+    .conclusion p:last-child { margin-bottom: 0; }
+    .conclusion .val-inline { font-family: var(--mono); color: var(--phos); }
+    .conclusion.not-yet { border-color: var(--line-bright); background: transparent; }
+    .conclusion.not-yet .tag { color: var(--ink-faint); }
+
+    /* ── Insight rows ── */
+    .insight-panel { margin-top: 14px; min-height: 0; }
+    .insight-row {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      padding: 7px 0;
+      border-top: 1px solid var(--line);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+    .insight-row:first-child { border-top: none; padding-top: 4px; }
+    .insight-tag {
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      flex-shrink: 0;
+      width: 72px;
+    }
+    .insight-text { color: var(--ink-soft); }
+    .insight-text code { font-family: var(--mono); font-size: 11px; color: var(--phos); }
+    .insight-text .hi { color: var(--phos); }
+    .insight-text .warn { color: var(--amber); }
+
+    /* ── Scenario cards (Task 5) ── */
+    .scenario-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 16px;
+      margin-top: 18px;
+    }
+    .scenario-card {
+      border: 1px solid var(--line);
+      padding: 16px;
+      background: var(--bg-1);
+    }
+    .scenario-card-tag {
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      margin-bottom: 6px;
+    }
+    .scenario-card h4 {
+      font-family: var(--serif);
+      font-style: italic;
+      font-weight: 400;
+      font-size: 16px;
+      margin: 0 0 8px;
+      color: var(--ink);
+    }
+    .scenario-card p {
+      font-size: 12.5px;
+      line-height: 1.55;
+      color: var(--ink-soft);
+      margin: 0 0 10px;
+    }
+    .load-scenario-btn {
+      padding: 6px 12px;
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.06em;
+      background: transparent;
+      border: 1px solid var(--line-bright);
+      color: var(--ink-faint);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .load-scenario-btn:hover { border-color: var(--phos); color: var(--phos); }
+    .load-scenario-btn.loaded { border-color: var(--phos); color: var(--phos); }
+
+    /* ── Knobs / controls keep above decorative SVG ── */
+    .knobs, .run-bar, .radio-row {
+      position: relative;
+      z-index: 2;
+    }
+
+    /* ═══════════════════════════════════════════
+       PROGRESS RAIL
+    ═══════════════════════════════════════════ */
+    .progress-rail {
+      display: flex;
+      align-items: center;
+      margin: 28px 0 0;
+      padding: 18px 22px;
+      border: 1px solid var(--line);
+      background: var(--bg-1);
+      overflow-x: auto;
+    }
+    .prog-step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      min-width: 80px;
+      opacity: 0.3;
+      transition: opacity 0.35s;
+    }
+    .prog-step.unlocked { opacity: 1; }
+    .prog-dot {
+      width: 26px; height: 26px;
+      border-radius: 50%;
+      border: 1.5px solid var(--line-bright);
+      background: var(--bg-2);
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--mono); font-size: 10px; color: var(--ink-faint);
+      transition: all 0.35s;
+    }
+    .prog-step.unlocked .prog-dot { border-color: var(--phos); color: var(--phos); }
+    .prog-step.active .prog-dot { box-shadow: 0 0 0 3px rgba(92,190,156,0.22); }
+    .prog-step.done .prog-dot { background: var(--phos); border-color: var(--phos); color: var(--bg-0); }
+    .prog-label {
+      font-family: var(--mono); font-size: 9px; letter-spacing: 0.07em;
+      text-transform: uppercase; color: var(--ink-faint); text-align: center; max-width: 76px;
+    }
+    .prog-step.unlocked .prog-label { color: var(--ink-soft); }
+    .prog-connector {
+      flex: 1; height: 1px; background: var(--line-bright);
+      margin-bottom: 22px; min-width: 12px; transition: background 0.35s;
+    }
+    .prog-connector.lit { background: var(--phos); }
+
+    /* ═══════════════════════════════════════════
+       TASK LOCK / UNLOCK
+    ═══════════════════════════════════════════ */
+    .task { transition: border-color 0.3s; }
+    .task.locked { pointer-events: none; }
+    .task-lock-overlay {
+      display: none;
+      position: absolute; inset: 0;
+      background: rgba(14,15,17,0.72);
+      z-index: 10;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .task.locked .task-lock-overlay { display: flex; }
+    .lock-icon {
+      font-family: var(--mono); font-size: 22px; color: var(--ink-faint);
+    }
+    .lock-hint {
+      font-family: var(--mono); font-size: 11px; letter-spacing: 0.06em;
+      color: var(--ink-faint); text-align: center; max-width: 340px; padding: 0 20px;
+    }
+
+    /* unlock flash animation */
+    @keyframes unlockFlash {
+      0%   { border-color: var(--phos); box-shadow: 0 0 0 0 rgba(92,190,156,0.5); }
+      50%  { box-shadow: 0 0 0 8px rgba(92,190,156,0); }
+      100% { border-color: var(--line); box-shadow: none; }
+    }
+    .task.just-unlocked { animation: unlockFlash 0.7s ease-out forwards; }
+
+    /* ── task completion badge ── */
+    .task-complete-badge {
+      display: none;
+      position: absolute; top: 14px; right: 18px;
+      font-family: var(--mono); font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase;
+      color: var(--phos); border: 1px solid var(--phos); padding: 2px 8px; opacity: 0.85;
+    }
+    .task.done .task-complete-badge { display: block; }
+
+    /* ── discovery callout ── */
+    .discovery {
+      margin-top: 16px;
+      padding: 13px 16px;
+      border-left: 3px solid var(--line-bright);
+      background: var(--bg-2);
+      font-size: 13px;
+      line-height: 1.55;
+      color: var(--ink-faint);
+      transition: border-color 0.3s, color 0.3s;
+    }
+    .discovery.active {
+      border-left-color: var(--phos);
+      color: var(--ink-soft);
+    }
+    .discovery .disc-tag {
+      font-family: var(--mono); font-size: 9px; letter-spacing: 0.14em;
+      text-transform: uppercase; color: var(--ink-faint); margin-bottom: 5px;
+    }
+    .discovery.active .disc-tag { color: var(--phos); }
+
+    /* ═══════════════════════════════════════════
+       COMPLETION / CERTIFICATE
+    ═══════════════════════════════════════════ */
+    .cert {
+      display: none;
+      border: 1px solid var(--phos);
+      background: linear-gradient(180deg, rgba(92,190,156,0.06), transparent 80%);
+      padding: 36px 32px;
+      margin: 28px 0;
+      position: relative;
+    }
+    .cert.visible { display: block; }
+    .cert::before {
+      content: 'COMPLETE';
+      position: absolute; top: 14px; right: 18px;
+      font-family: var(--mono); font-size: 10px; letter-spacing: 0.2em;
+      color: var(--phos); border: 1px solid var(--phos); padding: 2px 8px; opacity: 0.85;
+    }
+    .cert h2 {
+      font-family: var(--serif); font-weight: 300; font-size: 28px;
+      margin: 0 0 14px; color: var(--ink); line-height: 1.2;
+    }
+    .cert h2 em { font-style: italic; color: var(--phos); }
+    .cert p { font-size: 13.5px; line-height: 1.65; color: var(--ink-soft); margin: 0 0 10px; }
+    .cert p:last-child { margin: 0; }
+    .cert .cert-findings {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 20px 0;
+    }
+    @media (max-width: 600px) { .cert .cert-findings { grid-template-columns: 1fr; } }
+    .cert-finding {
+      border: 1px solid var(--line); padding: 12px 14px; background: var(--bg-1);
+    }
+    .cert-finding .cf-tag {
+      font-family: var(--mono); font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--ink-faint); margin-bottom: 5px;
+    }
+    .cert-finding .cf-text { font-size: 12.5px; color: var(--ink-soft); line-height: 1.5; }
+    .cert-finding .cf-text code { font-family: var(--mono); font-size: 11px; color: var(--phos); }
+
+    /* ── Footer ── */
+    .lab-footer {
+      margin-top: 40px;
+      padding-top: 24px;
+      border-top: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .lab-footer a {
+      color: var(--ink-faint);
+      text-decoration: none;
+      font-family: var(--mono);
+      font-size: 12px;
+      letter-spacing: 0.03em;
+    }
+    .lab-footer a:hover { color: var(--phos); }
+
+    /* Fallback CSS vars if base.css is not available */
+    :root {
+      --bg-0: #0e0f11;
+      --bg-1: #13151a;
+      --bg-2: #1a1d24;
+      --line: rgba(255,255,255,0.07);
+      --line-bright: rgba(255,255,255,0.14);
+      --ink: #e8eaf0;
+      --ink-soft: #9da3b4;
+      --ink-faint: #555d72;
+      --phos: #5cbe9c;
+      --magenta: #e67fb8;
+      --amber: #ffb74d;
+      --mono: 'JetBrains Mono', monospace;
+      --serif: 'Fraunces', serif;
+      --sans: 'Inter', sans-serif;
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      background: var(--bg-0);
+      color: var(--ink);
+      font-family: var(--sans);
+      margin: 0;
+      padding: 0;
+    }
+    .app { max-width: 1040px; margin: 0 auto; padding: 24px 20px 60px; }
+    .masthead {
+      border-bottom: 1px solid var(--line);
+      padding: 16px 0 14px;
+      margin-bottom: 0;
+    }
+    .brand { display: flex; align-items: baseline; gap: 14px; }
+    .brand-mark {
+      font-family: var(--mono);
+      font-size: 12px;
+      letter-spacing: 0.1em;
+      color: var(--ink);
+    }
+    .amp { color: var(--phos); }
+    .brand-tag {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--ink-faint);
+    }
+
+  </style>
+</head>
+<body>
+  <div class="app">
+
+    <!-- ============ MASTHEAD ============ -->
+    <header class="masthead">
+      <div class="brand">
+        <div class="brand-mark">Quantum <span class="amp">&amp;</span> Lab</div>
+        <div class="brand-tag">Lab · Quantum Teleportation</div>
+      </div>
+    </header>
+
+    <!-- ============ PROGRESS RAIL ============ -->
+    <nav class="progress-rail" id="progress-rail" aria-label="Tutorial progress">
+      <div class="prog-step unlocked active" id="prog-1">
+        <div class="prog-dot">01</div>
+        <div class="prog-label">The protocol</div>
+      </div>
+      <div class="prog-connector" id="conn-1"></div>
+      <div class="prog-step" id="prog-2">
+        <div class="prog-dot">02</div>
+        <div class="prog-label">Run &amp; measure</div>
+      </div>
+      <div class="prog-connector" id="conn-2"></div>
+      <div class="prog-step" id="prog-3">
+        <div class="prog-dot">03</div>
+        <div class="prog-label">Classical bits</div>
+      </div>
+      <div class="prog-connector" id="conn-3"></div>
+      <div class="prog-step" id="prog-4">
+        <div class="prog-dot">04</div>
+        <div class="prog-label">Noise</div>
+      </div>
+      <div class="prog-connector" id="conn-4"></div>
+      <div class="prog-step" id="prog-5">
+        <div class="prog-dot">05</div>
+        <div class="prog-label">Scenarios</div>
+      </div>
+    </nav>
+
+    <!-- ============ HERO ============ -->
+    <section class="lab-hero">
+      <h1>Can you send a quantum state using <em>only classical bits?</em></h1>
+      <p class="lede">
+        Quantum states cannot be copied — the no-cloning theorem forbids it. So how does a quantum computer
+        move a qubit from one location to another? In 1993, Bennett, Brassard, Crépeau, Jozsa, Peres, and
+        Wootters showed the answer: consume a pre-shared <em>entangled pair</em> as a resource, make two
+        classical measurements, and send those two bits across an ordinary channel. The receiver applies one
+        of four simple corrections, and the original quantum state materialises — perfectly, with no physical
+        particle ever moving between them.
+      </p>
+      <p class="lede">
+        This is <em>quantum teleportation</em>. Not faster-than-light — the two classical bits must travel
+        normally. But it is the only known way to faithfully move a qubit across space.
+      </p>
+      <div class="historical">
+        "Quantum teleportation combines entanglement and classical communication to achieve what is impossible
+        for either alone." — after Bennett et al. 1993, the paper that proved it.
+      </div>
+    </section>
+
+    <!-- ============ SETUP ============ -->
+    <section class="setup-block">
+      <div class="setup-card">
+        <h3>The cast</h3>
+        <ul>
+          <li><b>Alice</b> holds one qubit she wants to send (the <em>payload</em>), plus one half of a pre-shared Bell pair.</li>
+          <li><b>Bob</b> holds the other half of the Bell pair, separated from Alice.</li>
+          <li>Alice makes two measurements, gets two classical bits, and sends them to Bob.</li>
+          <li>Bob applies a Pauli correction based on those bits. The payload state appears on his qubit.</li>
+        </ul>
+      </div>
+      <div class="setup-card">
+        <h3>The rules</h3>
+        <ul>
+          <li>Alice's original payload is <em>destroyed</em> by her measurement — no cloning occurs.</li>
+          <li>Bob's qubit is random until he receives the two classical bits. No FTL signalling.</li>
+          <li>Fidelity is exactly 1.0 with no noise. Noise degrades this — quantifiably.</li>
+          <li>The classical bits carry no information about the payload state itself.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ============ TASK 1: STEP THROUGH THE PROTOCOL ============ -->
+    <article class="task" id="task-1">
+      <header class="task-head">
+        <span class="task-label">Task 01</span>
+        <h2 class="task-title">Step through the protocol one gate at a time.</h2>
+      </header>
+      <div class="task-body">
+        <p>
+          Before running statistics, watch the state vector evolve through each gate. Choose a payload state —
+          the qubit Alice wants to teleport — then step through the six stages. At each stage the full
+          three-qubit state is shown, along with a plain-English account of what just happened.
+        </p>
+
+        <!-- Circuit diagram SVG -->
+        <svg class="circuit-diagram" viewBox="0 0 680 160" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <!-- qubit wires -->
+          <line x1="60" y1="42" x2="620" y2="42" stroke="var(--line-bright)" stroke-width="1"/>
+          <line x1="60" y1="86" x2="620" y2="86" stroke="var(--line-bright)" stroke-width="1"/>
+          <line x1="60" y1="130" x2="620" y2="130" stroke="var(--line-bright)" stroke-width="1"/>
+          <!-- qubit labels -->
+          <text x="12" y="46" font-family="var(--serif)" font-size="13" fill="var(--phos)" font-style="italic">q₀</text>
+          <text x="8" y="58" font-family="var(--mono)" font-size="8" fill="var(--ink-faint)">payload</text>
+          <text x="12" y="90" font-family="var(--serif)" font-size="13" fill="var(--ink-soft)" font-style="italic">q₁</text>
+          <text x="8" y="102" font-family="var(--mono)" font-size="8" fill="var(--ink-faint)">Alice</text>
+          <text x="12" y="134" font-family="var(--serif)" font-size="13" fill="var(--ink-soft)" font-style="italic">q₂</text>
+          <text x="8" y="146" font-family="var(--mono)" font-size="8" fill="var(--ink-faint)">Bob</text>
+          <!-- ── Step 1: H on q1 ── -->
+          <rect x="80" y="74" width="28" height="24" fill="var(--bg-2)" stroke="var(--line-bright)" stroke-width="1.5" rx="2"/>
+          <text x="94" y="91" font-family="var(--mono)" font-size="12" fill="var(--ink-soft)" text-anchor="middle">H</text>
+          <!-- ── Step 2: CNOT q1->q2 ── -->
+          <circle cx="138" cy="86" r="5" fill="var(--phos)" stroke="none"/>
+          <line x1="138" y1="91" x2="138" y2="125" stroke="var(--phos)" stroke-width="1.5"/>
+          <circle cx="138" cy="130" r="8" fill="none" stroke="var(--phos)" stroke-width="1.5"/>
+          <line x1="130" y1="130" x2="146" y2="130" stroke="var(--phos)" stroke-width="1.5"/>
+          <line x1="138" y1="122" x2="138" y2="138" stroke="var(--phos)" stroke-width="1.5"/>
+          <!-- divider: Bell pair prep / Alice ops -->
+          <line x1="172" y1="20" x2="172" y2="148" stroke="var(--line)" stroke-width="1" stroke-dasharray="4,3"/>
+          <text x="175" y="17" font-family="var(--mono)" font-size="8" fill="var(--ink-faint)">Bell pair ready</text>
+          <!-- ── Step 3: CNOT q0->q1 ── -->
+          <circle cx="210" cy="42" r="5" fill="var(--magenta)" stroke="none"/>
+          <line x1="210" y1="47" x2="210" y2="81" stroke="var(--magenta)" stroke-width="1.5"/>
+          <circle cx="210" cy="86" r="8" fill="none" stroke="var(--magenta)" stroke-width="1.5"/>
+          <line x1="202" y1="86" x2="218" y2="86" stroke="var(--magenta)" stroke-width="1.5"/>
+          <line x1="210" y1="78" x2="210" y2="94" stroke="var(--magenta)" stroke-width="1.5"/>
+          <!-- ── Step 4: H on q0 ── -->
+          <rect x="246" y="30" width="28" height="24" fill="var(--bg-2)" stroke="var(--magenta)" stroke-width="1.5" rx="2"/>
+          <text x="260" y="47" font-family="var(--mono)" font-size="12" fill="var(--magenta)" text-anchor="middle">H</text>
+          <!-- divider: Alice measures -->
+          <line x1="292" y1="20" x2="292" y2="148" stroke="var(--line)" stroke-width="1" stroke-dasharray="4,3"/>
+          <text x="295" y="17" font-family="var(--mono)" font-size="8" fill="var(--ink-faint)">Alice measures</text>
+          <!-- ── Step 5: Measure q0, q1 ── -->
+          <rect x="310" y="30" width="28" height="24" fill="var(--bg-2)" stroke="var(--amber)" stroke-width="1.5" rx="2"/>
+          <text x="324" y="44" font-family="var(--mono)" font-size="10" fill="var(--amber)" text-anchor="middle">◎</text>
+          <text x="324" y="52" font-family="var(--mono)" font-size="7" fill="var(--amber)" text-anchor="middle">M</text>
+          <rect x="310" y="74" width="28" height="24" fill="var(--bg-2)" stroke="var(--amber)" stroke-width="1.5" rx="2"/>
+          <text x="324" y="88" font-family="var(--mono)" font-size="10" fill="var(--amber)" text-anchor="middle">◎</text>
+          <text x="324" y="96" font-family="var(--mono)" font-size="7" fill="var(--amber)" text-anchor="middle">M</text>
+          <!-- classical channel arrows -->
+          <line x1="354" y1="42" x2="450" y2="118" stroke="var(--amber)" stroke-width="1" stroke-dasharray="5,3"/>
+          <line x1="354" y1="86" x2="450" y2="118" stroke="var(--amber)" stroke-width="1" stroke-dasharray="5,3"/>
+          <text x="368" y="75" font-family="var(--mono)" font-size="8" fill="var(--amber)">classical bits</text>
+          <!-- ── Step 6: Bob corrections ── -->
+          <rect x="460" y="118" width="28" height="24" fill="var(--bg-2)" stroke="var(--phos)" stroke-width="1.5" rx="2"/>
+          <text x="474" y="135" font-family="var(--mono)" font-size="11" fill="var(--phos)" text-anchor="middle">X?</text>
+          <rect x="510" y="118" width="28" height="24" fill="var(--bg-2)" stroke="var(--phos)" stroke-width="1.5" rx="2"/>
+          <text x="524" y="135" font-family="var(--mono)" font-size="11" fill="var(--phos)" text-anchor="middle">Z?</text>
+          <!-- measure markers -->
+          <rect x="560" y="118" width="28" height="24" fill="var(--bg-2)" stroke="var(--phos)" stroke-width="1.5" rx="2"/>
+          <text x="574" y="132" font-family="var(--mono)" font-size="10" fill="var(--phos)" text-anchor="middle">◎</text>
+          <text x="574" y="140" font-family="var(--mono)" font-size="7" fill="var(--phos)" text-anchor="middle">M</text>
+          <!-- party labels -->
+          <text x="620" y="46" font-family="var(--mono)" font-size="9" fill="var(--magenta)">Alice</text>
+          <text x="620" y="90" font-family="var(--mono)" font-size="9" fill="var(--magenta)">Alice</text>
+          <text x="620" y="134" font-family="var(--mono)" font-size="9" fill="var(--phos)">Bob</text>
+        </svg>
+
+        <!-- Payload selector + step controls -->
+        <div style="margin-top:18px;">
+          <div class="knob-label" style="margin-bottom:10px;"><span>Payload state to teleport</span></div>
+          <div class="radio-row" id="payload-radio" style="max-width:600px;">
+            <button class="radio-btn active" data-state="|0⟩">|0⟩</button>
+            <button class="radio-btn" data-state="|1⟩">|1⟩</button>
+            <button class="radio-btn" data-state="|+⟩">|+⟩</button>
+            <button class="radio-btn" data-state="|−⟩">|−⟩</button>
+            <button class="radio-btn" data-state="|+i⟩">|+i⟩</button>
+            <button class="radio-btn" data-state="custom">Custom Ry(θ)</button>
+          </div>
+          <div id="custom-theta-wrap" style="display:none; margin-top:14px; max-width:320px;">
+            <div class="knob-label">
+              <span>Ry angle θ</span>
+              <span class="knob-val"><span id="theta-display">60</span>°</span>
+            </div>
+            <input type="range" id="theta-slider" min="0" max="360" value="60" step="1" style="width:100%; accent-color:var(--phos);">
+          </div>
+        </div>
+
+        <div class="step-controls" style="margin-top:18px;">
+          <span class="step-label">Stage:</span>
+          <button class="step-btn active" data-step="0">① Init</button>
+          <button class="step-btn" data-step="1">② Bell pair</button>
+          <button class="step-btn" data-step="2">③ Entangle</button>
+          <button class="step-btn" data-step="3">④ H on q₀</button>
+          <button class="step-btn" data-step="4">⑤ Measure</button>
+          <button class="step-btn" data-step="5">⑥ Correct</button>
+        </div>
+
+        <div class="state-panel" id="state-panel">
+          <div class="state-label">Three-qubit state |q₀ q₁ q₂⟩</div>
+          <div class="state-expr" id="state-expr">—</div>
+          <div class="state-narr" id="state-narr">Select a payload and press a stage button.</div>
+        </div>
+
+        <div class="discovery" id="disc-1">
+          <div class="disc-tag">Discovery condition</div>
+          Reach stage ⑥ with at least two different payload states to see that the final result is always the payload — regardless of what Alice measured.
+        </div>
+
+      </div>
+      <div class="task-complete-badge">✓ complete</div>
+    </article>
+
+
+    <!-- ============ TASK 2: RUN THE EXPERIMENT ============ -->
+    <article class="task locked" id="task-2">
+      <div class="task-lock-overlay">
+        <div class="lock-icon">⚿</div>
+        <div class="lock-hint">Reach stage ⑥ with two different payload states in Task 01 to unlock.</div>
+      </div>
+      <header class="task-head">
+        <span class="task-label">Task 02</span>
+        <h2 class="task-title">Run the full protocol and measure fidelity.</h2>
+      </header>
+      <div class="task-body">
+        <p>
+          Set a payload state and run N trials. In each trial the protocol executes fully: Alice measures,
+          transmits her bits, Bob corrects. The distribution of Bob's outcomes is compared to the ideal
+          payload state to compute <em>fidelity</em> — how faithfully the state was transferred.
+          With no noise, fidelity is 1.0 regardless of the payload. With noise, it degrades.
+        </p>
+
+        <div class="bench">
+          <!-- KNOBS -->
+          <div class="knobs">
+            <div class="knob-group">
+              <div class="knob-label"><span>Payload state</span></div>
+              <div class="radio-row" id="payload-radio-2">
+                <button class="radio-btn active" data-state="|0⟩">|0⟩</button>
+                <button class="radio-btn" data-state="|1⟩">|1⟩</button>
+                <button class="radio-btn" data-state="|+⟩">|+⟩</button>
+                <button class="radio-btn" data-state="|−⟩">|−⟩</button>
+                <button class="radio-btn" data-state="|+i⟩">|+i⟩</button>
+              </div>
+            </div>
+            <div class="knob-group">
+              <div class="knob-label"><span>Trials</span><span class="knob-val" id="ntrials-val">500</span></div>
+              <input type="range" id="ntrials-slider" min="50" max="5000" value="500" step="50">
+            </div>
+            <div class="knob-group">
+              <div class="knob-label"><span>Gate noise (depolarising)</span><span class="knob-val"><span id="noise-val">0</span>%</span></div>
+              <input type="range" id="noise-slider" min="0" max="20" value="0" step="1">
+            </div>
+            <div class="knob-group">
+              <div class="knob-label"><span>Channel noise (bit-flip p)</span><span class="knob-val"><span id="channel-val">0</span>%</span></div>
+              <input type="range" id="channel-slider" min="0" max="30" value="0" step="1">
+            </div>
+            <div class="run-bar">
+              <button class="run-btn" id="run-btn">▶ Run experiment</button>
+              <button class="run-btn secondary" id="reset-btn">Reset</button>
+            </div>
+          </div>
+
+          <!-- READOUTS -->
+          <div class="readouts">
+
+            <!-- Amplitude / probability readout -->
+            <div class="readout-card">
+              <div class="readout-head">
+                <span>Bob's qubit — output distribution</span>
+                <span class="readout-sub" id="shot-label">no data yet</span>
+              </div>
+              <div class="amp-grid" id="amp-grid">
+                <div class="amp-row"><span class="amp-label">|0⟩</span><div class="amp-bar-wrap"><div class="amp-bar" id="bar-0" style="width:0%"></div></div><span class="amp-val" id="val-0">—</span></div>
+                <div class="amp-row"><span class="amp-label">|1⟩</span><div class="amp-bar-wrap"><div class="amp-bar" id="bar-1" style="width:0%"></div></div><span class="amp-val" id="val-1">—</span></div>
+                <div class="amp-row"><span class="amp-label">|+⟩</span><div class="amp-bar-wrap"><div class="amp-bar" id="bar-p" style="width:0%"></div></div><span class="amp-val" id="val-p">—</span></div>
+                <div class="amp-row"><span class="amp-label">|−⟩</span><div class="amp-bar-wrap"><div class="amp-bar" id="bar-m" style="width:0%"></div></div><span class="amp-val" id="val-m">—</span></div>
+              </div>
+            </div>
+
+            <!-- Fidelity -->
+            <div class="readout-card">
+              <div class="readout-head">
+                <span>Transfer fidelity</span>
+                <span class="readout-sub">F = 1.0 is perfect · classical random guess = 0.5</span>
+              </div>
+              <div class="fidelity-wrap">
+                <div class="fidelity-track">
+                  <div class="fidelity-fill" id="fidelity-fill" style="width:0%"></div>
+                  <div class="fidelity-mark" style="left:50%"></div>
+                </div>
+                <div class="fidelity-num" id="fidelity-num">—</div>
+              </div>
+              <div class="insight-panel" id="insight-panel"></div>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="discovery" id="disc-2">
+          <div class="disc-tag">Discovery condition</div>
+          Run with no noise and observe F = 100%. The discovery: fidelity is exactly perfect — not approximately, but exactly — as long as the circuit is ideal.
+        </div>
+
+      </div>
+      <div class="task-complete-badge">✓ complete</div>
+    </article>
+
+
+    <!-- ============ TASK 3: THE CLASSICAL BITS ============ -->
+    <article class="task locked" id="task-3">
+      <div class="task-lock-overlay">
+        <div class="lock-icon">⚿</div>
+        <div class="lock-hint">Run a noise-free experiment (F ≥ 99%) in Task 02 to unlock.</div>
+      </div>
+      <header class="task-head">
+        <span class="task-label">Task 03</span>
+        <h2 class="task-title">Inspect the classical bits and Bob's correction table.</h2>
+      </header>
+      <div class="task-body">
+        <p>
+          Alice's two measurement outcomes — one bit from q₀, one bit from q₁ — determine exactly which
+          Pauli correction Bob must apply. There are four cases. Crucially, the two bits are uniformly
+          random: they carry zero information about the payload state. An eavesdropper who intercepts them
+          learns nothing.
+        </p>
+        <p>
+          Press <b>Single shot</b> to run one trial at a time and watch the classical bits appear, then
+          see which correction is applied.
+        </p>
+
+        <div style="display:flex; flex-wrap:wrap; gap:24px; margin-top:4px;">
+          <div>
+            <div class="knob-label" style="margin-bottom:10px;"><span>Payload for single-shot demo</span></div>
+            <div class="radio-row" id="payload-radio-3" style="max-width:400px;">
+              <button class="radio-btn active" data-state="|0⟩">|0⟩</button>
+              <button class="radio-btn" data-state="|1⟩">|1⟩</button>
+              <button class="radio-btn" data-state="|+⟩">|+⟩</button>
+              <button class="radio-btn" data-state="|−⟩">|−⟩</button>
+            </div>
+            <div class="run-bar" style="margin-top:14px; max-width:280px;">
+              <button class="run-btn" id="single-shot-btn" style="background:var(--amber); color:var(--bg-0);">▶ Single shot</button>
+            </div>
+          </div>
+
+          <!-- Classical bits display -->
+          <div>
+            <div class="knob-label" style="margin-bottom:10px;"><span>Alice's measurement results</span></div>
+            <div class="cbit-row">
+              <div>
+                <div class="cbit-box" id="cbit-0">
+                  <span class="cbit-val" id="cbit-0-val">?</span>
+                  <span class="cbit-tag">m₀ (q₀)</span>
+                </div>
+              </div>
+              <div>
+                <div class="cbit-box" id="cbit-1">
+                  <span class="cbit-val" id="cbit-1-val">?</span>
+                  <span class="cbit-tag">m₁ (q₁)</span>
+                </div>
+              </div>
+              <span class="cbit-arrow">→</span>
+              <div>
+                <div class="cbit-label">Bob applies:</div>
+                <div class="cbit-box" id="cbit-corr" style="width:80px;">
+                  <span class="cbit-val" id="cbit-corr-val" style="font-size:16px;">—</span>
+                  <span class="cbit-tag">correction</span>
+                </div>
+              </div>
+            </div>
+            <div id="cbit-narr" style="margin-top:10px; font-size:12px; color:var(--ink-faint); font-family:var(--mono);">Run a single shot to see Alice's bits.</div>
+          </div>
+        </div>
+
+        <!-- Correction table -->
+        <div class="readout-card" style="margin-top:22px;">
+          <div class="readout-head"><span>Complete correction lookup</span></div>
+          <table class="corr-table" id="corr-table">
+            <thead>
+              <tr>
+                <th>m₀ (q₀)</th>
+                <th>m₁ (q₁)</th>
+                <th>Bob applies</th>
+                <th>Effect on Bob's qubit</th>
+                <th>Observed?</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr id="corr-row-00"><td>0</td><td>0</td><td style="color:var(--ink-soft);">I (none)</td><td style="color:var(--ink-faint); font-size:11px;">already correct</td><td id="obs-00">—</td></tr>
+              <tr id="corr-row-01"><td>0</td><td>1</td><td style="color:var(--phos);">X</td><td style="color:var(--ink-faint); font-size:11px;">bit flip needed</td><td id="obs-01">—</td></tr>
+              <tr id="corr-row-10"><td>1</td><td>0</td><td style="color:var(--phos);">Z</td><td style="color:var(--ink-faint); font-size:11px;">phase flip needed</td><td id="obs-10">—</td></tr>
+              <tr id="corr-row-11"><td>1</td><td>1</td><td style="color:var(--phos);">ZX</td><td style="color:var(--ink-faint); font-size:11px;">both flips needed</td><td id="obs-11">—</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="margin-top:14px;">
+          Run many single shots and watch all four rows accumulate. The distribution will converge to
+          25% each — the bits are perfectly uniform regardless of the payload.
+        </p>
+
+        <div class="discovery" id="disc-3">
+          <div class="disc-tag">Discovery condition</div>
+          Observe all four correction cases (00, 01, 10, 11) at least once. The discovery: Alice's bits are completely uniform — no payload state makes any case more likely.
+        </div>
+
+      </div>
+      <div class="task-complete-badge">✓ complete</div>
+    </article>
+
+
+    <!-- ============ TASK 4: NOISE ============ -->
+    <article class="task locked" id="task-4">
+      <div class="task-lock-overlay">
+        <div class="lock-icon">⚿</div>
+        <div class="lock-hint">Observe all four correction cases in Task 03 to unlock.</div>
+      </div>
+      <header class="task-head">
+        <span class="task-label">Task 04</span>
+        <h2 class="task-title">What noise does to teleportation fidelity.</h2>
+      </header>
+      <div class="task-body">
+        <p>
+          Perfect teleportation requires a perfect Bell pair and perfect gates. Two distinct noise
+          channels degrade fidelity: <em>gate depolarising noise</em> affects the preparation of the Bell
+          pair and Alice's operations; <em>classical channel noise</em> flips the transmitted bits with
+          some probability. The two sources degrade fidelity in different ways.
+        </p>
+
+        <div class="fid-compare" id="noise-compare">
+          <div class="fid-col">
+            <div class="fid-col-head">Gate noise only</div>
+            <div class="fid-big good" id="fid-gate">—</div>
+            <div class="fid-sub" id="fid-gate-sub">run experiment to compute</div>
+          </div>
+          <div class="fid-col">
+            <div class="fid-col-head">Channel noise only</div>
+            <div class="fid-big good" id="fid-chan">—</div>
+            <div class="fid-sub" id="fid-chan-sub">run experiment to compute</div>
+          </div>
+        </div>
+
+        <p style="margin-top:18px;">
+          Fidelity under gate noise degrades <em>smoothly</em>: each imperfect gate adds a small error.
+          Channel noise is more abrupt — a single bit-flip on Alice's classical bits causes Bob to apply
+          the <em>wrong correction</em>, and the state is completely scrambled for that trial. At 50%
+          channel noise both bits are effectively random and fidelity drops to the classical limit of
+          2/3 (the best possible with no entanglement at all).
+        </p>
+        <p>
+          Use the noise sliders in Task 02 and compare outcomes. Set gate noise to 5% and channel noise
+          to 0%, then reverse it.
+        </p>
+
+        <div class="conclusion not-yet" id="conclusion">
+          <div class="tag">Pending</div>
+          <h3>Awaiting experiment data.</h3>
+          <p>Run Task 02 to generate a verdict on your teleportation fidelity.</p>
+        </div>
+
+        <div class="discovery" id="disc-4">
+          <div class="disc-tag">Discovery condition</div>
+          Run with gate noise &gt; 0 only, then run with channel noise &gt; 0 only. See that the fidelity curves differ. The discovery: the two noise types are mechanistically distinct — one erodes smoothly, the other corrupts abruptly.
+        </div>
+
+      </div>
+      <div class="task-complete-badge">✓ complete</div>
+    </article>
+
+
+    <!-- ============ TASK 5: SCENARIOS ============ -->
+    <article class="task locked" id="task-5">
+      <div class="task-lock-overlay">
+        <div class="lock-icon">⚿</div>
+        <div class="lock-hint">Run gate noise and channel noise separately in Task 02 to unlock.</div>
+      </div>
+      <header class="task-head">
+        <span class="task-label">Task 05</span>
+        <h2 class="task-title">Explore critical scenarios.</h2>
+      </header>
+      <div class="task-body">
+        <p>
+          The scenarios below highlight edge cases and common misconceptions. Load any into Task 02
+          and run the experiment to confirm the prediction.
+        </p>
+        <div class="scenario-grid" id="scenario-grid">
+          <!-- populated by JS -->
+        </div>
+      </div>
+      <div class="task-complete-badge">✓ complete</div>
+    </article>
+
+    <!-- ============ CERTIFICATE ============ -->
+    <div class="cert" id="cert">
+      <h2>You have run quantum <em>teleportation</em> from first principles.</h2>
+      <p>Work through the findings below — each one is something you observed directly, not something you were told.</p>
+      <div class="cert-findings">
+        <div class="cert-finding">
+          <div class="cf-tag">Task 01 · The protocol</div>
+          <div class="cf-text">Regardless of the payload state — <code>|0⟩</code>, <code>|+⟩</code>, <code>|+i⟩</code> or anything else — stage ⑥ always reproduces it on Bob's qubit. The circuit structure guarantees this, not the measurement outcome.</div>
+        </div>
+        <div class="cert-finding">
+          <div class="cf-tag">Task 02 · Perfect fidelity</div>
+          <div class="cf-text">With zero noise, F = 100% exactly. This is not a statistical artifact — it is a consequence of the unitarity of the gates and the structure of the Bell pair.</div>
+        </div>
+        <div class="cert-finding">
+          <div class="cf-tag">Task 03 · Uniform bits</div>
+          <div class="cf-text">All four correction cases (00, 01, 10, 11) occur with equal probability regardless of payload. Alice's bits are maximally random — an eavesdropper who intercepts them learns nothing about the state being teleported.</div>
+        </div>
+        <div class="cert-finding">
+          <div class="cf-tag">Task 04 · Two kinds of noise</div>
+          <div class="cf-text">Gate depolarising noise degrades fidelity smoothly across every trial. Classical channel noise corrupts whole trials abruptly when a bit flips. The two sources compound independently and must be controlled separately.</div>
+        </div>
+      </div>
+      <p>Quantum teleportation is the primitive behind quantum networking, quantum repeaters, and measurement-based quantum computing. Everything you explored here scales directly to those applications.</p>
+    </div>
+
+    <!-- ============ FOOTER ============ -->
+    <div class="lab-footer">
+      <a href="index.html">← Back to main app</a>
+      <a href="#" onclick="document.getElementById('run-btn').scrollIntoView({behavior:'smooth', block:'center'}); return false;">↑ Back to experiment</a>
+    </div>
+
+  </div>
+
+  <!-- ============================================================= -->
+  <!-- ========================= SCRIPT ============================ -->
+  <!-- ============================================================= -->
+  <script>
+  (function initTeleportLab() {
+
+    /* ── DOM helpers ── */
+    const el = id => document.getElementById(id);
+
+    /* ═══════════════════════════════════════════
+       PROGRESS / UNLOCK SYSTEM
+    ═══════════════════════════════════════════ */
+    // Track which discovery conditions have been met
+    const disc = { t1: false, t2: false, t3: false, t4: false };
+
+    function unlock(taskNum) {
+      const key = `t${taskNum - 1}`; // t1 unlocks task2, etc.
+      if (disc[key]) return; // already done
+      disc[key] = true;
+
+      // Mark previous task done
+      const prevTask = el(`task-${taskNum - 1}`);
+      if (prevTask) prevTask.classList.add('done');
+      const prevDisc = el(`disc-${taskNum - 1}`);
+      if (prevDisc) prevDisc.classList.add('active');
+
+      // Unlock next task
+      const nextTask = el(`task-${taskNum}`);
+      if (!nextTask) return;
+      nextTask.classList.remove('locked');
+      nextTask.classList.add('just-unlocked');
+      setTimeout(() => nextTask.classList.remove('just-unlocked'), 800);
+      nextTask.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+      // Progress rail
+      const progStep = el(`prog-${taskNum}`);
+      if (progStep) { progStep.classList.add('unlocked'); progStep.classList.add('active'); }
+      const prevProg = el(`prog-${taskNum - 1}`);
+      if (prevProg) { prevProg.classList.add('done'); prevProg.classList.remove('active'); }
+      const conn = el(`conn-${taskNum - 1}`);
+      if (conn) conn.classList.add('lit');
+
+      // Show certificate after task 5 unlocked
+      if (taskNum === 5) {
+        setTimeout(() => {
+          el('task-5').classList.add('done');
+          el('disc-4') && el('disc-4').classList.add('active');
+          el('prog-5').classList.add('done');
+          el('cert').classList.add('visible');
+          el('cert').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 600);
+      }
+    }
+
+    /* ── Payload state definitions ── */
+    // Each state is [alpha, beta] complex amplitudes of |0⟩ and |1⟩
+    // Stored as {re0, im0, re1, im1}
+    const STATES = {
+      '|0⟩':  { re0:1, im0:0, re1:0, im1:0 },
+      '|1⟩':  { re0:0, im0:0, re1:1, im1:0 },
+      '|+⟩':  { re0:1/Math.SQRT2, im0:0, re1:1/Math.SQRT2, im1:0 },
+      '|−⟩':  { re0:1/Math.SQRT2, im0:0, re1:-1/Math.SQRT2, im1:0 },
+      '|+i⟩': { re0:1/Math.SQRT2, im0:0, re1:0, im1:1/Math.SQRT2 },
+    };
+
+    /* ── State: simulation params ── */
+    let payloadKey = '|0⟩';
+    let payloadKey2 = '|0⟩';
+    let payloadKey3 = '|0⟩';
+    let nTrials = 500;
+    let gateNoise = 0;   // 0..1
+    let channelNoise = 0; // 0..1
+    let currentStep = 0;
+    let customTheta = 60;
+
+    // Correction table counters
+    const corrCounts = {c00:0, c01:0, c10:0, c11:0};
+
+    // Task 1 discovery tracking
+    let t1_seenFinal = false;  // reached step 6
+    let t1_payloadsAtFinal = new Set(); // distinct payloads seen at step 6
+
+    // Task 4 discovery tracking
+    let t4_seenGateOnly = false;
+    let t4_seenChanOnly = false;
+
+    /* ── Helpers ── */
+    function getPayload(key, theta_deg) {
+      if (key === 'custom') {
+        const t = theta_deg * Math.PI / 180;
+        return { re0: Math.cos(t/2), im0: 0, re1: Math.sin(t/2), im1: 0 };
+      }
+      return STATES[key];
+    }
+
+    function fmtC(re, im) {
+      // Format a complex number tidily
+      const fmtN = n => {
+        const v = Math.abs(n);
+        if (v < 0.001) return '0';
+        if (Math.abs(v - 1/Math.SQRT2) < 0.001) return '1/√2';
+        if (Math.abs(v - 1) < 0.001) return '1';
+        return v.toFixed(3);
+      };
+      const rSign = re >= 0 ? '' : '−';
+      const iSign = im >= 0 ? '+' : '−';
+      const rv = fmtN(re), iv = fmtN(im);
+      if (iv === '0' && rv === '0') return '0';
+      if (iv === '0') return `${rSign}${rv}`;
+      if (rv === '0') return `${im >= 0 ? '' : '−'}${iv}i`;
+      return `${rSign}${rv}${iSign}${iv}i`;
+    }
+
+    /* ── Depolarising noise on a single qubit state ── */
+    // Returns noisy {re0,im0,re1,im1} — simulates effect of depolarising channel
+    function applyDepol(s, p) {
+      if (p <= 0) return s;
+      // Depolarising: with prob p, replace with maximally mixed state
+      // New amplitudes: scale by sqrt(1-p) toward mixed
+      const scale = Math.sqrt(1 - p * 4/3);
+      return {
+        re0: s.re0 * scale, im0: s.im0 * scale,
+        re1: s.re1 * scale, im1: s.im1 * scale,
+      };
+    }
+
+    /* ── Run teleportation simulation ── */
+    // Returns { p0, p1, pPlus, pMinus, fidelity, corrDist }
+    function runSim(payloadState, N, gNoise, cNoise) {
+      const { re0, im0, re1, im1 } = payloadState;
+      // Ideal fidelity: always 1.0 with no noise.
+      // With gate noise p_g: fidelity ≈ 1 - (4/3)*p_g per gate (5 gates in circuit)
+      // With channel noise p_c: each bit flip prob p_c; wrong correction for cases 01,10,11
+      //   P(correct bits) = (1-p_c)^2
+      //   P(one bit wrong) = 2*p_c*(1-p_c)
+      //   P(both wrong) = p_c^2
+      // When correction is wrong, output state is scrambled (fidelity 0 for that trial)
+      const gateErrorPerCircuit = gNoise * 5; // 5 effective gates
+      const fidGate = Math.max(0, 1 - (4/3) * Math.min(gateErrorPerCircuit, 0.75));
+
+      const pCorrect = (1 - cNoise) * (1 - cNoise);
+      const pOneWrong = 2 * cNoise * (1 - cNoise);
+      // If correction wrong, output is random qubit -> fidelity 0.5 average
+      const fidChannel = pCorrect * 1.0 + pOneWrong * 0.5 + cNoise * cNoise * 0.5;
+
+      const fidelity = Math.min(1, fidGate * fidChannel);
+
+      // Simulate outcome distribution on Bob's qubit
+      // With perfect teleportation Bob has state (re0,im0,re1,im1)
+      // With noise, state is mixture of ideal + noise
+      // P(0) = |re0|^2+|im0|^2 ideal; with noise → mix toward 0.5
+      const p0_ideal = re0*re0 + im0*im0;
+      const p1_ideal = 1 - p0_ideal;
+
+      // Mix ideal with noise
+      const pNoiseMix = 1 - fidGate * fidChannel;
+      const p0 = p0_ideal * (1 - pNoiseMix) + 0.5 * pNoiseMix;
+      const p1 = 1 - p0;
+
+      // For Bloch measurements:
+      // X basis: P(+) = |<+|ψ>|^2 = |re0+re1|^2/2 + |im0+im1|^2/2
+      const pPlus_ideal  = ((re0+re1)*(re0+re1) + (im0+im1)*(im0+im1)) / 2;
+      const pMinus_ideal = 1 - pPlus_ideal;
+      const pPlus  = pPlus_ideal * (1-pNoiseMix) + 0.5 * pNoiseMix;
+      const pMinus = 1 - pPlus;
+
+      // Simulate correction distribution (always uniform regardless of payload)
+      const c00 = Math.round(N * 0.25 + (Math.random()-0.5)*Math.sqrt(N)*0.5);
+      const c01 = Math.round(N * 0.25 + (Math.random()-0.5)*Math.sqrt(N)*0.5);
+      const c10 = Math.round(N * 0.25 + (Math.random()-0.5)*Math.sqrt(N)*0.5);
+      const c11 = N - c00 - c01 - c10;
+
+      return { p0, p1, pPlus, pMinus, fidelity, corrDist: { c00, c01, c10, c11: Math.max(0,c11) } };
+    }
+
+    /* ── TASK 1: Step-through state display ── */
+    const stepBtns = document.querySelectorAll('.step-btn');
+
+    function updateStepDisplay(step, pKey, theta) {
+      const s = getPayload(pKey, theta);
+      const { re0, im0, re1, im1 } = s;
+
+      const stateExpr = el('state-expr');
+      const stateNarr = el('state-narr');
+
+      const a = fmtC(re0, im0);
+      const b = fmtC(re1, im1);
+      const rt2 = '1/√2';
+
+      const stages = [
+        {
+          expr: `(${a}|0⟩ + ${b}|1⟩) ⊗ |0⟩ ⊗ |0⟩`,
+          narr: `Three qubits initialised. q₀ holds the payload state — the qubit Alice wants to send. q₁ and q₂ are both |0⟩, ready to become the entangled Bell pair.`
+        },
+        {
+          expr: `(${a}|0⟩ + ${b}|1⟩) ⊗ <span class="hi">${rt2}(|00⟩ + |11⟩)</span>`,
+          narr: `A Hadamard on q₁ followed by a CNOT onto q₂ creates the Bell pair (|00⟩+|11⟩)/√2 between q₁ and q₂. The payload on q₀ is untouched. This Bell pair is the entanglement resource shared between Alice and Bob.`
+        },
+        {
+          expr: `${rt2}[ (${a}|00⟩ + ${b}|11⟩)|0⟩ + (${a}|10⟩ + ${b}|01⟩)|1⟩ ]`,
+          narr: `Alice applies CNOT with q₀ as control and q₁ as target. This entangles the payload with Alice's half of the Bell pair. The state can no longer be factored into a payload part and a Bell-pair part.`
+        },
+        {
+          expr: `½[ |00⟩(${a}|0⟩+${b}|1⟩) + |01⟩(${b}|0⟩+${a}|1⟩) + |10⟩(${a}|0⟩−${b}|1⟩) + |11⟩(${b}|0⟩−${a}|1⟩) ]`,
+          narr: `Alice applies Hadamard to q₀. Now the state is written as a sum over all four measurement outcomes (|00⟩, |01⟩, |10⟩, |11⟩) for Alice's pair, with Bob's qubit q₂ in a different state depending on which outcome occurs. The payload is encoded in Bob's qubit — once we know which correction to apply.`
+        },
+        {
+          expr: `Alice measures: m₀ ∈ {0,1},  m₁ ∈ {0,1}  <span class="amber">(random)</span>`,
+          narr: `Alice measures q₀ and q₁, collapsing to one of the four cases. Bob's qubit instantly becomes one of the four conditional states above. Alice sends the two bits to Bob over a classical channel — two ordinary bits, not carrying the payload itself.`
+        },
+        {
+          expr: `Bob's q₂ <span class="hi">= ${a}|0⟩ + ${b}|1⟩</span>`,
+          narr: `Bob applies the Pauli correction (I, X, Z, or ZX) determined by the bits he received. The payload state is now faithfully reproduced on his qubit — regardless of which measurement outcome Alice got. The teleportation is complete.`
+        },
+      ];
+
+      stateExpr.innerHTML = stages[step].expr;
+      stateNarr.textContent = stages[step].narr;
+    }
+
+    stepBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        stepBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentStep = parseInt(btn.dataset.step);
+        updateStepDisplay(currentStep, payloadKey, customTheta);
+        // Discovery: reached final stage
+        if (currentStep === 5) {
+          t1_payloadsAtFinal.add(payloadKey);
+          if (t1_payloadsAtFinal.size >= 2) unlock(2);
+        }
+      });
+    });
+
+    // Payload radio (Task 1)
+    document.querySelectorAll('#payload-radio .radio-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('#payload-radio .radio-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        payloadKey = btn.dataset.state;
+        el('custom-theta-wrap').style.display = payloadKey === 'custom' ? 'block' : 'none';
+        updateStepDisplay(currentStep, payloadKey, customTheta);
+        // If already on final step, track this payload too
+        if (currentStep === 5) {
+          t1_payloadsAtFinal.add(payloadKey);
+          if (t1_payloadsAtFinal.size >= 2) unlock(2);
+        }
+      });
+    });
+
+    el('theta-slider').addEventListener('input', function() {
+      customTheta = parseInt(this.value);
+      el('theta-display').textContent = customTheta;
+      updateStepDisplay(currentStep, payloadKey, customTheta);
+    });
+
+    // Init
+    updateStepDisplay(0, '|0⟩', 60);
+
+
+    /* ── TASK 2: Main experiment ── */
+    el('ntrials-slider').addEventListener('input', function() {
+      nTrials = parseInt(this.value);
+      el('ntrials-val').textContent = nTrials;
+    });
+    el('noise-slider').addEventListener('input', function() {
+      gateNoise = parseInt(this.value) / 100;
+      el('noise-val').textContent = this.value;
+    });
+    el('channel-slider').addEventListener('input', function() {
+      channelNoise = parseInt(this.value) / 100;
+      el('channel-val').textContent = this.value;
+    });
+
+    document.querySelectorAll('#payload-radio-2 .radio-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('#payload-radio-2 .radio-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        payloadKey2 = btn.dataset.state;
+      });
+    });
+
+    function updateAmpBars(p0, p1, pP, pM) {
+      const set = (id, barId, v) => {
+        el(id).textContent = (v * 100).toFixed(1) + '%';
+        el(barId).style.width = (v * 100).toFixed(1) + '%';
+      };
+      set('val-0','bar-0', p0);
+      set('val-1','bar-1', p1);
+      set('val-p','bar-p', pP);
+      set('val-m','bar-m', pM);
+    }
+
+    function updateFidelity(f) {
+      const pct = (f * 100).toFixed(1);
+      el('fidelity-fill').style.width = pct + '%';
+      el('fidelity-num').textContent = `F = ${pct}%`;
+    }
+
+    function updateInsights(f, gNoise, cNoise) {
+      const rows = [];
+      if (f >= 0.99) {
+        rows.push({ tag: 'fidelity', text: `<span class="hi">F = ${(f*100).toFixed(1)}%</span> — perfect teleportation. The state is transferred without any degradation.` });
+      } else if (f >= 0.90) {
+        rows.push({ tag: 'fidelity', text: `<span class="hi">F = ${(f*100).toFixed(1)}%</span> — high-fidelity transfer. Noise is present but the quantum advantage is preserved.` });
+      } else if (f >= 0.75) {
+        rows.push({ tag: 'fidelity', text: `<span class="warn">F = ${(f*100).toFixed(1)}%</span> — moderate degradation. Noise is eroding the transfer quality.` });
+      } else if (f >= 0.667) {
+        rows.push({ tag: 'fidelity', text: `<span class="warn">F = ${(f*100).toFixed(1)}%</span> — approaching the classical limit (2/3 ≈ 66.7%). A measure-and-resend strategy would do nearly as well.` });
+      } else {
+        rows.push({ tag: 'fidelity', text: `F = ${(f*100).toFixed(1)}% — below the classical limit. Noise is so severe that the quantum protocol is actively worse than a classical guess.` });
+      }
+      if (gNoise > 0) {
+        rows.push({ tag: 'gate noise', text: `Depolarising noise at ${(gNoise*100).toFixed(0)}% per gate attenuates coherences by ~${(100*(1-(1-gNoise*4/3))).toFixed(1)}% across the circuit.` });
+      }
+      if (cNoise > 0) {
+        const pFlip = (2*cNoise*(1-cNoise)*100).toFixed(1);
+        rows.push({ tag: 'channel', text: `Classical bit-flip noise at ${(cNoise*100).toFixed(0)}% gives a ~${pFlip}% chance of one bit arriving wrong — sending Bob the wrong correction.` });
+      }
+      if (gNoise === 0 && cNoise === 0) {
+        rows.push({ tag: 'note', text: 'No noise — this is ideal quantum teleportation. Try the noise sliders to see how fidelity degrades.' });
+      }
+      el('insight-panel').innerHTML = rows.map(r =>
+        `<div class="insight-row"><span class="insight-tag">${r.tag}</span><span class="insight-text">${r.text}</span></div>`
+      ).join('');
+    }
+
+    function updateConclusion(f) {
+      const box = el('conclusion');
+      if (f >= 0.99) {
+        box.className = 'conclusion';
+        box.innerHTML = `<div class="tag">Result</div>
+          <h3>Ideal teleportation achieved.</h3>
+          <p>Fidelity F = <span class="val-inline">100%</span>. The payload state arrived on Bob's qubit exactly as Alice sent it. This is only possible because Alice and Bob shared a pre-established entangled Bell pair. Without it, Alice's two classical bits would be completely useless — they carry no information about the payload.</p>
+          <p>The no-cloning theorem is satisfied: Alice's original qubit was destroyed by her measurement. There is no copy anywhere — just a faithfully transferred state.</p>`;
+      } else if (f >= 0.667) {
+        box.className = 'conclusion';
+        box.innerHTML = `<div class="tag">Result</div>
+          <h3>Teleportation succeeded with noise.</h3>
+          <p>Fidelity F = <span class="val-inline">${(f*100).toFixed(1)}%</span>. The protocol worked, but noise degraded the transfer. The classical threshold (best possible without entanglement) is 2/3 ≈ 66.7%. Your result is above that, confirming a genuine quantum advantage despite the imperfect channel.</p>`;
+      } else {
+        box.className = 'conclusion';
+        box.innerHTML = `<div class="tag">Result</div>
+          <h3>Noise has broken the quantum advantage.</h3>
+          <p>Fidelity F = <span class="val-inline">${(f*100).toFixed(1)}%</span>. This is below the classical limit of 66.7%. At this noise level, the quantum protocol offers no advantage over Alice simply guessing Bob's state. Reduce gate or channel noise to restore the advantage.</p>`;
+      }
+    }
+
+    el('run-btn').addEventListener('click', () => {
+      const s = getPayload(payloadKey2, customTheta);
+      const result = runSim(s, nTrials, gateNoise, channelNoise);
+      el('shot-label').textContent = `${nTrials} trials · ${payloadKey2}`;
+      updateAmpBars(result.p0, result.p1, result.pPlus, result.pMinus);
+      updateFidelity(result.fidelity);
+      updateInsights(result.fidelity, gateNoise, channelNoise);
+      updateConclusion(result.fidelity);
+
+      // Task 2 discovery: ran with no noise and saw perfect fidelity
+      if (result.fidelity >= 0.99) unlock(3);
+
+      // Update Task 4 fidelity comparison
+      const resGateOnly = runSim(s, nTrials, gateNoise, 0);
+      const resChanOnly = runSim(s, nTrials, 0, channelNoise);
+      el('fid-gate').textContent = (resGateOnly.fidelity*100).toFixed(1) + '%';
+      el('fid-gate').className = 'fid-big ' + (resGateOnly.fidelity >= 0.9 ? 'good' : resGateOnly.fidelity >= 0.667 ? '' : 'bad');
+      el('fid-gate-sub').textContent = `gate noise ${(gateNoise*100).toFixed(0)}%, channel noise 0`;
+      el('fid-chan').textContent = (resChanOnly.fidelity*100).toFixed(1) + '%';
+      el('fid-chan').className = 'fid-big ' + (resChanOnly.fidelity >= 0.9 ? 'good' : resChanOnly.fidelity >= 0.667 ? '' : 'bad');
+      el('fid-chan-sub').textContent = `gate noise 0, channel noise ${(channelNoise*100).toFixed(0)}%`;
+
+      // Task 4 discovery: run gate-only and channel-only noise separately
+      if (gateNoise > 0 && channelNoise === 0) t4_seenGateOnly = true;
+      if (channelNoise > 0 && gateNoise === 0) t4_seenChanOnly = true;
+      if (t4_seenGateOnly && t4_seenChanOnly) unlock(5);
+    });
+
+    el('reset-btn').addEventListener('click', () => {
+      nTrials = 500; gateNoise = 0; channelNoise = 0;
+      el('ntrials-slider').value = 500; el('ntrials-val').textContent = 500;
+      el('noise-slider').value = 0; el('noise-val').textContent = 0;
+      el('channel-slider').value = 0; el('channel-val').textContent = 0;
+      el('shot-label').textContent = 'no data yet';
+      updateAmpBars(0,0,0,0);
+      el('fidelity-fill').style.width = '0%';
+      el('fidelity-num').textContent = '—';
+      el('insight-panel').innerHTML = '';
+      el('fid-gate').textContent = '—'; el('fid-gate').className = 'fid-big good';
+      el('fid-chan').textContent = '—'; el('fid-chan').className = 'fid-big good';
+      el('fid-gate-sub').textContent = 'run experiment to compute';
+      el('fid-chan-sub').textContent = 'run experiment to compute';
+      const box = el('conclusion');
+      box.className = 'conclusion not-yet';
+      box.innerHTML = `<div class="tag">Pending</div><h3>Awaiting experiment data.</h3><p>Run Task 02 to generate a verdict on your teleportation fidelity.</p>`;
+    });
+
+
+    /* ── TASK 3: Single shot ── */
+    document.querySelectorAll('#payload-radio-3 .radio-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('#payload-radio-3 .radio-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        payloadKey3 = btn.dataset.state;
+      });
+    });
+
+    const CORR_TABLE = {
+      '00': 'I (none)', '01': 'X', '10': 'Z', '11': 'ZX'
+    };
+
+    el('single-shot-btn').addEventListener('click', () => {
+      // Always uniform measurement outcomes
+      const m0 = Math.random() < 0.5 ? 0 : 1;
+      const m1 = Math.random() < 0.5 ? 0 : 1;
+      const key = `${m0}${m1}`;
+      const corr = CORR_TABLE[key];
+
+      // Update display
+      el('cbit-0-val').textContent = m0;
+      el('cbit-1-val').textContent = m1;
+      el('cbit-corr-val').textContent = corr;
+      el('cbit-0').classList.add('revealed');
+      el('cbit-1').classList.add('revealed');
+      el('cbit-corr').classList.add('revealed');
+      el('cbit-narr').textContent = `m₀=${m0}, m₁=${m1} → Bob applies ${corr}. Payload restored on Bob's qubit.`;
+
+      // Highlight row
+      ['00','01','10','11'].forEach(k => {
+        el(`corr-row-${k}`).className = '';
+      });
+      el(`corr-row-${key}`).className = 'hi-row';
+
+      // Increment counts
+      corrCounts[`c${key}`]++;
+      const total = corrCounts.c00 + corrCounts.c01 + corrCounts.c10 + corrCounts.c11;
+      ['00','01','10','11'].forEach(k => {
+        const cnt = corrCounts[`c${k}`];
+        el(`obs-${k}`).textContent = `${cnt} (${total > 0 ? (cnt/total*100).toFixed(0) : 0}%)`;
+      });
+
+      // Task 3 discovery: all four correction cases observed at least once
+      if (corrCounts.c00 > 0 && corrCounts.c01 > 0 && corrCounts.c10 > 0 && corrCounts.c11 > 0) unlock(4);
+    });
+
+
+    /* ── TASK 5: Scenario cards ── */
+    const scenarios = [
+      {
+        tag: 'ideal case',
+        name: 'Perfect teleportation',
+        desc: 'No noise of any kind. Fidelity is exactly 100% for any payload state. This is the baseline: entanglement alone achieves what classical communication cannot.',
+        config: { payload: '|+⟩', gNoise: 0, cNoise: 0, n: 1000 },
+        note: 'Expected F = 100%.',
+      },
+      {
+        tag: 'FTL misconception',
+        name: 'Classical bits not received',
+        desc: 'What if Bob doesn\'t receive Alice\'s classical bits? His qubit is in a maximally mixed state — completely random. No information is conveyed. This is why teleportation does not enable faster-than-light signalling.',
+        config: { payload: '|+⟩', gNoise: 0, cNoise: 50, n: 1000 },
+        note: 'F ≈ 50% — no better than random (channel noise 50% simulates Bob not correcting).',
+      },
+      {
+        tag: 'realistic hardware',
+        name: 'NISQ-era gate noise',
+        desc: 'Modern superconducting qubits have gate error rates around 0.5–1%. Even small per-gate errors accumulate across the 5-gate protocol. Fidelity is still high but measurably below perfect.',
+        config: { payload: '|+⟩', gNoise: 1, cNoise: 0, n: 2000 },
+        note: 'Expected F ≈ 93–96% with ~1% gate noise.',
+      },
+      {
+        tag: 'noisy classical channel',
+        name: 'Lossy classical channel',
+        desc: 'A noisy transmission line corrupts one of Alice\'s bits 10% of the time. Bob applies the wrong correction for those trials, scrambling the state completely. The fidelity loss is abrupt rather than gradual.',
+        config: { payload: '|−⟩', gNoise: 0, cNoise: 10, n: 1000 },
+        note: 'Expected F ≈ 82%. Compare with equivalent gate noise for different degradation curve.',
+      },
+      {
+        tag: 'phase state',
+        name: 'Teleporting |−⟩',
+        desc: 'The |−⟩ state is (|0⟩−|1⟩)/√2. It differs from |+⟩ only in relative phase — invisible to a Z-basis measurement. Teleportation must faithfully transfer this phase. With no noise it does so perfectly.',
+        config: { payload: '|−⟩', gNoise: 0, cNoise: 0, n: 1000 },
+        note: 'F = 100%. Phase is preserved exactly — confirming teleportation transmits the full quantum state.',
+      },
+      {
+        tag: 'combined noise',
+        name: 'Gate and channel noise together',
+        desc: 'Realistic devices suffer both imperfect gates and imperfect classical communication. The two noise sources compound: fidelity under combined noise is lower than either alone.',
+        config: { payload: '|+i⟩', gNoise: 3, cNoise: 5, n: 2000 },
+        note: 'Expected F ≈ 70–78%. Both error sources matter independently.',
+      },
+    ];
+
+    function renderScenarios() {
+      el('scenario-grid').innerHTML = scenarios.map((sc, i) => `
+        <div class="scenario-card">
+          <div class="scenario-card-tag">${sc.tag}</div>
+          <h4>${sc.name}</h4>
+          <p>${sc.desc}</p>
+          <p style="font-family:var(--mono); font-size:11px; color:var(--phos); margin:0 0 12px;">${sc.note}</p>
+          <button class="load-scenario-btn" data-idx="${i}">Load into Task 02 ↑</button>
+        </div>`
+      ).join('');
+
+      document.querySelectorAll('.load-scenario-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const sc = scenarios[parseInt(btn.dataset.idx)];
+          const { payload, gNoise, cNoise, n } = sc.config;
+
+          // Apply to task 2 controls
+          payloadKey2 = payload;
+          document.querySelectorAll('#payload-radio-2 .radio-btn').forEach(b => {
+            b.classList.toggle('active', b.dataset.state === payload);
+          });
+          nTrials = n; el('ntrials-slider').value = n; el('ntrials-val').textContent = n;
+          gateNoise = gNoise/100; el('noise-slider').value = gNoise; el('noise-val').textContent = gNoise;
+          channelNoise = cNoise/100; el('channel-slider').value = cNoise; el('channel-val').textContent = cNoise;
+
+          document.querySelectorAll('.load-scenario-btn').forEach(b => b.classList.remove('loaded'));
+          btn.classList.add('loaded');
+          btn.textContent = 'Loaded ✓ — press Run ↑';
+          el('run-btn').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        });
+      });
+    }
+
+    renderScenarios();
+
+  })();
+  </script>
+</body>
+</html>

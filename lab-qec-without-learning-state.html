@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lab — Surface Code Error Correction</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,400&family=JetBrains+Mono:wght@300;400;500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles/base.css" />
+  <style>
+    .lab-hero {
+      border: 1px solid var(--line);
+      padding: 32px 28px;
+      margin: 28px 0 36px;
+      background: linear-gradient(180deg, rgba(127,255,196,0.06), transparent 80%);
+      position: relative;
+    }
+    .lab-hero::before {
+      content: 'LAB';
+      position: absolute;
+      top: 14px;
+      right: 18px;
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      color: var(--phos);
+      border: 1px solid var(--phos);
+      padding: 2px 8px;
+      pointer-events: none;
+    }
+    .lab-hero h1 {
+      font-family: var(--serif);
+      font-weight: 300;
+      font-size: 34px;
+      line-height: 1.15;
+      margin: 0 0 16px;
+      max-width: 880px;
+    }
+    .lab-hero h1 em { font-style: italic; color: var(--phos); }
+    .lab-hero p {
+      max-width: 760px;
+      font-size: 15px;
+      line-height: 1.6;
+      color: var(--ink-dim);
+      margin: 0 0 12px;
+    }
+    .task {
+      border: 1px solid var(--line);
+      margin: 28px 0;
+      position: relative;
+    }
+    .task-head {
+      padding: 18px 24px 14px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: baseline;
+      gap: 18px;
+    }
+    .task-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--phos);
+    }
+    .task-title {
+      font-family: var(--serif);
+      font-style: italic;
+      font-weight: 400;
+      font-size: 22px;
+      margin: 0;
+      color: var(--ink);
+    }
+    .task-body { padding: 22px 24px; }
+    .task-body p {
+      font-size: 13.5px;
+      line-height: 1.65;
+      color: var(--ink-dim);
+      margin: 0 0 12px;
+    }
+    .game-wrap {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 28px;
+      margin-top: 16px;
+      align-items: start;
+    }
+    @media (max-width: 900px) { .game-wrap { grid-template-columns: 1fr; } }
+    .game-panel {
+      border: 1px solid var(--line);
+      padding: 18px;
+      background: var(--bg-2);
+    }
+    .game-panel h3 {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      margin: 0 0 14px;
+    }
+    .legend {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--ink-faint);
+      margin-bottom: 12px;
+      line-height: 1.6;
+    }
+    .legend span { display: inline-block; margin-right: 14px; }
+    .dot { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: middle; }
+    .dot-ok { background: var(--line-bright); border: 1px solid var(--line); }
+    .dot-v { background: rgba(255,112,112,0.35); border: 1px solid var(--red); }
+    .syndrome-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      max-width: 280px;
+    }
+    .syndrome-cell {
+      aspect-ratio: 1;
+      border: 1px solid var(--line-bright);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--mono);
+      font-size: 11px;
+      background: var(--bg-1);
+      color: var(--ink-faint);
+    }
+    .syndrome-cell.violated {
+      background: rgba(255,112,112,0.12);
+      border-color: var(--red);
+      color: var(--red);
+    }
+    .data-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 6px;
+      max-width: 340px;
+    }
+    .data-cell {
+      aspect-ratio: 1;
+      border: 1px solid var(--line-bright);
+      background: var(--bg-1);
+      cursor: pointer;
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--ink-faint);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .data-cell:hover { border-color: var(--phos); color: var(--phos); }
+    .data-cell.selected {
+      border-color: var(--cyan);
+      background: rgba(111,212,224,0.12);
+      color: var(--cyan);
+    }
+    .data-cell.correct { border-color: var(--phos); background: rgba(127,255,196,0.15); color: var(--phos); }
+    .data-cell.wrong { border-color: var(--red); background: rgba(255,112,112,0.1); }
+    .run-bar { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
+    .run-btn {
+      padding: 10px 16px;
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      background: var(--phos);
+      color: var(--bg-0);
+      border: none;
+      cursor: pointer;
+    }
+    .run-btn:hover { opacity: 0.88; }
+    .run-btn.secondary {
+      background: transparent;
+      color: var(--ink-faint);
+      border: 1px solid var(--line-bright);
+    }
+    .score-line {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--phos);
+      margin-top: 12px;
+    }
+    .feedback {
+      margin-top: 12px;
+      padding: 12px 14px;
+      border-left: 3px solid var(--line-bright);
+      font-size: 13px;
+      line-height: 1.55;
+      color: var(--ink-dim);
+    }
+    .feedback.win { border-left-color: var(--phos); color: var(--ink); }
+    .feedback.loss { border-left-color: var(--red); color: var(--ink); }
+    .explain-box {
+      border: 1px solid var(--line);
+      padding: 18px 20px;
+      background: var(--bg-1);
+      margin-top: 12px;
+    }
+    .explain-box code { font-family: var(--mono); color: var(--cyan); font-size: 12px; }
+    .lab-footer {
+      margin-top: 40px;
+      padding-top: 24px;
+      border-top: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .lab-footer a {
+      color: var(--ink-faint);
+      text-decoration: none;
+      font-family: var(--mono);
+      font-size: 12px;
+    }
+    .lab-footer a:hover { color: var(--phos); }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="masthead">
+      <div class="brand">
+        <div class="brand-mark">Quantum <span class="amp">&amp;</span> Lab</div>
+        <div class="brand-tag">Lab · Surface code (distance 5)</div>
+      </div>
+    </header>
+
+    <section class="lab-hero">
+      <h1>Can you find the error from <em>parity checks alone?</em></h1>
+      <p>
+        The surface code stores logical information redundantly. Many local <code>Z</code> stabilizers
+        (plaquette operators) each return a single parity bit. A single <code>X</code> error on one data
+        qubit flips the syndromes of every plaquette that touches that qubit — you see a pattern of
+        violations without learning the logical state.
+      </p>
+      <p>
+        In this simplified <code>d = 5</code> patch there are <code>5×5</code> data qubits and
+        <code>4×4</code> plaquette checks. One hidden <code>X</code> error has occurred. Use the violated
+        plaquettes to guess which qubit was hit, then press <b>Submit guess</b>.
+      </p>
+    </section>
+
+    <article class="task">
+      <header class="task-head">
+        <span class="task-label">Task 01</span>
+        <h2 class="task-title">Syndrome hunt — guess the error location.</h2>
+      </header>
+      <div class="task-body">
+        <p>
+          Red plaquettes mean that stabilizer measured <code>−1</code> (parity violation). Your job is
+          the same as a decoder: infer the most likely error location from this syndrome pattern.
+        </p>
+        <div class="game-wrap">
+          <div class="game-panel">
+            <h3>Plaquette syndromes (what you measure)</h3>
+            <div class="legend">
+              <span><i class="dot dot-ok"></i> happy (<code>+1</code>)</span>
+              <span><i class="dot dot-v"></i> violated (<code>−1</code>)</span>
+            </div>
+            <div class="syndrome-grid" id="syndrome-grid" aria-label="Syndrome grid"></div>
+            <div class="run-bar">
+              <button type="button" class="run-btn" id="new-round-btn">New round</button>
+              <button type="button" class="run-btn secondary" id="submit-btn">Submit guess</button>
+            </div>
+            <p class="score-line" id="score-line">Score: 0 correct / 0 rounds</p>
+            <div class="feedback" id="feedback">Pick a data qubit below, then submit — or start a new round.</div>
+          </div>
+          <div class="game-panel">
+            <h3>Data qubits (your guess)</h3>
+            <p style="font-size:12px; color:var(--ink-faint); margin:0 0 10px; font-family:var(--mono);">
+              Rows and columns are 0-indexed. Corners touch one plaquette; edges two; interior four.
+            </p>
+            <div class="data-grid" id="data-grid" aria-label="Data qubit grid"></div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <article class="task">
+      <header class="task-head">
+        <span class="task-label">Task 02</span>
+        <h2 class="task-title">Why this is quantum error correction.</h2>
+      </header>
+      <div class="task-body">
+        <p>
+          Stabilizer outcomes only tell you about <em>errors</em>, not about the encoded logical
+          <code>|0⟩</code> vs <code>|1⟩</code>. That separation is why we can detect and later correct
+          noise while preserving superpositions of the logical subspace.
+        </p>
+        <div class="explain-box">
+          <p style="margin:0 0 8px;">
+            On a larger patch, multiple errors create more complex syndrome patterns; a minimum-distance
+            <code>d</code> code can correct up to <code>(d−1)/2</code> physical errors. Here
+            <code>d = 5</code> is the size of the patch in the usual “one logical qubit” layout; this
+            toy game uses a single <code>X</code> so the pattern stays unique and beginner-friendly.
+          </p>
+        </div>
+      </div>
+    </article>
+
+    <div class="lab-footer">
+      <a href="index.html">← Back to main app</a>
+      <a href="#" id="scroll-game">↑ Back to game</a>
+    </div>
+  </div>
+
+  <script>
+    (function initSurfaceCodeGame() {
+      const D = 5;
+      const P = D - 1;
+
+      const syndromeGrid = document.getElementById('syndrome-grid');
+      const dataGrid = document.getElementById('data-grid');
+      const feedback = document.getElementById('feedback');
+      const scoreLine = document.getElementById('score-line');
+      const newRoundBtn = document.getElementById('new-round-btn');
+      const submitBtn = document.getElementById('submit-btn');
+
+      let secretR = 0;
+      let secretC = 0;
+      let syndromes = [];
+      let guessR = null;
+      let guessC = null;
+      let rounds = 0;
+      let correct = 0;
+      let submitted = false;
+
+      function syndromeForError(er, ec) {
+        const s = [];
+        for (let pr = 0; pr < P; pr++) {
+          const row = [];
+          for (let pc = 0; pc < P; pc++) {
+            const hit = (er >= pr && er <= pr + 1 && ec >= pc && ec <= pc + 1);
+            row.push(hit ? 1 : 0);
+          }
+          s.push(row);
+        }
+        return s;
+      }
+
+      function renderSyndrome() {
+        syndromeGrid.innerHTML = '';
+        for (let pr = 0; pr < P; pr++) {
+          for (let pc = 0; pc < P; pc++) {
+            const cell = document.createElement('div');
+            cell.className = 'syndrome-cell' + (syndromes[pr][pc] ? ' violated' : '');
+            cell.textContent = syndromes[pr][pc] ? '−1' : '+1';
+            cell.title = `Plaquette (${pr},${pc})`;
+            syndromeGrid.appendChild(cell);
+          }
+        }
+      }
+
+      function renderDataGrid() {
+        dataGrid.innerHTML = '';
+        for (let r = 0; r < D; r++) {
+          for (let c = 0; c < D; c++) {
+            const cell = document.createElement('button');
+            cell.type = 'button';
+            cell.className = 'data-cell';
+            cell.textContent = r + ',' + c;
+            cell.dataset.r = String(r);
+            cell.dataset.c = String(c);
+            cell.addEventListener('click', () => {
+              if (submitted) return;
+              guessR = r;
+              guessC = c;
+              dataGrid.querySelectorAll('.data-cell').forEach(el => el.classList.remove('selected'));
+              cell.classList.add('selected');
+              feedback.className = 'feedback';
+              feedback.textContent = `Selected (${r},${c}). Press Submit guess when ready.`;
+            });
+            dataGrid.appendChild(cell);
+          }
+        }
+      }
+
+      function newRound() {
+        submitted = false;
+        secretR = Math.floor(Math.random() * D);
+        secretC = Math.floor(Math.random() * D);
+        syndromes = syndromeForError(secretR, secretC);
+        guessR = null;
+        guessC = null;
+        renderSyndrome();
+        renderDataGrid();
+        feedback.className = 'feedback';
+        feedback.textContent = 'New syndrome pattern. Click a data qubit, then Submit guess.';
+      }
+
+      function submitGuess() {
+        if (submitted) {
+          feedback.textContent = 'Already submitted for this round. Press New round.';
+          return;
+        }
+        if (guessR === null) {
+          feedback.textContent = 'Select a cell on the data grid first.';
+          return;
+        }
+        submitted = true;
+        rounds += 1;
+        const ok = guessR === secretR && guessC === secretC;
+        if (ok) correct += 1;
+
+        dataGrid.querySelectorAll('.data-cell').forEach(el => {
+          const rr = parseInt(el.dataset.r, 10);
+          const cc = parseInt(el.dataset.c, 10);
+          el.classList.remove('selected', 'correct', 'wrong');
+          if (rr === secretR && cc === secretC) el.classList.add('correct');
+          else if (rr === guessR && cc === guessC) el.classList.add('wrong');
+        });
+
+        feedback.className = 'feedback ' + (ok ? 'win' : 'loss');
+        feedback.innerHTML = ok
+          ? `<b>Correct.</b> The <code>X</code> error was at (${secretR},${secretC}).`
+          : `<b>Not quite.</b> You guessed (${guessR},${guessC}); the error was at (${secretR},${secretC}).`;
+
+        scoreLine.textContent = `Score: ${correct} correct / ${rounds} rounds`;
+      }
+
+      newRoundBtn.addEventListener('click', newRound);
+      submitBtn.addEventListener('click', submitGuess);
+      document.getElementById('scroll-game').addEventListener('click', (e) => {
+        e.preventDefault();
+        document.getElementById('new-round-btn').scrollIntoView({ behavior: 'smooth', block: 'center' });
+      });
+
+      newRound();
+    })();
+  </script>
+</body>
+</html>

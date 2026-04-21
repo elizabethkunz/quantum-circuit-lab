@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lab — No Cloning and BB84</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,400&family=JetBrains+Mono:wght@300;400;500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles/base.css" />
+  <style>
+    .lab-hero {
+      border: 1px solid var(--line);
+      padding: 32px 28px;
+      margin: 28px 0 36px;
+      background: linear-gradient(180deg, rgba(111,212,224,0.05), transparent 80%);
+      position: relative;
+    }
+    .lab-hero::before {
+      content: 'LAB';
+      position: absolute;
+      top: 14px;
+      right: 18px;
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      color: var(--cyan);
+      border: 1px solid var(--cyan);
+      padding: 2px 8px;
+      pointer-events: none;
+    }
+    .lab-hero h1 {
+      font-family: var(--serif);
+      font-weight: 300;
+      font-size: 36px;
+      line-height: 1.15;
+      margin: 0 0 16px;
+      max-width: 900px;
+    }
+    .lab-hero h1 em { color: var(--cyan); font-style: italic; }
+    .lab-hero p {
+      max-width: 760px;
+      font-size: 15px;
+      line-height: 1.6;
+      color: var(--ink-soft);
+      margin: 0 0 12px;
+    }
+    .task {
+      border: 1px solid var(--line);
+      margin: 28px 0;
+      position: relative;
+    }
+    .task-head {
+      padding: 18px 24px 14px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: baseline;
+      gap: 18px;
+    }
+    .task-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--cyan);
+    }
+    .task-title {
+      font-family: var(--serif);
+      font-style: italic;
+      font-weight: 400;
+      font-size: 22px;
+      margin: 0;
+      color: var(--ink);
+    }
+    .task-body { padding: 22px 24px; }
+    .task-body p {
+      font-size: 13.5px;
+      line-height: 1.65;
+      color: var(--ink-soft);
+      margin: 0 0 12px;
+    }
+    .bench {
+      display: grid;
+      grid-template-columns: 340px 1fr;
+      gap: 24px;
+      margin-top: 8px;
+    }
+    @media (max-width: 980px) { .bench { grid-template-columns: 1fr; } }
+    .knobs {
+      border: 1px solid var(--line);
+      padding: 18px;
+      background: var(--bg-2);
+      position: relative;
+      z-index: 2;
+    }
+    .knob-group { margin-bottom: 16px; }
+    .knob-group:last-child { margin-bottom: 0; }
+    .knob-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+    .knob-val { color: var(--cyan); font-family: var(--mono); }
+    .knob-group input[type="range"] { width: 100%; accent-color: var(--cyan); }
+    .radio-row {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      position: relative;
+      z-index: 2;
+    }
+    .radio-btn {
+      flex: 1 1 auto;
+      min-width: 0;
+      padding: 7px 10px;
+      font-family: var(--mono);
+      font-size: 11px;
+      background: var(--bg-1);
+      border: 1px solid var(--line-bright);
+      color: var(--ink-soft);
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.15s;
+    }
+    .radio-btn:hover { border-color: var(--cyan); color: var(--ink); }
+    .radio-btn.active {
+      background: rgba(111,212,224,0.14);
+      border-color: var(--cyan);
+      color: var(--cyan);
+    }
+    .run-bar {
+      display: flex;
+      gap: 10px;
+      margin-top: 16px;
+      position: relative;
+      z-index: 2;
+    }
+    .run-btn {
+      flex: 1;
+      padding: 10px 14px;
+      font-family: var(--mono);
+      font-size: 12px;
+      letter-spacing: 0.05em;
+      background: var(--cyan);
+      color: var(--bg-0);
+      border: none;
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+    .run-btn:hover { opacity: 0.85; }
+    .run-btn.secondary {
+      background: transparent;
+      color: var(--ink-faint);
+      border: 1px solid var(--line-bright);
+    }
+    .readouts { display: flex; flex-direction: column; gap: 18px; }
+    .readout-card {
+      border: 1px solid var(--line);
+      padding: 16px 18px;
+      background: var(--bg-1);
+    }
+    .readout-head {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+    }
+    .readout-sub { color: var(--ink-faint); font-size: 10px; letter-spacing: 0.05em; text-transform: none; }
+    table.stats {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: var(--mono);
+      font-size: 12px;
+    }
+    .stats th, .stats td {
+      padding: 8px 10px;
+      border-bottom: 1px solid var(--line);
+      text-align: right;
+    }
+    .stats th:first-child, .stats td:first-child { text-align: left; color: var(--ink-faint); }
+    .stats tr:last-child td { border-bottom: none; }
+    .bar-wrap {
+      height: 22px;
+      border: 1px solid var(--line);
+      background: var(--bg-2);
+      position: relative;
+      overflow: hidden;
+    }
+    .bar-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--cyan), var(--magenta));
+      transition: width 0.3s;
+    }
+    .bar-mark {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 1px;
+      background: var(--amber);
+      pointer-events: none;
+    }
+    .bar-mark::after {
+      content: attr(data-label);
+      position: absolute;
+      top: -14px;
+      left: -14px;
+      font-family: var(--mono);
+      font-size: 9px;
+      color: var(--amber);
+    }
+    .verdict {
+      margin-top: 10px;
+      padding: 12px 14px;
+      border-left: 3px solid var(--line-bright);
+      font-size: 13px;
+      line-height: 1.55;
+      color: var(--ink-soft);
+    }
+    .verdict.alert { border-left-color: var(--magenta); color: var(--ink); }
+    .verdict.safe { border-left-color: var(--phos); color: var(--ink); }
+    .theorem-box {
+      border: 1px solid var(--cyan);
+      background: linear-gradient(180deg, rgba(111,212,224,0.08), transparent);
+      padding: 20px 22px;
+      margin-top: 12px;
+    }
+    .theorem-box .tag {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--cyan);
+      margin-bottom: 8px;
+    }
+    .theorem-box p {
+      margin: 0 0 10px;
+      font-size: 13.5px;
+      line-height: 1.6;
+      color: var(--ink-soft);
+    }
+    .theorem-box code { font-family: var(--mono); color: var(--magenta); }
+    .flow-svg { width: 100%; height: 132px; pointer-events: none; }
+    .lab-footer {
+      margin-top: 40px;
+      padding-top: 24px;
+      border-top: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .lab-footer a {
+      color: var(--ink-faint);
+      text-decoration: none;
+      font-family: var(--mono);
+      font-size: 12px;
+      letter-spacing: 0.03em;
+    }
+    .lab-footer a:hover { color: var(--cyan); }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="masthead">
+      <div class="brand">
+        <div class="brand-mark">Quantum <span class="amp">&amp;</span> Lab</div>
+        <div class="brand-tag">Lab · No Cloning and BB84</div>
+      </div>
+    </header>
+
+    <section class="lab-hero">
+      <h1>Can an eavesdropper <em>copy a quantum message</em> without being detected?</h1>
+      <p>
+        In BB84, Alice sends random qubits prepared in one of two incompatible bases. Bob measures each qubit
+        in a random basis and later compares basis choices with Alice over a public channel.
+      </p>
+      <p>
+        If Eve intercepts and measures qubits to copy the message, she must guess a basis. Wrong guesses
+        disturb the state. That disturbance appears as extra errors in Alice and Bob's sifted key.
+      </p>
+    </section>
+
+    <article class="task">
+      <header class="task-head">
+        <span class="task-label">Task 01</span>
+        <h2 class="task-title">Configure the BB84 channel.</h2>
+      </header>
+      <div class="task-body">
+        <p>Pick key length, intrinsic channel noise, and an eavesdropping strategy. Then run repeated rounds and watch the observed error rate.</p>
+
+        <svg class="flow-svg" viewBox="0 0 700 132" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <rect x="20" y="38" width="130" height="56" rx="3" fill="var(--bg-2)" stroke="var(--cyan)" />
+          <text x="85" y="62" text-anchor="middle" font-family="var(--mono)" font-size="11" fill="var(--cyan)">Alice</text>
+          <text x="85" y="77" text-anchor="middle" font-family="var(--mono)" font-size="9" fill="var(--ink-faint)">prepare qubits</text>
+          <rect x="288" y="38" width="130" height="56" rx="3" fill="var(--bg-2)" stroke="var(--amber)" />
+          <text x="353" y="62" text-anchor="middle" font-family="var(--mono)" font-size="11" fill="var(--amber)">Channel / Eve</text>
+          <text x="353" y="77" text-anchor="middle" font-family="var(--mono)" font-size="9" fill="var(--ink-faint)">intercept-resend</text>
+          <rect x="550" y="38" width="130" height="56" rx="3" fill="var(--bg-2)" stroke="var(--phos)" />
+          <text x="615" y="62" text-anchor="middle" font-family="var(--mono)" font-size="11" fill="var(--phos)">Bob</text>
+          <text x="615" y="77" text-anchor="middle" font-family="var(--mono)" font-size="9" fill="var(--ink-faint)">measure qubits</text>
+          <line x1="150" y1="66" x2="288" y2="66" stroke="var(--line-bright)"/>
+          <line x1="418" y1="66" x2="550" y2="66" stroke="var(--line-bright)"/>
+        </svg>
+
+        <div class="bench">
+          <div class="knobs">
+            <div class="knob-group">
+              <div class="knob-label"><span>Total transmitted qubits</span><span class="knob-val" id="n-val">400</span></div>
+              <input type="range" id="n-slider" min="100" max="5000" value="400" step="50" />
+            </div>
+            <div class="knob-group">
+              <div class="knob-label"><span>Channel noise (background)</span><span class="knob-val"><span id="noise-val">2</span>%</span></div>
+              <input type="range" id="noise-slider" min="0" max="20" value="2" step="1" />
+            </div>
+            <div class="knob-group">
+              <div class="knob-label"><span>Eve interception rate</span><span class="knob-val"><span id="eve-rate-val">0</span>%</span></div>
+              <input type="range" id="eve-rate-slider" min="0" max="100" value="0" step="5" />
+            </div>
+            <div class="knob-group">
+              <div class="knob-label"><span>Eve strategy</span></div>
+              <div class="radio-row" id="eve-radio">
+                <button class="radio-btn active" data-mode="off">No Eve</button>
+                <button class="radio-btn" data-mode="intercept">Intercept-resend</button>
+              </div>
+            </div>
+            <div class="run-bar">
+              <button class="run-btn" id="run-btn">▶ Run BB84 round</button>
+              <button class="run-btn secondary" id="reset-btn">Reset</button>
+            </div>
+          </div>
+
+          <div class="readouts">
+            <div class="readout-card">
+              <div class="readout-head">
+                <span>Sifted key statistics</span>
+                <span class="readout-sub" id="status-line">no data yet</span>
+              </div>
+              <table class="stats">
+                <tbody>
+                  <tr><td>Transmitted qubits</td><td id="st-transmitted">—</td></tr>
+                  <tr><td>Sifted key length</td><td id="st-sifted">—</td></tr>
+                  <tr><td>Sampled bits for check</td><td id="st-sampled">—</td></tr>
+                  <tr><td>Observed QBER</td><td id="st-qber">—</td></tr>
+                  <tr><td>Expected QBER from Eve alone</td><td id="st-qber-eve">—</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="readout-card">
+              <div class="readout-head">
+                <span>Eavesdropping detectability</span>
+                <span class="readout-sub">typical abort threshold: 11%</span>
+              </div>
+              <div class="bar-wrap">
+                <div class="bar-fill" id="qber-bar"></div>
+                <div class="bar-mark" data-label="11%" style="left:11%;"></div>
+              </div>
+              <p style="margin:10px 0 0; font-size:12px; color:var(--ink-faint); font-family:var(--mono);" id="qber-line">QBER: —</p>
+              <div class="verdict" id="verdict">
+                Run the simulation. If Eve copies qubits by measurement, the extra disturbance appears as higher QBER.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <article class="task">
+      <header class="task-head">
+        <span class="task-label">Task 02</span>
+        <h2 class="task-title">Interpret the no-cloning limit.</h2>
+      </header>
+      <div class="task-body">
+        <p>BB84 security comes from a structural fact about quantum mechanics, not from Eve lacking compute power.</p>
+        <div class="theorem-box">
+          <div class="tag">No-cloning theorem</div>
+          <p>
+            There is no universal unitary operation <code>U</code> such that
+            <code>U |psi⟩|0⟩ = |psi⟩|psi⟩</code> for every unknown state <code>|psi⟩</code>.
+          </p>
+          <p>
+            In BB84, states from the Z and X bases are non-orthogonal as a set. Eve cannot perfectly copy
+            an unknown incoming qubit and delay measurement until basis information is announced.
+          </p>
+          <p>
+            Intercept-resend forces Eve to measure immediately in a guessed basis. Wrong guesses randomize
+            Bob outcomes in sifted bits, producing a detectable error signature.
+          </p>
+        </div>
+      </div>
+    </article>
+
+    <article class="task">
+      <header class="task-head">
+        <span class="task-label">Task 03</span>
+        <h2 class="task-title">Operational question and answer.</h2>
+      </header>
+      <div class="task-body">
+        <p>
+          <b>Question:</b> Can an eavesdropper copy a quantum message without being detected?
+        </p>
+        <p id="final-answer" style="font-family:var(--serif); font-size:20px; color:var(--ink);">
+          No result yet. Run a round above.
+        </p>
+      </div>
+    </article>
+
+    <div class="lab-footer">
+      <a href="index.html">← Back to main app</a>
+      <a href="#" onclick="document.getElementById('run-btn').scrollIntoView({behavior:'smooth', block:'center'}); return false;">↑ Back to simulation</a>
+    </div>
+  </div>
+
+  <script>
+    (function initBB84Lab() {
+      const el = id => document.getElementById(id);
+
+      const sliders = {
+        n: el('n-slider'),
+        noise: el('noise-slider'),
+        eveRate: el('eve-rate-slider')
+      };
+      const vals = {
+        n: el('n-val'),
+        noise: el('noise-val'),
+        eveRate: el('eve-rate-val')
+      };
+      const runBtn = el('run-btn');
+      const resetBtn = el('reset-btn');
+      const eveBtns = document.querySelectorAll('#eve-radio .radio-btn');
+
+      let eveMode = 'off';
+
+      function randBit() { return Math.random() < 0.5 ? 0 : 1; }
+      function randBasis() { return Math.random() < 0.5 ? 'Z' : 'X'; }
+
+      function prepState(bit, basis) {
+        if (basis === 'Z') return bit === 0 ? '0' : '1';
+        return bit === 0 ? '+' : '-';
+      }
+
+      function measureState(state, basis) {
+        const zStates = state === '0' || state === '1';
+        const xStates = state === '+' || state === '-';
+        if ((basis === 'Z' && zStates) || (basis === 'X' && xStates)) {
+          if (state === '0' || state === '+') return 0;
+          return 1;
+        }
+        return randBit();
+      }
+
+      function stateFromMeasurement(bit, basis) {
+        if (basis === 'Z') return bit === 0 ? '0' : '1';
+        return bit === 0 ? '+' : '-';
+      }
+
+      function runRound() {
+        const N = parseInt(sliders.n.value, 10);
+        const pNoise = parseFloat(sliders.noise.value) / 100;
+        const pIntercept = eveMode === 'off' ? 0 : parseFloat(sliders.eveRate.value) / 100;
+
+        let sifted = 0;
+        let mismatches = 0;
+
+        for (let i = 0; i < N; i++) {
+          const aBit = randBit();
+          const aBasis = randBasis();
+          const bBasis = randBasis();
+          const sentState = prepState(aBit, aBasis);
+
+          let deliveredState = sentState;
+          if (Math.random() < pIntercept) {
+            const eBasis = randBasis();
+            const eBit = measureState(deliveredState, eBasis);
+            deliveredState = stateFromMeasurement(eBit, eBasis);
+          }
+
+          let bBit = measureState(deliveredState, bBasis);
+          if (Math.random() < pNoise) bBit = 1 - bBit;
+
+          if (aBasis === bBasis) {
+            sifted++;
+            if (aBit !== bBit) mismatches++;
+          }
+        }
+
+        const sampled = Math.min(Math.floor(sifted * 0.3), 400);
+        const qber = sifted > 0 ? mismatches / sifted : 0;
+        const qberPct = qber * 100;
+        const eveOnlyQberPct = pIntercept * 25;
+        const detect = qberPct > 11;
+
+        el('status-line').textContent = `1 round complete · sifted ${sifted} bits`;
+        el('st-transmitted').textContent = N.toString();
+        el('st-sifted').textContent = sifted.toString();
+        el('st-sampled').textContent = sampled.toString();
+        el('st-qber').textContent = `${qberPct.toFixed(2)}%`;
+        el('st-qber-eve').textContent = `${eveOnlyQberPct.toFixed(2)}%`;
+
+        const pctForBar = Math.min(qberPct, 30);
+        el('qber-bar').style.width = `${(pctForBar / 30 * 100).toFixed(1)}%`;
+        el('qber-line').textContent = `QBER: ${qberPct.toFixed(2)}%`;
+
+        const verdict = el('verdict');
+        verdict.classList.remove('alert', 'safe');
+        if (detect) {
+          verdict.classList.add('alert');
+          verdict.innerHTML = `<b>Abort recommended.</b> QBER is above 11%, which is inconsistent with a secure key at this noise level. Eve or excess channel disturbance is detectable.`;
+        } else {
+          verdict.classList.add('safe');
+          verdict.innerHTML = `<b>Below threshold.</b> QBER is under 11%. The channel may still be noisy, but this round does not force an eavesdropping conclusion.`;
+        }
+
+        const ans = el('final-answer');
+        if (pIntercept > 0.01 && qberPct > 11) {
+          ans.innerHTML = `No. In BB84, copying unknown qubits causes disturbance, and that disturbance is statistically detectable as elevated QBER.`;
+        } else if (pIntercept > 0.01) {
+          ans.innerHTML = `Not reliably. Small interception can hide within finite statistics, but increasing sample size reveals the disturbance trend predicted by no-cloning.`;
+        } else {
+          ans.innerHTML = `With no eavesdropper, QBER is set mainly by channel noise. Use this as the baseline before adding Eve.`;
+        }
+      }
+
+      sliders.n.addEventListener('input', () => { vals.n.textContent = sliders.n.value; });
+      sliders.noise.addEventListener('input', () => { vals.noise.textContent = sliders.noise.value; });
+      sliders.eveRate.addEventListener('input', () => { vals.eveRate.textContent = sliders.eveRate.value; });
+
+      eveBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          eveBtns.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          eveMode = btn.dataset.mode;
+          if (eveMode === 'off') {
+            sliders.eveRate.value = 0;
+            vals.eveRate.textContent = '0';
+          } else if (parseInt(sliders.eveRate.value, 10) === 0) {
+            sliders.eveRate.value = 40;
+            vals.eveRate.textContent = '40';
+          }
+        });
+      });
+
+      runBtn.addEventListener('click', runRound);
+      resetBtn.addEventListener('click', () => {
+        sliders.n.value = 400;
+        sliders.noise.value = 2;
+        sliders.eveRate.value = 0;
+        vals.n.textContent = '400';
+        vals.noise.textContent = '2';
+        vals.eveRate.textContent = '0';
+        eveBtns.forEach(b => b.classList.remove('active'));
+        document.querySelector('#eve-radio .radio-btn[data-mode="off"]').classList.add('active');
+        eveMode = 'off';
+
+        el('status-line').textContent = 'no data yet';
+        el('st-transmitted').textContent = '—';
+        el('st-sifted').textContent = '—';
+        el('st-sampled').textContent = '—';
+        el('st-qber').textContent = '—';
+        el('st-qber-eve').textContent = '—';
+        el('qber-bar').style.width = '0%';
+        el('qber-line').textContent = 'QBER: —';
+        el('verdict').className = 'verdict';
+        el('verdict').textContent = 'Run the simulation. If Eve copies qubits by measurement, the extra disturbance appears as higher QBER.';
+        el('final-answer').textContent = 'No result yet. Run a round above.';
+      });
+    })();
+  </script>
+</body>
+</html>

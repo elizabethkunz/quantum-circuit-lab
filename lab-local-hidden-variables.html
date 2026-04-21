@@ -1,0 +1,1564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lab — Local Hidden Variables?</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,400&family=JetBrains+Mono:wght@300;400;500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles/base.css" />
+  <style>
+
+    /* ── Insight panel below win bar ── */
+    .insight-panel {
+      margin-top: 14px;
+      min-height: 0;
+      transition: all 0.2s;
+    }
+    .insight-row {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      padding: 7px 0;
+      border-top: 1px solid var(--line);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+    .insight-row:first-child { border-top: none; padding-top: 4px; }
+    .insight-tag {
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      flex-shrink: 0;
+      width: 72px;
+    }
+    .insight-text { color: var(--ink-soft); }
+    .insight-text code {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--phos);
+    }
+    .insight-text .hi { color: var(--magenta); }
+    .insight-text .warn { color: var(--amber); }
+
+    /* ── Angle explorer (Task 05) ── */
+    .angle-families {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 16px;
+      margin-top: 18px;
+    }
+    .angle-card {
+      border: 1px solid var(--line);
+      padding: 16px;
+      background: var(--bg-1);
+      position: relative;
+    }
+    .angle-card-tag {
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      margin-bottom: 6px;
+    }
+    .angle-card h4 {
+      font-family: var(--serif);
+      font-style: italic;
+      font-weight: 400;
+      font-size: 16px;
+      margin: 0 0 8px;
+      color: var(--ink);
+    }
+    .angle-card p {
+      font-size: 12.5px;
+      line-height: 1.55;
+      color: var(--ink-soft);
+      margin: 0 0 12px;
+    }
+    .angle-card .angle-vals {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--phos);
+      margin-bottom: 12px;
+    }
+    .angle-card .angle-vals span {
+      display: inline-block;
+      margin-right: 10px;
+    }
+    .angle-card .predicted-s {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--ink-faint);
+      margin-bottom: 12px;
+    }
+    .angle-card .predicted-s b { color: var(--magenta); }
+    .load-angles-btn {
+      padding: 6px 12px;
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.06em;
+      background: transparent;
+      border: 1px solid var(--line-bright);
+      color: var(--ink-faint);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .load-angles-btn:hover {
+      border-color: var(--phos);
+      color: var(--phos);
+    }
+    .load-angles-btn.loaded {
+      border-color: var(--magenta);
+      color: var(--magenta);
+    }
+
+    /* ===== Lab-local styles (scoped to the LHV lab) ===== */
+    .lab-hero {
+      border: 1px solid var(--line);
+      padding: 32px 28px;
+      margin: 28px 0 36px;
+      background: linear-gradient(180deg, rgba(230,127,184,0.035), transparent 80%);
+      position: relative;
+    }
+    .lab-hero::before {
+      content: 'LAB';
+      position: absolute;
+      top: 14px;
+      right: 18px;
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      color: var(--magenta);
+      border: 1px solid var(--magenta);
+      padding: 2px 8px;
+      opacity: 0.85;
+      pointer-events: none;
+    }
+    .lab-hero h1 {
+      font-family: var(--serif);
+      font-weight: 300;
+      font-size: 36px;
+      line-height: 1.15;
+      margin: 0 0 16px;
+      max-width: 760px;
+    }
+    .lab-hero h1 em {
+      font-style: italic;
+      color: var(--magenta);
+    }
+    .lab-hero .lede {
+      max-width: 720px;
+      font-size: 15px;
+      line-height: 1.6;
+      color: var(--ink-soft);
+    }
+    .lab-hero .lede + .lede { margin-top: 12px; }
+    .lab-hero .historical {
+      font-family: var(--serif);
+      font-style: italic;
+      color: var(--ink-faint);
+      font-size: 13.5px;
+      margin-top: 22px;
+      padding-left: 16px;
+      border-left: 2px solid var(--line-bright);
+      max-width: 680px;
+    }
+
+    .setup-block {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin: 32px 0;
+    }
+    @media (max-width: 780px) { .setup-block { grid-template-columns: 1fr; } }
+    .setup-card {
+      border: 1px solid var(--line);
+      padding: 20px;
+      background: var(--bg-1);
+    }
+    .setup-card h3 {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      margin: 0 0 14px;
+      font-weight: 500;
+    }
+    .setup-card ul {
+      margin: 0;
+      padding-left: 18px;
+      font-size: 13.5px;
+      line-height: 1.7;
+      color: var(--ink-soft);
+    }
+    .setup-card li + li { margin-top: 4px; }
+    .setup-card code {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--phos);
+    }
+
+    .task {
+      border: 1px solid var(--line);
+      margin: 28px 0;
+      position: relative;
+    }
+    .task-head {
+      padding: 18px 24px 14px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: baseline;
+      gap: 18px;
+    }
+    .task-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--magenta);
+    }
+    .task-title {
+      font-family: var(--serif);
+      font-style: italic;
+      font-weight: 400;
+      font-size: 22px;
+      margin: 0;
+      color: var(--ink);
+    }
+    .task-body { padding: 22px 24px; }
+    .task-body p {
+      font-size: 13.5px;
+      line-height: 1.65;
+      color: var(--ink-soft);
+      margin: 0 0 14px;
+    }
+    .task-body p:last-child { margin-bottom: 0; }
+
+    /* --- Experiment panel layout --- */
+    .bench {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 24px;
+      margin-top: 8px;
+    }
+    @media (max-width: 900px) { .bench { grid-template-columns: 1fr; } }
+
+    .knobs {
+      border: 1px solid var(--line);
+      padding: 18px;
+      background: var(--bg-2);
+    }
+    .knob-group { margin-bottom: 18px; }
+    .knob-group:last-child { margin-bottom: 0; }
+    .knob-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+    .knob-val {
+      color: var(--phos);
+      font-family: var(--mono);
+    }
+    .knob-group input[type="range"] {
+      width: 100%;
+      accent-color: var(--magenta);
+    }
+    .radio-row {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .radio-btn {
+      flex: 1 1 auto;
+      min-width: 0;
+      padding: 7px 10px;
+      font-family: var(--mono);
+      font-size: 11px;
+      background: var(--bg-1);
+      border: 1px solid var(--line-bright);
+      color: var(--ink-soft);
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.15s;
+    }
+    .radio-btn:hover { border-color: var(--phos); color: var(--ink); }
+    .radio-btn.active {
+      background: rgba(92,190,156,0.12);
+      border-color: var(--phos);
+      color: var(--phos);
+    }
+    .radio-btn.magenta.active {
+      background: rgba(230,127,184,0.12);
+      border-color: var(--magenta);
+      color: var(--magenta);
+    }
+
+    .run-bar {
+      display: flex;
+      gap: 10px;
+      margin-top: 18px;
+    }
+    .run-btn {
+      flex: 1;
+      padding: 10px 14px;
+      font-family: var(--mono);
+      font-size: 12px;
+      letter-spacing: 0.05em;
+      background: var(--magenta);
+      color: var(--bg-0);
+      border: none;
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+    .run-btn:hover { opacity: 0.85; }
+    .run-btn.secondary {
+      background: transparent;
+      color: var(--ink-faint);
+      border: 1px solid var(--line-bright);
+    }
+    .run-btn.secondary:hover { color: var(--ink); border-color: var(--phos); }
+
+    /* --- Readouts --- */
+    .readouts {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+    .readout-card {
+      border: 1px solid var(--line);
+      padding: 16px 18px;
+      background: var(--bg-1);
+    }
+    .readout-head {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+    }
+    .readout-sub {
+      color: var(--ink-faint);
+      font-size: 10px;
+      letter-spacing: 0.05em;
+      text-transform: none;
+    }
+
+    /* Correlation table */
+    table.corr-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: var(--mono);
+      font-size: 12px;
+    }
+    .corr-table th, .corr-table td {
+      padding: 8px 10px;
+      border-bottom: 1px solid var(--line);
+      text-align: right;
+    }
+    .corr-table th {
+      color: var(--ink-faint);
+      font-weight: 400;
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      text-align: right;
+    }
+    .corr-table th:first-child, .corr-table td:first-child {
+      text-align: left;
+      color: var(--ink-faint);
+    }
+    .corr-table tr:last-child td { border-bottom: none; }
+    .corr-val { color: var(--ink); }
+
+    /* CHSH big number */
+    .chsh-panel {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      align-items: stretch;
+    }
+    .chsh-big {
+      text-align: center;
+      padding: 6px 0 2px;
+    }
+    .chsh-big .val {
+      font-family: var(--serif);
+      font-size: 48px;
+      font-weight: 300;
+      line-height: 1;
+      color: var(--ink);
+    }
+    .chsh-big .val.violated { color: var(--magenta); }
+    .chsh-big .val.below { color: var(--amber); }
+    .chsh-big .err {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--ink-faint);
+      margin-top: 4px;
+    }
+    .chsh-scale { position: relative; height: 110px; }
+
+    .chsh-verdict {
+      margin-top: 14px;
+      padding: 12px 14px;
+      border-left: 3px solid var(--line-bright);
+      font-size: 13px;
+      line-height: 1.55;
+      color: var(--ink-soft);
+    }
+    .chsh-verdict.violated { border-left-color: var(--magenta); color: var(--ink); }
+    .chsh-verdict.below { border-left-color: var(--amber); color: var(--ink); }
+    .chsh-verdict b { color: inherit; }
+
+    /* Game-mode win-prob bar */
+    .winbar-wrap {
+      margin-top: 10px;
+      height: 22px;
+      background: var(--bg-2);
+      border: 1px solid var(--line);
+      position: relative;
+      overflow: hidden;
+    }
+    .winbar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--phos), var(--magenta));
+      transition: width 0.4s;
+    }
+    .winbar-mark {
+      position: absolute;
+      top: 0; bottom: 0;
+      width: 1px;
+      background: var(--amber);
+      pointer-events: none;
+    }
+    .winbar-mark::after {
+      content: '75%';
+      position: absolute;
+      top: -14px;
+      left: -12px;
+      font-family: var(--mono);
+      font-size: 9px;
+      color: var(--amber);
+    }
+
+    /* Conclusion box */
+    .conclusion {
+      border: 1px solid var(--magenta);
+      background: linear-gradient(180deg, rgba(230,127,184,0.05), transparent);
+      padding: 24px 26px;
+      margin-top: 18px;
+    }
+    .conclusion .tag {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--magenta);
+      margin-bottom: 10px;
+    }
+    .conclusion h3 {
+      font-family: var(--serif);
+      font-weight: 400;
+      font-size: 20px;
+      margin: 0 0 10px;
+      color: var(--ink);
+      line-height: 1.35;
+    }
+    .conclusion p {
+      font-size: 13.5px;
+      line-height: 1.65;
+      color: var(--ink-soft);
+      margin: 0 0 10px;
+    }
+    .conclusion p:last-child { margin-bottom: 0; }
+    .conclusion .val-inline {
+      font-family: var(--mono);
+      color: var(--magenta);
+    }
+    .conclusion.not-yet { border-color: var(--line-bright); background: transparent; }
+    .conclusion.not-yet .tag { color: var(--ink-faint); }
+
+    /* Preset strip */
+    .preset-strip {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin: 6px 0 18px;
+    }
+    .preset-btn {
+      padding: 6px 10px;
+      font-family: var(--mono);
+      font-size: 10.5px;
+      background: transparent;
+      border: 1px solid var(--line-bright);
+      color: var(--ink-faint);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .preset-btn:hover { color: var(--ink); border-color: var(--phos); }
+
+    /* Source schematic */
+    .source-diagram { width: 100%; height: 120px; margin-bottom: 4px; }
+    .source-diagram,
+    #corr-curve {
+      pointer-events: none; /* Decorative SVGs should never block controls. */
+    }
+
+    /* Keep controls above any decorative layers. */
+    .knobs,
+    .run-bar,
+    .preset-strip,
+    .radio-row {
+      position: relative;
+      z-index: 2;
+    }
+
+    /* Footer nav */
+    .lab-footer {
+      margin-top: 40px;
+      padding-top: 24px;
+      border-top: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .lab-footer a {
+      color: var(--ink-faint);
+      text-decoration: none;
+      font-family: var(--mono);
+      font-size: 12px;
+      letter-spacing: 0.03em;
+    }
+    .lab-footer a:hover { color: var(--phos); }
+  </style>
+</head>
+<body>
+  <div class="app">
+
+    <!-- ============ MASTHEAD ============ -->
+    <header class="masthead">
+      <div class="brand">
+        <div class="brand-mark">Quantum <span class="amp">&amp;</span> Lab</div>
+        <div class="brand-tag">Lab · Local Hidden Variables</div>
+      </div>
+    </header>
+
+    <!-- ============ HERO / HISTORY ============ -->
+    <section class="lab-hero">
+      <h1>Can nature be explained by <em>local hidden variables?</em></h1>
+      <p class="lede">
+        In 1935, Einstein, Podolsky, and Rosen argued that quantum mechanics must be incomplete.
+        Two particles, once entangled, appear to share correlated outcomes no matter how far apart they travel.
+        To Einstein, this "spooky action at a distance" was evidence that each particle must carry a set of
+        pre-existing instructions — a <em>local hidden variable</em> — that determined its answer before the
+        measurement ever happened. No spookiness. Just classical correlation, like two sealed envelopes.
+      </p>
+      <p class="lede">
+        For thirty years this was a matter of taste. Then in 1964, John Bell proved that the two pictures
+        make <em>different numerical predictions</em> — predictions you can measure. In this lab, you will
+        reproduce his experiment. You choose the source, the detector angles, the number of trials. The data
+        decides.
+      </p>
+      <div class="historical">
+        "It is a matter of indifference… whether the objects of physics are the elements of a complete or an
+        incomplete description." — after Bell, whose inequality closed the argument.
+      </div>
+    </section>
+
+    <!-- ============ SETUP ============ -->
+    <section class="setup-block">
+      <div class="setup-card">
+        <h3>The apparatus</h3>
+        <ul>
+          <li>A central source emits <b>pairs</b> of particles, one to Alice, one to Bob.</li>
+          <li>Alice independently chooses one of two settings: <code>a₀</code> or <code>a₁</code>.</li>
+          <li>Bob independently chooses one of two settings: <code>b₀</code> or <code>b₁</code>.</li>
+          <li>Each detector returns exactly one binary outcome: <code>+1</code> or <code>−1</code>.</li>
+          <li>Alice and Bob cannot signal each other during a trial.</li>
+        </ul>
+      </div>
+      <div class="setup-card">
+        <h3>Your role</h3>
+        <ul>
+          <li>You are the experimentalist. You do not know in advance whether the source is classical or quantum.</li>
+          <li>You choose angles, trial counts, and whether to add detector noise.</li>
+          <li>You observe four correlators <code>E(aᵢ, bⱼ)</code> and combine them into the CHSH statistic <code>S</code>.</li>
+          <li>Your job: <b>decide from the data</b> whether a local hidden-variable model of this kind can
+            explain what you measured.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ============ TASK 1: SET UP THE EXPERIMENT ============ -->
+    <article class="task">
+      <header class="task-head">
+        <span class="task-label">Task 01</span>
+        <h2 class="task-title">Configure the source and detectors.</h2>
+      </header>
+      <div class="task-body">
+        <p>
+          Pick a source. The <b>classical correlated source</b> emits pairs whose outcomes are determined by
+          a shared random variable — the local hidden variable. The <b>entangled source</b> emits a Bell pair
+          <code>(|00⟩ + |11⟩)/√2</code>. Both give perfectly correlated outcomes when Alice and Bob measure
+          along the same axis; the difference only shows up at mismatched angles.
+        </p>
+        <p>
+          Set Alice's two angles (<code>a₀, a₁</code>) and Bob's two angles (<code>b₀, b₁</code>). A classic
+          Bell test uses 0°, 45°, 22.5°, 67.5° — try it, but also try other combinations.
+        </p>
+
+        <svg class="source-diagram" viewBox="0 0 600 110" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <!-- wires -->
+          <line x1="80" y1="55" x2="240" y2="55" stroke="var(--line-bright)" stroke-width="1"/>
+          <line x1="360" y1="55" x2="520" y2="55" stroke="var(--line-bright)" stroke-width="1"/>
+          <!-- source -->
+          <circle cx="300" cy="55" r="18" fill="var(--bg-2)" stroke="var(--magenta)" stroke-width="1.5"/>
+          <text x="300" y="59" font-family="var(--mono)" font-size="11" fill="var(--magenta)" text-anchor="middle">S</text>
+          <!-- Alice detector -->
+          <rect x="50" y="38" width="40" height="34" fill="var(--bg-2)" stroke="var(--phos)" stroke-width="1.5" rx="2"/>
+          <text x="70" y="59" font-family="var(--serif)" font-size="14" fill="var(--phos)" text-anchor="middle" font-style="italic">A</text>
+          <text x="70" y="26" font-family="var(--mono)" font-size="9" fill="var(--ink-faint)" text-anchor="middle">Alice</text>
+          <text x="70" y="94" font-family="var(--mono)" font-size="9" fill="var(--ink-faint)" text-anchor="middle">a₀ or a₁</text>
+          <!-- Bob detector -->
+          <rect x="510" y="38" width="40" height="34" fill="var(--bg-2)" stroke="var(--phos)" stroke-width="1.5" rx="2"/>
+          <text x="530" y="59" font-family="var(--serif)" font-size="14" fill="var(--phos)" text-anchor="middle" font-style="italic">B</text>
+          <text x="530" y="26" font-family="var(--mono)" font-size="9" fill="var(--ink-faint)" text-anchor="middle">Bob</text>
+          <text x="530" y="94" font-family="var(--mono)" font-size="9" fill="var(--ink-faint)" text-anchor="middle">b₀ or b₁</text>
+          <!-- particle trails -->
+          <text x="160" y="50" font-family="var(--mono)" font-size="9" fill="var(--ink-faint)">◄─── particle</text>
+          <text x="400" y="50" font-family="var(--mono)" font-size="9" fill="var(--ink-faint)">particle ───►</text>
+          <text x="300" y="95" font-family="var(--mono)" font-size="9" fill="var(--magenta)" text-anchor="middle">source (classical or entangled)</text>
+        </svg>
+
+        <div class="bench">
+          <!-- CONTROL PANEL -->
+          <div class="knobs">
+            <div class="knob-group">
+              <div class="knob-label"><span>Source type</span></div>
+              <div class="radio-row" id="source-radio">
+                <button class="radio-btn magenta active" data-source="classical">Classical correlated</button>
+                <button class="radio-btn magenta" data-source="entangled">Entangled (singlet)</button>
+              </div>
+            </div>
+
+            <div class="knob-group">
+              <div class="knob-label"><span>Alice · a₀</span><span class="knob-val"><span id="a0-val">0</span>°</span></div>
+              <input type="range" id="a0-slider" min="0" max="180" value="0" step="1">
+            </div>
+            <div class="knob-group">
+              <div class="knob-label"><span>Alice · a₁</span><span class="knob-val"><span id="a1-val">90</span>°</span></div>
+              <input type="range" id="a1-slider" min="0" max="180" value="90" step="1">
+            </div>
+            <div class="knob-group">
+              <div class="knob-label"><span>Bob · b₀</span><span class="knob-val"><span id="b0-val">45</span>°</span></div>
+              <input type="range" id="b0-slider" min="0" max="180" value="45" step="1">
+            </div>
+            <div class="knob-group">
+              <div class="knob-label"><span>Bob · b₁</span><span class="knob-val"><span id="b1-val">135</span>°</span></div>
+              <input type="range" id="b1-slider" min="0" max="180" value="135" step="1">
+            </div>
+
+            <div class="knob-group">
+              <div class="knob-label"><span>Trials per setting</span><span class="knob-val" id="ntrials-val">500</span></div>
+              <input type="range" id="ntrials-slider" min="50" max="5000" value="500" step="50">
+            </div>
+
+            <div class="knob-group">
+              <div class="knob-label"><span>Detector noise (flip prob.)</span><span class="knob-val"><span id="noise-val">0</span>%</span></div>
+              <input type="range" id="noise-slider" min="0" max="25" value="0" step="1">
+            </div>
+
+            <div class="knob-group">
+              <div class="knob-label"><span>Presets</span></div>
+              <div class="preset-strip">
+                <button class="preset-btn" data-preset="chsh-optimal">CHSH optimal</button>
+                <button class="preset-btn" data-preset="aligned">All aligned (0°)</button>
+                <button class="preset-btn" data-preset="orthogonal">Classical bound (S≈2)</button>
+              </div>
+            </div>
+
+            <div class="run-bar">
+              <button class="run-btn" id="run-btn">▶ Run experiment</button>
+              <button class="run-btn secondary" id="reset-btn">Reset</button>
+            </div>
+          </div>
+
+          <!-- READOUTS -->
+          <div class="readouts">
+
+            <!-- Correlation table -->
+            <div class="readout-card">
+              <div class="readout-head">
+                <span>Measured correlators</span>
+                <span class="readout-sub" id="shot-count-label">no data yet</span>
+              </div>
+              <table class="corr-table">
+                <thead>
+                  <tr>
+                    <th></th>
+                    <th>E(a, b)</th>
+                    <th>N₊₊</th>
+                    <th>N₊₋</th>
+                    <th>N₋₊</th>
+                    <th>N₋₋</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>a₀, b₀</td><td class="corr-val" id="E00">—</td><td id="N00pp">—</td><td id="N00pm">—</td><td id="N00mp">—</td><td id="N00mm">—</td></tr>
+                  <tr><td>a₀, b₁</td><td class="corr-val" id="E01">—</td><td id="N01pp">—</td><td id="N01pm">—</td><td id="N01mp">—</td><td id="N01mm">—</td></tr>
+                  <tr><td>a₁, b₀</td><td class="corr-val" id="E10">—</td><td id="N10pp">—</td><td id="N10pm">—</td><td id="N10mp">—</td><td id="N10mm">—</td></tr>
+                  <tr><td>a₁, b₁</td><td class="corr-val" id="E11">—</td><td id="N11pp">—</td><td id="N11pm">—</td><td id="N11mp">—</td><td id="N11mm">—</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- CHSH game win probability -->
+            <div class="readout-card">
+              <div class="readout-head">
+                <span>CHSH game · empirical win rate</span>
+                <span class="readout-sub">classical bound: 75% · quantum: ~85.4%</span>
+              </div>
+              <div class="winbar-wrap">
+                <div class="winbar-fill" id="winbar-fill" style="width:0%"></div>
+                <div class="winbar-mark" style="left:75%"></div>
+              </div>
+              <p style="margin:10px 0 0; font-size:12px; color:var(--ink-faint); font-family:var(--mono);">
+                <span id="winprob-val">—</span>
+              </p>
+              <div class="insight-panel" id="insight-panel"></div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- ============ TASK 2: COMPUTE CHSH ============ -->
+    <article class="task">
+      <header class="task-head">
+        <span class="task-label">Task 02</span>
+        <h2 class="task-title">Combine the correlators into a test statistic.</h2>
+      </header>
+      <div class="task-body">
+        <p>
+          Bell showed that <em>any</em> theory where each particle carries local, pre-existing instructions —
+          no matter how elaborate — must satisfy a specific numerical bound on the combination
+        </p>
+        <p style="text-align:center; font-family:var(--serif); font-size:18px; color:var(--ink); margin:18px 0;">
+          S = E(a₀, b₀) − E(a₀, b₁) + E(a₁, b₀) + E(a₁, b₁)
+        </p>
+        <p>
+          The bound is <code>|S| ≤ 2</code>. Quantum mechanics, with an entangled source and well-chosen
+          angles, predicts a maximum of <code>|S| = 2√2 ≈ 2.828</code>. Anything above 2 is a problem for any
+          local hidden-variable model. Your measured value, with error bars from finite statistics, is below.
+        </p>
+
+        <div class="readout-card">
+          <div class="readout-head">
+            <span>CHSH statistic</span>
+            <span class="readout-sub" id="chsh-source-label">—</span>
+          </div>
+          <div class="chsh-panel">
+            <div>
+              <div class="chsh-big">
+                <div class="val" id="chsh-val">—</div>
+                <div class="err" id="chsh-err">run the experiment to compute S</div>
+              </div>
+            </div>
+            <div class="chsh-scale">
+              <svg viewBox="0 0 260 110" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;">
+                <!-- axis -->
+                <line x1="20" y1="85" x2="240" y2="85" stroke="var(--line-bright)" stroke-width="1"/>
+                <!-- ticks: 0, 2, 2√2, 4 on scale 0..4 -->
+                <g font-family="var(--mono)" font-size="9" fill="var(--ink-faint)">
+                  <line x1="20" y1="85" x2="20" y2="91" stroke="var(--line-bright)"/>
+                  <text x="20" y="103" text-anchor="middle">0</text>
+                  <line x1="130" y1="85" x2="130" y2="91" stroke="var(--amber)" stroke-width="1.5"/>
+                  <text x="130" y="103" text-anchor="middle" fill="var(--amber)">2</text>
+                  <line x1="175.5" y1="85" x2="175.5" y2="91" stroke="var(--magenta)" stroke-width="1.5"/>
+                  <text x="175.5" y="103" text-anchor="middle" fill="var(--magenta)">2√2</text>
+                  <line x1="240" y1="85" x2="240" y2="91" stroke="var(--line-bright)"/>
+                  <text x="240" y="103" text-anchor="middle">4</text>
+                </g>
+                <!-- zone labels -->
+                <text x="75" y="30" font-family="var(--mono)" font-size="9" fill="var(--amber)" text-anchor="middle">LHV allowed</text>
+                <text x="75" y="42" font-family="var(--mono)" font-size="8" fill="var(--ink-faint)" text-anchor="middle">|S| ≤ 2</text>
+                <text x="200" y="30" font-family="var(--mono)" font-size="9" fill="var(--magenta)" text-anchor="middle">Quantum-only</text>
+                <text x="200" y="42" font-family="var(--mono)" font-size="8" fill="var(--ink-faint)" text-anchor="middle">2 &lt; |S| ≤ 2√2</text>
+                <!-- bands -->
+                <rect x="20" y="72" width="110" height="8" fill="rgba(255,183,77,0.2)"/>
+                <rect x="130" y="72" width="45.5" height="8" fill="rgba(230,127,184,0.25)"/>
+                <!-- pointer (populated by JS) -->
+                <g id="chsh-pointer" style="display:none;">
+                  <line id="chsh-pointer-line" x1="20" y1="60" x2="20" y2="85" stroke="var(--phos)" stroke-width="2"/>
+                  <polygon id="chsh-pointer-tri" points="20,60 16,54 24,54" fill="var(--phos)"/>
+                </g>
+              </svg>
+            </div>
+          </div>
+          <div class="chsh-verdict" id="chsh-verdict">
+            Configure the experiment above and press <b>Run</b>. The verdict will appear here.
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- ============ TASK 3: CLASSICAL vs QUANTUM COMPARISON ============ -->
+    <article class="task">
+      <header class="task-head">
+        <span class="task-label">Task 03</span>
+        <h2 class="task-title">Compare classical and quantum predictions across angle differences.</h2>
+      </header>
+      <div class="task-body">
+        <p>
+          A single CHSH number is a summary. To see <i>where</i> the two theories diverge, plot the correlator
+          <code>E(θ)</code> as a function of the angle difference <code>θ = |α − β|</code> between Alice's and
+          Bob's detectors. The best local hidden-variable model achieves a <b>linear</b> correlation curve; the
+          quantum prediction is <code>+cos(θ)</code>. They touch at 0° and 180° — and separate in between.
+        </p>
+        <p>
+          The curve below shows both predictions overlaid with the four points you measured. The gap between
+          the curves at 22.5° and 67.5° is exactly what pushes CHSH past the classical bound.
+        </p>
+
+        <div class="readout-card">
+          <div class="readout-head">
+            <span>Correlation vs angle difference</span>
+            <span class="readout-sub">quantum: E(θ) = cos(θ) &nbsp;·&nbsp; best LHV: E(θ) = 1 − 2θ/180°</span>
+          </div>
+          <svg id="corr-curve" viewBox="0 0 560 260" xmlns="http://www.w3.org/2000/svg" style="width:100%; height:auto; max-height:300px;"></svg>
+        </div>
+      </div>
+    </article>
+
+    <!-- ============ TASK 4: CONCLUSION ============ -->
+    <article class="task">
+      <header class="task-head">
+        <span class="task-label">Task 04</span>
+        <h2 class="task-title">Render a verdict from the data.</h2>
+      </header>
+      <div class="task-body">
+        <p>
+          The CHSH inequality is a <em>closed question</em>: either your measured <code>|S|</code> exceeded 2
+          by more than the statistical error, or it did not. The conclusion below updates live with your
+          latest run.
+        </p>
+        <div class="conclusion not-yet" id="conclusion">
+          <div class="tag">Pending</div>
+          <h3>Awaiting data.</h3>
+          <p>Run at least one experiment in Task 01 to generate a conclusion.</p>
+        </div>
+      </div>
+    </article>
+
+
+    <!-- ============ TASK 5: ANGLE EXPLORER ============ -->
+    <article class="task">
+      <header class="task-head">
+        <span class="task-label">Task 05</span>
+        <h2 class="task-title">Explore other angle families.</h2>
+      </header>
+      <div class="task-body">
+        <p>
+          The canonical CHSH angles are not the only set that can expose Bell correlations. Below are four
+          other celebrated configurations — each with a different geometric intuition. Load any of them
+          into the experiment and run it to confirm the prediction.
+        </p>
+        <div class="angle-families" id="angle-families">
+          <!-- populated by JS -->
+        </div>
+      </div>
+    </article>
+
+    <!-- ============ FOOTER ============ -->
+    <div class="lab-footer">
+      <a href="index.html">← Back to main app</a>
+      <a href="#" onclick="document.getElementById('run-btn').scrollIntoView({behavior:'smooth', block:'center'}); return false;">↑ Back to experiment</a>
+    </div>
+
+  </div>
+
+  <!-- ============================================================= -->
+  <!-- ===================== LAB SCRIPT ============================ -->
+  <!-- ============================================================= -->
+  <script>
+  /* =========================================================================
+     LAB: LOCAL HIDDEN VARIABLES · CHSH experiment
+     ========================================================================= */
+
+  (function initLHVLab() {
+    // ---------- DOM refs ----------
+    const el = id => document.getElementById(id);
+
+    const sourceRadios = document.querySelectorAll('#source-radio .radio-btn');
+    const sliders = {
+      a0: el('a0-slider'), a1: el('a1-slider'),
+      b0: el('b0-slider'), b1: el('b1-slider'),
+      n:  el('ntrials-slider'), noise: el('noise-slider'),
+    };
+    const vals = {
+      a0: el('a0-val'), a1: el('a1-val'),
+      b0: el('b0-val'), b1: el('b1-val'),
+      n:  el('ntrials-val'), noise: el('noise-val'),
+    };
+    const runBtn = el('run-btn');
+    const resetBtn = el('reset-btn');
+    const presetBtns = document.querySelectorAll('.preset-btn');
+
+    // ---------- state ----------
+    let source = 'classical';
+    // slider values store quarter-degree precision via special mapping for b0/b1 defaults;
+    // we'll just use integer degrees for all, but support the classic 22.5/67.5 via presets.
+    // To make 22.5° and 67.5° selectable, interpret slider*0.5 for "half-step" mode? No—
+    // simpler: keep integer degrees; presets will snap to nearest integer (22 and 67).
+    // For the clean 2√2 demo we use 22.5 / 67.5 — implement as: store angle in state
+    // separately from slider raw value, with half-step granularity via slider*0.5 toggle.
+    // Cleanest: keep slider in degrees 0..180 integer; but presets can BYPASS the slider
+    // and set a floating-point angle directly. Re-interpret slider change as overriding.
+    const angles = { a0: 0, a1: 90, b0: 45, b1: 135 };  // degrees — canonical CHSH angles
+
+    // ---------- helpers ----------
+    function deg2rad(d) { return d * Math.PI / 180; }
+
+    function renderAngleLabels() {
+      vals.a0.textContent = fmtAngle(angles.a0);
+      vals.a1.textContent = fmtAngle(angles.a1);
+      vals.b0.textContent = fmtAngle(angles.b0);
+      vals.b1.textContent = fmtAngle(angles.b1);
+    }
+    function fmtAngle(a) {
+      return (Math.round(a * 10) / 10).toString();
+    }
+
+    // Sync sliders -> angles (integer-only from sliders)
+    ['a0','a1','b0','b1'].forEach(k => {
+      sliders[k].addEventListener('input', () => {
+        angles[k] = parseFloat(sliders[k].value);
+        renderAngleLabels();
+      });
+    });
+    sliders.n.addEventListener('input', () => {
+      vals.n.textContent = sliders.n.value;
+    });
+    sliders.noise.addEventListener('input', () => {
+      vals.noise.textContent = sliders.noise.value;
+    });
+
+    // Source selector
+    sourceRadios.forEach(btn => {
+      btn.addEventListener('click', () => {
+        sourceRadios.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        source = btn.dataset.source;
+      });
+    });
+
+    // Presets
+    presetBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const p = btn.dataset.preset;
+        if (p === 'chsh-optimal') {
+          angles.a0 = 0; angles.a1 = 90; angles.b0 = 45; angles.b1 = 135;
+        } else if (p === 'aligned') {
+          angles.a0 = 0; angles.a1 = 0; angles.b0 = 0; angles.b1 = 0;
+        } else if (p === 'orthogonal') {
+          angles.a0 = 0; angles.a1 = 90; angles.b0 = 90; angles.b1 = 0;
+        }
+        // sync sliders (round to int; the floating display still shows the stored angle)
+        sliders.a0.value = Math.round(angles.a0);
+        sliders.a1.value = Math.round(angles.a1);
+        sliders.b0.value = Math.round(angles.b0);
+        sliders.b1.value = Math.round(angles.b1);
+        renderAngleLabels();
+      });
+    });
+
+    // ------------------------------------------------------------------
+    // PHYSICS / SIMULATION
+    // ------------------------------------------------------------------
+
+    // Physics model — using the |Φ+⟩ Bell state (|00⟩+|11⟩)/√2 convention so that
+    // E(α,β) = +cos(α−β). This is the standard CHSH-maximizing convention: at
+    // canonical angles (0°, 45°, 22.5°, 67.5°) the combination E00 + E01 + E10 − E11
+    // evaluates to +2√2.
+    //
+    //   Quantum:   E(α,β) = +cos(α−β)
+    //   Best LHV:  E(α,β) = +1 − 2|α−β|/180   (linear triangle tangent to cos at 0°, 180°)
+    //
+    // Detector noise with flip prob p: each outcome independently flipped with prob p,
+    // which multiplies E by (1 − 2p)².
+
+    function simulatePair(alpha, beta, sourceType, flipProb) {
+      // returns {a, b} each ∈ {+1, -1}
+      let a, b;
+      if (sourceType === 'entangled') {
+        // |Φ+⟩ = (|00⟩+|11⟩)/√2 measured at angles α, β:
+        //   P(a=b=+1) = P(a=b=-1) = (1/2) cos²((α-β)/2)
+        //   P(a=-b)                = (1/2) sin²((α-β)/2)
+        // Gives E(α,β) = +cos(α-β).
+        const d = deg2rad(alpha - beta);
+        const sameP = 0.5 * Math.pow(Math.cos(d / 2), 2);   // ++ or --
+        const diffP = 0.5 * Math.pow(Math.sin(d / 2), 2);   // +- or -+
+        const r = Math.random();
+        if (r < sameP)              { a = +1; b = +1; }
+        else if (r < 2*sameP)       { a = -1; b = -1; }
+        else if (r < 2*sameP+diffP) { a = +1; b = -1; }
+        else                        { a = -1; b = +1; }
+      } else {
+        // Classical correlated source with shared hidden variable λ ∈ [0, π):
+        //   Alice: +1 if cos(α−λ) ≥ 0 else −1
+        //   Bob:   +1 if cos(β−λ) ≥ 0 else −1     (same rule → correlated at α=β)
+        // Gives E(α,β) = +1 − 2|Δ|/180 over Δ ∈ [0, 180] — the best local-realist
+        // envelope tangent to +cos at 0° and 180°.
+        const lambda = Math.random() * Math.PI;
+        a = Math.cos(deg2rad(alpha) - lambda) >= 0 ? +1 : -1;
+        b = Math.cos(deg2rad(beta)  - lambda) >= 0 ? +1 : -1;
+      }
+      // detector noise: independent flips
+      if (flipProb > 0) {
+        if (Math.random() < flipProb) a = -a;
+        if (Math.random() < flipProb) b = -b;
+      }
+      return { a, b };
+    }
+
+    function runSettingPair(alpha, beta, N, sourceType, flipProb) {
+      // returns { E, Npp, Npm, Nmp, Nmm }
+      let Npp=0, Npm=0, Nmp=0, Nmm=0;
+      for (let i=0; i<N; i++) {
+        const { a, b } = simulatePair(alpha, beta, sourceType, flipProb);
+        if (a===+1 && b===+1) Npp++;
+        else if (a===+1 && b===-1) Npm++;
+        else if (a===-1 && b===+1) Nmp++;
+        else Nmm++;
+      }
+      const total = N;
+      const E = (Npp + Nmm - Npm - Nmp) / total;
+      return { E, Npp, Npm, Nmp, Nmm, total };
+    }
+
+    // ------------------------------------------------------------------
+    // RUN + RENDER
+    // ------------------------------------------------------------------
+
+    function runExperiment() {
+      const N = parseInt(sliders.n.value);
+      const p = parseFloat(sliders.noise.value) / 100;
+
+      // Sign pattern: S = E00 - E01 + E10 + E11.
+      // Verified: equals +2sqrt(2) at angles (0,90,45,135) for the Phi+ source.
+      // The subtracted correlator is key '01' (Alice=a0, Bob=b1).
+      const settings = [
+        { key: '00', a: angles.a0, b: angles.b0, sign: +1 },
+        { key: '01', a: angles.a0, b: angles.b1, sign: -1 },
+        { key: '10', a: angles.a1, b: angles.b0, sign: +1 },
+        { key: '11', a: angles.a1, b: angles.b1, sign: +1 },
+      ];
+
+      const results = {};
+      let S = 0;
+
+      settings.forEach(s => {
+        const r = runSettingPair(s.a, s.b, N, source, p);
+        results[s.key] = r;
+        S += s.sign * r.E;
+      });
+
+      // Statistical error on S: sigma_E ~ sqrt((1-E^2)/N) per correlator.
+      let varS = 0;
+      settings.forEach(s => {
+        const E = results[s.key].E;
+        varS += (1 - E * E) / results[s.key].total;
+      });
+      const sigmaS = Math.sqrt(varS);
+
+      // CHSH game win probability.
+      // The subtracted correlator (key '01', sign=-1) maps to the game's DIFF slot.
+      // All other slots require SAME. W = (4 + S) / 8 analytically.
+      // +1->bit 0, -1->bit 1.  SAME wins = Npp+Nmm.  DIFF wins = Npm+Nmp.
+      let winCount = 0, winTotal = 0;
+      settings.forEach(s => {
+        const r = results[s.key];
+        const needDiff = (s.sign === -1);
+        winCount += needDiff ? (r.Npm + r.Nmp) : (r.Npp + r.Nmm);
+        winTotal += r.total;
+      });
+
+      renderCorrelationTable(results, N);
+      renderCHSH(S, sigmaS);
+      renderWinProb(winCount, winTotal);
+      renderCurveWithPoints(results, settings);
+      renderConclusion(S, sigmaS, source, p);
+      renderInsightPanel(S, winCount / winTotal, p, source);
+    }
+
+    function renderCorrelationTable(results, N) {
+      el('shot-count-label').textContent = `${N} trials × 4 settings = ${N*4} total`;
+      ['00','01','10','11'].forEach(k => {
+        const r = results[k];
+        el('E'+k).textContent = r.E.toFixed(3);
+        el('N'+k+'pp').textContent = r.Npp;
+        el('N'+k+'pm').textContent = r.Npm;
+        el('N'+k+'mp').textContent = r.Nmp;
+        el('N'+k+'mm').textContent = r.Nmm;
+      });
+    }
+
+    function renderCHSH(S, sigmaS) {
+      const absS = Math.abs(S);
+      const valEl = el('chsh-val');
+      valEl.textContent = S.toFixed(3);
+      valEl.classList.remove('violated', 'below');
+      // "Significantly above 2" = more than 2 sigma above 2
+      const zAbove = (absS - 2) / sigmaS;
+      if (zAbove > 2) valEl.classList.add('violated');
+      else if (absS < 2) valEl.classList.add('below');
+
+      el('chsh-err').textContent = `|S| = ${absS.toFixed(3)}   ±   ${sigmaS.toFixed(3)}   (1σ)`;
+      el('chsh-source-label').textContent = source === 'entangled' ? 'source: entangled |Φ+⟩' : 'source: classical correlated';
+
+      // Pointer on scale (maps |S| from 0..4 → x 20..240)
+      const pointerX = 20 + Math.min(Math.max(absS, 0), 4) * (220/4);
+      const g = el('chsh-pointer');
+      g.style.display = '';
+      const line = el('chsh-pointer-line');
+      line.setAttribute('x1', pointerX);
+      line.setAttribute('x2', pointerX);
+      const tri = el('chsh-pointer-tri');
+      tri.setAttribute('points', `${pointerX},60 ${pointerX-4},54 ${pointerX+4},54`);
+      const pointerColor = zAbove > 2 ? 'var(--magenta)' : (absS < 2 ? 'var(--amber)' : 'var(--phos)');
+      line.setAttribute('stroke', pointerColor);
+      tri.setAttribute('fill', pointerColor);
+
+      // Verdict line
+      const verdict = el('chsh-verdict');
+      verdict.classList.remove('violated','below');
+      if (zAbove > 2) {
+        verdict.classList.add('violated');
+        verdict.innerHTML = `<b>|S| = ${absS.toFixed(3)} ± ${sigmaS.toFixed(3)}</b> — above the classical bound of 2 by ${zAbove.toFixed(1)}σ. No local hidden-variable model can produce this.`;
+      } else if (absS < 2) {
+        verdict.classList.add('below');
+        verdict.innerHTML = `<b>|S| = ${absS.toFixed(3)} ± ${sigmaS.toFixed(3)}</b> — within the classical bound |S| ≤ 2. A local hidden-variable model is consistent with this data.`;
+      } else {
+        verdict.innerHTML = `<b>|S| = ${absS.toFixed(3)} ± ${sigmaS.toFixed(3)}</b> — borderline. Increase trials to resolve whether you are above or below the bound of 2.`;
+      }
+    }
+
+    function renderWinProb(winCount, winTotal) {
+      if (winTotal === 0) return;
+      const p = winCount / winTotal;
+      el('winbar-fill').style.width = (p * 100).toFixed(1) + '%';
+      el('winprob-val').textContent = `empirical win rate: ${(p*100).toFixed(2)}%`;
+
+    }
+
+    function renderConclusion(S, sigmaS, sourceType, noise) {
+      const box = el('conclusion');
+      const absS = Math.abs(S);
+      const zAbove = (absS - 2) / sigmaS;
+      box.classList.remove('not-yet');
+
+      if (zAbove > 2) {
+        box.innerHTML = `
+          <div class="tag" style="color:var(--magenta)">Conclusion · violation</div>
+          <h3>Your measured CHSH score <span class="val-inline">|S| = ${absS.toFixed(3)} ± ${sigmaS.toFixed(3)}</span> exceeded the local-realist bound of 2.</h3>
+          <p>
+            No local hidden-variable model of this kind can explain the data. Whatever determined
+            each particle's outcome was <em>not</em> a pre-existing instruction carried from the source.
+            The correlations you measured require either entanglement or faster-than-light communication.
+          </p>
+          <p style="color:var(--ink-faint); font-family:var(--mono); font-size:12px;">
+            source: ${sourceType} · noise: ${(noise*100).toFixed(0)}% · angles: (${fmtAngle(angles.a0)}°, ${fmtAngle(angles.a1)}°, ${fmtAngle(angles.b0)}°, ${fmtAngle(angles.b1)}°) · deviation above bound: ${zAbove.toFixed(1)}σ
+          </p>
+        `;
+      } else if (absS < 2 - 2*sigmaS) {
+        box.classList.add('not-yet');
+        box.innerHTML = `
+          <div class="tag">Conclusion · no violation</div>
+          <h3>Your measured <span style="color:var(--amber); font-family:var(--mono);">|S| = ${absS.toFixed(3)} ± ${sigmaS.toFixed(3)}</span> sits comfortably within the classical bound.</h3>
+          <p>
+            ${sourceType === 'classical'
+              ? 'This is exactly what Bell\'s theorem predicts for a classical correlated source. A local hidden-variable model fits this data. Try switching the source to <b>entangled</b> to see what quantum mechanics can do.'
+              : 'An entangled source <i>can</i> violate CHSH, but only at well-chosen angles. Your current angles do not expose the quantum correlation. Try the <b>CHSH optimal</b> preset.'}
+          </p>
+          <p style="color:var(--ink-faint); font-family:var(--mono); font-size:12px;">
+            source: ${sourceType} · noise: ${(noise*100).toFixed(0)}% · angles: (${fmtAngle(angles.a0)}°, ${fmtAngle(angles.a1)}°, ${fmtAngle(angles.b0)}°, ${fmtAngle(angles.b1)}°)
+          </p>
+        `;
+      } else {
+        box.innerHTML = `
+          <div class="tag" style="color:var(--phos)">Conclusion · inconclusive</div>
+          <h3>Your measured <span style="color:var(--phos); font-family:var(--mono);">|S| = ${absS.toFixed(3)} ± ${sigmaS.toFixed(3)}</span> is too close to the bound to resolve.</h3>
+          <p>
+            With the current statistics you cannot confidently rule out local hidden variables.
+            Increase the trial count and run again — the statistical error <code style="font-family:var(--mono); color:var(--phos);">σ_S ∝ 1/√N</code> shrinks as you accumulate data.
+          </p>
+          <p style="color:var(--ink-faint); font-family:var(--mono); font-size:12px;">
+            source: ${sourceType} · noise: ${(noise*100).toFixed(0)}% · trials: ${parseInt(sliders.n.value)} per setting
+          </p>
+        `;
+      }
+    }
+
+    // ------------------------------------------------------------------
+    // CORRELATION CURVE (Task 3)
+    // ------------------------------------------------------------------
+
+    function renderCurveWithPoints(results, settings) {
+      const svg = el('corr-curve');
+      const ns = 'http://www.w3.org/2000/svg';
+      svg.innerHTML = '';
+
+      const W = 560, H = 260;
+      const padL = 50, padR = 20, padT = 20, padB = 50;
+      const plotW = W - padL - padR, plotH = H - padT - padB;
+
+      // x axis: θ from 0 to 180 degrees
+      // y axis: E from -1 to +1
+      const xScale = deg => padL + (deg / 180) * plotW;
+      const yScale = E => padT + (1 - E) * 0.5 * plotH;  // E=+1 at top, E=-1 at bottom
+
+      function add(tag, attrs, text) {
+        const e = document.createElementNS(ns, tag);
+        for (const [k,v] of Object.entries(attrs)) e.setAttribute(k, v);
+        if (text !== undefined) e.textContent = text;
+        svg.appendChild(e);
+        return e;
+      }
+
+      // Axes
+      add('line', {x1: padL, y1: padT, x2: padL, y2: padT+plotH, stroke: 'var(--line-bright)', 'stroke-width': 1});
+      add('line', {x1: padL, y1: padT+plotH, x2: padL+plotW, y2: padT+plotH, stroke: 'var(--line-bright)', 'stroke-width': 1});
+      // Zero line
+      add('line', {x1: padL, y1: yScale(0), x2: padL+plotW, y2: yScale(0), stroke: 'var(--line)', 'stroke-width': 1, 'stroke-dasharray': '2 3'});
+
+      // X ticks
+      [0, 45, 90, 135, 180].forEach(d => {
+        const x = xScale(d);
+        add('line', {x1: x, y1: padT+plotH, x2: x, y2: padT+plotH+4, stroke: 'var(--line-bright)'});
+        add('text', {x: x, y: padT+plotH+16, 'font-family': 'var(--mono)', 'font-size': 10, fill: 'var(--ink-faint)', 'text-anchor': 'middle'}, d + '°');
+      });
+      add('text', {x: padL+plotW/2, y: H-10, 'font-family': 'var(--mono)', 'font-size': 10, fill: 'var(--ink-faint)', 'text-anchor': 'middle'}, 'angle difference θ = |α − β|');
+
+      // Y ticks
+      [-1, -0.5, 0, 0.5, 1].forEach(v => {
+        const y = yScale(v);
+        add('line', {x1: padL-4, y1: y, x2: padL, y2: y, stroke: 'var(--line-bright)'});
+        add('text', {x: padL-8, y: y+3, 'font-family': 'var(--mono)', 'font-size': 10, fill: 'var(--ink-faint)', 'text-anchor': 'end'}, v.toFixed(1));
+      });
+      add('text', {x: 14, y: padT+plotH/2, 'font-family': 'var(--mono)', 'font-size': 10, fill: 'var(--ink-faint)', 'text-anchor': 'middle', transform: `rotate(-90 14 ${padT+plotH/2})`}, 'E(θ)');
+
+      // --- Quantum curve: E = +cos(θ) ---
+      let qPath = '';
+      for (let d = 0; d <= 180; d += 2) {
+        const E = Math.cos(deg2rad(d));
+        qPath += (d===0 ? 'M ' : 'L ') + xScale(d) + ' ' + yScale(E) + ' ';
+      }
+      add('path', {d: qPath, fill: 'none', stroke: 'var(--magenta)', 'stroke-width': 1.8});
+
+      // --- Best LHV envelope: E = 1 - 2θ/180, linear from +1 at 0° to −1 at 180° ---
+      // Tangent to +cos(θ) at θ=0 and θ=180°. The gap between the two curves in
+      // between is exactly what the CHSH violation measures.
+      let cPath = '';
+      for (let d = 0; d <= 180; d += 2) {
+        const E = 1 - 2 * (d / 180);
+        cPath += (d===0 ? 'M ' : 'L ') + xScale(d) + ' ' + yScale(E) + ' ';
+      }
+      add('path', {d: cPath, fill: 'none', stroke: 'var(--amber)', 'stroke-width': 1.4, 'stroke-dasharray': '4 3'});
+
+      // --- Measured points ---
+      settings.forEach(s => {
+        const dTheta = Math.abs(s.a - s.b);
+        const thetaDisp = dTheta > 180 ? 360 - dTheta : dTheta;
+        const E = results[s.key].E;
+        const x = xScale(thetaDisp);
+        const y = yScale(E);
+        add('circle', {cx: x, cy: y, r: 5, fill: 'var(--phos)', stroke: 'var(--bg-0)', 'stroke-width': 1.5});
+        add('text', {x: x+8, y: y-6, 'font-family': 'var(--mono)', 'font-size': 9, fill: 'var(--phos)'}, `(a${s.key[0]},b${s.key[1]})`);
+      });
+
+      // Legend
+      const lx = padL + plotW - 180, ly = padT + 8;
+      add('rect', {x: lx-6, y: ly-10, width: 180, height: 56, fill: 'var(--bg-2)', stroke: 'var(--line)', 'stroke-width': 1, opacity: 0.9});
+      add('line', {x1: lx, y1: ly, x2: lx+20, y2: ly, stroke: 'var(--magenta)', 'stroke-width': 1.8});
+      add('text', {x: lx+26, y: ly+3, 'font-family': 'var(--mono)', 'font-size': 9, fill: 'var(--ink-soft)'}, 'quantum cos(θ)');
+      add('line', {x1: lx, y1: ly+14, x2: lx+20, y2: ly+14, stroke: 'var(--amber)', 'stroke-width': 1.4, 'stroke-dasharray': '4 3'});
+      add('text', {x: lx+26, y: ly+17, 'font-family': 'var(--mono)', 'font-size': 9, fill: 'var(--ink-soft)'}, 'best LHV');
+      add('circle', {cx: lx+10, cy: ly+30, r: 4, fill: 'var(--phos)'});
+      add('text', {x: lx+26, y: ly+33, 'font-family': 'var(--mono)', 'font-size': 9, fill: 'var(--ink-soft)'}, 'your data');
+    }
+
+    // ------------------------------------------------------------------
+    // INSIGHT PANEL (below win bar)
+    // ------------------------------------------------------------------
+
+    function renderInsightPanel(S, winRate, noiseP, sourceType) {
+      const panel = el('insight-panel');
+      if (!panel) return;
+
+      const absS = Math.abs(S);
+      const rows = [];
+
+      // ── theoretical maximum at these angles ──
+      const d2r = d => d * Math.PI / 180;
+      const E00t = Math.cos(d2r(angles.a0 - angles.b0));
+      const E01t = Math.cos(d2r(angles.a0 - angles.b1));
+      const E10t = Math.cos(d2r(angles.a1 - angles.b0));
+      const E11t = Math.cos(d2r(angles.a1 - angles.b1));
+      const S_theory_entangled = E00t - E01t + E10t + E11t;
+      const S_theory_classical = computeBestLHV(angles.a0, angles.a1, angles.b0, angles.b1);
+      const maxPossible = Math.abs(S_theory_entangled);
+
+      if (sourceType === 'entangled') {
+        const efficiency = maxPossible > 0.01 ? (absS / maxPossible * 100).toFixed(0) : '—';
+        const theoretic = maxPossible.toFixed(3);
+        if (maxPossible > 2.01) {
+          rows.push({
+            tag: 'quantum max',
+            text: `These angles predict <code>|S| = ${theoretic}</code> — your measurement is at <span class="${absS > 1.9 * maxPossible / 2 ? 'hi' : 'warn'}">${efficiency}%</span> of that.`
+          });
+        } else if (maxPossible > 1.5) {
+          rows.push({
+            tag: 'sub-optimal',
+            text: `Quantum max at these angles is only <code>${theoretic}</code>. Rotate toward <code>(0°, 90°, 45°, 135°)</code> to reach <span class="hi">2.828</span>.`
+          });
+        } else {
+          rows.push({
+            tag: 'poor angles',
+            text: `Quantum max here is just <code>${theoretic}</code> — these angles suppress the Bell correlation. The source is entangled but the geometry hides it.`
+          });
+        }
+      } else {
+        const classMax = Math.abs(S_theory_classical).toFixed(3);
+        rows.push({
+          tag: 'lhv max',
+          text: `Best hidden-variable bound at these angles: <code>|S| ≤ ${classMax}</code>. Your measurement: <code>${absS.toFixed(3)}</code>.`
+        });
+      }
+
+      // ── noise commentary ──
+      if (noiseP > 0) {
+        const attenuation = Math.pow(1 - 2 * noiseP, 2);
+        const noisyMax = (2 * Math.sqrt(2) * attenuation).toFixed(3);
+        const crossover = noiseP >= 0.5 * (1 - 1 / Math.sqrt(2));
+        rows.push({
+          tag: 'noise',
+          text: crossover
+            ? `At ${(noiseP*100).toFixed(0)}% flip rate noise has pushed the quantum ceiling below 2 — <span class="warn">no angle can violate CHSH at this noise level.</span>`
+            : `Detector noise attenuates S by (1−2p)² = ${attenuation.toFixed(3)}. Even with a perfect source the ceiling here is <code>${noisyMax}</code>.`
+        });
+      }
+
+      // ── win rate interpretation ──
+      const pct = (winRate * 100).toFixed(2);
+      if (winRate > 0.853) {
+        rows.push({ tag: 'win rate', text: `<span class="hi">${pct}%</span> — within reach of the Tsirelson bound (85.36%). Hard to do better with any quantum strategy.` });
+      } else if (winRate > 0.80) {
+        rows.push({ tag: 'win rate', text: `<span class="hi">${pct}%</span> — clearly super-classical. A referee running this game cannot attribute it to shared randomness.` });
+      } else if (winRate > 0.75) {
+        rows.push({ tag: 'win rate', text: `<span class="warn">${pct}%</span> — marginally above 75%. Increase trials or move angles toward optimal to widen the gap.` });
+      } else if (winRate > 0.70) {
+        rows.push({ tag: 'win rate', text: `<span class="warn">${pct}%</span> — below the classical limit. A shared coin-flip strategy could match or beat this.` });
+      } else {
+        rows.push({ tag: 'win rate', text: `${pct}% — well below 75%. These angles are actively suppressing correlation. The source looks worse than random here.` });
+      }
+
+      // ── special angle commentary ──
+      const a0r = Math.round(angles.a0), a1r = Math.round(angles.a1);
+      const b0r = Math.round(angles.b0), b1r = Math.round(angles.b1);
+      const diff01 = Math.abs(a0r - b0r);
+      const diff11 = Math.abs(a1r - b1r);
+      if (diff01 === 0 && diff11 === 0 && a0r === a1r) {
+        rows.push({ tag: 'note', text: 'All angles identical — every correlator equals 1. S = 2 exactly. No violation is possible; try spreading the angles apart.' });
+      } else if (diff01 === 90 && diff11 === 90) {
+        rows.push({ tag: 'note', text: 'Alice and Bob are always perpendicular — all correlators are 0. S = 0. Orthogonal measurements share no information.' });
+      } else if (maxPossible > 2.82) {
+        rows.push({ tag: 'optimal', text: 'These angles are near the <span class="hi">Tsirelson optimum</span> — the maximum quantum violation allowed by any physical theory.' });
+      }
+
+      panel.innerHTML = rows.map(r => `
+        <div class="insight-row">
+          <span class="insight-tag">${r.tag}</span>
+          <span class="insight-text">${r.text}</span>
+        </div>`).join('');
+    }
+
+    // Best LHV correlation at a given angle pair (linear envelope)
+    function bestLHVcorr(alpha, beta) {
+      const d = Math.abs(alpha - beta) % 180;
+      return 1 - 2 * d / 180;
+    }
+    function computeBestLHV(a0, a1, b0, b1) {
+      return bestLHVcorr(a0,b0) - bestLHVcorr(a0,b1) + bestLHVcorr(a1,b0) + bestLHVcorr(a1,b1);
+    }
+
+    // ------------------------------------------------------------------
+    // ANGLE FAMILIES (Task 05)
+    // ------------------------------------------------------------------
+
+    const angleFamilies = [
+      {
+        name: 'Symmetric star',
+        tag: 'equal spacing',
+        a0: 0, a1: 90, b0: 30, b1: 120,
+        desc: `Alice and Bob both span 90°, but Bob's frame is rotated 30°. The four angle pairs form a regular pattern around the circle. Predicted S ≈ 2.73.`,
+        note: `The star family generalises to any rotation — only the <em>difference</em> between frames determines S.`,
+      },
+      {
+        name: 'Tilted CHSH',
+        tag: 'asymmetric',
+        a0: 15, a1: 75, b0: 45, b1: 135,
+        desc: `The canonical frame shifted by 15°. Because S depends only on angle differences, the violation is identical. A good test that absolute angles don't matter — only relative geometry does.`,
+        note: `Any global rotation of all four angles leaves S unchanged.`,
+      },
+      {
+        name: 'Near-classical edge',
+        tag: 'marginal case',
+        a0: 0, a1: 90, b0: 10, b1: 100,
+        desc: `Bob's frame is close to Alice's, compressing the angle differences. S sits just above 2 — the violation is real but thin. A few percent of detector noise erases it.`,
+        note: `This is the regime real experiments worry about most: signal barely above the noise floor.`,
+      },
+      {
+        name: 'Anti-correlated sweep',
+        tag: 'negative S',
+        a0: 0, a1: 90, b0: 135, b1: 45,
+        desc: `Swapping b₀ and b₁ flips the sign of S to −2√2. The magnitude of the violation is identical; the sign only reflects which correlator is "anti-aligned". |S| is what matters.`,
+        note: `Bell's inequality is symmetric in |S|. Positive and negative maxima are physically equivalent.`,
+      },
+      {
+        name: 'Noise threshold',
+        tag: 'detector stress test',
+        a0: 0, a1: 90, b0: 45, b1: 135,
+        desc: `Optimal angles, but set detector noise to ~15% and watch S collapse to ≈1.38. The quantum–classical crossover occurs at p ≈ 14.6% — above that, no angle combination can violate CHSH.`,
+        note: `Real photon experiments typically see 2–5% detector inefficiency, comfortably below the threshold.`,
+        noiseHint: 15,
+      },
+      {
+        name: 'Maximally mixed angles',
+        tag: 'zero correlation',
+        a0: 0, a1: 90, b0: 90, b1: 0,
+        desc: `Alice and Bob's settings perfectly cancel each other out. S = 0 regardless of source. Illustrates that entanglement is useless without a shared measurement strategy.`,
+        note: `Two parties with orthogonal frames extract zero correlated information.`,
+      },
+    ];
+
+    function renderAngleFamilies() {
+      const container = el('angle-families');
+      if (!container) return;
+
+      container.innerHTML = angleFamilies.map((fam, i) => {
+        const d2r = d => d * Math.PI / 180;
+        const E00 = Math.cos(d2r(fam.a0 - fam.b0));
+        const E01 = Math.cos(d2r(fam.a0 - fam.b1));
+        const E10 = Math.cos(d2r(fam.a1 - fam.b0));
+        const E11 = Math.cos(d2r(fam.a1 - fam.b1));
+        const Spred = E00 - E01 + E10 + E11;
+        const Sabs = Math.abs(Spred).toFixed(3);
+        const violated = Math.abs(Spred) > 2;
+        const angleStr = `a₀=${fam.a0}° a₁=${fam.a1}° b₀=${fam.b0}° b₁=${fam.b1}°`;
+        const noiseNote = fam.noiseHint ? `<br><span style="color:var(--amber);font-size:11px;">Try with ${fam.noiseHint}% detector noise.</span>` : '';
+
+        return `
+          <div class="angle-card">
+            <div class="angle-card-tag">${fam.tag}</div>
+            <h4>${fam.name}</h4>
+            <p>${fam.desc}</p>
+            <div class="angle-vals">${angleStr.split(' ').map(a=>`<span>${a}</span>`).join('')}</div>
+            <div class="predicted-s">predicted |S| = <b>${Sabs}</b>${violated ? ' <span style="color:var(--magenta)">· violates</span>' : ' <span style="color:var(--amber)">· within bound</span>'}${noiseNote}</div>
+            <p style="font-size:11.5px; font-style:italic; color:var(--ink-faint); margin:0 0 12px;">${fam.note}</p>
+            <button class="load-angles-btn" data-family="${i}">Load into experiment ↑</button>
+          </div>`;
+      }).join('');
+
+      // Wire up load buttons
+      container.querySelectorAll('.load-angles-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const fam = angleFamilies[parseInt(btn.dataset.family)];
+          angles.a0 = fam.a0; angles.a1 = fam.a1;
+          angles.b0 = fam.b0; angles.b1 = fam.b1;
+          sliders.a0.value = fam.a0; sliders.a1.value = fam.a1;
+          sliders.b0.value = fam.b0; sliders.b1.value = fam.b1;
+          if (fam.noiseHint) {
+            sliders.noise.value = fam.noiseHint;
+            vals.noise.textContent = fam.noiseHint;
+          }
+          renderAngleLabels();
+          // Mark loaded
+          container.querySelectorAll('.load-angles-btn').forEach(b => b.classList.remove('loaded'));
+          btn.classList.add('loaded');
+          btn.textContent = 'Loaded ✓ — press Run ↑';
+          // Scroll to knobs smoothly
+          el('run-btn').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        });
+      });
+    }
+
+    // ------------------------------------------------------------------
+    // WIRE UP BUTTONS
+    // ------------------------------------------------------------------
+
+    runBtn.addEventListener('click', runExperiment);
+    resetBtn.addEventListener('click', () => {
+      // restore defaults
+      angles.a0 = 0; angles.a1 = 90; angles.b0 = 45; angles.b1 = 135;
+      sliders.a0.value = 0; sliders.a1.value = 90;
+      sliders.b0.value = 45; sliders.b1.value = 135;
+      sliders.n.value = 500; sliders.noise.value = 0;
+      vals.n.textContent = 500; vals.noise.textContent = 0;
+      renderAngleLabels();
+      // reset source
+      sourceRadios.forEach(b => b.classList.remove('active'));
+      document.querySelector('#source-radio .radio-btn[data-source="classical"]').classList.add('active');
+      source = 'classical';
+      // clear readouts
+      el('shot-count-label').textContent = 'no data yet';
+      ['00','01','10','11'].forEach(k => {
+        el('E'+k).textContent = '—';
+        el('N'+k+'pp').textContent = '—';
+        el('N'+k+'pm').textContent = '—';
+        el('N'+k+'mp').textContent = '—';
+        el('N'+k+'mm').textContent = '—';
+      });
+      el('chsh-val').textContent = '—';
+      el('chsh-val').classList.remove('violated','below');
+      el('chsh-err').textContent = 'run the experiment to compute S';
+      el('chsh-source-label').textContent = '—';
+      el('chsh-pointer').style.display = 'none';
+      el('chsh-verdict').className = 'chsh-verdict';
+      el('chsh-verdict').innerHTML = 'Configure the experiment above and press <b>Run</b>. The verdict will appear here.';
+      el('winbar-fill').style.width = '0%';
+      el('winprob-val').textContent = '—';
+      const ip = el('insight-panel'); if (ip) ip.innerHTML = '';
+
+      el('corr-curve').innerHTML = '';
+      const box = el('conclusion');
+      box.className = 'conclusion not-yet';
+      box.innerHTML = `
+        <div class="tag">Pending</div>
+        <h3>Awaiting data.</h3>
+        <p>Run at least one experiment in Task 01 to generate a conclusion.</p>
+      `;
+    });
+
+    // Init: populate labels
+    renderAngleLabels();
+    renderAngleFamilies();
+  })();
+  </script>
+</body>
+</html>

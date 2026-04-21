@@ -182,7 +182,86 @@ Step 6
     svg.appendChild(mk('text', { x: W - 8, y: H - 8, fill: 'var(--ink-faint)', 'font-size': 11, 'font-family': 'var(--mono)', 'text-anchor': 'end' }, 'frequency'));
   }
 
-  window.t9Utils = { fmt, drawCurve, drawTwoCurves, drawSpectrum, spectrumValue };
+  function drawPopulationMeter(containerId, pExcited) {
+    const el = document.getElementById(containerId);
+    if (!el) return;
+    const pE = Math.max(0, Math.min(1, pExcited));
+    const pG = 1 - pE;
+    el.innerHTML = `
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;">
+        <div style="border:1px solid var(--line);border-radius:8px;padding:8px;background:var(--bg-2);">
+          <div style="font-family:var(--mono);font-size:10px;color:var(--ink-faint);">Excited |1⟩</div>
+          <div style="height:10px;background:var(--line);border-radius:999px;margin-top:6px;overflow:hidden;">
+            <div style="height:100%;width:${100 * pE}%;background:linear-gradient(90deg,var(--amber),var(--magenta));"></div>
+          </div>
+          <div style="font-family:var(--mono);font-size:11px;color:var(--amber);margin-top:5px;">${fmt(100 * pE, 1)}%</div>
+        </div>
+        <div style="border:1px solid var(--line);border-radius:8px;padding:8px;background:var(--bg-2);">
+          <div style="font-family:var(--mono);font-size:10px;color:var(--ink-faint);">Ground |0⟩</div>
+          <div style="height:10px;background:var(--line);border-radius:999px;margin-top:6px;overflow:hidden;">
+            <div style="height:100%;width:${100 * pG}%;background:linear-gradient(90deg,var(--cyan),var(--phos));"></div>
+          </div>
+          <div style="font-family:var(--mono);font-size:11px;color:var(--phos);margin-top:5px;">${fmt(100 * pG, 1)}%</div>
+        </div>
+      </div>
+    `;
+  }
+
+  function drawPhaseDial(svgId, coherence, phase = 0.8) {
+    const svg = document.getElementById(svgId);
+    if (!svg) return;
+    const ns = 'http://www.w3.org/2000/svg';
+    svg.innerHTML = '';
+    const W = 230, H = 160, cx = 80, cy = 84, R = 52;
+    svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+    function mk(tag, attrs, text) {
+      const e = document.createElementNS(ns, tag);
+      Object.entries(attrs).forEach(([k, v]) => e.setAttribute(k, v));
+      if (text) e.textContent = text;
+      return e;
+    }
+    const coh = Math.max(0, Math.min(1, coherence));
+    const tipX = cx + R * coh * Math.cos(phase);
+    const tipY = cy - R * coh * Math.sin(phase);
+    svg.appendChild(mk('circle', { cx, cy, r: R, fill: 'none', stroke: 'var(--line-bright)', 'stroke-width': 1.2 }));
+    svg.appendChild(mk('line', { x1: cx - R - 6, y1: cy, x2: cx + R + 6, y2: cy, stroke: 'var(--line)', 'stroke-width': 1 }));
+    svg.appendChild(mk('line', { x1: cx, y1: cy - R - 6, x2: cx, y2: cy + R + 6, stroke: 'var(--line)', 'stroke-width': 1 }));
+    svg.appendChild(mk('line', { x1: cx, y1: cy, x2: tipX, y2: tipY, stroke: 'var(--phos)', 'stroke-width': 3, 'stroke-linecap': 'round' }));
+    svg.appendChild(mk('circle', { cx: tipX, cy: tipY, r: 4.2, fill: 'var(--phos)' }));
+    svg.appendChild(mk('text', { x: 148, y: 62, fill: 'var(--ink-faint)', 'font-size': 10, 'font-family': 'var(--mono)' }, '|ρ01|'));
+    svg.appendChild(mk('text', { x: 148, y: 80, fill: 'var(--phos)', 'font-size': 16, 'font-family': 'var(--mono)' }, fmt(coh, 3)));
+    svg.appendChild(mk('text', { x: 148, y: 102, fill: 'var(--ink-dim)', 'font-size': 10, 'font-family': 'var(--mono)' }, coh < 0.35 ? 'phase mostly scrambled' : 'phase still trackable'));
+  }
+
+  function drawPulseSequence(svgId, kind, probe) {
+    const svg = document.getElementById(svgId);
+    if (!svg) return;
+    const ns = 'http://www.w3.org/2000/svg';
+    svg.innerHTML = '';
+    const W = 340, H = 132;
+    svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+    function mk(tag, attrs, text) {
+      const e = document.createElementNS(ns, tag);
+      Object.entries(attrs).forEach(([k, v]) => e.setAttribute(k, v));
+      if (text) e.textContent = text;
+      return e;
+    }
+    svg.appendChild(mk('line', { x1: 24, y1: 86, x2: W - 16, y2: 86, stroke: 'var(--line-bright)', 'stroke-width': 1.2 }));
+    svg.appendChild(mk('rect', { x: 36, y: 58, width: 22, height: 28, rx: 4, fill: 'var(--phos)', opacity: 0.95 }));
+    svg.appendChild(mk('text', { x: 47, y: 52, fill: 'var(--phos)', 'font-size': 10, 'text-anchor': 'middle', 'font-family': 'var(--mono)' }, 'π/2'));
+    if (kind === 'oneoverf') {
+      svg.appendChild(mk('rect', { x: 152, y: 50, width: 24, height: 36, rx: 4, fill: 'var(--amber)', opacity: 0.95 }));
+      svg.appendChild(mk('text', { x: 164, y: 44, fill: 'var(--amber)', 'font-size': 10, 'text-anchor': 'middle', 'font-family': 'var(--mono)' }, 'π'));
+    }
+    svg.appendChild(mk('rect', { x: 272, y: 58, width: 22, height: 28, rx: 4, fill: 'var(--phos)', opacity: 0.95 }));
+    svg.appendChild(mk('text', { x: 283, y: 52, fill: 'var(--phos)', 'font-size': 10, 'text-anchor': 'middle', 'font-family': 'var(--mono)' }, 'π/2'));
+    const px = 36 + Math.max(0, Math.min(1, probe)) * 258;
+    svg.appendChild(mk('line', { x1: px, y1: 24, x2: px, y2: 96, stroke: 'var(--magenta)', 'stroke-width': 1.5, 'stroke-dasharray': '4 4' }));
+    svg.appendChild(mk('text', { x: px + 5, y: 22, fill: 'var(--magenta)', 'font-size': 10, 'font-family': 'var(--mono)' }, 'probe t'));
+    svg.appendChild(mk('text', { x: 20, y: 114, fill: 'var(--ink-faint)', 'font-size': 10, 'font-family': 'var(--mono)' }, kind === 'oneoverf' ? 'Echo sequence refocuses slow drift' : 'Ramsey-like free precession'));
+  }
+
+  window.t9Utils = { fmt, drawCurve, drawTwoCurves, drawSpectrum, spectrumValue, drawPopulationMeter, drawPhaseDial, drawPulseSequence };
 })();
 
 /* ---- T9 Step 1: T1 relaxation ---- */
@@ -204,15 +283,18 @@ Step 6
     if (cap) {
       const halfLife = Math.log(2) * T1;
       const at20 = Math.exp(-20 / T1);
+      const probeT = 20;
       cap.innerHTML = `
         <b>T1 = energy relaxation time.</b> Start in |1⟩ and the excited-state population decays exponentially back toward |0⟩.
         <br><span style="color:var(--ink-faint)">
           In an OQS picture, this is driven by bath noise near the qubit transition frequency.
         </span>
+        <div id="t9-t1-meter"></div>
         <div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--line);font-family:var(--mono);font-size:11px;color:var(--ink-dim)">
-          50% lifetime: ${t9Utils.fmt(halfLife, 2)} μs · P(|1⟩) at 20 μs: ${t9Utils.fmt(at20, 3)}
+          50% lifetime: ${t9Utils.fmt(halfLife, 2)} μs · P(|1⟩) at ${probeT} μs: ${t9Utils.fmt(at20, 3)}
         </div>
       `;
+      t9Utils.drawPopulationMeter('t9-t1-meter', at20);
     }
     markDone('t9-1');
   }
@@ -243,10 +325,14 @@ Step 6
       cap.innerHTML = `
         <b>Pure dephasing</b> does not move population from |1⟩ to |0⟩.
         It scrambles phase, so superpositions lose contrast even when the average energy stays the same.
+        <div style="margin-top:8px;">
+          <svg id="t9-dephase-dial" style="width:100%;max-width:250px;height:auto;"></svg>
+        </div>
         <div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--line);font-family:var(--mono);font-size:11px;color:var(--ink-dim)">
           |ρ<sub>01</sub>| at 20 μs: ${t9Utils.fmt(at20, 3)} · at 40 μs: ${t9Utils.fmt(at40, 3)}
         </div>
       `;
+      t9Utils.drawPhaseDial('t9-dephase-dial', at20);
     }
     markDone('t9-2');
   }
@@ -372,6 +458,7 @@ Step 6
 
   run.addEventListener('click', () => {
     const kind = sel.value;
+    let probe = 0.5;
 
     let ramsey, echo, txt;
     if (kind === 'oneoverf') {
@@ -391,19 +478,40 @@ Step 6
     t9Utils.drawTwoCurves('t9-echo-svg', ramsey, echo, ['Ramsey', 'Echo']);
 
     if (note) {
-      const probe = 0.5;
-      const ramseyProbe = Math.max(0, ramsey(probe));
-      const echoProbe = Math.max(0, echo(probe));
-      const gain = echoProbe / Math.max(ramseyProbe, 1e-6);
-      note.innerHTML = `
-        ${txt}<br>
-        <span style="color:var(--ink-faint)">
-          This is why experimental papers often quote both T<sub>2</sub><sup>*</sup> (Ramsey) and T<sub>2</sub><sup>echo</sup>.
-        </span>
-        <div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--line);font-family:var(--mono);font-size:11px;color:var(--ink-dim)">
-          Mid-sequence signal at t=0.5: Ramsey ${t9Utils.fmt(ramseyProbe, 3)} · Echo ${t9Utils.fmt(echoProbe, 3)} · Echo gain ${t9Utils.fmt(gain, 2)}x
-        </div>
-      `;
+      function renderProbePanel() {
+        const ramseyProbe = Math.max(0, ramsey(probe));
+        const echoProbe = Math.max(0, echo(probe));
+        const gain = echoProbe / Math.max(ramseyProbe, 1e-6);
+        note.innerHTML = `
+          ${txt}<br>
+          <span style="color:var(--ink-faint)">
+            This is why experimental papers often quote both T<sub>2</sub><sup>*</sup> (Ramsey) and T<sub>2</sub><sup>echo</sup>.
+          </span>
+          <div style="margin-top:8px;border:1px solid var(--line);border-radius:10px;padding:8px;background:var(--bg-2);">
+            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-family:var(--mono);font-size:11px;color:var(--ink-dim);">
+              Probe time
+              <input id="t9-echo-probe" type="range" min="0.05" max="0.95" step="0.01" value="${probe}" style="width:140px;accent-color:var(--magenta)" />
+              <span id="t9-echo-probe-val" style="color:var(--magenta)">${t9Utils.fmt(probe, 2)}</span>
+            </div>
+            <svg id="t9-echo-pulses" style="width:100%;max-width:340px;height:auto;margin-top:8px;"></svg>
+          </div>
+          <div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--line);font-family:var(--mono);font-size:11px;color:var(--ink-dim)">
+            Signal at t=${t9Utils.fmt(probe, 2)}: Ramsey ${t9Utils.fmt(ramseyProbe, 3)} · Echo ${t9Utils.fmt(echoProbe, 3)} · Echo gain ${t9Utils.fmt(gain, 2)}x
+          </div>
+        `;
+        t9Utils.drawPulseSequence('t9-echo-pulses', kind, probe);
+        const probeSlider = document.getElementById('t9-echo-probe');
+        const probeVal = document.getElementById('t9-echo-probe-val');
+        if (probeSlider) {
+          probeSlider.addEventListener('input', () => {
+            probe = parseFloat(probeSlider.value);
+            if (probeVal) probeVal.textContent = t9Utils.fmt(probe, 2);
+            renderProbePanel();
+          });
+        }
+      }
+
+      renderProbePanel();
     }
     markDone('t9-5');
   });

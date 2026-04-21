@@ -1055,7 +1055,7 @@
   .toast.err { border-color: var(--red); color: var(--red); box-shadow: 0 0 20px rgba(255,112,112,0.25); }
 
   /* =========================================================
-     TAB NAV (top-level: Lab vs Learn)
+     TAB NAV (top-level: Home, Explore, Tutorials, …)
      ========================================================= */
   .tabs {
     display: flex;
@@ -1105,6 +1105,309 @@
   }
   .view { display: none; }
   .view.active { display: block; }
+
+  /* =========================================================
+     HOME (landing) VIEW
+     ========================================================= */
+  #view-home {
+    padding-bottom: 48px;
+  }
+  .home-hero {
+    border: 1px solid var(--line);
+    padding: 40px 36px 44px;
+    margin-bottom: 36px;
+    background: linear-gradient(165deg, rgba(127,255,196,0.07), transparent 55%);
+    position: relative;
+  }
+  .home-hero h1 {
+    font-family: var(--serif);
+    font-weight: 300;
+    font-size: clamp(32px, 4.5vw, 48px);
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    margin: 0 0 18px;
+    max-width: 18ch;
+  }
+  .home-hero h1 em {
+    font-style: italic;
+    color: var(--phos-dim);
+  }
+  .home-hero .home-lede {
+    max-width: 52ch;
+    font-size: 16px;
+    line-height: 1.65;
+    color: var(--ink-dim);
+    margin: 0 0 22px;
+  }
+  .home-hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+  }
+  .home-section {
+    margin-bottom: 40px;
+    max-width: 58ch;
+  }
+  .home-section h2 {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-style: italic;
+    font-size: 26px;
+    color: var(--ink);
+    margin: 0 0 14px;
+    line-height: 1.2;
+  }
+  .home-section p {
+    font-size: 15px;
+    line-height: 1.65;
+    color: var(--ink-dim);
+    margin: 0 0 12px;
+  }
+  .home-section p:last-child { margin-bottom: 0; }
+  .home-aside {
+    margin-top: 16px;
+    padding: 14px 18px;
+    border-left: 2px solid var(--line-bright);
+    font-family: var(--serif);
+    font-size: 14px;
+    font-style: italic;
+    color: var(--ink-faint);
+    line-height: 1.55;
+  }
+  .home-demo-wrap {
+    margin: 22px 0 28px;
+    padding: 28px 24px;
+    background: var(--bg-1);
+    border: 1px solid var(--line);
+    max-width: 420px;
+  }
+  .home-demo-wrap .home-demo-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 14px;
+  }
+  .home-cta-band {
+    margin: 44px 0 40px;
+    padding: 28px 26px;
+    border: 1px solid var(--line-bright);
+    background: var(--bg-1);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .home-cta-band p {
+    margin: 0;
+    font-family: var(--serif);
+    font-size: 17px;
+    font-style: italic;
+    color: var(--ink);
+    flex: 1 1 220px;
+  }
+  .home-cta-band .home-cta-btns {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .home-learn {
+    margin-top: 8px;
+    padding-top: 36px;
+    border-top: 1px solid var(--line);
+  }
+  .home-learn h2 {
+    font-family: var(--serif);
+    font-weight: 300;
+    font-size: 32px;
+    margin: 0 0 10px;
+    color: var(--ink);
+  }
+  .home-learn .home-learn-sub {
+    font-size: 14px;
+    color: var(--ink-dim);
+    margin: 0 0 28px;
+    max-width: 52ch;
+    line-height: 1.6;
+  }
+  .home-learn-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 16px;
+  }
+  .home-learn-card {
+    border: 1px solid var(--line);
+    padding: 18px 18px 16px;
+    background: var(--bg-1);
+    text-align: left;
+    cursor: pointer;
+    font: inherit;
+    color: inherit;
+    transition: border-color 0.15s, transform 0.15s;
+    display: block;
+    width: 100%;
+  }
+  .home-learn-card:hover {
+    border-color: var(--phos-dim);
+    transform: translateY(-2px);
+  }
+  .home-learn-card .tag {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--phos-dim);
+    margin-bottom: 8px;
+  }
+  .home-learn-card h3 {
+    font-family: var(--serif);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 18px;
+    margin: 0 0 8px;
+    color: var(--ink);
+  }
+  .home-learn-card p {
+    font-size: 13px;
+    line-height: 1.55;
+    color: var(--ink-dim);
+    margin: 0;
+  }
+  .home-learn-card .go {
+    margin-top: 12px;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--phos);
+  }
+
+  /* =========================================================
+     LABS VIEW
+     ========================================================= */
+  .labs-intro {
+    display: grid;
+    grid-template-columns: 1.3fr 1fr;
+    gap: 48px;
+    margin-bottom: 28px;
+    align-items: start;
+  }
+  .labs-intro h1 {
+    font-family: var(--serif);
+    font-weight: 300;
+    font-size: 46px;
+    line-height: 1.05;
+    letter-spacing: -0.025em;
+    color: var(--ink);
+    margin-bottom: 14px;
+  }
+  .labs-intro h1 em {
+    font-style: italic;
+    color: var(--magenta);
+  }
+  .labs-intro p {
+    color: var(--ink-dim);
+    font-size: 15px;
+    line-height: 1.6;
+    max-width: 58ch;
+  }
+  .labs-intro .rules {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--ink-faint);
+    letter-spacing: 0.06em;
+    line-height: 1.8;
+    border-left: 1px solid var(--line-bright);
+    padding-left: 16px;
+  }
+  .labs-intro .rules b {
+    color: var(--amber);
+    font-weight: 500;
+  }
+  .labs-section {
+    margin-top: 10px;
+  }
+  .labs-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+  }
+  .lab-card {
+    display: block;
+    text-decoration: none;
+    background: var(--bg-1);
+    border: 1px solid var(--line);
+    padding: 18px;
+    transition: all 0.18s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .lab-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--magenta), var(--cyan));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.25s ease;
+  }
+  .lab-card:hover {
+    border-color: var(--line-bright);
+    transform: translateY(-2px);
+  }
+  .lab-card:hover::before { transform: scaleX(1); }
+  .lab-card-num {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 8px;
+  }
+  .lab-card h2 {
+    font-family: var(--serif);
+    font-size: 25px;
+    line-height: 1.18;
+    font-weight: 300;
+    color: var(--ink);
+    margin-bottom: 8px;
+  }
+  .lab-card-sub {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--cyan);
+    margin-bottom: 10px;
+  }
+  .lab-card-desc {
+    color: var(--ink-dim);
+    font-size: 13px;
+    line-height: 1.58;
+    margin-bottom: 14px;
+  }
+  .lab-card-cta {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--magenta);
+    border-top: 1px dashed var(--line);
+    padding-top: 10px;
+  }
+
+  @media (max-width: 900px) {
+    .labs-intro { grid-template-columns: 1fr; }
+    .labs-intro h1 { font-size: 32px; }
+    .labs-grid { grid-template-columns: 1fr; }
+  }
 
   /* =========================================================
      LEARN INTRO
@@ -1181,7 +1484,7 @@
     background: var(--bg-1);
     border: 1px solid var(--line);
     padding: 18px 22px;
-  min-height: 122px;
+    min-height: 134px;
     cursor: pointer;
     text-align: left;
     display: flex;
@@ -1241,6 +1544,48 @@
     background: var(--bg-0);
   }
   .subtab.active .subtab-pill { color: var(--phos); border-color: var(--phos-dim); }
+
+  /* Tutorial difficulty (1–5 filled dots) */
+  .tutorial-diff {
+    display: flex;
+    flex-direction: row;
+    gap: 4px;
+    align-items: center;
+    margin-top: 5px;
+  }
+  .tutorial-diff-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    border: 1px solid var(--line-bright);
+    background: transparent;
+    box-sizing: border-box;
+    flex-shrink: 0;
+  }
+  .subtab-intro .tutorial-diff-dot.filled {
+    background: var(--phos-dim);
+    border-color: var(--phos-dim);
+  }
+  .subtab-intro.active .tutorial-diff-dot.filled {
+    background: var(--phos);
+    border-color: var(--phos);
+  }
+  .subtab-alg .tutorial-diff-dot.filled {
+    background: rgba(230,127,184,0.5);
+    border-color: var(--magenta);
+  }
+  .subtab-alg.active .tutorial-diff-dot.filled {
+    background: var(--magenta);
+    border-color: var(--magenta);
+  }
+  .subtab-noise .tutorial-diff-dot.filled {
+    background: rgba(255,184,101,0.45);
+    border-color: var(--amber-dim);
+  }
+  .subtab-noise.active .tutorial-diff-dot.filled {
+    background: var(--amber);
+    border-color: var(--amber);
+  }
 
   /* =========================================================
      STEP CARDS

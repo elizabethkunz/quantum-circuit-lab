@@ -237,9 +237,99 @@ Step 6
     svg.appendChild(mk('text', { x: 16, y: 42, fill: 'var(--amber)', 'font-size': 12, 'font-family': 'var(--mono)' }, labelBottom));
   }
 
+  function drawBlochSphereProjection(svgId, inputVec, outputVec, azimuth = 0.95, elevation = 0.52) {
+    const svg = document.getElementById(svgId);
+    if (!svg) return;
+    const ns = 'http://www.w3.org/2000/svg';
+    svg.innerHTML = '';
+    const W = 360, H = 220, cx = 180, cy = 114, R = 72;
+    svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+
+    function mk(tag, attrs, text) {
+      const e = document.createElementNS(ns, tag);
+      Object.entries(attrs).forEach(([k, v]) => e.setAttribute(k, v));
+      if (text) e.textContent = text;
+      return e;
+    }
+
+    function proj(v) {
+      const ca = Math.cos(azimuth), sa = Math.sin(azimuth);
+      const ce = Math.cos(elevation), se = Math.sin(elevation);
+      const x1 = ca * v.x - sa * v.y;
+      const y1 = sa * v.x + ca * v.y;
+      const z1 = v.z;
+      const y2 = ce * y1 - se * z1;
+      const z2 = se * y1 + ce * z1;
+      return { x: cx + R * x1, y: cy - R * y2, depth: z2 };
+    }
+
+    const back = 0.45 + 0.25 * Math.cos(elevation);
+    svg.appendChild(mk('ellipse', { cx, cy, rx: R, ry: Math.max(20, R * back), fill: 'none', stroke: 'var(--line)', 'stroke-width': 1, opacity: 0.55 }));
+    svg.appendChild(mk('circle', { cx, cy, r: R, fill: 'none', stroke: 'var(--line-bright)', 'stroke-width': 1.2, opacity: 0.85 }));
+
+    const basis = [
+      { name: 'x', v: { x: 1, y: 0, z: 0 } },
+      { name: 'y', v: { x: 0, y: 1, z: 0 } },
+      { name: 'z', v: { x: 0, y: 0, z: 1 } }
+    ];
+    basis.forEach(b => {
+      const p = proj(b.v);
+      svg.appendChild(mk('line', { x1: cx, y1: cy, x2: p.x, y2: p.y, stroke: 'var(--line)', 'stroke-width': 1, opacity: 0.8 }));
+      svg.appendChild(mk('text', {
+        x: p.x + 4, y: p.y - 4, fill: 'var(--ink-faint)', 'font-size': 10, 'font-family': 'var(--mono)'
+      }, b.name));
+    });
+
+    const pin = proj(inputVec);
+    const pout = proj(outputVec);
+    svg.appendChild(mk('line', { x1: cx, y1: cy, x2: pin.x, y2: pin.y, stroke: 'var(--phos)', 'stroke-width': 3, 'stroke-linecap': 'round' }));
+    svg.appendChild(mk('circle', { cx: pin.x, cy: pin.y, r: 4.4, fill: 'var(--phos)' }));
+    svg.appendChild(mk('line', { x1: cx, y1: cy, x2: pout.x, y2: pout.y, stroke: 'var(--amber)', 'stroke-width': 3, 'stroke-linecap': 'round' }));
+    svg.appendChild(mk('circle', { cx: pout.x, cy: pout.y, r: 4.4, fill: 'var(--amber)' }));
+    svg.appendChild(mk('text', { x: 16, y: 24, fill: 'var(--phos)', 'font-size': 11, 'font-family': 'var(--mono)' }, 'input'));
+    svg.appendChild(mk('text', { x: 16, y: 40, fill: 'var(--amber)', 'font-size': 11, 'font-family': 'var(--mono)' }, 'after channel'));
+  }
+
+  function blochRadius(v) {
+    return Math.sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
+  }
+
+  function djNoisyDistribution(n, functionType, channel, strength) {
+    const N = Math.pow(2, n);
+    const probs = new Array(N).fill(0);
+    const idealIndex = functionType === 'constant' ? 0 : (N - 1);
+    probs[idealIndex] = 1;
+
+    const p = Math.max(0, Math.min(1, strength));
+    const uniform = 1 / N;
+
+    if (channel === 'depolarizing') {
+      for (let i = 0; i < N; i++) probs[i] = (1 - p) * probs[i] + p * uniform;
+      return probs;
+    }
+
+    if (channel === 'dephasing') {
+      const q = 0.2 + 0.55 * p;
+      for (let i = 0; i < N; i++) probs[i] = (1 - q) * probs[i] + q * uniform;
+      return probs;
+    }
+
+    if (channel === 'amplitude') {
+      const toGround = 0.18 + 0.7 * p;
+      const toUniform = 0.15 * p;
+      for (let i = 0; i < N; i++) probs[i] = (1 - toGround - toUniform) * probs[i] + toUniform * uniform;
+      probs[0] += toGround;
+      const s = probs.reduce((acc, v) => acc + v, 0);
+      return probs.map(v => v / Math.max(s, 1e-12));
+    }
+
+    return probs;
+  }
+
   window.t8Utils = {
     c, matMul, dagger, matAdd, applyKraus, channelKraus, applyChannel, rhoFromState,
-    blochFromRho, probsHTML, rhoHTML, purity, drawBlochDisc, traceDistance2x2, fmt
+    blochFromRho, probsHTML, rhoHTML, purity, drawBlochDisc, drawBlochSphereProjection,
+    traceDistance2x2, blochRadius, djNoisyDistribution, fmt
   };
 })();
 
@@ -250,6 +340,7 @@ Step 6
   const valEl = document.getElementById('t8-lambda-val');
   const caption = document.getElementById('t8-map-caption');
   if (!mapSel || !slider) return;
+  let viewAz = 0.95;
 
   function update() {
     const kind = mapSel.value;
@@ -276,7 +367,29 @@ Step 6
           Purity: ${t8Utils.fmt(t8Utils.purity(rhoOut), 3)} ·
           x = ${t8Utils.fmt(vout.x, 2)}, z = ${t8Utils.fmt(vout.z, 2)}
         </span>
+        <div style="margin-top:8px;border-top:1px solid var(--line);padding-top:8px;">
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-family:var(--mono);font-size:11px;color:var(--ink-dim);">
+            Bloch sphere view
+            <input id="t8-bloch-view" type="range" min="0.2" max="1.6" step="0.02" value="${viewAz}" style="width:130px;accent-color:var(--cyan);" />
+            <span id="t8-bloch-view-val" style="color:var(--cyan)">${t8Utils.fmt(viewAz, 2)}</span>
+            <span style="color:var(--ink-faint)">|r|: ${t8Utils.fmt(t8Utils.blochRadius(vout), 3)}</span>
+          </div>
+          <svg id="t8-bloch-sphere-svg" style="width:100%;max-width:360px;height:auto;margin-top:8px;"></svg>
+        </div>
       `;
+      function renderSphere() {
+        t8Utils.drawBlochSphereProjection('t8-bloch-sphere-svg', vin, vout, viewAz, 0.52);
+      }
+      renderSphere();
+      const view = document.getElementById('t8-bloch-view');
+      const viewVal = document.getElementById('t8-bloch-view-val');
+      if (view) {
+        view.addEventListener('input', () => {
+          viewAz = parseFloat(view.value);
+          if (viewVal) viewVal.textContent = t8Utils.fmt(viewAz, 2);
+          renderSphere();
+        });
+      }
     }
     markDone('t8-1');
   }
@@ -552,7 +665,120 @@ Step 6
           The general quantum version of a physically allowed noisy update rule.
         </div>
       </div>
+      <div class="glass-card" style="margin-top:12px;padding:12px;">
+        <b>Cross-tutorial lab: Deutsch-Jozsa under channels</b><br>
+        <span style="color:var(--ink-faint);">
+          Ideal DJ gives a deterministic bitstring pattern. Here you can see how different channel families blur that decision for 2-3 input qubits.
+        </span>
+        <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:8px;">
+          <label style="font-family:var(--mono);font-size:10px;color:var(--ink-faint);">
+            n qubits
+            <select id="t8-dj-n" class="analysis-select" style="margin-left:6px;">
+              <option value="2">2</option>
+              <option value="3">3</option>
+            </select>
+          </label>
+          <label style="font-family:var(--mono);font-size:10px;color:var(--ink-faint);">
+            Function type
+            <select id="t8-dj-func" class="analysis-select" style="margin-left:6px;">
+              <option value="constant">Constant f(x)</option>
+              <option value="balanced">Balanced f(x)</option>
+            </select>
+          </label>
+          <label style="font-family:var(--mono);font-size:10px;color:var(--ink-faint);">
+            Channel
+            <select id="t8-dj-chan" class="analysis-select" style="margin-left:6px;">
+              <option value="dephasing">Dephasing</option>
+              <option value="amplitude">Amplitude damping</option>
+              <option value="depolarizing">Depolarizing</option>
+            </select>
+          </label>
+          <label style="font-family:var(--mono);font-size:10px;color:var(--ink-faint);">
+            Noise strength
+            <input id="t8-dj-p" type="range" min="0" max="1" step="0.05" value="0.3" style="width:140px;vertical-align:middle;accent-color:var(--magenta);" />
+            <span id="t8-dj-p-val" style="color:var(--magenta);">30%</span>
+          </label>
+        </div>
+        <div id="t8-dj-circuit" style="margin-top:8px;"></div>
+        <div id="t8-dj-bars" style="margin-top:8px;"></div>
+        <div id="t8-dj-note" style="margin-top:8px;font-family:var(--mono);font-size:11px;color:var(--ink-dim);"></div>
+      </div>
     `;
+
+    const nSel = document.getElementById('t8-dj-n');
+    const fSel = document.getElementById('t8-dj-func');
+    const cSel = document.getElementById('t8-dj-chan');
+    const pSlider = document.getElementById('t8-dj-p');
+    const pVal = document.getElementById('t8-dj-p-val');
+    const circuit = document.getElementById('t8-dj-circuit');
+    const bars = document.getElementById('t8-dj-bars');
+    const note = document.getElementById('t8-dj-note');
+
+    function labelBits(i, n) {
+      return `|${i.toString(2).padStart(n, '0')}⟩`;
+    }
+
+    function barsHTML(probs, n, focusIndex) {
+      const maxShow = probs.length <= 8 ? probs.length : 8;
+      let html = `<div style="display:grid;grid-template-columns:repeat(${maxShow},minmax(36px,1fr));gap:6px;align-items:end;">`;
+      for (let i = 0; i < maxShow; i++) {
+        const p = probs[i];
+        const h = 24 + 92 * p;
+        const hi = i === focusIndex;
+        html += `
+          <div style="display:flex;flex-direction:column;align-items:center;">
+            <div style="width:100%;max-width:42px;height:${h}px;border-radius:8px 8px 4px 4px;background:${hi ? 'linear-gradient(180deg,var(--phos),var(--magenta))' : 'linear-gradient(180deg,var(--line-bright),var(--line))'};opacity:${hi ? 1 : 0.8};"></div>
+            <div style="font-family:var(--mono);font-size:10px;color:${hi ? 'var(--phos)' : 'var(--ink-faint)'};margin-top:5px;">${labelBits(i, n)}</div>
+            <div style="font-family:var(--mono);font-size:10px;color:var(--ink-dim);">${Math.round(100 * p)}%</div>
+          </div>
+        `;
+      }
+      html += '</div>';
+      return html;
+    }
+
+    function renderDJ() {
+      if (!nSel || !fSel || !cSel || !pSlider) return;
+      const n = parseInt(nSel.value);
+      const funcType = fSel.value;
+      const chan = cSel.value;
+      const p = parseFloat(pSlider.value);
+      if (pVal) pVal.textContent = `${Math.round(100 * p)}%`;
+
+      const N = Math.pow(2, n);
+      const focusIndex = funcType === 'constant' ? 0 : (N - 1);
+      const probs = t8Utils.djNoisyDistribution(n, funcType, chan, p);
+      const focusProb = probs[focusIndex];
+      const leakage = 1 - focusProb;
+      const verdict = funcType === 'constant'
+        ? 'all-zero outcome expected (constant)'
+        : 'non-zero outcome expected (balanced)';
+
+      if (circuit) {
+        circuit.innerHTML = `
+          <div style="border:1px solid var(--line);border-radius:10px;padding:8px;background:var(--bg-2);font-family:var(--mono);font-size:11px;color:var(--ink-dim);">
+            ${'q'.repeat(n).split('').map((_, i) => `q${i}: |0⟩ --H-- U<sub>f</sub> --H-- M`).join('<br>')}
+            <div style="margin-top:6px;color:var(--ink-faint);">Interpretation rule: ${verdict}</div>
+          </div>
+        `;
+      }
+      if (bars) bars.innerHTML = barsHTML(probs, n, focusIndex);
+      if (note) {
+        note.innerHTML = `
+          Focus state ${labelBits(focusIndex, n)}: <span style="color:var(--amber)">${t8Utils.fmt(100 * focusProb, 1)}%</span>
+          · leakage to wrong signatures: <span style="color:var(--cyan)">${t8Utils.fmt(100 * leakage, 1)}%</span>
+          <br><span style="color:var(--ink-faint);">
+            Dephasing mainly erodes interference, depolarizing randomizes toward uniform, and amplitude damping biases toward low-energy bitstrings.
+          </span>
+        `;
+      }
+    }
+
+    [nSel, fSel, cSel, pSlider].forEach(el => {
+      if (el) el.addEventListener('input', renderDJ);
+      if (el) el.addEventListener('change', renderDJ);
+    });
+    renderDJ();
     markDone('t8-6');
   });
 })();

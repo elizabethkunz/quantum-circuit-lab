@@ -1,9 +1,13 @@
 /* ---------------- TAB SWITCHING ---------------- */
 function switchTab(tab) {
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+  const homeView = document.getElementById('view-home');
+  if (homeView) homeView.classList.toggle('active', tab === 'home');
   document.getElementById('view-lab').classList.toggle('active', tab === 'lab');
   document.getElementById('view-learn').classList.toggle('active', tab === 'learn');
   document.getElementById('view-templates').classList.toggle('active', tab === 'templates');
+  const labsView = document.getElementById('view-labs');
+  if (labsView) labsView.classList.toggle('active', tab === 'labs');
   document.getElementById('view-docs').classList.toggle('active', tab === 'docs');
   // When switching to Learn, redraw any bloch spheres to ensure correct layout
   if (tab === 'learn') {
