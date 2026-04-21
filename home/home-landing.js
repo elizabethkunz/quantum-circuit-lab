@@ -43,12 +43,113 @@
     color: var(--phos); opacity: 0.7; margin-bottom: 1.25rem;
   }
 
-  /* ── scroll-reveal ── */
+  /* ── scroll-reveal (per-block; triggers as each block enters view) ── */
   .home-reveal {
-    opacity: 0; transform: translateY(22px);
-    transition: opacity 0.65s ease, transform 0.65s ease;
+    opacity: 0; transform: translateY(20px);
+    transition: opacity 0.75s cubic-bezier(0.22, 1, 0.36, 1), transform 0.75s cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: opacity, transform;
   }
-  .home-reveal.visible { opacity: 1; transform: none; }
+  .home-reveal.visible { opacity: 1; transform: none; will-change: auto; }
+  .home-hero-inner .home-reveal:nth-child(1) { transition-delay: 0s; }
+  .home-hero-inner .home-reveal:nth-child(2) { transition-delay: 0.08s; }
+  .home-hero-inner .home-reveal:nth-child(3) { transition-delay: 0.16s; }
+  .home-hero-inner .home-reveal:nth-child(4) { transition-delay: 0.24s; }
+  .home-hero-inner .home-reveal:nth-child(5) { transition-delay: 0.32s; }
+  .wrap-up .home-reveal:nth-child(1) { transition-delay: 0s; }
+  .wrap-up .home-reveal:nth-child(2) { transition-delay: 0.12s; }
+  .home-learn-grid .home-reveal:nth-child(1) { transition-delay: 0s; }
+  .home-learn-grid .home-reveal:nth-child(2) { transition-delay: 0.05s; }
+  .home-learn-grid .home-reveal:nth-child(3) { transition-delay: 0.1s; }
+  .home-learn-grid .home-reveal:nth-child(4) { transition-delay: 0.15s; }
+  .home-learn-grid .home-reveal:nth-child(5) { transition-delay: 0.2s; }
+
+  /* ── Bell state formula box ── */
+  .home-bell-formula-box {
+    margin-top: 1.25rem;
+    padding: 1rem 1.15rem 1.1rem;
+    background: var(--bg-0);
+    border: 1px solid var(--line-bright);
+    border-radius: 4px;
+    border-left: 2px solid var(--cyan);
+  }
+  .home-bell-formula-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 0.65rem;
+  }
+  .home-bell-formula-katex {
+    font-family: var(--serif);
+    font-size: 1.05rem;
+    color: var(--ink);
+    line-height: 1.5;
+  }
+
+  /* ── Home gate gallery (palette-style icons) ── */
+  .home-gate-gallery {
+    width: 100%;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px dashed var(--line);
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+  }
+  .home-gate-gallery-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    align-self: flex-start;
+  }
+  .home-gate-card {
+    display: grid;
+    grid-template-columns: 52px 1fr;
+    gap: 0.85rem;
+    align-items: center;
+    padding: 0.55rem 0.65rem;
+    background: var(--bg-0);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  .home-gate-card:hover {
+    border-color: var(--phos-dim);
+    box-shadow: 0 0 14px rgba(127,255,196,0.08);
+  }
+  .home-gate-icon {
+    width: 48px; height: 48px;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--bg-2);
+    border: 1px solid var(--line);
+    font-family: var(--serif);
+    font-weight: 500;
+    font-size: 20px;
+    color: var(--ink);
+    user-select: none;
+  }
+  .home-gate-card:hover .home-gate-icon {
+    border-color: var(--phos);
+    color: var(--phos);
+    box-shadow: 0 0 10px rgba(127,255,196,0.15);
+  }
+  .home-gate-card-body .home-gate-card-name {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--cyan);
+    margin-bottom: 0.25rem;
+  }
+  .home-gate-card-body p {
+    font-size: 0.82rem;
+    line-height: 1.55;
+    color: var(--ink-dim);
+    margin: 0;
+  }
 
   /* ── two-column chapter layout ── */
   .home-chapter {
@@ -297,10 +398,10 @@
   <section class="home-hero-wrap">
     <canvas id="home-hero-canvas" aria-hidden="true"></canvas>
     <div class="home-hero-inner">
-      <div class="home-eyebrow">Quantum &amp; Lab · Interactive introduction</div>
-      <h1>The universe computes in ways<br/>that feel <em>impossible.</em></h1>
-      <p>Quantum theory can feel counterintuitive at first, but it is one of the most precise frameworks in science. This page is a guided journey — from the ordinary switch in your phone, through superposition and spin measurement, to two particles sharing correlations across distance. Nothing is locked: scroll freely and interact as you go.</p>
-      <div class="home-hero-actions">
+      <div class="home-eyebrow home-reveal">Quantum &amp; Lab · Interactive introduction</div>
+      <h1 class="home-reveal">The universe computes in ways<br/>that feel <em>impossible.</em></h1>
+      <p class="home-reveal">Quantum theory can feel counterintuitive at first, but it is one of the most precise frameworks in science. This page is a guided journey — from the ordinary switch in your phone, through superposition and spin measurement, to two particles sharing correlations across distance. </p>
+      <div class="home-hero-actions home-reveal">
         <button type="button" class="btn primary" onclick="switchTab('learn');switchSubtab('t1');">Begin Tutorial 1 →</button>
         <button type="button" class="btn" onclick="switchTab('lab')">Open circuit lab</button>
       </div>
@@ -308,8 +409,8 @@
   </section>
 
   <!-- ══ 01: CLASSICAL BIT ═════════════════════════════════════════════════ -->
-  <div class="home-chapter home-reveal">
-    <div class="home-chapter-text">
+  <div class="home-chapter">
+    <div class="home-chapter-text home-reveal">
       <span class="home-chapter-kicker">01 · The ordinary bit</span>
       <h2>Everything digital is a very fast <em>choice.</em></h2>
       <p><a href="#" onclick="switchTab('learn');switchSubtab('t1');return false;" style="font-family:var(--mono);font-size:10px;letter-spacing:0.08em;color:var(--phos-dim);text-decoration:none;">→ Go deeper in Tutorial 1</a></p>
@@ -319,7 +420,7 @@
         <strong>Try it.</strong> Notice how the switch is always definite, even before you look. We are about to shatter that assumption.
       </div>
     </div>
-    <div class="home-chapter-visual">
+    <div class="home-chapter-visual home-reveal">
       <div class="home-panel">
         <div class="home-panel-label">One classical bit</div>
         <div class="classical-bit">
@@ -339,17 +440,17 @@
   <div class="home-mini-quote home-reveal">"Computation is, in a very real sense, the evolution of physical law." <b>— David Deutsch</b></div>
 
   <!-- ══ 02: BLOCH SPHERE ══════════════════════════════════════════════════ -->
-  <div class="home-chapter flip home-reveal">
-    <div class="home-chapter-text">
+  <div class="home-chapter flip">
+    <div class="home-chapter-text home-reveal">
       <span class="home-chapter-kicker">02 · The quantum bit</span>
       <h2>A qubit lives on the surface of a <em>sphere.</em></h2>
-      <p>A qubit — the quantum analogue of a bit — need not commit to one value before measurement. Its pure states map to points on the surface of the <strong>Bloch sphere</strong>: the north pole is \(|0\\rangle\), the south pole is \(|1\\rangle\), and points in between represent coherent superpositions.</p>
+      <p>A qubit — the quantum analogue of a bit — need not commit to one value before measurement. Its pure states map to points on the surface of the <strong>Bloch sphere</strong>: the north pole is \\(|0\\rangle\\), the south pole is \\(|1\\rangle\\), and points in between represent coherent superpositions.</p>
       <p>The equator is especially important: these states can all yield 50/50 outcomes in the computational basis, yet they differ by <strong>phase</strong>. That phase is invisible to a single measurement, but it governs interference and algorithmic advantage.</p>
       <div class="rules" style="margin-top:1.25rem">
         Drag the sphere to rotate your view, or click a preset. Notice that |+⟩ and |−⟩ look equally mixed but are fundamentally different states.
       </div>
     </div>
-    <div class="home-chapter-visual">
+    <div class="home-chapter-visual home-reveal">
       <div class="home-panel">
         <div class="home-panel-label">Bloch sphere — drag to rotate view</div>
         <canvas id="home-bloch-canvas" width="260" height="260" aria-label="Interactive Bloch sphere showing qubit state"></canvas>
@@ -361,7 +462,7 @@
           <button class="home-preset" data-theta="1.5708" data-phi="1.5708">|+i⟩</button>
           <button class="home-preset" data-theta="1.5708" data-phi="-1.5708">|−i⟩</button>
         </div>
-        <div class="home-state-text" id="home-bloch-state">\(|\psi\\rangle = |0\\rangle\)</div>
+        <div class="home-state-text" id="home-bloch-state">\\(|\\psi\\rangle = |0\\rangle\\)</div>
       </div>
     </div>
   </div>
@@ -369,29 +470,29 @@
   <div class="home-mini-quote home-reveal">"If quantum mechanics hasn't profoundly shocked you, you haven't understood it yet." <b>— Niels Bohr</b></div>
 
   <!-- ══ 03: SPIN MEASUREMENT ═══════════════════════════════════════════════ -->
-  <div class="home-section-full home-reveal">
-    <div class="analysis-head">
+  <div class="home-section-full" id="home-spin-section">
+    <div class="analysis-head home-reveal">
       <h3>Measurement turns spin superposition into a definite result.</h3>
       <div class="num">03 · Superposition</div>
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:2.5rem;align-items:center">
-      <div>
+      <div class="home-reveal">
         <p style="font-size:0.95rem;color:var(--ink-dim);line-height:1.75;margin-bottom:0.9rem">
-          Electron spin gives a concrete physical model for qubits. In many platforms, \(|0\\rangle\) and \(|1\\rangle\) correspond to two measurable spin orientations. If the spin is prepared in \(|+\\rangle = (|0\\rangle + |1\\rangle)/\sqrt{2}\) and measured along the z-axis, outcomes are 50/50: \(|0\\rangle\) (up) or \(|1\\rangle\) (down).
+          Electron spin gives a concrete physical model for qubits. In many platforms, \\(|0\\rangle\\) and \\(|1\\rangle\\) correspond to two measurable spin orientations. If the spin is prepared in \\(|+\\rangle = (|0\\rangle + |1\\rangle)/\\sqrt{2}\\) and measured along the z-axis, outcomes are 50/50: \\(|0\\rangle\\) (up) or \\(|1\\rangle\\) (down).
         </p>
         <p style="font-size:0.95rem;color:var(--ink-dim);line-height:1.75;margin-bottom:0.9rem">
-          There is <strong>no hidden pre-written answer</strong>. Measurement projects \(|\psi\\rangle\) onto an eigenstate of the chosen observable. That postulate is central to every protocol in the rest of this lab.
+          There is <strong>no hidden pre-written answer</strong>. Measurement projects \\(|\\psi\\rangle\\) onto an eigenstate of the chosen observable. That postulate is central to every protocol in the rest of this lab.
         </p>
         <p style="font-size:0.95rem;color:var(--ink-dim);line-height:1.75">
-          Use the panel to prepare \(|+\\rangle\), measure repeatedly, and watch individual outcomes collapse while ensemble statistics converge.
+          Use the panel to prepare \\(|+\\rangle\\), measure repeatedly, and watch individual outcomes collapse while ensemble statistics converge.
         </p>
         <p><a href="#" onclick="switchTab('learn');switchSubtab('t2');return false;" style="font-family:var(--mono);font-size:10px;letter-spacing:0.08em;color:var(--phos-dim);text-decoration:none;">→ Entanglement and measurement in Tutorial 2</a></p>
       </div>
-      <div class="home-spin-wrap">
+      <div class="home-spin-wrap home-reveal">
         <canvas id="home-spin-canvas" width="360" height="185" aria-label="Electron spin superposition and measurement"></canvas>
-        <div class="home-spin-state" id="home-spin-state">\(|\psi\\rangle = |+\\rangle = (|0\\rangle + |1\\rangle)/\sqrt{2}\)</div>
+        <div class="home-spin-state" id="home-spin-state">\\(|\\psi\\rangle = |+\\rangle = (|0\\rangle + |1\\rangle)/\\sqrt{2}\\)</div>
         <div class="home-spin-btns">
-          <button class="btn" id="home-spin-super-btn">Prepare \(|+\\rangle\)</button>
+          <button class="btn" id="home-spin-super-btn">Prepare \\(|+\\rangle\\)</button>
           <button class="btn primary" id="home-spin-measure-btn">Measure along z</button>
         </div>
       </div>
@@ -401,16 +502,16 @@
   <div class="home-mini-quote home-reveal">"Nature isn't classical... and if you want to make a simulation of nature, you'd better make it quantum mechanical." <b>— Richard Feynman</b></div>
 
   <!-- ══ 04: GATES ARE ROTATIONS ═══════════════════════════════════════════ -->
-  <div class="home-chapter home-reveal">
-    <div class="home-chapter-text">
+  <div class="home-chapter">
+    <div class="home-chapter-text home-reveal">
       <span class="home-chapter-kicker">04 · Quantum gates</span>
       <h2>Gates are <em>rotations</em> of the sphere.</h2>
       <p><a href="#" onclick="switchTab('learn');switchSubtab('t1');return false;" style="font-family:var(--mono);font-size:10px;letter-spacing:0.08em;color:var(--phos-dim);text-decoration:none;">→ Gate intuition in Tutorial 1</a></p>
       <p>In classical computing, a NOT gate flips 0 to 1. In quantum computing, single-qubit gates act as <strong>rotations</strong> on the Bloch sphere, moving the state vector continuously through Hilbert space.</p>
-      <p>The <strong>H gate</strong> (Hadamard) is foundational: it maps \(|0\\rangle\) from the pole to equatorial superposition, preparing states used across algorithms, metrology, and communication protocols.</p>
+      <p>The <strong>H gate</strong> (Hadamard) is foundational: it maps \\(|0\\rangle\\) from the pole to equatorial superposition, preparing states used across algorithms, metrology, and communication protocols.</p>
       <p>Apply gates in sequence below. Order matters: H then X is not the same transformation as X then H. This non-commutativity is one of the defining structural differences from classical logic.</p>
     </div>
-    <div class="home-chapter-visual">
+    <div class="home-chapter-visual home-reveal">
       <div class="home-panel">
         <div class="home-panel-label">Apply gates · start at |0⟩</div>
         <canvas id="home-gate-canvas" width="240" height="240" aria-label="Bloch sphere showing gate operations"></canvas>
@@ -418,10 +519,31 @@
           <button class="home-gate-btn" data-gate="H">H</button>
           <button class="home-gate-btn" data-gate="X">X</button>
           <button class="home-gate-btn" data-gate="Y">Y</button>
-          <button class="home-gate-btn" data-gate="Z">Z</button>
-          <button class="home-gate-btn" data-gate="S">S</button>
-          <button class="home-gate-btn" data-gate="T">T</button>
           <button class="home-gate-btn reset" data-gate="RESET">↻ Reset</button>
+        </div>
+        <div class="home-gate-gallery">
+          <div class="home-gate-gallery-label">Same icons as Explore</div>
+          <div class="home-gate-card">
+            <div class="home-gate-icon" aria-hidden="true">H</div>
+            <div class="home-gate-card-body">
+              <div class="home-gate-card-name">Hadamard</div>
+              <p>Maps the poles to the equator, creating equal superpositions used in algorithms and measurement bases.</p>
+            </div>
+          </div>
+          <div class="home-gate-card">
+            <div class="home-gate-icon" aria-hidden="true">X</div>
+            <div class="home-gate-card-body">
+              <div class="home-gate-card-name">Pauli-X</div>
+              <p>A π rotation about the x-axis — the quantum NOT that swaps |0⟩ and |1⟩ amplitudes on the Bloch sphere.</p>
+            </div>
+          </div>
+          <div class="home-gate-card">
+            <div class="home-gate-icon" aria-hidden="true">Y</div>
+            <div class="home-gate-card-body">
+              <div class="home-gate-card-name">Pauli-Y</div>
+              <p>A π rotation about the y-axis that mixes |0⟩ and |1⟩ while inserting a relative phase between the components.</p>
+            </div>
+          </div>
         </div>
         <div class="home-gate-history" id="home-gate-history">No gates applied yet</div>
         <div class="home-state-text" id="home-gate-state">State: |0⟩</div>
@@ -430,18 +552,18 @@
   </div>
 
   <!-- ══ 05: MEASUREMENT COIN FLIP ═════════════════════════════════════════ -->
-  <div class="home-coin-section home-reveal">
-    <div class="analysis-head">
-      <h3>Measurement projects \(|+\\rangle\) to \(|0\\rangle\) or \(|1\\rangle\).</h3>
+  <div class="home-coin-section">
+    <div class="analysis-head home-reveal">
+      <h3>Measurement projects \\(|+\\rangle\\) to \\(|0\\rangle\\) or \\(|1\\rangle\\).</h3>
       <div class="num">05 · Measurement</div>
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:2.5rem;align-items:start">
-      <div>
+      <div class="home-reveal">
         <p style="font-size:0.95rem;color:var(--ink-dim);line-height:1.75;margin-bottom:0.9rem">
-          When you measure a qubit in \(|+\\rangle\) — the state H prepares from \(|0\\rangle\) — each shot yields either \(0\) or \(1\). Individual outcomes are intrinsically random, while long-run frequencies obey exact quantum probabilities: \(P(0)=P(1)=1/2\).
+          When you measure a qubit in \\(|+\\rangle\\) — the state H prepares from \\(|0\\rangle\\) — each shot yields either \\(0\\) or \\(1\\). Individual outcomes are intrinsically random, while long-run frequencies obey exact quantum probabilities: \\(P(0)=P(1)=1/2\\).
         </p>
         <p style="font-size:0.95rem;color:var(--ink-dim);line-height:1.75;margin-bottom:0.9rem">
-          Click to measure a fresh \(|+\\rangle\) state each time. The circles track shot-by-shot outcomes, while the Bloch panel shows post-measurement projection.
+          Click to measure a fresh \\(|+\\rangle\\) state each time. The circles track shot-by-shot outcomes, while the Bloch panel shows post-measurement projection.
         </p>
         <p><a href="#" onclick="switchTab('learn');switchSubtab('t1');return false;" style="font-family:var(--mono);font-size:10px;letter-spacing:0.08em;color:var(--phos-dim);text-decoration:none;">→ Measurement foundations in Tutorial 1</a></p>
         <div style="margin-top:1.15rem;display:flex;gap:0.6rem;flex-wrap:wrap">
@@ -451,17 +573,17 @@
         </div>
         <div class="home-coin-stats" id="home-coin-stats"></div>
       </div>
-      <div>
+      <div class="home-reveal">
         <div class="home-panel" style="margin-bottom:1rem">
-          <div class="home-panel-label">Bloch sphere view (starts at \(|+\\rangle\))</div>
+          <div class="home-panel-label">Bloch sphere view (starts at \\(|+\\rangle\\))</div>
           <canvas id="home-measure-bloch-canvas" width="200" height="200" aria-label="Bloch sphere showing plus state and collapsed measurement state"></canvas>
-          <div class="home-state-text" id="home-measure-bloch-state">\(|\psi\\rangle = |+\\rangle\)</div>
+          <div class="home-state-text" id="home-measure-bloch-state">\\(|\\psi\\rangle = |+\\rangle\\)</div>
         </div>
         <div class="home-panel-label" style="margin-bottom:0.5rem">Results — each circle is one shot</div>
         <div class="home-coin-row" id="home-coin-row"></div>
         <div style="display:flex;gap:1rem;margin-top:0.5rem">
-          <span style="font-family:var(--mono);font-size:10px;color:var(--phos)">■ \(|1\\rangle\)</span>
-          <span style="font-family:var(--mono);font-size:10px;color:var(--magenta)">■ \(|0\\rangle\)</span>
+          <span style="font-family:var(--mono);font-size:10px;color:var(--phos)">■ \\(|1\\rangle\\)</span>
+          <span style="font-family:var(--mono);font-size:10px;color:var(--magenta)">■ \\(|0\\rangle\\)</span>
         </div>
       </div>
     </div>
@@ -475,24 +597,28 @@
   </div>
 
   <!-- ══ 06: ENTANGLEMENT / BELL STATES ════════════════════════════════════ -->
-  <div class="home-section-full home-reveal">
-    <div class="analysis-head">
+  <div class="home-section-full">
+    <div class="analysis-head home-reveal">
       <h3>Two qubits, one shared fate.</h3>
       <div class="num">06 · Entanglement</div>
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:2.5rem;align-items:start">
-      <div>
+      <div class="home-reveal">
         <p style="font-size:0.95rem;color:var(--ink-dim);line-height:1.75;margin-bottom:0.9rem">
           Entanglement is a uniquely quantum correlation structure. Two qubits can be prepared in a joint state where measuring one constrains the other, even when the systems are widely separated.
         </p>
         <p style="font-size:0.95rem;color:var(--ink-dim);line-height:1.75;margin-bottom:0.9rem">
-          A canonical example is the <strong>Bell state</strong> \(|\Phi^+\\rangle = (|00\\rangle + |11\\rangle)/\sqrt{2}\). Measurements yield correlated pairs (both 0 or both 1), while neither subsystem carries an independent pre-assigned classical bit.
+          A canonical example is the <strong>Bell state</strong> \\(|\\Phi^+\\rangle = (|00\\rangle + |11\\rangle)/\\sqrt{2}\\). Measurements yield correlated pairs (both 0 or both 1), while neither subsystem carries an independent pre-assigned classical bit.
         </p>
-        <p style="font-size:0.95rem;color:var(--ink-dim);line-height:1.75">
-          Run the experiment. The \(|01\\rangle\) and \(|10\\rangle\) bars stay near zero, while \(|00\\rangle\) and \(|11\\rangle\) dominate — a direct signature of Bell-pair correlations.
+        <p style="font-size:0.95rem;color:var(--ink-dim);line-height:1.75;margin-bottom:0.9rem">
+          Run the experiment. The \\(|01\\rangle\\) and \\(|10\\rangle\\) bars stay near zero, while \\(|00\\rangle\\) and \\(|11\\rangle\\) dominate — a direct signature of Bell-pair correlations.
         </p>
+        <div class="home-bell-formula-box" id="home-bell-formula-box">
+          <div class="home-bell-formula-label">Bell state (maximally entangled)</div>
+          <div class="home-bell-formula-katex">\\(|\\Phi^+\\rangle = \\dfrac{|00\\rangle + |11\\rangle}{\\sqrt{2}}\\)</div>
+        </div>
       </div>
-      <div class="home-panel">
+      <div class="home-panel home-reveal">
         <div class="home-panel-label">Bell state experiment · |Φ+⟩</div>
         <div class="home-bell-qubits">
           <div style="display:flex;flex-direction:column;align-items:center;gap:0.5rem">
@@ -544,14 +670,14 @@
     You have now seen the core ingredients: bits vs qubits, superposition, measurement, gate dynamics, and entanglement. The sections below extend each thread into deeper, fully interactive study.
   </div>
 
-  <div class="wrap-up home-reveal">
-    <button type="button" class="wrap-card" onclick="switchTab('learn');switchSubtab('t1');">
+  <div class="wrap-up">
+    <button type="button" class="wrap-card home-reveal" onclick="switchTab('learn');switchSubtab('t1');">
       <div class="wrap-tag">03 · Tutorials</div>
       <div class="wrap-title">Step-by-step interactives</div>
       <div class="wrap-desc">Nine modules from single-qubit intuition through algorithms, noise channels, and hardware timescales — with checkpoints that unlock the next step.</div>
       <div class="wrap-cta">Open Tutorial 1 →</div>
     </button>
-    <button type="button" class="wrap-card alt" onclick="switchTab('lab')">
+    <button type="button" class="wrap-card alt home-reveal" onclick="switchTab('lab')">
       <div class="wrap-tag">02 · Explore</div>
       <div class="wrap-title">Build your own circuits</div>
       <div class="wrap-desc">Drag gates, run the simulator, add noise, and read the plain-English trace — the main laboratory bench.</div>
@@ -559,38 +685,38 @@
     </button>
   </div>
 
-  <section class="analysis-section home-learn-wrap home-reveal" id="what-you-learn">
-    <div class="analysis-head">
+  <section class="analysis-section home-learn-wrap" id="what-you-learn">
+    <div class="analysis-head home-reveal">
       <h3>What you'll learn here</h3>
       <div class="num">05 + refs</div>
     </div>
-    <p class="home-learn-sub">Each card matches a tab along the top of the app.</p>
+    <p class="home-learn-sub home-reveal">Each card matches a tab along the top of the app.</p>
     <div class="home-learn-grid">
-      <button type="button" class="home-learn-card" onclick="switchTab('lab')">
+      <button type="button" class="home-learn-card home-reveal" onclick="switchTab('lab')">
         <div class="tag">02 · Explore</div>
         <h3>Build and run circuits</h3>
         <p>Drag operations onto wires, adjust qubit count, add noise, and compare probability, amplitude, and density views with a short narrative.</p>
         <div class="go">Go to Explore →</div>
       </button>
-      <button type="button" class="home-learn-card" onclick="switchTab('learn');switchSubtab('t1');">
+      <button type="button" class="home-learn-card home-reveal" onclick="switchTab('learn');switchSubtab('t1');">
         <div class="tag">03 · Tutorials</div>
         <h3>Step-by-step interactives</h3>
         <p>Nine modules from single-qubit intuition through algorithms, noise channels, and hardware timescales, each with checks that unlock the next step.</p>
         <div class="go">Go to Tutorials →</div>
       </button>
-      <button type="button" class="home-learn-card" onclick="switchTab('templates')">
+      <button type="button" class="home-learn-card home-reveal" onclick="switchTab('templates')">
         <div class="tag">04 · Template library</div>
         <h3>Ready-made circuits</h3>
         <p>Load Bell states, algorithms, and diagnostics into the playground instantly, then tweak them.</p>
         <div class="go">Open templates →</div>
       </button>
-      <button type="button" class="home-learn-card" onclick="switchTab('labs')">
+      <button type="button" class="home-learn-card home-reveal" onclick="switchTab('labs')">
         <div class="tag">05 · Labs</div>
         <h3>Open-ended investigations</h3>
         <p>Longer question-driven pages — Bell tests, BB84, surface-code decoding games, and teleportation scenarios.</p>
         <div class="go">Browse labs →</div>
       </button>
-      <button type="button" class="home-learn-card" onclick="switchTab('docs')">
+      <button type="button" class="home-learn-card home-reveal" onclick="switchTab('docs')">
         <div class="tag">06 · References</div>
         <h3>Papers and notes</h3>
         <p>Curated citations and short context for where the on-screen claims come from.</p>
@@ -720,34 +846,20 @@
       ctx.strokeStyle = 'var(--magenta)'; ctx.lineWidth = 0.9;
       ctx.globalAlpha = 0.35; ctx.stroke(); ctx.globalAlpha = 1;
 
-      // axes
+      // x / y reference axes (drawn under the state vector)
       var axes = [
-        { d:[0,0, 0.95], lbl:'|0⟩', col:'var(--cyan)',    a:0.8 },
-        { d:[0,0,-0.88],  lbl:'|1⟩', col:'var(--phos)',    a:0.5 },
-        { d:[0.9,0,0],    lbl:'x',   col:'var(--magenta)', a:0.4 },
-        { d:[0,0.9,0],    lbl:'y',   col:'var(--amber)',   a:0.4 },
+        { d:[0,0, 0.95], lbl:'|0⟩', col:'var(--cyan)',    a:0.8, pole: true },
+        { d:[0,0,-0.88],  lbl:'|1⟩', col:'var(--phos)',    a:0.5, pole: true },
+        { d:[0.9,0,0],    lbl:'x',   col:'var(--magenta)', a:0.4, pole: false },
+        { d:[0,0.9,0],    lbl:'y',   col:'var(--amber)',   a:0.4, pole: false },
       ];
-      axes.forEach(function (ax) {
+      axes.filter(function (ax) { return !ax.pole; }).forEach(function (ax) {
         var o = proj(0,0,0), e = proj(ax.d[0],ax.d[1],ax.d[2]);
         ctx.beginPath(); ctx.moveTo(o.sx,o.sy); ctx.lineTo(e.sx,e.sy);
         ctx.strokeStyle = ax.col; ctx.lineWidth = 1;
         ctx.globalAlpha = ax.a; ctx.stroke();
-
-        // Highlight |0> and |1> as the classical anchor states.
-        if (ax.lbl === '|0⟩' || ax.lbl === '|1⟩') {
-          ctx.save();
-          ctx.globalAlpha = 0.95;
-          ctx.shadowColor = ax.col;
-          ctx.shadowBlur = 12;
-          ctx.beginPath();
-          ctx.arc(e.sx, e.sy, 4.2, 0, Math.PI * 2);
-          ctx.fillStyle = ax.col;
-          ctx.fill();
-          ctx.restore();
-        }
-
         ctx.font = '11px var(--mono)'; ctx.fillStyle = ax.col;
-        ctx.globalAlpha = (ax.lbl === '|0⟩' || ax.lbl === '|1⟩') ? 1 : ax.a * 0.9;
+        ctx.globalAlpha = ax.a * 0.9;
         ctx.fillText(ax.lbl, e.sx+4, e.sy+4);
         ctx.globalAlpha = 1;
       });
@@ -782,6 +894,37 @@
       // tip dot
       ctx.beginPath(); ctx.arc(tp.sx,tp.sy,4,0,Math.PI*2);
       ctx.fillStyle = 'var(--ink)'; ctx.fill();
+
+      // |0⟩, |1⟩ poles on top of glow + state arrow (readable at full opacity)
+      axes.filter(function (ax) { return ax.pole; }).forEach(function (ax) {
+        var o = proj(0,0,0), e = proj(ax.d[0],ax.d[1],ax.d[2]);
+        ctx.beginPath(); ctx.moveTo(o.sx,o.sy); ctx.lineTo(e.sx,e.sy);
+        ctx.strokeStyle = ax.col;
+        ctx.lineWidth = 2;
+        ctx.globalAlpha = 1;
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.arc(e.sx, e.sy, 5.5, 0, Math.PI * 2);
+        ctx.fillStyle = ax.col;
+        ctx.globalAlpha = 1;
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(8,12,10,0.95)';
+        ctx.lineWidth = 1.2;
+        ctx.stroke();
+
+        var lx = e.sx + 6, ly = e.sy + 5;
+        ctx.font = 'bold 12px var(--mono)';
+        ctx.textBaseline = 'alphabetic';
+        ctx.lineJoin = 'round';
+        ctx.lineWidth = 3.5;
+        ctx.strokeStyle = 'rgba(10,14,12,0.94)';
+        ctx.globalAlpha = 1;
+        ctx.strokeText(ax.lbl, lx, ly);
+        ctx.fillStyle = ax.col;
+        ctx.fillText(ax.lbl, lx, ly);
+        ctx.globalAlpha = 1;
+      });
     }
 
     function lerp(a, b, t) { return a + (b-a)*t; }
@@ -858,7 +1001,10 @@
         var th = parseFloat(btn.dataset.theta);
         var ph = parseFloat(btn.dataset.phi);
         sphere.animateTo(th, ph);
-        setTimeout(function () { if (stateEl) stateEl.textContent = stateLabel(th, ph); }, 450);
+        setTimeout(function () {
+          if (stateEl) stateEl.textContent = stateLabel(th, ph);
+          if (typeof global.scheduleMathRender === 'function') global.scheduleMathRender(stateEl || document.body);
+        }, 450);
       });
     });
   }
@@ -877,13 +1023,9 @@
       var x = Math.sin(th)*Math.cos(ph), y = Math.sin(th)*Math.sin(ph), z = Math.cos(th);
       function rotX(a){var c=Math.cos(a),s=Math.sin(a),ny=c*y-s*z,nz=s*y+c*z;y=ny;z=nz;}
       function rotY(a){var c=Math.cos(a),s=Math.sin(a),nx=c*x+s*z,nz=-s*x+c*z;x=nx;z=nz;}
-      function rotZ(a){var c=Math.cos(a),s=Math.sin(a),nx=c*x-s*y,ny=s*x+c*y;x=nx;y=ny;}
       if      (g==='X') rotX(PI);
       else if (g==='Y') rotY(PI);
-      else if (g==='Z') rotZ(PI);
       else if (g==='H'){rotY(PI/2);rotX(PI);}
-      else if (g==='S') rotZ(PI/2);
-      else if (g==='T') rotZ(PI/4);
       return [Math.acos(Math.max(-1,Math.min(1,z))), Math.atan2(y,x)];
     }
 
@@ -895,6 +1037,7 @@
           sphere.animateTo(0,0);
           if (histEl) histEl.innerHTML='No gates applied yet';
           if (stateEl) stateEl.textContent='State: |0⟩';
+          if (typeof global.scheduleMathRender === 'function') global.scheduleMathRender(stateEl || document.body);
           return;
         }
         state = applyGate(g, state[0], state[1]);
@@ -902,6 +1045,7 @@
         sphere.animateTo(state[0], state[1]);
         if (histEl) histEl.innerHTML = history.map(function(g){return '<span class="gh-gate">'+g+'</span>';}).join(' → ');
         if (stateEl) stateEl.textContent = stateLabel(state[0], state[1]);
+        if (typeof global.scheduleMathRender === 'function') global.scheduleMathRender(stateEl || document.body);
       });
     });
   }
@@ -913,6 +1057,23 @@
     var ctx = canvas.getContext('2d');
     var W = canvas.width, H = canvas.height;
     var state = 'plus';
+    var scrollSpinPhase = 0;
+    var spinScrollRaf = null;
+    var spinPlusAnimId = null;
+
+    function stopSpinPlusAnim() {
+      if (spinPlusAnimId) cancelAnimationFrame(spinPlusAnimId);
+      spinPlusAnimId = null;
+    }
+    function startSpinPlusAnim() {
+      if (state !== 'plus' || spinPlusAnimId) return;
+      function frame() {
+        if (state !== 'plus') { spinPlusAnimId = null; return; }
+        draw();
+        spinPlusAnimId = requestAnimationFrame(frame);
+      }
+      spinPlusAnimId = requestAnimationFrame(frame);
+    }
 
     function drawArrow(x, y, len, ang, col) {
       var ex = x + len * Math.cos(ang), ey = y + len * Math.sin(ang);
@@ -939,7 +1100,16 @@
       ctx.fillText('measure z', 226, 36);
 
       ctx.beginPath(); ctx.arc(92, 102, 38, 0, Math.PI * 2); ctx.strokeStyle = 'rgba(111,212,224,0.55)'; ctx.stroke();
-      drawArrow(92, 102, 30, 0, 'var(--cyan)');
+      var prepAng;
+      if (state === 'plus') {
+        var t = (typeof performance !== 'undefined' && performance.now) ? performance.now() * 0.0012 : 0;
+        prepAng = scrollSpinPhase + 0.1 * Math.sin(t * 1.6);
+      } else if (state === '0') {
+        prepAng = -Math.PI / 2;
+      } else {
+        prepAng = Math.PI / 2;
+      }
+      drawArrow(92, 102, 32, prepAng, 'var(--cyan)');
       ctx.fillStyle = 'var(--cyan)'; ctx.fillText('|+>', 114, 105);
 
       // right measurement outcomes
@@ -958,24 +1128,49 @@
       }
     }
 
+    function queueSpinScrollDraw() {
+      if (spinScrollRaf) return;
+      spinScrollRaf = requestAnimationFrame(function () {
+        spinScrollRaf = null;
+        var sec = document.getElementById('home-spin-section');
+        if (!sec) return;
+        var r = sec.getBoundingClientRect();
+        var vh = window.innerHeight || 600;
+        if (r.bottom < 24 || r.top > vh - 24) return;
+        var u = (vh * 0.55 - r.top) / (vh * 0.65 + r.height * 0.5);
+        u = Math.max(0, Math.min(1, u));
+        scrollSpinPhase = u * Math.PI * 2.8;
+        if (state === 'plus') draw();
+      });
+    }
+    window.addEventListener('scroll', queueSpinScrollDraw, { passive: true });
+    window.addEventListener('resize', queueSpinScrollDraw, { passive: true });
+    queueSpinScrollDraw();
+
     var stateEl = document.getElementById('home-spin-state');
     document.getElementById('home-spin-super-btn').addEventListener('click', function () {
       state = 'plus';
+      stopSpinPlusAnim();
       draw();
+      startSpinPlusAnim();
       if (stateEl) {
-        stateEl.textContent = '\(|\psi\\rangle = |+\\rangle = (|0\\rangle + |1\\rangle)/\sqrt{2}\)';
+        stateEl.textContent = '\\(|\\psi\\rangle = |+\\rangle = (|0\\rangle + |1\\rangle)/\\sqrt{2}\\)';
         stateEl.classList.remove('settled');
+        if (typeof global.scheduleMathRender === 'function') global.scheduleMathRender(stateEl);
       }
     });
     document.getElementById('home-spin-measure-btn').addEventListener('click', function () {
+      stopSpinPlusAnim();
       state = (Math.random() > 0.5) ? '0' : '1';
       draw();
       if (stateEl) {
-        stateEl.textContent = state === '0' ? '\(|\psi\\rangle \\to |0\\rangle\) (spin up)' : '\(|\psi\\rangle \\to |1\\rangle\) (spin down)';
+        stateEl.textContent = state === '0' ? '\\(|\\psi\\rangle \\to |0\\rangle\\) (spin up)' : '\\(|\\psi\\rangle \\to |1\\rangle\\) (spin down)';
         stateEl.classList.add('settled');
+        if (typeof global.scheduleMathRender === 'function') global.scheduleMathRender(stateEl);
       }
     });
     draw();
+    startSpinPlusAnim();
   }
 
   /* ─── Quantum coin flip ──────────────────────────────────────────────────── */
@@ -988,7 +1183,8 @@
     var measureStateEl = document.getElementById('home-measure-bloch-state');
     if (measureSphere) {
       measureSphere.animateTo(Math.PI/2, 0); // |+>
-      if (measureStateEl) measureStateEl.textContent = '\(|\psi\\rangle = |+\\rangle\)';
+      if (measureStateEl) measureStateEl.textContent = '\\(|\\psi\\rangle = |+\\rangle\\)';
+      if (typeof global.scheduleMathRender === 'function') global.scheduleMathRender(document.getElementById('home-measure-bloch-state') || document.body);
     }
 
     function addCoin(result) {
@@ -1002,12 +1198,13 @@
       if(stats) stats.textContent=total+' shots · |1⟩: '+counts['1']+' ('+Math.round(counts['1']/total*100)+'%) · |0⟩: '+counts['0']+' ('+Math.round(counts['0']/total*100)+'%)';
     }
 
-    document.getElementById('home-flip-btn').addEventListener('click',function(){ var r=Math.random()>0.5?'1':'0'; addCoin(r); if(measureSphere){ if(r==='1'){measureSphere.animateTo(Math.PI,0); if(measureStateEl) measureStateEl.textContent='\(|\psi\\rangle \\to |1\\rangle\)';} else {measureSphere.animateTo(0,0); if(measureStateEl) measureStateEl.textContent='\(|\psi\\rangle \\to |0\\rangle\)';}} });
-    document.getElementById('home-flip-10-btn').addEventListener('click',function(){ var r='0'; for(var i=0;i<10;i++){ r=Math.random()>0.5?'1':'0'; addCoin(r);} if(measureSphere){ if(r==='1'){measureSphere.animateTo(Math.PI,0); if(measureStateEl) measureStateEl.textContent='\(|\psi\\rangle \\to |1\\rangle\)';} else {measureSphere.animateTo(0,0); if(measureStateEl) measureStateEl.textContent='\(|\psi\\rangle \\to |0\\rangle\)';}} });
+    document.getElementById('home-flip-btn').addEventListener('click',function(){ var r=Math.random()>0.5?'1':'0'; addCoin(r); if(measureSphere){ if(r==='1'){measureSphere.animateTo(Math.PI,0); if(measureStateEl) measureStateEl.textContent='\\(|\\psi\\rangle \\to |1\\rangle\\)';} else {measureSphere.animateTo(0,0); if(measureStateEl) measureStateEl.textContent='\\(|\\psi\\rangle \\to |0\\rangle\\)';}} if (typeof global.scheduleMathRender === 'function') global.scheduleMathRender(measureStateEl || document.body); });
+    document.getElementById('home-flip-10-btn').addEventListener('click',function(){ var r='0'; for(var i=0;i<10;i++){ r=Math.random()>0.5?'1':'0'; addCoin(r);} if(measureSphere){ if(r==='1'){measureSphere.animateTo(Math.PI,0); if(measureStateEl) measureStateEl.textContent='\\(|\\psi\\rangle \\to |1\\rangle\\)';} else {measureSphere.animateTo(0,0); if(measureStateEl) measureStateEl.textContent='\\(|\\psi\\rangle \\to |0\\rangle\\)';}} if (typeof global.scheduleMathRender === 'function') global.scheduleMathRender(measureStateEl || document.body); });
     document.getElementById('home-flip-reset-btn').addEventListener('click',function(){
       row.innerHTML=''; counts={'0':0,'1':0};
       if(stats) stats.textContent='';
-      if(measureSphere){measureSphere.animateTo(Math.PI/2,0); if(measureStateEl) measureStateEl.textContent='\(|\psi\\rangle = |+\\rangle\)';}
+      if(measureSphere){measureSphere.animateTo(Math.PI/2,0); if(measureStateEl) measureStateEl.textContent='\\(|\\psi\\rangle = |+\\rangle\\)';}
+      if (typeof global.scheduleMathRender === 'function') global.scheduleMathRender(measureStateEl || document.body);
     });
   }
 
@@ -1068,7 +1265,7 @@
         entries.forEach(function (e) {
           if (e.isIntersecting) { el.classList.add('visible'); obs.unobserve(el); }
         });
-      }, { threshold: 0.07 });
+      }, { threshold: [0, 0.06, 0.12], rootMargin: '0px 0px -5% 0px' });
       obs.observe(el);
     });
   }
@@ -1095,6 +1292,7 @@
       initCoinFlip();
       initBell();
       initScrollReveal();
+      if (typeof global.scheduleMathRender === 'function') global.scheduleMathRender(root);
     });
 
     if (typeof global.onHomeLandingMounted === 'function') {
