@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Quantum Lab — Interactive Quantum Circuit Analysis</title>
+<title>Quantum Lab — Home · Interactive quantum introductions &amp; circuits</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,700;1,9..144,400&family=JetBrains+Mono:wght@300;400;500;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -26,29 +26,42 @@
   </header>
 
   <nav class="tabs" role="tablist">
-    <button class="tab-btn active" data-tab="lab" role="tab">
+    <button class="tab-btn active" data-tab="home" role="tab">
       <span class="tab-num">01</span>
-      <span class="tab-name">Laboratory</span>
+      <span class="tab-name">Home</span>
+      <span class="tab-sub">Gentle introduction · start here</span>
+    </button>
+    <button class="tab-btn" data-tab="lab" role="tab">
+      <span class="tab-num">02</span>
+      <span class="tab-name">Explore</span>
       <span class="tab-sub">Construct and simulate circuits</span>
     </button>
     <button class="tab-btn" data-tab="learn" role="tab">
-      <span class="tab-num">02</span>
+      <span class="tab-num">03</span>
       <span class="tab-name">Tutorials</span>
       <span class="tab-sub">Structured interactive modules</span>
     </button>
     <button class="tab-btn" data-tab="templates" role="tab">
-      <span class="tab-num">03</span>
+      <span class="tab-num">04</span>
       <span class="tab-name">Template Library</span>
       <span class="tab-sub">Reference circuits · load and analyze</span>
     </button>
+    <button class="tab-btn" data-tab="labs" role="tab">
+      <span class="tab-num">05</span>
+      <span class="tab-name">Labs</span>
+      <span class="tab-sub">Open-ended advanced investigations</span>
+    </button>
     <button class="tab-btn" data-tab="docs" role="tab">
-      <span class="tab-num">04</span>
+      <span class="tab-num">06</span>
       <span class="tab-name">References</span>
       <span class="tab-sub">Papers, texts, and technical notes</span>
     </button>
   </nav>
 
-  <div id="view-lab" class="view active">
+  <!-- Home content is injected by js/home/home-landing.js (edit markup there). -->
+  <div id="view-home" class="view active"></div>
+
+  <div id="view-lab" class="view">
   <section class="intro">
     <div>
       <h1>Design and evaluate quantum circuits<br/>in an <em>interactive environment.</em></h1>
@@ -282,21 +295,25 @@
         <button class="subtab subtab-intro active" data-subtab="t1">
           <span class="subtab-num">Tutorial 1</span>
           <span class="subtab-name">From bits to qubits</span>
+          <span class="tutorial-diff" aria-label="Difficulty 1 of 5"><span class="tutorial-diff-dot filled"></span><span class="tutorial-diff-dot"></span><span class="tutorial-diff-dot"></span><span class="tutorial-diff-dot"></span><span class="tutorial-diff-dot"></span></span>
           <span class="subtab-pill" id="t1-progress">0 / 8</span>
         </button>
         <button class="subtab subtab-intro" data-subtab="t2">
           <span class="subtab-num">Tutorial 2</span>
           <span class="subtab-name">Entanglement &amp; two-qubit gates</span>
+          <span class="tutorial-diff" aria-label="Difficulty 2 of 5"><span class="tutorial-diff-dot filled"></span><span class="tutorial-diff-dot filled"></span><span class="tutorial-diff-dot"></span><span class="tutorial-diff-dot"></span><span class="tutorial-diff-dot"></span></span>
           <span class="subtab-pill" id="t2-progress">0 / 5</span>
         </button>
         <button class="subtab subtab-intro" data-subtab="t3">
           <span class="subtab-num">Tutorial 3</span>
           <span class="subtab-name">Mixed states &amp; density matrices</span>
+          <span class="tutorial-diff" aria-label="Difficulty 3 of 5"><span class="tutorial-diff-dot filled"></span><span class="tutorial-diff-dot filled"></span><span class="tutorial-diff-dot filled"></span><span class="tutorial-diff-dot"></span><span class="tutorial-diff-dot"></span></span>
           <span class="subtab-pill" id="t3-progress">0 / 5</span>
         </button>
         <button class="subtab subtab-intro" data-subtab="t4">
           <span class="subtab-num">Tutorial 4</span>
           <span class="subtab-name">Why quantum needs error correction</span>
+          <span class="tutorial-diff" aria-label="Difficulty 4 of 5"><span class="tutorial-diff-dot filled"></span><span class="tutorial-diff-dot filled"></span><span class="tutorial-diff-dot filled"></span><span class="tutorial-diff-dot filled"></span><span class="tutorial-diff-dot"></span></span>
           <span class="subtab-pill" id="t4-progress">0 / 5</span>
         </button>
       </div>
@@ -305,16 +322,19 @@
         <button class="subtab subtab-alg" data-subtab="t5">
           <span class="subtab-num">Tutorial 5</span>
           <span class="subtab-name">Deutsch–Jozsa algorithm</span>
+          <span class="tutorial-diff" aria-label="Difficulty 5 of 5"><span class="tutorial-diff-dot filled"></span><span class="tutorial-diff-dot filled"></span><span class="tutorial-diff-dot filled"></span><span class="tutorial-diff-dot filled"></span><span class="tutorial-diff-dot filled"></span></span>
           <span class="subtab-pill" id="t5-progress">0 / 6</span>
         </button>
         <button class="subtab subtab-alg" data-subtab="t6">
           <span class="subtab-num">Tutorial 6</span>
           <span class="subtab-name">Variational Quantum Eigensolver</span>
+          <span class="tutorial-diff" aria-label="Difficulty 4 of 5"><span class="tutorial-diff-dot filled"></span><span class="tutorial-diff-dot filled"></span><span class="tutorial-diff-dot filled"></span><span class="tutorial-diff-dot filled"></span><span class="tutorial-diff-dot"></span></span>
           <span class="subtab-pill" id="t6-progress">0 / 6</span>
         </button>
         <button class="subtab subtab-alg" data-subtab="t7">
           <span class="subtab-num">Tutorial 7</span>
           <span class="subtab-name">Grover search</span>
+          <span class="tutorial-diff" aria-label="Difficulty 4 of 5"><span class="tutorial-diff-dot filled"></span><span class="tutorial-diff-dot filled"></span><span class="tutorial-diff-dot filled"></span><span class="tutorial-diff-dot filled"></span><span class="tutorial-diff-dot"></span></span>
           <span class="subtab-pill" id="t7-progress">0 / 7</span>
         </button>
       </div>
@@ -323,11 +343,13 @@
         <button class="subtab subtab-noise" data-subtab="t8">
           <span class="subtab-num">Tutorial 8</span>
           <span class="subtab-name">Quantum channels</span>
+          <span class="tutorial-diff" aria-label="Difficulty 4 of 5"><span class="tutorial-diff-dot filled"></span><span class="tutorial-diff-dot filled"></span><span class="tutorial-diff-dot filled"></span><span class="tutorial-diff-dot filled"></span><span class="tutorial-diff-dot"></span></span>
           <span class="subtab-pill" id="t8-progress">0 / 6</span>
         </button>
         <button class="subtab subtab-noise" data-subtab="t9">
           <span class="subtab-num">Tutorial 9</span>
           <span class="subtab-name">Hardware noise timescales</span>
+          <span class="tutorial-diff" aria-label="Difficulty 3 of 5"><span class="tutorial-diff-dot filled"></span><span class="tutorial-diff-dot filled"></span><span class="tutorial-diff-dot filled"></span><span class="tutorial-diff-dot"></span><span class="tutorial-diff-dot"></span></span>
           <span class="subtab-pill" id="t9-progress">0 / 6</span>
         </button>
       </div>
@@ -510,7 +532,7 @@
         </header>
         <div class="step-body">
           <p>Everything above has assumed perfect gates. Real quantum computers are short pulses of laser light, microwaves, or magnetic fields, and every pulse is slightly imperfect. Over a circuit's lifetime, tiny errors accumulate and the clean peaks smear.</p>
-          <p>Drag the noise slider and watch the Bell pair distribution drift. At 0%, only <code>00</code> and <code>11</code> appear. At 5%, the forbidden outcomes start leaking in. This is why quantum error correction is the central engineering problem of the field — and the subject of Tutorial 2.</p>
+          <p>Drag the noise slider and watch the Bell pair distribution drift. At 0%, only <code>00</code> and <code>11</code> appear. At 5%, the forbidden outcomes start leaking in. This is why quantum error correction is the central engineering problem of the field — you will meet stabilizers, thresholds, and surface-code intuition in <b>Tutorial 4</b>.</p>
           <div class="mini-runner">
             <div class="noise-demo">
               <div class="noise-demo-label">Noise level: <span id="t1-noise-val">0.0%</span></div>
@@ -538,7 +560,7 @@
         </header>
         <div class="step-body">
           <p>You've met the core ideas: superposition (a qubit in between), gates (rotations on the sphere), measurement (the collapse to a classical bit), entanglement (qubits sharing a fate), and noise (why it's all so hard).</p>
-          <p>Everything else in quantum computing — teleportation, Grover's search, Shor's factoring, phase estimation, error correction — is built out of these five. The Lab has a playground where you can drag gates and try things yourself. Tutorial 2 explains how error correction works its way around the noise problem.</p>
+          <p>Everything else in quantum computing — teleportation, Grover's search, Shor's factoring, phase estimation, error correction — is built out of these five. The Lab has a playground where you can drag gates and try things yourself. <b>Tutorial 2</b> moves to two qubits: entanglement, <code>CNOT</code>, Bell-test statistics, and a hands-on CHSH tester — the bridge from single-qubit intuition to what networks and algorithms actually use.</p>
           <div class="wrap-up">
             <button class="wrap-card" data-go="lab">
               <div class="wrap-tag">Lab</div>
@@ -548,8 +570,8 @@
             </button>
             <button class="wrap-card alt" data-go="t2">
               <div class="wrap-tag">Tutorial 2</div>
-              <div class="wrap-title">Why QC needs error correction</div>
-              <div class="wrap-desc">A short sequel on noise, the no-cloning theorem, and how qubits protect each other.</div>
+              <div class="wrap-title">Entanglement &amp; two-qubit gates</div>
+              <div class="wrap-desc">Product vs entangled states, <code>CNOT</code> truth tables and phase kickback, measuring one half of a Bell pair, a CHSH inequality runner, and teleportation / superdense-coding sketches.</div>
               <div class="wrap-cta">Start Tutorial 2 →</div>
             </button>
           </div>
@@ -777,17 +799,17 @@
           <p>Two-qubit state space is 4-dimensional, not 2+2. Product states can be described by their parts; entangled states <b>cannot</b>. The CNOT gate creates entanglement when its control is in superposition. Measuring one qubit of an entangled pair collapses the other — instantaneously, always, perfectly.</p>
           <p>These aren't philosophical curiosities. Entanglement is the <em>resource</em> that gives quantum computers and networks their power. The density matrix tutorial (next) shows how to distinguish genuine superposition from classical randomness — a distinction that matters enormously for quantum hardware.</p>
           <div class="wrap-up">
-            <button class="wrap-card" data-go="t3">
-              <div class="wrap-tag">Tutorial 3</div>
-              <div class="wrap-title">Mixed states & density matrices</div>
-              <div class="wrap-desc">Learn why superposition and classical mixture look different — and where entanglement goes when noise hits.</div>
-              <div class="wrap-cta">Next tutorial →</div>
-            </button>
-            <button class="wrap-card alt" data-go="lab">
+            <button class="wrap-card" data-go="lab">
               <div class="wrap-tag">Lab</div>
               <div class="wrap-title">Explore entanglement yourself</div>
               <div class="wrap-desc">Load the Bell pair or GHZ template, switch to Density ρ view, and inspect the off-diagonals.</div>
               <div class="wrap-cta">Open the Lab →</div>
+            </button>
+            <button class="wrap-card alt" data-go="t3">
+              <div class="wrap-tag">Tutorial 3</div>
+              <div class="wrap-title">Mixed states &amp; density matrices</div>
+              <div class="wrap-desc">Learn why superposition and classical mixture look different — and where entanglement goes when noise hits.</div>
+              <div class="wrap-cta">Next tutorial →</div>
             </button>
           </div>
         </div>
@@ -957,17 +979,17 @@
           <p>Pure states and mixed states both exist in quantum mechanics. They can produce identical Z-basis statistics but differ in every other basis — the difference is entirely in the off-diagonal elements of ρ. The density matrix is the <b>complete description</b> of any quantum state, pure or mixed.</p>
           <p>Decoherence is the physical process by which off-diagonals decay. When a qubit interacts with its environment, the environment effectively "measures" it continuously — the Bloch vector shrinks from the surface toward the centre, and the quantum advantage erodes. <span class="punch">Fighting this is the entire engineering challenge of quantum computing.</span></p>
           <div class="wrap-up">
-            <button class="wrap-card" data-go="t4">
-              <div class="wrap-tag">Tutorial 4</div>
-              <div class="wrap-title">Why quantum needs error correction</div>
-              <div class="wrap-desc">Now that you understand decoherence, see how error correction fights back against it.</div>
-              <div class="wrap-cta">Next tutorial →</div>
-            </button>
-            <button class="wrap-card alt" data-go="lab">
+            <button class="wrap-card" data-go="lab">
               <div class="wrap-tag">Lab</div>
               <div class="wrap-title">Inspect ρ yourself</div>
               <div class="wrap-desc">Load any template, run with and without noise, and flip to the Density ρ view to watch the off-diagonals respond.</div>
               <div class="wrap-cta">Open the Lab →</div>
+            </button>
+            <button class="wrap-card alt" data-go="t4">
+              <div class="wrap-tag">Tutorial 4</div>
+              <div class="wrap-title">Why quantum needs error correction</div>
+              <div class="wrap-desc">Now that you understand decoherence, see how error correction fights back against it.</div>
+              <div class="wrap-cta">Next tutorial →</div>
             </button>
           </div>
         </div>
@@ -1126,11 +1148,11 @@
               <div class="wrap-desc">Now that you understand what noise does, see what happens when you crank the slider on your own designs.</div>
               <div class="wrap-cta">Open the Lab →</div>
             </button>
-            <button class="wrap-card alt" data-go="t1">
-              <div class="wrap-tag">Tutorial 1</div>
-              <div class="wrap-title">Revisit the basics</div>
-              <div class="wrap-desc">Replay the interactive tour from the top if you want to lock it in.</div>
-              <div class="wrap-cta">Start over →</div>
+            <button class="wrap-card alt" data-go="t5">
+              <div class="wrap-tag">Tutorial 5</div>
+              <div class="wrap-title">Deutsch–Jozsa algorithm</div>
+              <div class="wrap-desc">Use interference and phase kickback to beat classical query complexity on a structured oracle — then see how noise breaks the advantage.</div>
+              <div class="wrap-cta">Next tutorial →</div>
             </button>
           </div>
         </div>
@@ -1352,17 +1374,17 @@
             <p class="insight-text">Deutsch's original 1985 paper introduced the 1-bit version. Deutsch and Jozsa extended it to n bits in 1992. The circuit you've been running is essentially theirs, minus some optimisations discovered in 1998. The original paper is in the Docs section under <em>Algorithms</em>.</p>
           </div>
           <div class="wrap-up">
-            <button class="wrap-card" data-go="t4">
-              <div class="wrap-tag">Tutorial 4</div>
-              <div class="wrap-title">Why quantum needs error correction</div>
-              <div class="wrap-desc">You've seen that noise breaks the D-J algorithm. Now understand how the field is fighting back.</div>
-              <div class="wrap-cta">← Tutorial 4</div>
-            </button>
-            <button class="wrap-card alt" data-go="lab">
+            <button class="wrap-card" data-go="lab">
               <div class="wrap-tag">Lab</div>
               <div class="wrap-title">Build your own oracle</div>
               <div class="wrap-desc">Load the Deutsch's algorithm template, swap in a different oracle, and see what comes out.</div>
               <div class="wrap-cta">Open the Lab →</div>
+            </button>
+            <button class="wrap-card alt" data-go="t6">
+              <div class="wrap-tag">Tutorial 6</div>
+              <div class="wrap-title">Variational Quantum Eigensolver</div>
+              <div class="wrap-desc">Hybrid loops: parameterized circuits, measured energies, and classical optimizers on noisy landscapes.</div>
+              <div class="wrap-cta">Next tutorial →</div>
             </button>
           </div>
         </div>
@@ -1528,11 +1550,11 @@
               <div class="wrap-desc">Load a variational template and experiment with rotation angles and noise.</div>
               <div class="wrap-cta">Open the Lab →</div>
             </button>
-            <button class="wrap-card alt" data-go="t5">
-              <div class="wrap-tag">Tutorial 5</div>
-              <div class="wrap-title">Compare with oracle algorithms</div>
-              <div class="wrap-desc">Contrast variational heuristics with deterministic interference-based circuits.</div>
-              <div class="wrap-cta">← Tutorial 5</div>
+            <button class="wrap-card alt" data-go="t7">
+              <div class="wrap-tag">Tutorial 7</div>
+              <div class="wrap-title">Grover search</div>
+              <div class="wrap-desc">Amplitude amplification, iteration count, and how noise erodes the quantum search advantage.</div>
+              <div class="wrap-cta">Next tutorial →</div>
             </button>
           </div>
         </div>
@@ -1713,17 +1735,17 @@
             <p class="insight-text">Lov Grover published the algorithm in 1996, and it became a cornerstone result in quantum complexity theory. It is still the canonical baseline for "black-box" search and appears as a subroutine in many larger quantum algorithms.</p>
           </div>
           <div class="wrap-up">
-            <button class="wrap-card" data-go="t5">
-              <div class="wrap-tag">Tutorial 5</div>
-              <div class="wrap-title">Deutsch-Jozsa algorithm</div>
-              <div class="wrap-desc">Compare two classic oracle algorithms side-by-side and connect their interference patterns.</div>
-              <div class="wrap-cta">← Tutorial 5</div>
-            </button>
-            <button class="wrap-card alt" data-go="lab">
+            <button class="wrap-card" data-go="lab">
               <div class="wrap-tag">Lab</div>
               <div class="wrap-title">Build your own Grover variant</div>
               <div class="wrap-desc">Load templates, alter the oracle structure, and inspect probabilities, amplitudes, and density matrix views.</div>
               <div class="wrap-cta">Open the Lab →</div>
+            </button>
+            <button class="wrap-card alt" data-go="t8">
+              <div class="wrap-tag">Tutorial 8</div>
+              <div class="wrap-title">Quantum channels</div>
+              <div class="wrap-desc">CPTP maps on density matrices: Kraus operators, composition, and how common noise models shrink the Bloch ball.</div>
+              <div class="wrap-cta">Next tutorial →</div>
             </button>
           </div>
         </div>
@@ -1837,6 +1859,20 @@
           <p>This final card consolidates the three workhorse channels used across quantum engineering papers and simulators. Think of it as a quick mental lookup table before you move to hardware-level timescales in Tutorial 9.</p>
           <button class="btn primary" id="t8-summary-run">Generate summary</button>
           <div id="t8-summary-grid" style="margin-top:10px"></div>
+          <div class="wrap-up" style="margin-top:22px">
+            <button class="wrap-card" data-go="lab">
+              <div class="wrap-tag">Lab</div>
+              <div class="wrap-title">Build your own circuits</div>
+              <div class="wrap-desc">Apply noise in the circuit builder and compare probability, amplitude, and density views on the same layout.</div>
+              <div class="wrap-cta">Open the Lab →</div>
+            </button>
+            <button class="wrap-card alt" data-go="t9">
+              <div class="wrap-tag">Tutorial 9</div>
+              <div class="wrap-title">Hardware noise timescales</div>
+              <div class="wrap-desc">T1, dephasing, T2, spectra, Ramsey vs echo — connect abstract channels to device-level intuition.</div>
+              <div class="wrap-cta">Next tutorial →</div>
+            </button>
+          </div>
         </div>
       </article>
     </div><!-- /#tut-8 -->
@@ -1949,6 +1985,20 @@
             <button class="btn" data-device="generic">Big picture</button>
           </div>
           <div id="t9-device-out" style="margin-top:10px;padding:12px;background:var(--bg-2);border:1px solid var(--line);font-family:var(--serif);font-size:14px;color:var(--ink-dim);line-height:1.55"></div>
+          <div class="wrap-up" style="margin-top:22px">
+            <button class="wrap-card" data-go="lab">
+              <div class="wrap-tag">Lab</div>
+              <div class="wrap-title">Build your own circuits</div>
+              <div class="wrap-desc">Match noise sliders to the timescales you explored here, then stress-test longer circuits in the Laboratory.</div>
+              <div class="wrap-cta">Open the Lab →</div>
+            </button>
+            <button class="wrap-card alt" data-go="t1">
+              <div class="wrap-tag">Tutorial 1</div>
+              <div class="wrap-title">From bits to qubits</div>
+              <div class="wrap-desc">Loop back to the guided foundations — Bloch sphere, gates, Bell pairs, and the first noise preview.</div>
+              <div class="wrap-cta">Back to Tutorial 1 →</div>
+            </button>
+          </div>
         </div>
       </article>
     </div><!-- /#tut-9 -->
@@ -2329,6 +2379,66 @@
     </section>
 
   </div><!-- /#view-templates -->
+
+  <!-- ============================================================
+       LABS VIEW — open-ended advanced investigations
+       ============================================================ -->
+  <div id="view-labs" class="view">
+    <section class="labs-intro">
+      <div>
+        <h1>Open-ended <em>quantum investigations.</em></h1>
+        <p>These labs are intentionally less guided than Tutorials. They are designed as question-driven explorations where you run experiments, test assumptions, and build your own argument from the outputs.</p>
+      </div>
+      <div class="rules">
+        <b>How to use Labs</b><br/>
+        Start from the prompt, form a hypothesis, then use circuits, noise channels, and measurement statistics to evaluate your claim. There is no single fixed path.
+      </div>
+    </section>
+
+    <section class="labs-section">
+      <div class="labs-grid">
+        <a class="lab-card" href="lab-local-hidden-variables.html">
+          <div class="lab-card-num">Lab 01</div>
+          <h2>Can nature be explained by local hidden variables?</h2>
+          <div class="lab-card-sub">Bell experiment / Bell inequalities</div>
+          <p class="lab-card-desc">
+            Build Bell-test style circuits, sweep measurement bases, and compare correlations against local hidden-variable bounds. Use violations to reason about what kinds of classical explanations fail.
+          </p>
+          <div class="lab-card-cta">Open lab →</div>
+        </a>
+
+        <a class="lab-card" href="lab-no-cloning-theorem.html">
+          <div class="lab-card-num">Lab 02</div>
+          <h2>Why can’t an unknown quantum state be copied?</h2>
+          <div class="lab-card-sub">The No Cloning Theorem</div>
+          <p class="lab-card-desc">
+            Try candidate cloning strategies using unitary gates and ancillas, then inspect outputs across different unknown inputs to see exactly where perfect cloning breaks.
+          </p>
+          <div class="lab-card-cta">Open lab →</div>
+        </a>
+
+        <a class="lab-card" href="lab-qec-without-learning-state.html">
+          <div class="lab-card-num">Lab 03</div>
+          <h2>Surface code — find the error from syndromes</h2>
+          <div class="lab-card-sub">Quantum error correction</div>
+          <p class="lab-card-desc">
+            Play a distance-5 patch game: one hidden X error flips plaquette parities. Decode the syndrome pattern and guess which data qubit was hit — without learning the logical qubit.
+          </p>
+          <div class="lab-card-cta">Open lab →</div>
+        </a>
+
+        <a class="lab-card" href="lab-quantum-teleportation.html">
+          <div class="lab-card-num">Lab 04</div>
+          <h2>How does quantum teleportation move an unknown state?</h2>
+          <div class="lab-card-sub">Teleportation protocol</div>
+          <p class="lab-card-desc">
+            Run the teleportation experiment: Bell pair, classical bits, and Bob’s correction. Sweep noise and payloads to see fidelity, scenarios, and why classical bits are required.
+          </p>
+          <div class="lab-card-cta">Open lab →</div>
+        </a>
+      </div>
+    </section>
+  </div><!-- /#view-labs -->
 
   <!-- ============================================================
        DOCS VIEW — timeline + curated references
@@ -2749,6 +2859,7 @@
 <script src="data/docs.js"></script>
 <script src="js/lab/templates.js"></script>
 <script src="js/tutorials/learn-core.js"></script>
+<script src="js/home/home-landing.js"></script>
 <script src="js/tutorials/tutorial-1-foundations.js"></script>
 <script src="js/tutorials/tutorial-2-entanglement.js"></script>
 <script src="js/tutorials/tutorial-3-density.js"></script>
