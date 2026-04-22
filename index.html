@@ -240,6 +240,34 @@
     </div>
   </section>
 
+  <section class="analysis-section" id="lab-circuit-pulse">
+    <div class="analysis-head">
+      <h3>Circuit to pulse</h3>
+      <div class="num">Conceptual hardware mapping</div>
+    </div>
+    <div class="analysis-grid">
+      <article class="analysis-card">
+        <h4>Pulse implementation view</h4>
+        <p>Conceptual mapping from logical operations to hardware pulse schedules.</p>
+        <div class="pulse-impl-layout">
+          <div>
+            <label class="analysis-label" for="analysis-hardware-select">Hardware platform</label>
+            <select id="analysis-hardware-select" class="analysis-select">
+              <option value="superconducting">Superconducting</option>
+              <option value="trapped_ion">Trapped ion</option>
+              <option value="photonic">Photonic</option>
+            </select>
+            <div id="analysis-pulse-source" class="analysis-note" style="margin-top:8px">Run a circuit to auto-build a pulse schedule from your gate timeline.</div>
+            <svg id="analysis-pulse-timeline" viewBox="0 0 340 96" xmlns="http://www.w3.org/2000/svg" style="width:100%;margin-top:10px"></svg>
+            <div id="analysis-pulse-explain" class="analysis-values">
+              <div class="placeholder-output">Run a circuit to view a multi-rail pulse timeline. Click or drag a palette gate to inspect its decomposition.</div>
+            </div>
+          </div>
+        </div>
+      </article>
+    </div>
+  </section>
+
   <!-- Reference -->
   <section class="reference">
     <div>
@@ -445,6 +473,9 @@
                 <button class="apply-gate-btn" data-bloch="2" data-gate="S">S</button>
                 <button class="apply-gate-btn" data-bloch="2" data-gate="T">T</button>
               </div>
+              <div class="playback-row">
+                <button class="btn" id="t1-gate-play">▶ Play trajectory</button>
+              </div>
               <button class="reset-gate-btn" data-bloch="2">↻ Reset to |0⟩</button>
             </div>
           </div>
@@ -537,7 +568,7 @@
         </header>
         <div class="step-body">
           <p>Everything above has assumed perfect gates. Real quantum computers are short pulses of laser light, microwaves, or magnetic fields, and every pulse is slightly imperfect. Over a circuit's lifetime, tiny errors accumulate and the clean peaks smear.</p>
-          <p>Drag the noise slider and watch the Bell pair distribution drift. At 0%, only <code>00</code> and <code>11</code> appear. At 5%, the forbidden outcomes start leaking in. In density-matrix terms this is no longer a pure Bell state (you can inspect that structure in the Lab density view). This is why quantum error correction is the central engineering problem of the field — you will meet stabilizers, thresholds, and surface-code intuition in <b>Tutorial 4</b>.</p>
+          <p>Drag the noise slider and watch the Bell pair distribution drift. At 0%, only <code>00</code> and <code>11</code> appear. At 5%, the forbidden outcomes start leaking in. In density-matrix terms this is no longer a pure Bell state (you can inspect that structure in the Lab density view). This is why quantum error correction is the central engineering problem of the field — you will meet stabilizers, thresholds, and surface-code intuition in <b>Tutorial 4</b>.<a id="fnref-t1-1" class="expert-fn-ref" href="#fn-t1-1"><sup>[E1]</sup></a></p>
           <div class="mini-runner">
             <div class="noise-demo">
               <div class="noise-demo-label">Noise level: <span id="t1-noise-val">0.0%</span></div>
@@ -582,6 +613,12 @@
           </div>
         </div>
       </article>
+      <details class="expert-footnotes">
+        <summary>Expert Footnotes (Hidden)</summary>
+        <ol>
+          <li id="fn-t1-1">Depolarizing noise is a theorist's idealization: it assumes errors are equally likely to be \(X\), \(Y\), or \(Z\), and are independent from gate to gate. Real hardware noise is neither symmetric nor memoryless. Superconducting qubits are dominated by \(1/f\) charge noise and two-level system (TLS) defects at low frequencies, plus quasiparticle poisoning and Purcell decay at higher frequencies. These produce correlated, structured errors that a flat depolarizing rate cannot capture. The model is useful for building intuition and for threshold calculations, but experimentalists characterize noise through randomized benchmarking, process tomography, and cycle benchmarking — specifically because the real error distribution is richer than this slider implies. <a class="expert-fn-ref" href="#fnref-t1-1">↩</a></li>
+        </ol>
+      </details>
     </div><!-- /#tut-1 -->
 
     <!-- ============================================================ Tutorial 2 -->
@@ -955,7 +992,7 @@
         </header>
         <div class="step-body">
           <p>In Tutorial 1, the Bloch sphere showed pure states as points on the <em>surface</em>. But mixed states aren't pure — they're convex combinations of pure states, and their Bloch vector has <b>length less than 1</b>. The maximally mixed state \( \rho = I/2 \) sits exactly at the <em>center</em>.</p>
-          <p>Drag the decoherence slider and watch the Bloch vector shrink from the surface toward the origin. The length of the vector is exactly \( \sqrt{2\,\mathrm{Tr}(\rho^2)-1} \) — a direct measure of <em>purity</em>. When hardware engineers say "T₂ time" (coherence time), they're measuring how long before their qubit's Bloch vector reaches the center.</p>
+          <p>Drag the decoherence slider and watch the Bloch vector shrink from the surface toward the origin. The length of the vector is exactly \( \sqrt{2\,\mathrm{Tr}(\rho^2)-1} \) — a direct measure of <em>purity</em>. When hardware engineers say "T₂ time" (coherence time), they're measuring how long before their qubit's Bloch vector reaches the center.<a id="fnref-t3-1" class="expert-fn-ref" href="#fn-t3-1"><sup>[E1]</sup></a></p>
           <div class="bloch-ball-wrap">
             <div class="bloch-ball-host" id="bloch-ball-svg"></div>
             <div class="bloch-ball-side">
@@ -963,6 +1000,10 @@
                 <div class="noise-demo-label">Decoherence: <span id="bloch-ball-decohere-val">0%</span></div>
                 <input type="range" min="0" max="100" value="0" id="bloch-ball-slider" class="t1-noise-slider"/>
                 <div class="noise-demo-sublabel">Bloch vector length = purity indicator</div>
+              </div>
+              <div class="playback-row" style="margin-top:10px">
+                <button class="btn" id="t3-bloch-play">▶ Play shrink</button>
+                <button class="btn" id="t3-bloch-reset">↻ Reset</button>
               </div>
               <div id="bloch-ball-readout" style="font-family:var(--mono);font-size:11px;line-height:1.8;color:var(--ink-dim);margin-top:14px;padding:12px;background:var(--bg-0);border:1px solid var(--line)"></div>
             </div>
@@ -999,6 +1040,12 @@
           </div>
         </div>
       </article>
+      <details class="expert-footnotes">
+        <summary>Expert Footnotes (Hidden)</summary>
+        <ol>
+          <li id="fn-t3-1">Strictly speaking, \(T_2\) describes the timescale for off-diagonal density matrix elements — coherences — to decay, which corresponds to the transverse (\(x\)-\(y\) plane) component of the Bloch vector shrinking. The longitudinal (\(z\)-axis) component decays on the separate timescale \(T_1\), which governs energy relaxation. A qubit can therefore lose phase coherence (\(T_2\) process) while retaining its excited-state population (\(T_1\) still long), or vice versa. The full Bloch vector only reaches the center — the maximally mixed state — when both processes have acted. The distinction matters for algorithm design: phase-sensitive algorithms like Grover are limited by \(T_2\), while state preparation fidelity is limited by \(T_1\). <a class="expert-fn-ref" href="#fnref-t3-1">↩</a></li>
+        </ol>
+      </details>
     </div><!-- /#tut-3 -->
 
     <!-- ============================================================ Tutorial 4 (was Tutorial 2) -->
@@ -1046,7 +1093,7 @@
         </header>
         <div class="step-body">
           <p>Classical computers handle noise by <b>redundancy</b>. If a hard drive bit might flip, store it three times: <code>000</code>. Later, check all three — majority rules.</p>
-          <p>Quantum computers can't do this directly. The <b>no-cloning theorem</b> says there is no machine that, given an unknown qubit, produces an independent copy of it. The key point is linearity/unitarity: if a machine cloned basis states, applying it to a superposition would violate linear evolution because \(U(\alpha|\psi_1\rangle+\beta|\psi_2\rangle)|0\rangle\) cannot equal \((\alpha|\psi_1\rangle+\beta|\psi_2\rangle)\otimes(\alpha|\psi_1\rangle+\beta|\psi_2\rangle)\). The theorem was proved in 1982 and is completely airtight.</p>
+          <p>Quantum computers can't do this directly. The <b>no-cloning theorem</b> says there is no machine that, given an unknown qubit, produces an independent copy of it. The key point is linearity/unitarity: if a machine cloned basis states, applying it to a superposition would violate linear evolution because \(U(\alpha|\psi_1\rangle+\beta|\psi_2\rangle)|0\rangle\) cannot equal \((\alpha|\psi_1\rangle+\beta|\psi_2\rangle)\otimes(\alpha|\psi_1\rangle+\beta|\psi_2\rangle)\). The theorem was proved in 1982 and is completely airtight.<a id="fnref-t4-1" class="expert-fn-ref" href="#fn-t4-1"><sup>[E1]</sup></a></p>
           <div class="insight-box">
             <div class="insight-label">Implication</div>
             <p class="insight-text">Quantum error correction cannot copy a qubit. It has to protect it some other way — by <em>entangling it with helper qubits</em> so the information is spread across many physical qubits that can be measured safely.</p>
@@ -1124,13 +1171,13 @@
             <div style="font-family:var(--mono);font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:10px">Physical qubit overhead vs code distance</div>
             <svg id="overhead-chart" viewBox="0 0 500 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:500px"></svg>
             <div style="font-family:var(--mono);font-size:10px;color:var(--ink-faint);margin-top:6px;letter-spacing:0.06em">
-              A distance-<em>d</em> surface code uses 2d²−1 physical qubits per logical qubit. At d=21 (targeting RSA-2048), that's ~881 physical qubits <em>per logical qubit</em>. Full RSA-scale workloads require many logical qubits plus magic-state factories and routing overhead, pushing total physical-qubit counts far higher (order of tens of millions in common estimates).
+              A distance-<em>d</em> surface code uses 2d²−1 physical qubits per logical qubit. At d=21 (targeting RSA-2048), that's ~881 physical qubits <em>per logical qubit</em>. Full RSA-scale workloads require many logical qubits plus magic-state factories and routing overhead, pushing total physical-qubit counts far higher (order of tens of millions in common estimates).<a id="fnref-t4-2" class="expert-fn-ref" href="#fn-t4-2"><sup>[E2]</sup></a>
             </div>
           </div>
 
           <div class="insight-box amber">
             <div class="insight-label">The threshold theorem</div>
-            <p class="insight-text">Under standard noise models, the surface-code threshold is near 1% (code- and decoder-dependent). If physical gates operate below that regime, enough redundancy can drive logical error rates <em>arbitrarily low</em>. Recent experiments now report sub-threshold operation in distance-scaled surface-code runs, including Google's 2024 demonstration.</p>
+            <p class="insight-text">Under standard noise models, the surface-code threshold is near 1% (code- and decoder-dependent). If physical gates operate below that regime, enough redundancy can drive logical error rates <em>arbitrarily low</em>.<a id="fnref-t4-3" class="expert-fn-ref" href="#fn-t4-3"><sup>[E3]</sup></a> Recent experiments now report sub-threshold operation in distance-scaled surface-code runs, including Google's 2024 demonstration.<a id="fnref-t4-4" class="expert-fn-ref" href="#fn-t4-4"><sup>[E4]</sup></a></p>
           </div>
           <div class="step-action">
             <div class="action-prompt">Inject an error, observe the syndrome, and correct it.</div>
@@ -1163,6 +1210,15 @@
           </div>
         </div>
       </article>
+      <details class="expert-footnotes">
+        <summary>Expert Footnotes (Hidden)</summary>
+        <ol>
+          <li id="fn-t4-1">More precisely: suppose a unitary \(U\) could clone arbitrary states, mapping \(U(|\psi\rangle|0\rangle)=|\psi\rangle|\psi\rangle\) for all \(|\psi\rangle\). Applying this to two distinct states \(|\psi\rangle\) and \(|\phi\rangle\) and then to their superposition leads to a contradiction with the linearity of quantum mechanics — the output of cloning a superposition is not the same as the superposition of cloned outputs. The theorem therefore follows from unitarity plus linearity, not from either alone. It also has an information-theoretic consequence: it prevents faster-than-light signaling via entanglement, since cloning would allow measurement outcomes on one side to be reliably read from the other. <a class="expert-fn-ref" href="#fnref-t4-1">↩</a></li>
+          <li id="fn-t4-2">The figure \(2d^2-1\) counts data and ancilla qubits within the code patch itself. Full architectural overhead for a fault-tolerant computation is substantially larger: magic state distillation (required for non-Clifford gates like \(T\)), classical decoding hardware, routing between logical qubits, and the overhead of the syndrome extraction cycle all add multiplicative factors. Realistic resource estimates for running Shor's algorithm at RSA-2048 scale typically place the total physical qubit count in the millions. The per-logical-qubit patch overhead is the right number to build intuition; it is not the right number to cite when assessing how far current hardware is from cryptographically relevant computation. <a class="expert-fn-ref" href="#fnref-t4-2">↩</a></li>
+          <li id="fn-t4-3">This is the fault-tolerance threshold theorem, not merely an error-correction statement. Error correction detects and fixes errors; fault tolerance additionally requires that the syndrome measurement and correction operations themselves be implemented without amplifying errors faster than the code can suppress them. Achieving this requires careful engineering: gates must be "transversal" or otherwise structured so errors don't spread across a code block, and non-Clifford gates (like \(T\)) require additional protocols such as magic state distillation, which carry their own overhead. The threshold figure of \(\sim 1\%\) is an approximate guide — different codes, noise models, and architectures produce different thresholds, and the 2019 Google experiment put their two-qubit gate fidelity at \(\sim 99.5\%\), placing it just above threshold for the surface code. <a class="expert-fn-ref" href="#fnref-t4-3">↩</a></li>
+          <li id="fn-t4-4">The random circuit sampling task used in the 2019 experiment was deliberately chosen to be hard for classical simulation while playing to the strengths of the superconducting hardware. It is not a useful computation in itself. This is a feature of where NISQ hardware currently sits: quantum processors can outperform classical computers on specific, carefully constructed tasks, but not yet on problems with direct practical value. <a class="expert-fn-ref" href="#fnref-t4-4">↩</a></li>
+        </ol>
+      </details>
     </div><!-- /#tut-4 -->
 
     <!-- ============================================================ Tutorial 5: Deutsch–Jozsa -->
@@ -1183,7 +1239,7 @@
         </header>
         <div class="step-body">
           <p>Imagine a black-box function <em>f</em> that takes an n-bit string and outputs 0 or 1. You're promised it is either <b>constant</b> (outputs the same value for every input) or <b>balanced</b> (outputs 0 for exactly half the inputs and 1 for the rest). <em>How many queries does it take to decide which?</em></p>
-          <p>Classically, you might need to evaluate f on up to 2<sup>n−1</sup>+1 inputs — more than half the input space — before you can be certain. Quantum mechanics does it in <b>exactly one query</b>, regardless of n. This is the Deutsch–Jozsa (D-J) algorithm, the first proof of quantum computational advantage.</p>
+          <p>Classically, you might need to evaluate f on up to 2<sup>n−1</sup>+1 inputs — more than half the input space — before you can be certain. Quantum mechanics does it in <b>exactly one query</b>, regardless of n. This is the Deutsch–Jozsa (D-J) algorithm, the first proof of quantum computational advantage.<a id="fnref-t5-1" class="expert-fn-ref" href="#fn-t5-1"><sup>[E1]</sup></a></p>
           <!-- Classical comparison interactive -->
           <div style="margin:22px 0;padding:20px;background:var(--bg-2);border:1px solid var(--line)">
             <div style="font-family:var(--mono);font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:12px">Classical worst-case query count</div>
@@ -1395,6 +1451,12 @@
           </div>
         </div>
       </article>
+      <details class="expert-footnotes">
+        <summary>Expert Footnotes (Hidden)</summary>
+        <ol>
+          <li id="fn-t5-1">The Deutsch–Jozsa speedup is an oracle query complexity separation: it counts how many times you must evaluate a black-box function \(f\), and proves one quantum query suffices where classical worst-case requires exponentially many. This is not a speedup in wall-clock time or circuit depth over all classical algorithms in general — it is a separation within a specific formal model where the function's implementation is hidden. Oracle separations are theoretically important (they were the first formal evidence quantum computers could outperform classical ones) but do not directly imply speedups for problems where the function's structure is known. Shor's algorithm achieves a genuine superpolynomial speedup outside the oracle model; Deutsch–Jozsa is the conceptual ancestor that established the circuit idiom Shor later exploited. <a class="expert-fn-ref" href="#fnref-t5-1">↩</a></li>
+        </ol>
+      </details>
     </div><!-- /#tut-5 -->
 
     <!-- ============================================================ Tutorial 6: VQE -->
@@ -1547,7 +1609,7 @@
           <h2>VQE in one sentence.</h2>
         </header>
         <div class="step-body">
-          <p>VQE is a hybrid loop: prepare a parameterized quantum state, estimate energy from measurements, and let a classical optimizer update parameters to reduce that energy. Its success depends on three things: expressive ansatz design, optimizer robustness, and low-noise measurement statistics.</p>
+          <p>VQE is a hybrid loop: prepare a parameterized quantum state, estimate energy from measurements, and let a classical optimizer update parameters to reduce that energy. Its success depends on three things: expressive ansatz design, optimizer robustness, and low-noise measurement statistics.<a id="fnref-t6-1" class="expert-fn-ref" href="#fn-t6-1"><sup>[E1]</sup></a></p>
           <p>What you just explored — landscape shape, ansatz limitations, and shot noise — is exactly what practitioners tune when running VQE for chemistry and materials models on NISQ-era hardware.</p>
           <div class="wrap-up">
             <button class="wrap-card" data-go="lab">
@@ -1565,6 +1627,12 @@
           </div>
         </div>
       </article>
+      <details class="expert-footnotes">
+        <summary>Expert Footnotes (Hidden)</summary>
+        <ol>
+          <li id="fn-t6-1">A fourth challenge, not listed here but arguably the most fundamental, is the barren plateau problem: for sufficiently deep parameterized circuits, the gradient of the cost function with respect to any parameter becomes exponentially small in the number of qubits. This means classical optimizers have essentially no useful signal to follow — the landscape becomes flat everywhere. Barren plateaus are a known theoretical obstacle to scaling VQE beyond small systems, and resolving them is an active research area. This is considered one of the most serious unsolved problems for variational quantum algorithms. For more information, reference McClean et al. (2018) for this issue in the template library. <a class="expert-fn-ref" href="#fnref-t6-1">↩</a></li>
+        </ol>
+      </details>
     </div><!-- /#tut-6 -->
 
     <!-- ============================================================ Tutorial 7: Grover Search -->
@@ -1843,7 +1911,7 @@
       <article class="step-card locked" data-step="t8-5">
         <header class="step-head"><div class="step-num">Step 05</div><h2>Composing channels.</h2></header>
         <div class="step-body">
-          <p>Hardware does not experience one isolated error at the end of a circuit. It experiences a sequence of noisy processes. In open-system language, those processes compose as maps acting on \( \rho \).</p>
+          <p>Hardware does not experience one isolated error at the end of a circuit. It experiences a sequence of noisy processes. In open-system language, those processes compose as maps acting on \( \rho \).<a id="fnref-t8-1" class="expert-fn-ref" href="#fn-t8-1"><sup>[E1]</sup></a></p>
           <p>Run both orders and compare. When channels do not commute, order changes the final state — another reason realistic noise modeling is richer than a single "error rate" number.</p>
           <label style="font-family:var(--mono);font-size:10px;color:var(--ink-faint)">p:
             <input type="range" id="t8-compose-p" min="0" max="1" step="0.05" value="0.35" style="width:200px;accent-color:var(--magenta);vertical-align:middle"/>
@@ -1881,6 +1949,13 @@
           </div>
         </div>
       </article>
+      <details class="expert-footnotes">
+        <summary>Expert Footnotes (Hidden)</summary>
+        <ol>
+          <li id="fn-t8-1">The channel composition demonstrated here assumes each noise process is Markovian — meaning the environment has no memory between successive gates and errors at different time steps are statistically independent. Real quantum hardware frequently violates this assumption. Crosstalk between qubits, slow drift in control parameters, correlated leakage errors, and low-frequency \(1/f\) noise all introduce temporal correlations that Markovian channel composition cannot capture. In those regimes, the effective error on a gate can depend on what gates preceded it, which is one reason why characterization protocols like gate set tomography are preferred over simple per-gate error rate benchmarking for high-accuracy devices. <a class="expert-fn-ref" href="#fnref-t8-1">↩</a></li>
+          <li id="fn-t8-2">Depolarizing noise is a theorist's idealization: it assumes errors are equally likely to be \(X\), \(Y\), or \(Z\), and are independent from gate to gate. Real hardware noise is neither symmetric nor memoryless. Superconducting qubits are dominated by \(1/f\) charge noise and two-level system (TLS) defects at low frequencies, plus quasiparticle poisoning and Purcell decay at higher frequencies. These produce correlated, structured errors that a flat depolarizing rate cannot capture. The model is useful for building intuition and for threshold calculations, but experimentalists characterize noise through randomized benchmarking, process tomography, and cycle benchmarking — specifically because the real error distribution is richer than this slider implies. <a class="expert-fn-ref" href="#fnref-t8-2">↩</a></li>
+        </ol>
+      </details>
     </div><!-- /#tut-8 -->
 
     <!-- ============================================================ Tutorial 9: Hardware Noise -->
@@ -2008,6 +2083,12 @@
           </div>
         </div>
       </article>
+      <details class="expert-footnotes">
+        <summary>Expert Footnotes (Hidden)</summary>
+        <ol>
+          <li id="fn-t9-1">This relation assumes Markovian dynamics — that the environment has no memory of past interactions with the qubit. In practice, low-frequency \(1/f\) noise (dominant in superconducting and spin qubits) violates this assumption. As a result, \(T_2\) measured by a Ramsey experiment (\(T_2^*\)) is often much shorter than the formula predicts from \(T_1\) and \(T_\phi\) alone, because slow drift accumulates coherently across the measurement window. Spin/dynamical echo sequences (Hahn echo, CPMG) partially refocus this drift and recover a longer \(T_2^{\mathrm{echo}}\) — which is why the two measurements can differ by an order of magnitude on the same device. <a class="expert-fn-ref" href="#fnref-t9-1">↩</a></li>
+        </ol>
+      </details>
     </div><!-- /#tut-9 -->
 
     <!-- ============================================================ Tutorial 10 -->
@@ -2099,12 +2180,33 @@
       <article class="step-card locked" data-step="t10-5">
         <header class="step-head"><div class="step-num">Step 05</div><h2>Echo refocuses slow noise.</h2></header>
         <div class="step-body">
-          <p>Insert a π-pulse in the middle to refocus slow drift (Hahn echo), extending observed coherence.</p>
-          <button class="btn primary" id="t10-echo-toggle">⏻ Echo: OFF — turn on</button>
+          <p>Build a pulse sequence by dragging blocks onto a timeline, then run it. Ramsey and Hahn echo emerge from what you construct.</p>
+          <div class="t10-builder-wrap">
+            <div class="t10-builder-palette" id="t10-builder-palette">
+              <div class="t10-builder-label">Pulse palette</div>
+              <button class="btn t10-builder-block" draggable="true" data-block="pi2">π/2 pulse</button>
+              <button class="btn t10-builder-block" draggable="true" data-block="wait">wait</button>
+              <button class="btn t10-builder-block" draggable="true" data-block="pi">π pulse</button>
+            </div>
+            <div class="t10-builder-timeline-wrap">
+              <div class="t10-builder-label">Timeline (5 slots)</div>
+              <div class="t10-builder-timeline" id="t10-builder-timeline">
+                <div class="t10-drop-slot" data-slot="0"></div>
+                <div class="t10-drop-slot" data-slot="1"></div>
+                <div class="t10-drop-slot" data-slot="2"></div>
+                <div class="t10-drop-slot" data-slot="3"></div>
+                <div class="t10-drop-slot" data-slot="4"></div>
+              </div>
+              <div class="t10-builder-actions">
+                <button class="btn" id="t10-builder-clear">Clear</button>
+                <button class="btn primary" id="t10-builder-run">Run sequence</button>
+              </div>
+            </div>
+          </div>
           <svg id="t10-echo-seq" viewBox="0 0 460 80" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:460px;margin-top:8px"></svg>
           <svg id="t10-echo-curve" viewBox="0 0 460 220" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:460px;margin-top:8px"></svg>
           <div id="t10-echo-desc" style="font-family:var(--serif);font-size:14px;color:var(--ink-dim)"></div>
-          <div class="step-action"><div class="action-prompt">Toggle echo on and off.</div><button class="btn primary step-next" data-unlocks="t10-6" disabled id="t10-5-next">Next →</button></div>
+          <div class="step-action"><div class="action-prompt">Construct both Ramsey and echo sequences.</div><button class="btn primary step-next" data-unlocks="t10-6" disabled id="t10-5-next">Next →</button></div>
         </div>
       </article>
 
@@ -2117,7 +2219,16 @@
             <button class="btn t10-shape-btn" data-t10shape="gaussian">Gaussian</button>
             <button class="btn t10-shape-btn" data-t10shape="derag">DRAG-like</button>
           </div>
-          <svg id="t10-shape-envelope" viewBox="0 0 460 180" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:460px;margin-top:8px"></svg>
+          <div class="t10-shape-panels">
+            <div>
+              <div class="t10-builder-label">Time-domain envelope</div>
+              <svg id="t10-shape-envelope" viewBox="0 0 460 180" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:460px;margin-top:8px"></svg>
+            </div>
+            <div>
+              <div class="t10-builder-label">Frequency-domain spectrum (toy)</div>
+              <svg id="t10-shape-spectrum" viewBox="0 0 460 180" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:460px;margin-top:8px"></svg>
+            </div>
+          </div>
           <div id="t10-shape-leak" style="font-family:var(--mono);font-size:12px;color:var(--ink-dim);margin-top:8px"></div>
           <div id="t10-shape-desc" style="font-family:var(--serif);font-size:14px;color:var(--ink-dim);margin-top:6px"></div>
           <div class="step-action"><div class="action-prompt">Compare at least two pulse families.</div><button class="btn primary step-next" data-unlocks="t10-7" disabled id="t10-6-next">Next →</button></div>
@@ -2527,7 +2638,7 @@
           </div>
           <h3>Hardware-efficient ansatz</h3>
           <div class="tpl-one-liner">Native-gate VQE block</div>
-          <p class="tpl-desc">Uses only gates native to real hardware — Ry, Rz, and a linear chain of CNOTs. Expressive enough for small chemistry and optimization problems, but prone to <em>barren plateaus</em> at depth. The standard starting point for IBM Qiskit and Google Cirq tutorials. <a href="#ref-kandala2017" class="tpl-cite" data-doc-ref="ref-kandala2017">[Hardware-efficient VQE]</a> <a href="#ref-barren2018" class="tpl-cite" data-doc-ref="ref-barren2018">[Barren Plateaus]</a></p>
+          <p class="tpl-desc">Uses only gates native to real hardware — Ry, Rz, and a linear chain of CNOTs. Expressive enough for small chemistry and optimization problems, but prone to <em>barren plateaus</em> at depth.<a id="fnref-v03-1" class="expert-fn-ref" href="#fn-v03-1"><sup>[E1]</sup></a> The standard starting point for IBM Qiskit and Google Cirq tutorials. <a href="#ref-kandala2017" class="tpl-cite" data-doc-ref="ref-kandala2017">[Hardware-efficient VQE]</a> <a href="#ref-barren2018" class="tpl-cite" data-doc-ref="ref-barren2018">[Barren Plateaus]</a></p>
           <div class="tpl-tags">
             <span class="tpl-tag">hea</span><span class="tpl-tag">native gates</span><span class="tpl-tag">barren plateaus</span>
           </div>
@@ -2536,6 +2647,12 @@
       </div>
     </section>
 
+    <details class="expert-footnotes" style="margin-top:10px;">
+      <summary>Expert Footnotes (Hidden)</summary>
+      <ol>
+        <li id="fn-v03-1">A fourth challenge, not listed here but arguably the most fundamental, is the barren plateau problem: for sufficiently deep parameterized circuits, the gradient of the cost function with respect to any parameter becomes exponentially small in the number of qubits. This means classical optimizers have essentially no useful signal to follow — the landscape becomes flat everywhere. Barren plateaus are a known theoretical obstacle to scaling VQE beyond small systems, and resolving them is an active research area. This is considered one of the most serious unsolved problems for variational quantum algorithms. For more information, reference McClean et al. (2018) for this issue in the template library. <a class="expert-fn-ref" href="#fnref-v03-1">↩</a></li>
+      </ol>
+    </details>
   </div><!-- /#view-templates -->
 
   <!-- ============================================================
@@ -2591,6 +2708,16 @@
           <div class="lab-card-sub">Teleportation protocol</div>
           <p class="lab-card-desc">
             Run the teleportation experiment: Bell pair, classical bits, and Bob’s correction. Sweep noise and payloads to see fidelity, scenarios, and why classical bits are required.
+          </p>
+          <div class="lab-card-cta">Open lab →</div>
+        </a>
+
+        <a class="lab-card" href="lab-phase-estimation.html">
+          <div class="lab-card-num">Lab 05</div>
+          <h2>How does phase estimation power Shor's algorithm?</h2>
+          <div class="lab-card-sub">Quantum phase estimation</div>
+          <p class="lab-card-desc">
+            Build QPE step by step: phase kickback, inverse QFT, continued fractions, and noise analysis to see how precision appears, and when it breaks.
           </p>
           <div class="lab-card-cta">Open lab →</div>
         </a>

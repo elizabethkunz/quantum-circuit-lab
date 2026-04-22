@@ -203,7 +203,10 @@ function renderHist(containerId, p0, p1, barClass, label0, label1) {
 (function initT3Step4() {
   const slider = document.getElementById('bloch-ball-slider');
   const valEl  = document.getElementById('bloch-ball-decohere-val');
+  const playBtn = document.getElementById('t3-bloch-play');
+  const resetBtn = document.getElementById('t3-bloch-reset');
   let reachedFull = false;
+  let animFrame = null;
 
   function drawBlochBall(t) {
     // t=0: pure |+> on equator surface; t=1: centre (maximally mixed)
@@ -296,6 +299,38 @@ function renderHist(containerId, p0, p1, barClass, label0, label1) {
     drawBlochBall(t);
     if (t >= 0.99) { reachedFull = true; markDone('t3-4'); }
   });
+
+  if (playBtn) {
+    playBtn.addEventListener('click', () => {
+      if (animFrame) cancelAnimationFrame(animFrame);
+      const start = performance.now();
+      const durationMs = 1800;
+      function tick(now) {
+        const u = Math.min(1, (now - start) / durationMs);
+        const t = u;
+        slider.value = String(Math.round(t * 100));
+        valEl.textContent = Math.round(t * 100) + '%';
+        drawBlochBall(t);
+        if (u < 1) {
+          animFrame = requestAnimationFrame(tick);
+        } else {
+          reachedFull = true;
+          markDone('t3-4');
+          animFrame = null;
+        }
+      }
+      animFrame = requestAnimationFrame(tick);
+    });
+  }
+  if (resetBtn) {
+    resetBtn.addEventListener('click', () => {
+      if (animFrame) cancelAnimationFrame(animFrame);
+      animFrame = null;
+      slider.value = '0';
+      valEl.textContent = '0%';
+      drawBlochBall(0);
+    });
+  }
 
   // T3-5 auto-done on unlock
   const card5 = document.querySelector('[data-step="t3-5"]');

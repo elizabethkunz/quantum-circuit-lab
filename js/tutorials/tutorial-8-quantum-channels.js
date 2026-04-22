@@ -658,7 +658,7 @@ Step 6
         </div>
         <div class="glass-card">
           <b>Depolarizing</b><br>
-          Symmetric shrinkage toward the maximally mixed state.
+          Symmetric shrinkage toward the maximally mixed state.<a id="fnref-t8-2" class="expert-fn-ref" href="#fn-t8-2"><sup>[E2]</sup></a>
         </div>
         <div class="glass-card">
           <b>CPTP map</b><br>

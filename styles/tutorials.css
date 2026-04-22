@@ -338,6 +338,87 @@
     width: 100%;
   }
   .reset-gate-btn:hover { border-color: var(--amber); color: var(--amber); }
+  .playback-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .t10-builder-wrap {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 14px;
+    margin: 10px 0 8px;
+    padding: 12px;
+    border: 1px solid var(--line);
+    background: var(--bg-2);
+  }
+  .t10-builder-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 6px;
+  }
+  .t10-builder-palette {
+    border: 1px solid var(--line);
+    background: var(--bg-0);
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .t10-builder-block {
+    text-align: left;
+    cursor: grab;
+  }
+  .t10-builder-block:active { cursor: grabbing; }
+  .t10-builder-timeline-wrap {
+    border: 1px solid var(--line);
+    background: var(--bg-0);
+    padding: 10px;
+  }
+  .t10-builder-timeline {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(70px, 1fr));
+    gap: 8px;
+  }
+  .t10-drop-slot {
+    min-height: 42px;
+    border: 1px dashed var(--line-bright);
+    background: var(--bg-1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--ink-faint);
+    padding: 2px;
+  }
+  .t10-drop-slot.drop-target {
+    border-color: var(--phos);
+    box-shadow: inset 0 0 0 1px var(--phos-dim);
+  }
+  .t10-drop-slot .slot-block {
+    width: 100%;
+    border: 1px solid var(--cyan);
+    color: var(--cyan);
+    background: var(--bg-0);
+    padding: 6px 4px;
+    text-align: center;
+    cursor: pointer;
+  }
+  .t10-builder-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+  }
+  .t10-shape-panels {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
 
   /* =========================================================
      MINI-RUNNER (pre-built circuit + result)
@@ -615,7 +696,7 @@
   .wrap-card.alt .wrap-cta { color: var(--amber); }
 
   @media (max-width: 900px) {
-    .learn-intro, .subtabs, .bloch-wrap, .mini-runner, .wrap-up { grid-template-columns: 1fr; }
+    .learn-intro, .subtabs, .bloch-wrap, .mini-runner, .wrap-up, .t10-builder-wrap, .t10-shape-panels { grid-template-columns: 1fr; }
     .bloch-host { max-width: 300px; margin: 0 auto; }
     .step-card { padding: 22px 20px; }
     .step-head h2 { font-size: 22px; }
@@ -729,6 +810,65 @@
     text-transform: uppercase;
     color: var(--ink-faint);
     margin-right: 2px;
+  }
+
+  .expert-fn-ref {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--tutorial-accent);
+    text-decoration: none;
+    margin-left: 2px;
+  }
+  .expert-fn-ref:hover {
+    color: var(--amber);
+    text-decoration: underline;
+  }
+
+  .expert-footnotes {
+    margin-top: 2px;
+    border: 1px dashed var(--line);
+    border-left: 2px solid var(--tutorial-accent-dim);
+    background: var(--bg-1);
+    padding: 8px 10px;
+  }
+  .expert-footnotes summary {
+    cursor: pointer;
+    list-style: none;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--tutorial-accent);
+  }
+  .expert-footnotes summary::-webkit-details-marker {
+    display: none;
+  }
+  .expert-footnotes summary::before {
+    content: '▸ ';
+    color: var(--amber);
+  }
+  .expert-footnotes[open] summary::before {
+    content: '▾ ';
+  }
+  .expert-footnotes ol {
+    margin: 10px 0 2px 18px;
+    display: grid;
+    gap: 10px;
+  }
+  .expert-footnotes li {
+    font-family: var(--serif);
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--ink-dim);
+    max-width: 95ch;
+  }
+  .expert-footnotes li code {
+    font-family: var(--mono);
+    font-size: 12px;
+    background: var(--bg-2);
+    padding: 1px 6px;
+    color: var(--amber);
+    border-radius: 2px;
   }
   .tpl-filter-wrap {
     margin: 4px 0 22px;

@@ -1025,6 +1025,24 @@
     letter-spacing: 0.08em;
     color: var(--ink-faint);
   }
+  .pulse-impl-layout {
+    display: block;
+  }
+  #lab-circuit-pulse .analysis-grid {
+    grid-template-columns: 1fr;
+  }
+  #lab-circuit-pulse .analysis-card {
+    overflow: hidden;
+  }
+  #analysis-pulse-timeline {
+    background: var(--bg-0);
+    border: 1px solid var(--line);
+    padding: 0;
+    box-sizing: border-box;
+    display: block;
+    width: 100%;
+    min-height: 360px;
+  }
 
   /* Reference / footer */
   .reference {
@@ -1085,6 +1103,7 @@
       grid-template-columns: 1fr;
     }
     .analysis-grid { grid-template-columns: 1fr; }
+    .pulse-impl-layout { display: block; }
     .subtab-group.intro, .subtab-group.alg, .subtab-group.noise { grid-template-columns: 1fr; }
     .gloss-grid { grid-template-columns: 1fr; }
     .palette { position: static; }

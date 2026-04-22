@@ -1,0 +1,1489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lab — Quantum Phase Estimation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,400&family=JetBrains+Mono:wght@300;400;500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles/base.css" />
+  <link rel="stylesheet" href="styles/labs.css" />
+  <style>
+    /* ── Masthead ── */
+    .masthead {
+      border-bottom: 1px solid var(--line);
+      padding: 16px 0 14px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .brand { display: flex; align-items: baseline; gap: 14px; }
+    .brand-mark { font-family: var(--mono); font-size: 12px; letter-spacing: 0.1em; color: var(--ink); }
+    .amp { color: var(--phos); }
+    .brand-tag { font-family: var(--mono); font-size: 11px; color: var(--ink-faint); }
+
+    /* ── Lab hero ── */
+    .lab-hero {
+      border: 1px solid var(--line);
+      padding: 32px 28px;
+      margin: 28px 0 36px;
+      background: linear-gradient(180deg, rgba(92,190,156,0.035), transparent 80%);
+      position: relative;
+    }
+    .lab-hero::before {
+      content: 'LAB';
+      position: absolute; top: 14px; right: 18px;
+      font-family: var(--mono); font-size: 10px; letter-spacing: 0.2em;
+      color: var(--phos); border: 1px solid var(--phos); padding: 2px 8px;
+      opacity: 0.85; pointer-events: none;
+    }
+    .lab-hero h1 {
+      font-family: var(--serif); font-weight: 300; font-size: 36px;
+      line-height: 1.15; margin: 0 0 16px; max-width: 760px;
+    }
+    .lab-hero h1 em { font-style: italic; color: var(--phos); }
+    .lab-hero .lede {
+      max-width: 720px; font-size: 15px; line-height: 1.6; color: var(--ink-soft);
+    }
+    .lab-hero .lede + .lede { margin-top: 12px; }
+    .lab-hero .historical {
+      font-family: var(--serif); font-style: italic; color: var(--ink-faint);
+      font-size: 13.5px; margin-top: 22px; padding-left: 16px;
+      border-left: 2px solid var(--line-bright); max-width: 680px;
+    }
+    .lab-hero .ref-row {
+      margin-top: 20px; display: flex; gap: 16px; flex-wrap: wrap;
+    }
+    .ref-pill {
+      font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em;
+      color: var(--ink-faint); border: 1px solid var(--line-bright);
+      padding: 3px 10px; text-decoration: none; transition: all 0.15s;
+    }
+    .ref-pill:hover { color: var(--phos); border-color: var(--phos); }
+
+    /* ── Setup cards ── */
+    .setup-block { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin: 32px 0; }
+    @media (max-width: 780px) { .setup-block { grid-template-columns: 1fr; } }
+    .setup-card { border: 1px solid var(--line); padding: 20px; background: var(--bg-1); }
+    .setup-card h3 {
+      font-family: var(--mono); font-size: 10px; letter-spacing: 0.15em;
+      text-transform: uppercase; color: var(--ink-faint); margin: 0 0 14px; font-weight: 500;
+    }
+    .setup-card ul { margin: 0; padding-left: 18px; font-size: 13.5px; line-height: 1.7; color: var(--ink-soft); }
+    .setup-card li + li { margin-top: 4px; }
+    .setup-card code { font-family: var(--mono); font-size: 12px; color: var(--phos); }
+
+    /* ── Progress rail ── */
+    .progress-rail {
+      display: flex; align-items: center; margin: 28px 0 0; padding: 18px 22px;
+      border: 1px solid var(--line); background: var(--bg-1); overflow-x: auto;
+    }
+    .prog-step {
+      display: flex; flex-direction: column; align-items: center; gap: 6px;
+      min-width: 80px; opacity: 0.3; transition: opacity 0.35s;
+    }
+    .prog-step.unlocked { opacity: 1; }
+    .prog-dot {
+      width: 26px; height: 26px; border-radius: 50%;
+      border: 1.5px solid var(--line-bright); background: var(--bg-2);
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--mono); font-size: 10px; color: var(--ink-faint);
+      transition: all 0.35s;
+    }
+    .prog-step.unlocked .prog-dot { border-color: var(--phos); color: var(--phos); }
+    .prog-step.active .prog-dot { box-shadow: 0 0 0 3px rgba(92,190,156,0.22); }
+    .prog-step.done .prog-dot { background: var(--phos); border-color: var(--phos); color: var(--bg-0); }
+    .prog-label {
+      font-family: var(--mono); font-size: 9px; letter-spacing: 0.07em;
+      text-transform: uppercase; color: var(--ink-faint); text-align: center; max-width: 76px;
+    }
+    .prog-step.unlocked .prog-label { color: var(--ink-soft); }
+    .prog-connector {
+      flex: 1; height: 1px; background: var(--line-bright);
+      margin-bottom: 22px; min-width: 12px; transition: background 0.35s;
+    }
+    .prog-connector.lit { background: var(--phos); }
+
+    /* ── Task structure ── */
+    .task { border: 1px solid var(--line); margin: 28px 0; position: relative; transition: border-color 0.3s; }
+    .task.locked { pointer-events: none; }
+    .task-lock-overlay {
+      display: none; position: absolute; inset: 0;
+      background: rgba(14,15,17,0.72); z-index: 10;
+      align-items: center; justify-content: center; flex-direction: column; gap: 10px;
+    }
+    .task.locked .task-lock-overlay { display: flex; }
+    .lock-icon { font-family: var(--mono); font-size: 22px; color: var(--ink-faint); }
+    .lock-hint {
+      font-family: var(--mono); font-size: 11px; letter-spacing: 0.06em;
+      color: var(--ink-faint); text-align: center; max-width: 340px; padding: 0 20px;
+    }
+    @keyframes unlockFlash {
+      0%   { border-color: var(--phos); box-shadow: 0 0 0 0 rgba(92,190,156,0.5); }
+      50%  { box-shadow: 0 0 0 8px rgba(92,190,156,0); }
+      100% { border-color: var(--line); box-shadow: none; }
+    }
+    .task.just-unlocked { animation: unlockFlash 0.7s ease-out forwards; }
+    .task-complete-badge {
+      display: none; position: absolute; top: 14px; right: 18px;
+      font-family: var(--mono); font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase;
+      color: var(--phos); border: 1px solid var(--phos); padding: 2px 8px; opacity: 0.85;
+    }
+    .task.done .task-complete-badge { display: block; }
+    .task-head {
+      padding: 18px 24px 14px; border-bottom: 1px solid var(--line);
+      display: flex; align-items: baseline; gap: 18px;
+    }
+    .task-label { font-family: var(--mono); font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--phos); }
+    .task-title { font-family: var(--serif); font-style: italic; font-weight: 400; font-size: 22px; margin: 0; color: var(--ink); }
+    .task-body { padding: 22px 24px; }
+    .task-body p { font-size: 13.5px; line-height: 1.65; color: var(--ink-soft); margin: 0 0 14px; }
+    .task-body p:last-child { margin-bottom: 0; }
+
+    /* ── Discovery callout ── */
+    .discovery {
+      margin-top: 16px; padding: 13px 16px; border-left: 3px solid var(--line-bright);
+      background: var(--bg-2); font-size: 13px; line-height: 1.55;
+      color: var(--ink-faint); transition: border-color 0.3s, color 0.3s;
+    }
+    .discovery.active { border-left-color: var(--phos); color: var(--ink-soft); }
+    .discovery .disc-tag {
+      font-family: var(--mono); font-size: 9px; letter-spacing: 0.14em;
+      text-transform: uppercase; color: var(--ink-faint); margin-bottom: 5px;
+    }
+    .discovery.active .disc-tag { color: var(--phos); }
+
+    /* ── Bench ── */
+    .bench { display: grid; grid-template-columns: 300px 1fr; gap: 24px; margin-top: 8px; }
+    @media (max-width: 860px) { .bench { grid-template-columns: 1fr; } }
+    .knobs { border: 1px solid var(--line); padding: 18px; background: var(--bg-2); }
+    .knob-group { margin-bottom: 18px; }
+    .knob-group:last-child { margin-bottom: 0; }
+    .knob-label {
+      font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--ink-faint); display: flex; justify-content: space-between; margin-bottom: 8px;
+    }
+    .knob-val { color: var(--phos); font-family: var(--mono); }
+    .knob-group input[type="range"] { width: 100%; accent-color: var(--phos); }
+    .radio-row { display: flex; gap: 6px; flex-wrap: wrap; }
+    .radio-btn {
+      flex: 1 1 auto; min-width: 0; padding: 7px 10px; font-family: var(--mono); font-size: 11px;
+      background: var(--bg-1); border: 1px solid var(--line-bright); color: var(--ink-soft);
+      cursor: pointer; text-align: center; transition: all 0.15s;
+    }
+    .radio-btn:hover { border-color: var(--phos); color: var(--ink); }
+    .radio-btn.active { background: rgba(92,190,156,0.12); border-color: var(--phos); color: var(--phos); }
+    .run-bar { display: flex; gap: 10px; margin-top: 18px; }
+    .run-btn {
+      flex: 1; padding: 10px 14px; font-family: var(--mono); font-size: 12px;
+      letter-spacing: 0.05em; background: var(--phos); color: var(--bg-0);
+      border: none; cursor: pointer; transition: opacity 0.15s;
+    }
+    .run-btn:hover { opacity: 0.85; }
+    .run-btn.secondary {
+      background: transparent; color: var(--ink-faint); border: 1px solid var(--line-bright);
+    }
+    .run-btn.secondary:hover { color: var(--ink); border-color: var(--phos); }
+
+    /* ── Readouts ── */
+    .readouts { display: flex; flex-direction: column; gap: 18px; }
+    .readout-card { border: 1px solid var(--line); padding: 16px 18px; background: var(--bg-1); }
+    .readout-head {
+      font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--ink-faint); margin-bottom: 12px; display: flex; justify-content: space-between; align-items: baseline;
+    }
+    .readout-sub { color: var(--ink-faint); font-size: 10px; letter-spacing: 0.05em; text-transform: none; }
+
+    /* ── State panel ── */
+    .state-panel {
+      margin-top: 14px; padding: 14px; border: 1px solid var(--line);
+      background: var(--bg-2); min-height: 80px;
+    }
+    .state-label {
+      font-family: var(--mono); font-size: 9px; letter-spacing: 0.14em;
+      text-transform: uppercase; color: var(--ink-faint); margin-bottom: 8px;
+    }
+    .state-expr { font-family: var(--mono); font-size: 13px; color: var(--phos); line-height: 1.7; }
+    .state-expr .hi { color: var(--magenta); }
+    .state-expr .amber { color: var(--amber); }
+    .state-narr { font-size: 12.5px; color: var(--ink-soft); margin-top: 8px; line-height: 1.55; }
+    .state-narr code { font-family: var(--mono); font-size: 11px; color: var(--phos); }
+
+    /* ── Step buttons ── */
+    .step-controls { display: flex; gap: 8px; align-items: center; margin-top: 14px; flex-wrap: wrap; }
+    .step-label { font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; color: var(--ink-faint); text-transform: uppercase; }
+    .step-btn {
+      padding: 6px 14px; font-family: var(--mono); font-size: 11px;
+      background: transparent; border: 1px solid var(--line-bright);
+      color: var(--ink-faint); cursor: pointer; transition: all 0.15s;
+    }
+    .step-btn:hover { border-color: var(--phos); color: var(--phos); }
+    .step-btn.active { border-color: var(--phos); color: var(--phos); background: rgba(92,190,156,0.1); }
+
+    /* ── Probability histogram bars ── */
+    .hist-wrap { margin-top: 8px; }
+    .hist-row {
+      display: flex; align-items: center; gap: 10px; margin-bottom: 6px;
+      font-family: var(--mono); font-size: 11px;
+    }
+    .hist-label { width: 46px; color: var(--ink-faint); flex-shrink: 0; text-align: right; }
+    .hist-bar-wrap {
+      flex: 1; height: 14px; background: var(--bg-2); border: 1px solid var(--line); overflow: hidden; position: relative;
+    }
+    .hist-bar {
+      height: 100%; background: var(--phos); transition: width 0.4s ease;
+    }
+    .hist-bar.peak { background: var(--magenta); }
+    .hist-val { width: 52px; text-align: right; color: var(--phos); }
+
+    /* ── Phase dial ── */
+    .phase-canvas-wrap {
+      display: flex; justify-content: center; align-items: center;
+      padding: 12px 0;
+    }
+
+    /* ── Fraction readout ── */
+    .fraction-box {
+      border: 1px solid var(--line); padding: 16px 18px; background: var(--bg-1); margin-top: 14px;
+    }
+    .fraction-box .frac-head {
+      font-family: var(--mono); font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase;
+      color: var(--ink-faint); margin-bottom: 10px;
+    }
+    .frac-row { display: flex; gap: 18px; flex-wrap: wrap; margin-top: 6px; }
+    .frac-item { text-align: center; }
+    .frac-num {
+      font-family: var(--serif); font-weight: 300; font-size: 32px; color: var(--ink); line-height: 1;
+    }
+    .frac-num.good { color: var(--phos); }
+    .frac-num.bad  { color: var(--amber); }
+    .frac-sub { font-family: var(--mono); font-size: 10px; color: var(--ink-faint); margin-top: 4px; }
+
+    /* ── Conclusion ── */
+    .conclusion {
+      border: 1px solid var(--phos);
+      background: linear-gradient(180deg, rgba(92,190,156,0.05), transparent);
+      padding: 24px 26px; margin-top: 18px;
+    }
+    .conclusion .tag {
+      font-family: var(--mono); font-size: 10px; letter-spacing: 0.18em;
+      text-transform: uppercase; color: var(--phos); margin-bottom: 10px;
+    }
+    .conclusion h3 {
+      font-family: var(--serif); font-weight: 400; font-size: 20px;
+      margin: 0 0 10px; color: var(--ink); line-height: 1.35;
+    }
+    .conclusion p { font-size: 13.5px; line-height: 1.65; color: var(--ink-soft); margin: 0 0 10px; }
+    .conclusion p:last-child { margin-bottom: 0; }
+    .conclusion .val-inline { font-family: var(--mono); color: var(--phos); }
+    .conclusion.not-yet { border-color: var(--line-bright); background: transparent; }
+    .conclusion.not-yet .tag { color: var(--ink-faint); }
+
+    /* ── Insight rows ── */
+    .insight-panel { margin-top: 14px; min-height: 0; }
+    .insight-row {
+      display: flex; align-items: baseline; gap: 10px; padding: 7px 0;
+      border-top: 1px solid var(--line); font-size: 12px; line-height: 1.5;
+    }
+    .insight-row:first-child { border-top: none; padding-top: 4px; }
+    .insight-tag {
+      font-family: var(--mono); font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--ink-faint); flex-shrink: 0; width: 72px;
+    }
+    .insight-text { color: var(--ink-soft); }
+    .insight-text code { font-family: var(--mono); font-size: 11px; color: var(--phos); }
+    .insight-text .hi { color: var(--phos); }
+    .insight-text .warn { color: var(--amber); }
+
+    /* ── Certificate ── */
+    .cert {
+      display: none; border: 1px solid var(--phos);
+      background: linear-gradient(180deg, rgba(92,190,156,0.06), transparent 80%);
+      padding: 36px 32px; margin: 28px 0; position: relative;
+    }
+    .cert.visible { display: block; }
+    .cert::before {
+      content: 'COMPLETE'; position: absolute; top: 14px; right: 18px;
+      font-family: var(--mono); font-size: 10px; letter-spacing: 0.2em;
+      color: var(--phos); border: 1px solid var(--phos); padding: 2px 8px; opacity: 0.85;
+    }
+    .cert h2 { font-family: var(--serif); font-weight: 300; font-size: 28px; margin: 0 0 14px; color: var(--ink); line-height: 1.2; }
+    .cert h2 em { font-style: italic; color: var(--phos); }
+    .cert p { font-size: 13.5px; line-height: 1.65; color: var(--ink-soft); margin: 0 0 10px; }
+    .cert .cert-findings { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 20px 0; }
+    @media (max-width: 600px) { .cert .cert-findings { grid-template-columns: 1fr; } }
+    .cert-finding { border: 1px solid var(--line); padding: 12px 14px; background: var(--bg-1); }
+    .cert-finding .cf-tag {
+      font-family: var(--mono); font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--ink-faint); margin-bottom: 5px;
+    }
+    .cert-finding .cf-text { font-size: 12.5px; color: var(--ink-soft); line-height: 1.5; }
+    .cert-finding .cf-text code { font-family: var(--mono); font-size: 11px; color: var(--phos); }
+
+    /* ── Math display ── */
+    .math-block {
+      background: var(--bg-2); border: 1px solid var(--line); padding: 14px 18px;
+      font-family: var(--mono); font-size: 13px; color: var(--phos); line-height: 1.9;
+      margin: 14px 0; overflow-x: auto;
+    }
+    .math-block .dim { color: var(--ink-faint); }
+    .math-block .hi { color: var(--magenta); }
+    .math-block .amber { color: var(--amber); }
+
+    /* ── CFrac table ── */
+    table.cfrac-table {
+      width: 100%; border-collapse: collapse; font-family: var(--mono); font-size: 12px; margin-top: 10px;
+    }
+    .cfrac-table th, .cfrac-table td {
+      padding: 8px 10px; border-bottom: 1px solid var(--line); text-align: center;
+    }
+    .cfrac-table th {
+      color: var(--ink-faint); font-weight: 400; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase;
+    }
+    .cfrac-table tr:last-child td { border-bottom: none; }
+    .cfrac-table .hi-row td { color: var(--phos); background: rgba(92,190,156,0.07); }
+    .cfrac-table .amber-row td { color: var(--amber); }
+
+    /* ── Order-finding result grid ── */
+    .order-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; margin-top: 14px;
+    }
+    .order-cell {
+      border: 1px solid var(--line); padding: 12px 14px; background: var(--bg-1);
+    }
+    .order-cell .oc-tag {
+      font-family: var(--mono); font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--ink-faint); margin-bottom: 6px;
+    }
+    .order-cell .oc-val {
+      font-family: var(--serif); font-size: 26px; font-weight: 300; color: var(--ink); line-height: 1;
+    }
+    .order-cell .oc-val.good { color: var(--phos); }
+    .order-cell .oc-val.bad  { color: var(--amber); }
+    .order-cell .oc-sub { font-family: var(--mono); font-size: 10px; color: var(--ink-faint); margin-top: 4px; }
+
+    /* ── Footer ── */
+    .lab-footer {
+      margin-top: 40px; padding-top: 24px; border-top: 1px solid var(--line);
+      display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+    }
+    .lab-footer a { color: var(--ink-faint); text-decoration: none; font-family: var(--mono); font-size: 12px; }
+    .lab-footer a:hover { color: var(--phos); }
+
+    /* ── Inline code ── */
+    code { font-family: var(--mono); font-size: 12px; color: var(--phos); }
+  </style>
+</head>
+<body>
+<div class="app">
+
+  <!-- MASTHEAD -->
+  <header class="masthead">
+    <div class="brand">
+      <div class="brand-mark">Quantum <span class="amp">&amp;</span> Lab</div>
+      <div class="brand-tag">Lab · Quantum Phase Estimation</div>
+    </div>
+    <div class="lab-tools">
+      <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Enable light mode">Light mode</button>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="lab-hero">
+    <h1>Shor's subroutine:<br><em>Quantum Phase Estimation</em></h1>
+    <p class="lede">
+      In 1994, Peter Shor showed that a quantum computer could factor large integers in polynomial time — a result that shocked the cryptographic world. The technical heart of his algorithm is a beautiful subroutine called <strong>Quantum Phase Estimation (QPE)</strong>. It extracts the eigenvalue of a unitary operator with exponential precision, far beyond what classical sampling could achieve.
+    </p>
+    <p class="lede">
+      In this lab you will build QPE from scratch: understand the interference mechanism that writes a phase onto a register, simulate the inverse QFT that reads it out, recover the order of a number from the measured fraction, and finally see how noise erodes the algorithm's precision. No prior quantum mechanics required — just curiosity and a willingness to click buttons.
+    </p>
+    <p class="historical">
+      "Algorithms for quantum computation: discrete logarithms and factoring." — P. W. Shor, <em>Proc. 35th Annual Symposium on Foundations of Computer Science</em>, IEEE, 1994, pp. 124–134.
+    </p>
+    <div class="ref-row">
+      <a class="ref-pill" href="https://arxiv.org/abs/quant-ph/9508027" target="_blank" rel="noopener">Shor 1994 (arXiv quant-ph/9508027)</a>
+      <a class="ref-pill" href="https://arxiv.org/abs/quant-ph/9511026" target="_blank" rel="noopener">Kitaev 1995 — original QPE (quant-ph/9511026)</a>
+      <a class="ref-pill" href="https://arxiv.org/abs/quant-ph/9605043" target="_blank" rel="noopener">Shor 1996 full paper (quant-ph/9605043)</a>
+    </div>
+  </section>
+
+  <!-- SETUP CARDS -->
+  <div class="setup-block">
+    <div class="setup-card">
+      <h3>What you will build</h3>
+      <ul>
+        <li><strong>Task 01</strong> — Prepare the superposition and apply controlled-U gates; watch the phase accumulate on each ancilla qubit.</li>
+        <li><strong>Task 02</strong> — Apply the inverse QFT; watch the ancilla register collapse toward a single basis state.</li>
+        <li><strong>Task 03</strong> — Read the measurement outcome and run the continued-fraction algorithm to extract the order <em>r</em>.</li>
+        <li><strong>Task 04</strong> — Add phase noise; see how precision degrades and understand why more ancilla qubits help.</li>
+      </ul>
+    </div>
+    <div class="setup-card">
+      <h3>Background concepts</h3>
+      <ul>
+        <li>A <strong>phase</strong> θ encodes as <code>e<sup>2πiθ</sup></code> — a rotation on the complex unit circle.</li>
+        <li>A <strong>unitary operator</strong> <em>U</em> has eigenstates <code>|u⟩</code> with eigenvalue <code>e<sup>2πiφ</sup></code>.</li>
+        <li>QPE uses <em>n</em> ancilla qubits to estimate φ to <em>n</em> binary digits of precision.</li>
+        <li>For Shor: <em>U</em> is modular multiplication <code>U|y⟩ = |ay mod N⟩</code>; its phase gives the <strong>order</strong> of <em>a</em> mod <em>N</em>.</li>
+        <li>From the order, the factors of <em>N</em> follow from <code>gcd(a<sup>r/2</sup> ± 1, N)</code>.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- PROGRESS RAIL -->
+  <nav class="progress-rail" id="progress-rail">
+    <div class="prog-step unlocked active" id="prog-1">
+      <div class="prog-dot">01</div>
+      <div class="prog-label">Phase kickback</div>
+    </div>
+    <div class="prog-connector" id="conn-1"></div>
+    <div class="prog-step" id="prog-2">
+      <div class="prog-dot">02</div>
+      <div class="prog-label">Inverse QFT</div>
+    </div>
+    <div class="prog-connector" id="conn-2"></div>
+    <div class="prog-step" id="prog-3">
+      <div class="prog-dot">03</div>
+      <div class="prog-label">Order finding</div>
+    </div>
+    <div class="prog-connector" id="conn-3"></div>
+    <div class="prog-step" id="prog-4">
+      <div class="prog-dot">04</div>
+      <div class="prog-label">Noise &amp; precision</div>
+    </div>
+  </nav>
+
+  <!-- ================================================================
+       TASK 01: PHASE KICKBACK
+  ================================================================ -->
+  <article class="task" id="task-1">
+    <div class="task-lock-overlay"><div class="lock-icon">⚿</div><div class="lock-hint">Complete a previous task to unlock.</div></div>
+    <header class="task-head">
+      <span class="task-label">Task 01</span>
+      <h2 class="task-title">Apply controlled-U gates and watch the phase accumulate.</h2>
+    </header>
+    <div class="task-body">
+      <p>
+        QPE begins by putting <em>n</em> ancilla qubits into a uniform superposition with Hadamard gates. We then apply the gate <em>U<sup>2<sup>k</sup></sup></em> controlled on ancilla qubit <em>k</em>. Because the target register is in eigenstate <code>|u⟩</code> of <em>U</em> with eigenvalue <code>e<sup>2πiφ</sup></code>, this leaves the target unchanged but kicks the phase back onto the ancilla.
+      </p>
+      <div class="math-block">
+        <span class="dim">After Hadamard + controlled-U on ancilla k:</span><br>
+        <span class="hi">|q<sub>k</sub>⟩</span> <span class="dim">→</span>  (|0⟩ + <span class="amber">e<sup>2πi·2<sup>k</sup>φ</sup></span> |1⟩) / √2
+      </div>
+      <p>
+        Each ancilla encodes a different binary digit of φ. The full register, before the inverse QFT, is a tensor product of these single-qubit states. Step through each ancilla below to see the phase it accumulates.
+      </p>
+      <p>
+        Choose a true phase φ and the number of ancilla qubits <em>n</em>, then step through the circuit one ancilla at a time. Watch the unit-circle diagram update as phase accumulates on each qubit.
+      </p>
+
+      <!-- controls + display -->
+      <div class="bench">
+        <div class="knobs">
+          <div class="knob-group">
+            <div class="knob-label"><span>True phase φ</span><span class="knob-val" id="t1-phi-label">3/8</span></div>
+            <div class="radio-row" id="phi-radio">
+              <button class="radio-btn active" data-phi="0.375">3/8</button>
+              <button class="radio-btn" data-phi="0.25">1/4</button>
+              <button class="radio-btn" data-phi="0.1">1/10</button>
+              <button class="radio-btn" data-phi="0.333">1/3</button>
+              <button class="radio-btn" data-phi="0.7">7/10</button>
+            </div>
+          </div>
+          <div class="knob-group">
+            <div class="knob-label"><span>Ancilla qubits n</span><span class="knob-val" id="t1-n-val">4</span></div>
+            <input type="range" id="t1-n-slider" min="2" max="6" value="4" step="1">
+          </div>
+          <div class="step-controls" style="margin-top:6px;">
+            <span class="step-label">Ancilla:</span>
+            <button class="step-btn" id="t1-step-back">← prev</button>
+            <button class="step-btn" id="t1-step-fwd">next →</button>
+          </div>
+          <div id="t1-ancilla-display" style="margin-top:14px; font-family:var(--mono); font-size:11px; color:var(--ink-faint);">Step through to begin.</div>
+          <div class="run-bar" style="margin-top:14px;">
+            <button class="run-btn" id="t1-all-btn">▶ Apply all at once</button>
+            <button class="run-btn secondary" id="t1-reset-btn">Reset</button>
+          </div>
+        </div>
+
+        <div class="readouts">
+          <div class="readout-card">
+            <div class="readout-head"><span>Phase on unit circle</span><span class="readout-sub" id="t1-qubit-sub">ancilla not yet applied</span></div>
+            <div class="phase-canvas-wrap">
+              <canvas id="phase-canvas" width="220" height="220"></canvas>
+            </div>
+          </div>
+
+          <div class="readout-card">
+            <div class="readout-head"><span>Register state after kickback</span></div>
+            <div class="state-panel" style="margin:0;">
+              <div class="state-label">Ancilla register |q<sub>n-1</sub>…q<sub>0</sub>⟩ — phases accumulated so far</div>
+              <div class="state-expr" id="t1-state-expr">—</div>
+              <div class="state-narr" id="t1-state-narr">Apply Hadamard + controlled-U to all ancillas to see the full pre-IQFT state.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="discovery" id="disc-1">
+        <div class="disc-tag">Discovery condition</div>
+        Step through all ancilla qubits with at least two different values of φ. Notice that each ancilla qubit <em>k</em> carries the phase <code>e<sup>2πi·2<sup>k</sup>φ</sup></code> — a doubled rotation with each step.
+      </div>
+    </div>
+    <div class="task-complete-badge">✓ complete</div>
+  </article>
+
+  <!-- ================================================================
+       TASK 02: INVERSE QFT
+  ================================================================ -->
+  <article class="task locked" id="task-2">
+    <div class="task-lock-overlay">
+      <div class="lock-icon">⚿</div>
+      <div class="lock-hint">Step through all ancilla qubits in Task 01 to unlock.</div>
+    </div>
+    <header class="task-head">
+      <span class="task-label">Task 02</span>
+      <h2 class="task-title">Apply the inverse QFT and see the register collapse to a single peak.</h2>
+    </header>
+    <div class="task-body">
+      <p>
+        After phase kickback, the ancilla register encodes φ as a product state of single-qubit phases. The <strong>inverse Quantum Fourier Transform</strong> turns this distributed encoding into a sharp computational-basis peak. Constructive interference occurs near the integer <code>k</code> closest to <code>φ · 2<sup>n</sup></code>; all other amplitudes cancel destructively.
+      </p>
+      <p>
+        This is the central miracle of QPE: the QFT converts a phase — something normally invisible to measurement — into a directly readable register value.
+      </p>
+      <div class="math-block">
+        <span class="dim">Ideal measurement distribution (n bits):</span><br>
+        P(k) = <span class="hi">|⟨k|IQFT|ψ⟩|²</span>  <span class="dim">—  peaked at k ≈ φ · 2<sup>n</sup></span>
+      </div>
+      <p>
+        Adjust the number of ancilla qubits and see how the histogram narrows. With more qubits, the peak sharpens and the estimated phase gets more decimal places of precision.
+      </p>
+
+      <div class="bench">
+        <div class="knobs">
+          <div class="knob-group">
+            <div class="knob-label"><span>True phase φ</span><span class="knob-val" id="t2-phi-label">3/8</span></div>
+            <div class="radio-row" id="t2-phi-radio">
+              <button class="radio-btn active" data-phi="0.375">3/8</button>
+              <button class="radio-btn" data-phi="0.25">1/4</button>
+              <button class="radio-btn" data-phi="0.1">1/10</button>
+              <button class="radio-btn" data-phi="0.333">1/3</button>
+              <button class="radio-btn" data-phi="0.7">7/10</button>
+            </div>
+          </div>
+          <div class="knob-group">
+            <div class="knob-label"><span>Ancilla qubits n</span><span class="knob-val" id="t2-n-val">4</span></div>
+            <input type="range" id="t2-n-slider" min="2" max="8" value="4" step="1">
+          </div>
+          <div class="run-bar">
+            <button class="run-btn" id="t2-run-btn">▶ Compute IQFT output</button>
+            <button class="run-btn secondary" id="t2-reset-btn">Reset</button>
+          </div>
+        </div>
+
+        <div class="readouts">
+          <div class="readout-card">
+            <div class="readout-head"><span>Output probability distribution P(k)</span><span class="readout-sub" id="t2-sub">run to compute</span></div>
+            <div class="hist-wrap" id="t2-hist">
+              <p style="font-size:12px; color:var(--ink-faint); font-family:var(--mono); margin:12px 0;">Press "Compute IQFT output" to see the histogram.</p>
+            </div>
+          </div>
+          <div class="readout-card">
+            <div class="readout-head"><span>Peak analysis</span></div>
+            <div class="frac-row" id="t2-peak-row">
+              <div class="frac-item">
+                <div class="frac-num" id="t2-k-best">—</div>
+                <div class="frac-sub">best k (integer)</div>
+              </div>
+              <div class="frac-item">
+                <div class="frac-num" id="t2-phi-est">—</div>
+                <div class="frac-sub">k / 2<sup>n</sup> (estimated φ)</div>
+              </div>
+              <div class="frac-item">
+                <div class="frac-num" id="t2-error">—</div>
+                <div class="frac-sub">|error| in φ</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="discovery" id="disc-2">
+        <div class="disc-tag">Discovery condition</div>
+        Run with n=2, n=4, and n=6. Notice how the peak probability increases and the error shrinks roughly as <code>1/2<sup>n</sup></code> for phases that are exactly representable in n bits.
+      </div>
+    </div>
+    <div class="task-complete-badge">✓ complete</div>
+  </article>
+
+  <!-- ================================================================
+       TASK 03: ORDER FINDING
+  ================================================================ -->
+  <article class="task locked" id="task-3">
+    <div class="task-lock-overlay">
+      <div class="lock-icon">⚿</div>
+      <div class="lock-hint">Run Task 02 with at least three different ancilla qubit counts to unlock.</div>
+    </div>
+    <header class="task-head">
+      <span class="task-label">Task 03</span>
+      <h2 class="task-title">Extract the order using continued fractions.</h2>
+    </header>
+    <div class="task-body">
+      <p>
+        Measuring the QPE register gives an integer <em>k</em>. The ratio <code>k / 2<sup>n</sup></code> is a rational approximation to <code>s/r</code>, where <em>s</em> is some integer and <em>r</em> is the order we want. To extract <em>r</em>, Shor uses the <strong>continued fraction expansion</strong> — a classical algorithm that finds the best rational approximation to any real number. The convergents of the expansion are candidates for <code>s/r</code>; we take the one whose denominator gives the smallest valid order.
+      </p>
+      <p>
+        For integer factoring, we seek the order <em>r</em> of <em>a</em> modulo <em>N</em> — meaning the smallest <em>r</em> such that <code>a<sup>r</sup> ≡ 1 (mod N)</code>. Once we have <em>r</em>, the factors are <code>gcd(a<sup>r/2</sup> ± 1, N)</code>, with high probability.
+      </p>
+      <p>
+        Choose a base <em>a</em> and modulus <em>N</em>, set the number of ancilla qubits, and run QPE. The simulator will find the most likely measurement outcome and run the continued fraction algorithm on it. You will see every step of the fraction expansion and whether it leads to a valid factor.
+      </p>
+
+      <div class="bench">
+        <div class="knobs">
+          <div class="knob-group">
+            <div class="knob-label"><span>Modulus N</span><span class="knob-val" id="t3-N-val">15</span></div>
+            <div class="radio-row" id="t3-N-radio">
+              <button class="radio-btn active" data-n="15">15</button>
+              <button class="radio-btn" data-n="21">21</button>
+              <button class="radio-btn" data-n="35">35</button>
+            </div>
+          </div>
+          <div class="knob-group">
+            <div class="knob-label"><span>Base a (coprime to N)</span><span class="knob-val" id="t3-a-val">7</span></div>
+            <div class="radio-row" id="t3-a-radio">
+              <!-- populated dynamically -->
+            </div>
+          </div>
+          <div class="knob-group">
+            <div class="knob-label"><span>Ancilla qubits n</span><span class="knob-val" id="t3-n-val">6</span></div>
+            <input type="range" id="t3-n-slider" min="4" max="10" value="6" step="1">
+          </div>
+          <div class="run-bar">
+            <button class="run-btn" id="t3-run-btn">▶ Run QPE + factor</button>
+            <button class="run-btn secondary" id="t3-reset-btn">Reset</button>
+          </div>
+        </div>
+
+        <div class="readouts">
+          <div class="readout-card">
+            <div class="readout-head"><span>Continued fraction expansion of k / 2<sup>n</sup></span></div>
+            <div id="t3-cfrac-wrap">
+              <p style="font-size:12px; color:var(--ink-faint); font-family:var(--mono); margin:8px 0;">Run to see expansion.</p>
+            </div>
+          </div>
+          <div class="readout-card">
+            <div class="readout-head"><span>Factoring result</span></div>
+            <div class="order-grid" id="t3-order-grid">
+              <div class="order-cell"><div class="oc-tag">measured k</div><div class="oc-val" id="t3-k">—</div><div class="oc-sub">integer outcome</div></div>
+              <div class="order-cell"><div class="oc-tag">estimated r</div><div class="oc-val" id="t3-r">—</div><div class="oc-sub">order of a mod N</div></div>
+              <div class="order-cell"><div class="oc-tag">gcd(a^{r/2}−1, N)</div><div class="oc-val" id="t3-f1">—</div><div class="oc-sub">factor candidate</div></div>
+              <div class="order-cell"><div class="oc-tag">gcd(a^{r/2}+1, N)</div><div class="oc-val" id="t3-f2">—</div><div class="oc-sub">factor candidate</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="t3-conclusion" class="conclusion not-yet" style="margin-top:18px;">
+        <div class="tag">Pending</div>
+        <h3>Awaiting QPE run.</h3>
+        <p>Press "Run QPE + factor" to attempt to factor N.</p>
+      </div>
+
+      <div class="discovery" id="disc-3">
+        <div class="disc-tag">Discovery condition</div>
+        Successfully factor N=15 and N=21. Notice that some (a, N) pairs give r that is odd or trivial — QPE still works, but the factoring step fails and you must try a different base.
+      </div>
+    </div>
+    <div class="task-complete-badge">✓ complete</div>
+  </article>
+
+  <!-- ================================================================
+       TASK 04: NOISE
+  ================================================================ -->
+  <article class="task locked" id="task-4">
+    <div class="task-lock-overlay">
+      <div class="lock-icon">⚿</div>
+      <div class="lock-hint">Successfully factor N in Task 03 to unlock.</div>
+    </div>
+    <header class="task-head">
+      <span class="task-label">Task 04</span>
+      <h2 class="task-title">Add phase noise and watch the precision erode.</h2>
+    </header>
+    <div class="task-body">
+      <p>
+        Real quantum hardware introduces <strong>phase noise</strong> — random rotations that blur each ancilla's phase. Concretely, each controlled-U gate applies an additional random phase error drawn from a Gaussian of width σ. The effect on the IQFT output is a broadening of the peak: small noise spreads probability across neighbouring states; large noise creates a nearly flat distribution.
+      </p>
+      <p>
+        More ancilla qubits means finer phase resolution — but also more gates, meaning more noise accumulates. There is a sweet spot where adding qubits still helps precision faster than noise destroys it. This interplay between circuit depth and noise is a central challenge of near-term quantum computing.
+      </p>
+      <p>
+        Explore the tradeoff below. Fix a phase, vary noise and qubit count, and observe how the peak probability and phase error change.
+      </p>
+
+      <div class="bench">
+        <div class="knobs">
+          <div class="knob-group">
+            <div class="knob-label"><span>True phase φ</span><span class="knob-val" id="t4-phi-label">3/8</span></div>
+            <div class="radio-row" id="t4-phi-radio">
+              <button class="radio-btn active" data-phi="0.375">3/8</button>
+              <button class="radio-btn" data-phi="0.25">1/4</button>
+              <button class="radio-btn" data-phi="0.1">1/10</button>
+              <button class="radio-btn" data-phi="0.333">1/3</button>
+            </div>
+          </div>
+          <div class="knob-group">
+            <div class="knob-label"><span>Phase noise σ (rad)</span><span class="knob-val"><span id="t4-noise-val">0.00</span></span></div>
+            <input type="range" id="t4-noise-slider" min="0" max="100" value="0" step="1">
+          </div>
+          <div class="knob-group">
+            <div class="knob-label"><span>Ancilla qubits n</span><span class="knob-val" id="t4-n-val">5</span></div>
+            <input type="range" id="t4-n-slider" min="2" max="8" value="5" step="1">
+          </div>
+          <div class="run-bar">
+            <button class="run-btn" id="t4-run-btn">▶ Simulate with noise</button>
+            <button class="run-btn secondary" id="t4-reset-btn">Reset</button>
+          </div>
+        </div>
+
+        <div class="readouts">
+          <div class="readout-card">
+            <div class="readout-head"><span>Noisy output distribution</span><span class="readout-sub" id="t4-sub">awaiting run</span></div>
+            <div class="hist-wrap" id="t4-hist">
+              <p style="font-size:12px; color:var(--ink-faint); font-family:var(--mono); margin:12px 0;">Press "Simulate with noise" to see effect.</p>
+            </div>
+          </div>
+
+          <div class="readout-card">
+            <div class="readout-head"><span>Precision comparison (noiseless vs noisy)</span></div>
+            <div class="frac-row" id="t4-compare-row">
+              <div class="frac-item">
+                <div class="frac-num good" id="t4-peak-clean">—</div>
+                <div class="frac-sub">peak prob (noiseless)</div>
+              </div>
+              <div class="frac-item">
+                <div class="frac-num" id="t4-peak-noisy">—</div>
+                <div class="frac-sub">peak prob (noisy)</div>
+              </div>
+              <div class="frac-item">
+                <div class="frac-num" id="t4-phi-err-noisy">—</div>
+                <div class="frac-sub">phase error (noisy)</div>
+              </div>
+            </div>
+            <div class="insight-panel" id="t4-insights"></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="t4-conclusion" class="conclusion not-yet">
+        <div class="tag">Pending</div>
+        <h3>Awaiting experiment.</h3>
+        <p>Run a noisy simulation to see the verdict.</p>
+      </div>
+
+      <div class="discovery" id="disc-4">
+        <div class="disc-tag">Discovery condition</div>
+        Find a combination of noise σ and qubit count n where increasing n from 4 to 6 <em>helps</em> precision, and another where it <em>hurts</em> (because the extra gates accumulate too much noise).
+      </div>
+    </div>
+    <div class="task-complete-badge">✓ complete</div>
+  </article>
+
+  <!-- COMPLETION CERTIFICATE -->
+  <div class="cert" id="cert">
+    <h2>Phase estimation complete.<br><em>You built Shor's subroutine.</em></h2>
+    <p>
+      You have traced the full arc of Quantum Phase Estimation: phase kickback on ancilla qubits, constructive interference via the inverse QFT, continued-fraction readout to recover the order, and the degradation of precision under realistic phase noise.
+    </p>
+    <div class="cert-findings">
+      <div class="cert-finding">
+        <div class="cf-tag">Key result 1</div>
+        <div class="cf-text">Each ancilla qubit <em>k</em> accumulates the phase <code>e<sup>2πi·2<sup>k</sup>φ</sup></code>. Together they encode φ in binary across the register.</div>
+      </div>
+      <div class="cert-finding">
+        <div class="cf-tag">Key result 2</div>
+        <div class="cf-text">The inverse QFT converts the distributed phase encoding into a measurement peak near <code>k = φ·2<sup>n</sup></code>. More qubits → sharper peak → more precision.</div>
+      </div>
+      <div class="cert-finding">
+        <div class="cf-tag">Key result 3</div>
+        <div class="cf-text">Continued fractions extract a rational <code>s/r</code> from the measured <code>k/2<sup>n</sup></code>. The denominator <em>r</em> is the multiplicative order, and <code>gcd(a<sup>r/2</sup>±1, N)</code> yields the factors.</div>
+      </div>
+      <div class="cert-finding">
+        <div class="cf-tag">Key result 4</div>
+        <div class="cf-text">Phase noise broadens the QPE peak. At low noise, adding ancilla qubits improves precision; at high noise, added circuit depth accumulates more error than the resolution gain is worth.</div>
+      </div>
+    </div>
+    <p>
+      Shor's 1994 paper showed that this procedure runs in <code>O((log N)<sup>3</sup>)</code> quantum gate operations — polynomial in the number of digits of N. The best classical factoring algorithms (GNFS) run in sub-exponential but super-polynomial time. This asymptotic gap is the reason QPE is considered one of the most consequential algorithms ever discovered.
+    </p>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="lab-footer">
+    <div>
+      <a href="https://arxiv.org/abs/quant-ph/9508027" target="_blank" rel="noopener">Shor 1994 — original conference paper</a>
+      &ensp;·&ensp;
+      <a href="https://arxiv.org/abs/quant-ph/9511026" target="_blank" rel="noopener">Kitaev 1995 — QPE formalism</a>
+      &ensp;·&ensp;
+      <a href="https://arxiv.org/abs/quant-ph/9605043" target="_blank" rel="noopener">Shor 1996 — full journal version</a>
+    </div>
+    <div>
+      <a href="index.html">← Back to main app</a>
+      &ensp;·&ensp;
+      <a href="#" onclick="document.getElementById('task-1').scrollIntoView({behavior:'smooth', block:'start'}); return false;">↑ Back to experiment</a>
+    </div>
+  </footer>
+
+</div><!-- .app -->
+
+<script>
+(function initLabThemeToggle() {
+  var STORAGE_KEY = 'quantum-lab-theme';
+  var root = document.documentElement;
+  var button = document.getElementById('theme-toggle');
+  if (!button) return;
+
+  var currentTheme = localStorage.getItem(STORAGE_KEY) === 'light' ? 'light' : 'dark';
+
+  function applyTheme(theme) {
+    if (theme === 'light') {
+      root.setAttribute('data-theme', 'light');
+    } else {
+      root.removeAttribute('data-theme');
+    }
+    button.setAttribute('data-theme', theme);
+    button.setAttribute('aria-pressed', String(theme === 'light'));
+    button.setAttribute('aria-label', theme === 'light' ? 'Switch to dark mode' : 'Enable light mode');
+    button.textContent = theme === 'light' ? 'Dark mode' : 'Light mode';
+  }
+
+  applyTheme(currentTheme);
+  button.addEventListener('click', function () {
+    currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+    localStorage.setItem(STORAGE_KEY, currentTheme);
+    applyTheme(currentTheme);
+  });
+})();
+
+(() => {
+  'use strict';
+
+  /* ── Utility ── */
+  const el = id => document.getElementById(id);
+  const τ = 2 * Math.PI;
+
+  /* ── GCD / modpow ── */
+  function gcd(a, b) { while (b) { [a, b] = [b, a % b]; } return a; }
+  function modpow(base, exp, mod) {
+    let result = 1n;
+    base = BigInt(base) % BigInt(mod);
+    exp = BigInt(exp); mod = BigInt(mod);
+    while (exp > 0n) {
+      if (exp % 2n === 1n) result = result * base % mod;
+      exp >>= 1n; base = base * base % mod;
+    }
+    return Number(result);
+  }
+  function trueOrder(a, N) {
+    let x = a % N, r = 1;
+    while (x !== 1) { x = (x * a) % N; r++; if (r > N) return null; }
+    return r;
+  }
+
+  /* ── Continued fractions ── */
+  function continuedFraction(num, den, maxTerms = 20) {
+    // Returns [convergents] = [{a, p, q}]
+    let convergents = [];
+    let p0 = 1, q0 = 0, p1 = 0, q1 = 1;
+    for (let i = 0; i < maxTerms; i++) {
+      if (den === 0) break;
+      const a = Math.floor(num / den);
+      const p2 = a * p1 + p0;
+      const q2 = a * q1 + q0;
+      convergents.push({ a, p: p2, q: q2 });
+      [num, den] = [den, num - a * den];
+      [p0, p1] = [p1, p2];
+      [q0, q1] = [q1, q2];
+    }
+    return convergents;
+  }
+
+  /* ── QPE probability distribution ── */
+  function qpeProbs(phi, n, noiseSigma = 0) {
+    const M = 1 << n; // 2^n states
+    const probs = new Float64Array(M);
+    // Compute ideal amplitudes via IQFT formula
+    // P(k) = (1/M) |sum_{j=0}^{M-1} e^{2πi j (φ - k/M)}|^2
+    // With noise: each ancilla qubit k gets extra phase eps_k ~ N(0, sigma)
+    // We average over many noise samples for sigma > 0
+    const samples = noiseSigma > 0 ? 200 : 1;
+    for (let s = 0; s < samples; s++) {
+      const noisePhases = [];
+      for (let bit = 0; bit < n; bit++) {
+        noisePhases.push(noiseSigma > 0 ? gaussRand() * noiseSigma : 0);
+      }
+      for (let k = 0; k < M; k++) {
+        // amplitude = (1/M) * sum_j exp(2πi * j * (phi - k/M)) with noise
+        // Using phase kickback formulation:
+        // After IQFT, the k-th amplitude gets contribution from each ancilla bit:
+        // amplitude_k = product_{bit=0}^{n-1} cos(π(phi*2^bit + noisePhases[bit]/tau - k/2^(n-bit)))
+        // Actually use direct sum formula:
+        let re = 0, im = 0;
+        for (let j = 0; j < M; j++) {
+          // Phase from bit j: each bit contributes its phase
+          let ang = 0;
+          for (let bit = 0; bit < n; bit++) {
+            const jBit = (j >> bit) & 1;
+            if (jBit) {
+              ang += τ * phi * (1 << bit) + noisePhases[bit];
+            }
+          }
+          // IQFT phase
+          ang -= τ * j * k / M;
+          re += Math.cos(ang);
+          im += Math.sin(ang);
+        }
+        probs[k] += (re * re + im * im) / (M * M * samples);
+      }
+    }
+    return probs;
+  }
+
+  function gaussRand() {
+    let u = 0, v = 0;
+    while (!u) u = Math.random();
+    while (!v) v = Math.random();
+    return Math.sqrt(-2 * Math.log(u)) * Math.cos(τ * v);
+  }
+
+  /* ══════════════════════════════
+     PROGRESS + UNLOCK SYSTEM
+  ══════════════════════════════ */
+  const unlocked = new Set([1]);
+  const done = new Set();
+
+  function unlock(taskNum) {
+    if (unlocked.has(taskNum)) return;
+    unlocked.add(taskNum);
+    const taskEl = el(`task-${taskNum}`);
+    taskEl.classList.remove('locked');
+    taskEl.classList.add('just-unlocked');
+    setTimeout(() => taskEl.classList.remove('just-unlocked'), 800);
+    const prog = el(`prog-${taskNum}`);
+    prog.classList.add('unlocked', 'active');
+    if (taskNum > 1) {
+      const conn = el(`conn-${taskNum - 1}`);
+      if (conn) conn.classList.add('lit');
+    }
+  }
+
+  function markDone(taskNum) {
+    if (done.has(taskNum)) return;
+    done.add(taskNum);
+    const taskEl = el(`task-${taskNum}`);
+    taskEl.classList.add('done');
+    el(`prog-${taskNum}`).classList.add('done');
+    if (done.size === 4) el('cert').classList.add('visible');
+  }
+
+  /* ══════════════════════════════
+     TASK 01: PHASE KICKBACK
+  ══════════════════════════════ */
+  let t1_phi = 0.375;
+  let t1_n = 4;
+  let t1_step = -1; // current ancilla qubit shown (-1 = none)
+  let t1_phisSeen = new Set();
+  let t1_maxStep = -1;
+
+  // Phase canvas
+  const canvas = el('phase-canvas');
+  const ctx = canvas.getContext('2d');
+  const CW = canvas.width, CH = canvas.height;
+  const cx = CW / 2, cy = CH / 2, cr = 84;
+
+  function drawPhaseCircle(phaseAngle, ancillaIdx, n) {
+    ctx.clearRect(0, 0, CW, CH);
+    // Background circle
+    ctx.beginPath();
+    ctx.arc(cx, cy, cr, 0, τ);
+    ctx.strokeStyle = 'rgba(255,255,255,0.07)';
+    ctx.lineWidth = 1; ctx.stroke();
+    // Tick marks
+    for (let i = 0; i < 8; i++) {
+      const a = (i / 8) * τ;
+      ctx.beginPath();
+      ctx.moveTo(cx + (cr - 6) * Math.cos(a), cy + (cr - 6) * Math.sin(a));
+      ctx.lineTo(cx + cr * Math.cos(a), cy + cr * Math.sin(a));
+      ctx.strokeStyle = 'rgba(255,255,255,0.14)'; ctx.lineWidth = 1; ctx.stroke();
+    }
+    // Reference axis (φ=0 direction)
+    ctx.beginPath();
+    ctx.moveTo(cx, cy); ctx.lineTo(cx + cr + 12, cy);
+    ctx.strokeStyle = 'rgba(255,255,255,0.1)'; ctx.lineWidth = 1; ctx.stroke();
+    ctx.fillStyle = 'rgba(255,255,255,0.25)';
+    ctx.font = '10px JetBrains Mono';
+    ctx.fillText('φ=0', cx + cr + 4, cy - 4);
+
+    if (phaseAngle === null) return;
+
+    // Phase arrow — use canvas angle convention (0 = right, clockwise)
+    const canvasAngle = -phaseAngle; // complex plane: +y up, so negate
+    const ax = cx + cr * Math.cos(canvasAngle);
+    const ay = cy + cr * Math.sin(canvasAngle);
+
+    // Arc showing phase
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.arc(cx, cy, 40, 0, canvasAngle, canvasAngle < 0);
+    ctx.strokeStyle = 'rgba(92,190,156,0.3)'; ctx.lineWidth = 1.5; ctx.stroke();
+
+    // Arrow line
+    ctx.beginPath();
+    ctx.moveTo(cx, cy); ctx.lineTo(ax, ay);
+    ctx.strokeStyle = '#5cbe9c'; ctx.lineWidth = 2; ctx.stroke();
+    // Arrowhead
+    const headLen = 10;
+    const angle = Math.atan2(ay - cy, ax - cx);
+    ctx.beginPath();
+    ctx.moveTo(ax, ay);
+    ctx.lineTo(ax - headLen * Math.cos(angle - 0.45), ay - headLen * Math.sin(angle - 0.45));
+    ctx.lineTo(ax - headLen * Math.cos(angle + 0.45), ay - headLen * Math.sin(angle + 0.45));
+    ctx.closePath();
+    ctx.fillStyle = '#5cbe9c'; ctx.fill();
+
+    // Dot at origin
+    ctx.beginPath(); ctx.arc(cx, cy, 3, 0, τ); ctx.fillStyle = 'rgba(255,255,255,0.4)'; ctx.fill();
+
+    // Phase label
+    const phaseRad = phaseAngle;
+    const phaseDeg = (phaseRad * 180 / Math.PI).toFixed(1);
+    ctx.fillStyle = '#5cbe9c'; ctx.font = '11px JetBrains Mono';
+    ctx.fillText(`2π × ${(phaseAngle / τ).toFixed(4)}`, cx - 50, cy + cr + 22);
+    ctx.fillStyle = 'rgba(255,255,255,0.3)'; ctx.font = '10px JetBrains Mono';
+    ctx.fillText(`= ${phaseDeg}°`, cx - 24, cy + cr + 36);
+  }
+
+  function t1Update() {
+    el('t1-n-val').textContent = t1_n;
+    el('t1-phi-label').textContent = (() => {
+      const map = { '0.375': '3/8', '0.25': '1/4', '0.1': '1/10', '0.333': '1/3', '0.7': '7/10' };
+      return map[String(t1_phi)] || t1_phi.toFixed(3);
+    })();
+
+    if (t1_step < 0) {
+      drawPhaseCircle(null, -1, t1_n);
+      el('t1-qubit-sub').textContent = 'no ancilla applied yet';
+      el('t1-state-expr').innerHTML = '—';
+      el('t1-state-narr').textContent = 'Press "next →" to apply ancilla qubits one by one, or "Apply all at once".';
+      el('t1-ancilla-display').textContent = 'Step through to begin.';
+      return;
+    }
+
+    // Phase accumulated on ancilla qubit t1_step: e^{2πi · 2^step · phi}
+    const rawPhase = τ * Math.pow(2, t1_step) * t1_phi;
+    const normPhase = rawPhase % τ;
+    drawPhaseCircle(normPhase, t1_step, t1_n);
+    el('t1-qubit-sub').textContent = `ancilla q${t1_step} — phase 2π × ${(Math.pow(2, t1_step) * t1_phi).toFixed(4)} mod 1`;
+
+    // Build register expression
+    let expr = '';
+    for (let k = t1_n - 1; k >= 0; k--) {
+      const phaseVal = t1_step >= 0 && k <= t1_step ? (τ * Math.pow(2, k) * t1_phi) % τ : null;
+      if (phaseVal !== null) {
+        const f = (Math.pow(2, k) * t1_phi % 1).toFixed(4);
+        expr += `<span class="hi">q${k}</span>: (|0⟩ + e<sup>2πi·${f}</sup>|1⟩)/√2<br>`;
+      } else {
+        expr += `<span style="color:var(--ink-faint)">q${k}: (|0⟩ + |1⟩)/√2  ← Hadamard only</span><br>`;
+      }
+    }
+    el('t1-state-expr').innerHTML = expr;
+    el('t1-ancilla-display').textContent = `Showing ancilla q${t1_step} of q0…q${t1_n-1}`;
+    el('t1-state-narr').textContent = t1_step === t1_n - 1
+      ? 'All ancilla qubits have been kicked. The register is now ready for the inverse QFT.'
+      : `${t1_n - 1 - t1_step} ancilla qubits remaining.`;
+  }
+
+  el('t1-n-slider').addEventListener('input', e => {
+    t1_n = parseInt(e.target.value);
+    t1_step = -1; t1_maxStep = -1;
+    t1Update();
+  });
+
+  document.querySelectorAll('#phi-radio .radio-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#phi-radio .radio-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      t1_phi = parseFloat(btn.dataset.phi);
+      t1_step = -1; t1_maxStep = -1;
+      t1_phisSeen.add(t1_phi);
+      t1Update();
+    });
+  });
+
+  el('t1-step-fwd').addEventListener('click', () => {
+    if (t1_step < t1_n - 1) t1_step++;
+    t1_maxStep = Math.max(t1_maxStep, t1_step);
+    t1_phisSeen.add(t1_phi);
+    t1Update();
+    // Unlock task 2 if all steps seen in at least 2 phi values
+    if (t1_maxStep >= t1_n - 1 && t1_phisSeen.size >= 2) {
+      markDone(1);
+      unlock(2);
+      el('disc-1').classList.add('active');
+    }
+  });
+
+  el('t1-step-back').addEventListener('click', () => {
+    if (t1_step > -1) t1_step--;
+    t1Update();
+  });
+
+  el('t1-all-btn').addEventListener('click', () => {
+    t1_step = t1_n - 1;
+    t1_maxStep = t1_n - 1;
+    t1_phisSeen.add(t1_phi);
+    t1Update();
+    if (t1_phisSeen.size >= 2) {
+      markDone(1); unlock(2);
+      el('disc-1').classList.add('active');
+    }
+  });
+
+  el('t1-reset-btn').addEventListener('click', () => {
+    t1_step = -1; t1_maxStep = -1;
+    t1Update();
+  });
+
+  // Init
+  t1_phisSeen.add(t1_phi);
+  t1Update();
+
+  /* ══════════════════════════════
+     TASK 02: INVERSE QFT
+  ══════════════════════════════ */
+  let t2_phi = 0.375;
+  let t2_n = 4;
+  let t2_nSeen = new Set();
+
+  function phiLabel(phi) {
+    const map = { '0.375': '3/8', '0.25': '1/4', '0.1': '1/10', '0.333': '1/3', '0.7': '7/10' };
+    return map[String(phi)] || phi.toFixed(3);
+  }
+
+  document.querySelectorAll('#t2-phi-radio .radio-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#t2-phi-radio .radio-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      t2_phi = parseFloat(btn.dataset.phi);
+      el('t2-phi-label').textContent = phiLabel(t2_phi);
+    });
+  });
+
+  el('t2-n-slider').addEventListener('input', e => {
+    t2_n = parseInt(e.target.value);
+    el('t2-n-val').textContent = t2_n;
+  });
+
+  function renderHistogram(containerId, probs, n, subId) {
+    const M = probs.length;
+    const maxP = Math.max(...probs);
+    const peakK = probs.indexOf(maxP);
+
+    let html = '';
+    // Show all states, but limit display for large n
+    const maxShow = Math.min(M, 32);
+    const step = Math.ceil(M / maxShow);
+    for (let k = 0; k < M; k += step) {
+      const p = probs[k];
+      const pct = maxP > 0 ? (p / maxP) * 100 : 0;
+      const isPeak = (k === peakK);
+      html += `<div class="hist-row">
+        <span class="hist-label">${k}</span>
+        <div class="hist-bar-wrap"><div class="hist-bar${isPeak ? ' peak' : ''}" style="width:${pct.toFixed(1)}%"></div></div>
+        <span class="hist-val" style="${isPeak ? 'color:var(--magenta)' : ''}">${(p * 100).toFixed(1)}%</span>
+      </div>`;
+    }
+    el(containerId).innerHTML = html;
+    if (subId) el(subId).textContent = `n=${n}, M=2<sup>${n}</sup>=${M} states`;
+    return peakK;
+  }
+
+  el('t2-run-btn').addEventListener('click', () => {
+    const probs = qpeProbs(t2_phi, t2_n);
+    const M = 1 << t2_n;
+    const peakK = renderHistogram('t2-hist', probs, t2_n, null);
+    el('t2-sub').textContent = `n=${t2_n}, M=${M} states`;
+
+    const phiEst = peakK / M;
+    const err = Math.abs(phiEst - t2_phi);
+    el('t2-k-best').textContent = peakK;
+    el('t2-phi-est').textContent = phiEst.toFixed(4);
+    el('t2-error').textContent = err.toFixed(4);
+    const errEl = el('t2-error');
+    errEl.className = 'frac-num ' + (err < 1 / M ? 'good' : err < 2 / M ? '' : 'bad');
+
+    t2_nSeen.add(t2_n);
+    if (t2_nSeen.size >= 3) {
+      markDone(2); unlock(3);
+      el('disc-2').classList.add('active');
+    }
+  });
+
+  el('t2-reset-btn').addEventListener('click', () => {
+    el('t2-hist').innerHTML = '<p style="font-size:12px; color:var(--ink-faint); font-family:var(--mono); margin:12px 0;">Press "Compute IQFT output" to see histogram.</p>';
+    el('t2-k-best').textContent = '—'; el('t2-phi-est').textContent = '—'; el('t2-error').textContent = '—';
+  });
+
+  /* ══════════════════════════════
+     TASK 03: ORDER FINDING
+  ══════════════════════════════ */
+  let t3_N = 15, t3_a = 7, t3_n = 6;
+  let t3_factored = new Set();
+
+  const coprimes = {
+    15: [2, 4, 7, 8, 11, 13, 14],
+    21: [2, 4, 5, 8, 10, 11, 13, 16, 17, 19, 20],
+    35: [2, 3, 4, 6, 8, 9, 11, 12, 13, 16, 17, 18, 19, 22, 23, 24, 26, 27, 29, 31, 32, 33]
+  };
+
+  function populateARadio() {
+    const cp = coprimes[t3_N] || [];
+    const wrap = el('t3-a-radio');
+    wrap.innerHTML = '';
+    // Show at most 6 coprime choices
+    const choices = cp.slice(0, 6);
+    t3_a = choices[0] || 2;
+    el('t3-a-val').textContent = t3_a;
+    choices.forEach((v, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'radio-btn' + (i === 0 ? ' active' : '');
+      btn.dataset.a = v;
+      btn.textContent = v;
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('#t3-a-radio .radio-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        t3_a = v; el('t3-a-val').textContent = v;
+      });
+      wrap.appendChild(btn);
+    });
+  }
+
+  document.querySelectorAll('#t3-N-radio .radio-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#t3-N-radio .radio-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      t3_N = parseInt(btn.dataset.n);
+      el('t3-N-val').textContent = t3_N;
+      populateARadio();
+    });
+  });
+  el('t3-n-slider').addEventListener('input', e => {
+    t3_n = parseInt(e.target.value);
+    el('t3-n-val').textContent = t3_n;
+  });
+  populateARadio();
+
+  el('t3-run-btn').addEventListener('click', () => {
+    const r_true = trueOrder(t3_a, t3_N);
+    if (!r_true) { alert('Could not determine order. Try a different base.'); return; }
+    // True phase(s) are s/r for s=0..r-1; most likely to measure s=1 leading peak
+    // Pick s=1 as primary phase
+    const phi = 1 / r_true;
+    const M = 1 << t3_n;
+    const probs = qpeProbs(phi, t3_n);
+    // Most likely k
+    let peakK = 0, peakP = 0;
+    for (let k = 0; k < M; k++) if (probs[k] > peakP) { peakP = probs[k]; peakK = k; }
+
+    el('t3-k').textContent = peakK;
+
+    // Run continued fractions on peakK / M
+    const convs = continuedFraction(peakK, M, 20);
+
+    // Build table
+    let tableHTML = '<table class="cfrac-table"><thead><tr><th>step</th><th>aₙ</th><th>convergent p/q</th><th>|φ - p/q|</th><th>gcd test</th></tr></thead><tbody>';
+    let foundR = null, foundF1 = null, foundF2 = null;
+    convs.forEach((c, i) => {
+      const err = Math.abs(phi - c.p / c.q);
+      // Test if q is a valid order
+      let gcdTest = '—';
+      let isValid = false;
+      if (c.q > 1 && c.q <= t3_N) {
+        const chk = modpow(t3_a, c.q, t3_N);
+        if (chk === 1) {
+          gcdTest = `a^q ≡ 1 ✓`;
+          isValid = true;
+          if (!foundR) {
+            foundR = c.q;
+            // Compute factors
+            if (foundR % 2 === 0) {
+              const half = foundR / 2;
+              const apow = modpow(t3_a, half, t3_N);
+              foundF1 = gcd(apow - 1, t3_N);
+              foundF2 = gcd(apow + 1, t3_N);
+            }
+          }
+        } else {
+          gcdTest = `a^q ≡ ${chk} ✗`;
+        }
+      }
+      const rowClass = isValid ? 'hi-row' : '';
+      tableHTML += `<tr class="${rowClass}"><td>${i}</td><td>${c.a}</td><td>${c.p}/${c.q}</td><td>${err.toFixed(5)}</td><td>${gcdTest}</td></tr>`;
+    });
+    tableHTML += '</tbody></table>';
+    el('t3-cfrac-wrap').innerHTML = tableHTML;
+
+    // Update order cells
+    el('t3-r').textContent = foundR || '?';
+    el('t3-r').className = 'oc-val ' + (foundR ? 'good' : 'bad');
+
+    if (foundR && foundR % 2 === 0 && foundF1 !== null) {
+      el('t3-f1').textContent = foundF1;
+      el('t3-f2').textContent = foundF2;
+      const isFactor1 = foundF1 > 1 && foundF1 < t3_N;
+      const isFactor2 = foundF2 > 1 && foundF2 < t3_N;
+      el('t3-f1').className = 'oc-val ' + (isFactor1 ? 'good' : 'bad');
+      el('t3-f2').className = 'oc-val ' + (isFactor2 ? 'good' : 'bad');
+
+      const success = isFactor1 || isFactor2;
+      const f = isFactor1 ? foundF1 : foundF2;
+      const f2 = t3_N / f;
+      const box = el('t3-conclusion');
+      if (success) {
+        box.className = 'conclusion';
+        box.innerHTML = `<div class="tag">Result</div>
+          <h3>${t3_N} = ${f} × ${f2}</h3>
+          <p>QPE measured k = <span class="val-inline">${peakK}</span> out of 2<sup>${t3_n}</sup> = ${M}, giving estimated phase <span class="val-inline">${(peakK/M).toFixed(4)}</span> ≈ <span class="val-inline">1/${r_true}</span>. The continued fraction algorithm extracted the order <span class="val-inline">r = ${foundR}</span>. Since r is even, we compute gcd(${t3_a}<sup>${foundR/2}</sup>±1, ${t3_N}) = gcd(${modpow(t3_a, foundR/2, t3_N*100)-1 < 0 ? '…' : '…'}, ${t3_N}), which yields <span class="val-inline">${f}</span> and <span class="val-inline">${f2}</span>.</p>
+          <p>This is Shor's algorithm — a number that would take trillions of operations classically was factored in a handful of quantum gate layers.</p>`;
+        t3_factored.add(t3_N);
+        if (t3_factored.has(15) && t3_factored.has(21)) {
+          markDone(3); unlock(4);
+          el('disc-3').classList.add('active');
+        }
+      } else {
+        box.className = 'conclusion';
+        box.innerHTML = `<div class="tag">Partial result</div>
+          <h3>Order found, but gcd test failed.</h3>
+          <p>r = <span class="val-inline">${foundR}</span> is even, but gcd(a<sup>r/2</sup>±1, N) did not yield a non-trivial factor. This happens for some (a, N) pairs — simply try a different base <em>a</em>.</p>`;
+      }
+    } else {
+      el('t3-f1').textContent = '—'; el('t3-f2').textContent = '—';
+      const box = el('t3-conclusion');
+      box.className = 'conclusion';
+      box.innerHTML = `<div class="tag">Order issue</div>
+        <h3>r = ${foundR || '?'} — ${foundR ? (foundR % 2 !== 0 ? 'odd order' : 'trivial') : 'not found'}.</h3>
+        <p>${foundR ? 'The order is ' + (foundR % 2 !== 0 ? 'odd — we need r even for the gcd trick to work.' : 'trivial (r=1). This base always gives 1 mod N.') : 'The continued fraction did not converge to a valid order. Try more ancilla qubits or a different base.'} Try a different base a or increase n.</p>`;
+    }
+  });
+
+  el('t3-reset-btn').addEventListener('click', () => {
+    el('t3-cfrac-wrap').innerHTML = '<p style="font-size:12px; color:var(--ink-faint); font-family:var(--mono); margin:8px 0;">Run to see expansion.</p>';
+    ['t3-k','t3-r','t3-f1','t3-f2'].forEach(id => { el(id).textContent = '—'; el(id).className = 'oc-val'; });
+    const box = el('t3-conclusion');
+    box.className = 'conclusion not-yet';
+    box.innerHTML = '<div class="tag">Pending</div><h3>Awaiting QPE run.</h3><p>Press "Run QPE + factor" to attempt to factor N.</p>';
+  });
+
+  /* ══════════════════════════════
+     TASK 04: NOISE
+  ══════════════════════════════ */
+  let t4_phi = 0.375;
+  let t4_noise = 0;
+  let t4_n = 5;
+  let t4_lowNoiseHighN = false, t4_highNoiseHighN = false;
+  let t4_prevNoise = 0, t4_prevN = 5;
+
+  document.querySelectorAll('#t4-phi-radio .radio-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#t4-phi-radio .radio-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      t4_phi = parseFloat(btn.dataset.phi);
+      el('t4-phi-label').textContent = phiLabel(t4_phi);
+    });
+  });
+
+  el('t4-noise-slider').addEventListener('input', e => {
+    t4_noise = parseInt(e.target.value) / 100 * 0.8; // 0 to 0.8 rad
+    el('t4-noise-val').textContent = t4_noise.toFixed(2);
+  });
+  el('t4-n-slider').addEventListener('input', e => {
+    t4_n = parseInt(e.target.value);
+    el('t4-n-val').textContent = t4_n;
+  });
+
+  el('t4-run-btn').addEventListener('click', () => {
+    const probsClean = qpeProbs(t4_phi, t4_n, 0);
+    const probsNoisy = qpeProbs(t4_phi, t4_n, t4_noise);
+    const M = 1 << t4_n;
+
+    const peakClean = Math.max(...probsClean);
+    const peakNoisyVal = Math.max(...probsNoisy);
+    const peakK = probsNoisy.indexOf(peakNoisyVal);
+    const phiErrNoisy = Math.abs(peakK / M - t4_phi);
+
+    renderHistogram('t4-hist', probsNoisy, t4_n, 't4-sub');
+
+    el('t4-peak-clean').textContent = (peakClean * 100).toFixed(1) + '%';
+    el('t4-peak-noisy').textContent = (peakNoisyVal * 100).toFixed(1) + '%';
+    el('t4-peak-noisy').className = 'frac-num ' + (peakNoisyVal > 0.5 ? 'good' : peakNoisyVal > 0.2 ? '' : 'bad');
+    el('t4-phi-err-noisy').textContent = phiErrNoisy.toFixed(4);
+    el('t4-phi-err-noisy').className = 'frac-num ' + (phiErrNoisy < 1/M ? 'good' : phiErrNoisy < 3/M ? '' : 'bad');
+
+    // Insights
+    const insights = [];
+    if (t4_noise < 0.05) {
+      insights.push({ tag: 'low noise', text: `Peak probability <span class="hi">${(peakNoisyVal*100).toFixed(1)}%</span> — close to ideal. Each additional ancilla qubit halves the phase uncertainty.` });
+    } else if (t4_noise < 0.3) {
+      insights.push({ tag: 'moderate', text: `Noise σ=${t4_noise.toFixed(2)} rad is spreading probability. Peak dropped from <span class="hi">${(peakClean*100).toFixed(1)}%</span> to <span class="warn">${(peakNoisyVal*100).toFixed(1)}%</span>.` });
+    } else {
+      insights.push({ tag: 'heavy noise', text: `<span class="warn">Peak is below 20%.</span> The distribution is nearly flat — the algorithm is unlikely to identify the correct phase.` });
+    }
+    if (t4_n >= 6 && t4_noise < 0.1) {
+      insights.push({ tag: 'precision', text: `With n=${t4_n} qubits and low noise, phase precision is <code>1/${M}</code> = <span class="hi">${(1/M).toFixed(5)}</span>. A 50-qubit register would give ~10<sup>-15</sup> precision.` });
+    }
+    el('t4-insights').innerHTML = insights.map(ins =>
+      `<div class="insight-row"><span class="insight-tag">${ins.tag}</span><span class="insight-text">${ins.text}</span></div>`
+    ).join('');
+
+    // Track for discovery
+    if (t4_noise < 0.05 && t4_n >= 6) t4_lowNoiseHighN = true;
+    if (t4_noise > 0.3 && t4_n >= 6) t4_highNoiseHighN = true;
+
+    // Conclusion
+    const box = el('t4-conclusion');
+    if (peakNoisyVal > 0.5) {
+      box.className = 'conclusion';
+      box.innerHTML = `<div class="tag">Result</div>
+        <h3>QPE is robust at this noise level.</h3>
+        <p>Peak probability <span class="val-inline">${(peakNoisyVal*100).toFixed(1)}%</span> — the algorithm would succeed most of the time. Phase noise σ = <span class="val-inline">${t4_noise.toFixed(2)}</span> rad is within the tolerant regime for n = <span class="val-inline">${t4_n}</span> qubits.</p>`;
+    } else if (peakNoisyVal > 0.2) {
+      box.className = 'conclusion';
+      box.innerHTML = `<div class="tag">Result</div>
+        <h3>QPE is marginal — noise is competing with precision.</h3>
+        <p>Peak probability <span class="val-inline">${(peakNoisyVal*100).toFixed(1)}%</span>. The correct phase is the most likely outcome but far from certain. Reducing σ or decreasing circuit depth (fewer ancilla qubits) would help.</p>`;
+    } else {
+      box.className = 'conclusion';
+      box.innerHTML = `<div class="tag">Result</div>
+        <h3>Noise has washed out the QPE signal.</h3>
+        <p>Peak probability <span class="val-inline">${(peakNoisyVal*100).toFixed(1)}%</span> — barely above the uniform floor of <span class="val-inline">${(100/M).toFixed(1)}%</span>. The measured outcome is essentially random. Error correction or dramatically lower noise is required.</p>`;
+    }
+
+    if (t4_lowNoiseHighN && t4_highNoiseHighN) {
+      markDone(4);
+      el('disc-4').classList.add('active');
+    }
+  });
+
+  el('t4-reset-btn').addEventListener('click', () => {
+    el('t4-hist').innerHTML = '<p style="font-size:12px; color:var(--ink-faint); font-family:var(--mono); margin:12px 0;">Press "Simulate with noise" to see effect.</p>';
+    el('t4-peak-clean').textContent = '—'; el('t4-peak-noisy').textContent = '—'; el('t4-phi-err-noisy').textContent = '—';
+    el('t4-insights').innerHTML = '';
+    const box = el('t4-conclusion');
+    box.className = 'conclusion not-yet';
+    box.innerHTML = '<div class="tag">Pending</div><h3>Awaiting experiment.</h3><p>Run a noisy simulation to see the verdict.</p>';
+  });
+
+})();
+</script>
+</body>
+</html>

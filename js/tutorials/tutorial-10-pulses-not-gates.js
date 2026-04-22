@@ -115,6 +115,8 @@
   const blochSvg = document.getElementById('t10-pulse-bloch');
   const readoutEl = document.getElementById('t10-pulse-readout');
   const seen = new Set();
+  let animTheta = 0;
+  let animFrame = null;
 
   // θ = Ω * t  (in units where Ω=1 ↔ amp=1.0, t=π gives π rotation)
   function thetaFromControls() {
@@ -189,10 +191,24 @@
     if (durVal) durVal.textContent = dur.toFixed(2);
 
     const theta = thetaFromControls();
-    const b = window.t10BlochFromXRot(theta);
 
     drawPulse();
-    window.t10DrawBlochDisk(blochSvg, b, { label: `θ = ${theta.toFixed(2)} rad` });
+    if (animFrame) cancelAnimationFrame(animFrame);
+    const startTheta = animTheta;
+    const start = performance.now();
+    const duration = 260;
+    function tick(now) {
+      const u = Math.min(1, (now - start) / duration);
+      animTheta = startTheta + (theta - startTheta) * u;
+      const b = window.t10BlochFromXRot(animTheta);
+      window.t10DrawBlochDisk(blochSvg, b, { label: `θ = ${animTheta.toFixed(2)} rad` });
+      if (u < 1) {
+        animFrame = requestAnimationFrame(tick);
+      } else {
+        animFrame = null;
+      }
+    }
+    animFrame = requestAnimationFrame(tick);
 
     // classify: near |0⟩, equator, |1⟩
     const p1 = Math.sin(theta / 2) ** 2;
@@ -261,7 +277,7 @@
     svg.appendChild(mkEl('text', {
       x: W - padR, y: H - 12, 'font-family': 'var(--mono)',
       'font-size': 10, fill: 'var(--ink-faint)', 'text-anchor': 'end'
-    }, 'pulse duration (ns)'));
+    }, 'pulse duration (units of 1/Ω)'));
 
     // y ticks
     [0, 0.5, 1].forEach(v => {
@@ -346,7 +362,7 @@
     }
     const err = Math.abs(pickedTime - piTime);
     if (err < 0.15) {
-      foundEl.innerHTML = `<b style="color:var(--phos)">Calibrated.</b> You found the π-pulse at t ≈ ${pickedTime.toFixed(2)} ns. <span style="color:var(--ink-faint)">This is day 1 of every superconducting qubit lab: sweep duration, fit the sinusoid, pick the first peak. Once this point is known, every X-style gate built from this channel becomes much more reliable.</span>`;
+      foundEl.innerHTML = `<b style="color:var(--phos)">Calibrated.</b> You found the π-pulse at t ≈ ${pickedTime.toFixed(2)} (units of 1/Ω). <span style="color:var(--ink-faint)">This is day 1 of every superconducting qubit lab: sweep duration, fit the sinusoid, pick the first peak. Once this point is known, every X-style gate built from this channel becomes much more reliable.</span>`;
       markDone('t10-2');
     } else if (err < 0.5) {
       foundEl.innerHTML = `Close — you're at P(|1⟩) = ${(rabi(pickedTime, amp) * 100).toFixed(0)}%. The true π-pulse is at t ≈ ${piTime.toFixed(2)} ns.`;
@@ -472,7 +488,7 @@
     const maxP = 1 / (1 + delta * delta);
     if (descEl) {
       if (Math.abs(delta) < 0.05) {
-        descEl.innerHTML = `<b style="color:var(--phos)">On resonance.</b> Clean Rabi. P(|1⟩) reaches 100% at the π-pulse. "On resonance" simply means your microwave tone matches the qubit transition frequency.`;
+        descEl.innerHTML = `<b style="color:var(--phos)">On resonance.</b> Clean Rabi. P(|1⟩) reaches 100% at the π-pulse. "On resonance" simply means your microwave tone matches the qubit transition frequency.<a id="fnref-t10-1" class="expert-fn-ref" href="#fn-t10-1"><sup>[E1]</sup></a><br><span id="fn-t10-1" style="display:block;margin-top:6px;color:var(--ink-faint)">[E1] This description is exact for an ideal two-level system. Real superconducting qubits — transmons in particular — are weakly anharmonic: the |1⟩→|2⟩ transition sits only 100–300 MHz below the |0⟩→|1⟩ transition, close enough that a resonant drive also has partial spectral overlap with the leakage transition. So "on resonance with the qubit" does not mean "off resonance with everything else." This is why detuning alone is insufficient to suppress leakage on transmons, and why pulse shaping (Step 6) is necessary even when your drive frequency is perfectly calibrated.</span>`;
       } else if (Math.abs(delta) < 1.0) {
         descEl.innerHTML = `<b style="color:var(--amber)">Small detuning.</b> Oscillations are <i>faster</i> (generalized Rabi Ω' = √(Ω² + δ²)) but don't reach the top — the ceiling is ${(maxP * 100).toFixed(0)}%. So you can still wiggle the qubit, but you cannot fully flip it with this mistuned drive.`;
       } else {
@@ -532,6 +548,10 @@
       x: W - padR, y: H - 12, 'font-family': 'var(--mono)',
       'font-size': 10, fill: 'var(--ink-faint)', 'text-anchor': 'end'
     }, 'wait time τ'));
+    svg.appendChild(mkEl('text', {
+      x: W - padR, y: padT + 14, 'font-family': 'var(--mono)',
+      'font-size': 10, fill: 'var(--ink-faint)', 'text-anchor': 'end'
+    }, `fixed detuning δ = ${delta.toFixed(1)} (arb. units)`));
 
     // envelope (upper/lower)
     let dUp = '', dLo = '';
@@ -616,11 +636,17 @@
 /* ---- T10 Step 5: Hahn echo — one extra π-pulse refocuses drift ---- */
 (function initT10Step5() {
   const svg = document.getElementById('t10-echo-curve');
-  const toggleBtn = document.getElementById('t10-echo-toggle');
   const descEl = document.getElementById('t10-echo-desc');
   const seqSvg = document.getElementById('t10-echo-seq');
-  let echoOn = false;
-  let ran = 0;
+  const palette = document.getElementById('t10-builder-palette');
+  const timeline = document.getElementById('t10-builder-timeline');
+  const runBtn = document.getElementById('t10-builder-run');
+  const clearBtn = document.getElementById('t10-builder-clear');
+  const slots = timeline ? Array.from(timeline.querySelectorAll('.t10-drop-slot')) : [];
+  const built = new Array(slots.length).fill(null);
+  let seenRamsey = false;
+  let seenEcho = false;
+  let mode = 'ramsey';
 
   // Ramsey envelope decays as exp(-τ/T2*) because slow frequency drift dephases.
   // Echo inserts a π-pulse at τ/2 — slow drift is refocused. Residual decay is
@@ -667,14 +693,13 @@
     }
     svg.appendChild(mkEl('path', {
       d: dR, fill: 'none',
-      stroke: echoOn ? 'var(--line-bright)' : 'var(--phos)',
-      'stroke-width': echoOn ? 1.5 : 2.3,
+      stroke: mode === 'echo' ? 'var(--line-bright)' : 'var(--phos)',
+      'stroke-width': mode === 'echo' ? 1.5 : 2.3,
       'stroke-linecap': 'round',
-      opacity: echoOn ? 0.55 : 1
+      opacity: mode === 'echo' ? 0.55 : 1
     }));
 
-    // Echo (shown only when toggled)
-    if (echoOn) {
+    if (mode === 'echo') {
       let dE = '';
       for (let i = 0; i <= samples; i++) {
         const t = (i / samples) * tauMax;
@@ -732,7 +757,7 @@
     }
 
     pulseMark(0.02, 'π/2', 'var(--amber)');
-    if (echoOn) {
+    if (mode === 'echo') {
       pulseMark(0.5, 'π', 'var(--magenta)', 10, 34);
     }
     pulseMark(0.98, 'π/2', 'var(--amber)');
@@ -746,12 +771,12 @@
     seqSvg.appendChild(mkEl('text', {
       x: padL, y: mid + 22, 'font-family': 'var(--mono)',
       'font-size': 10, fill: 'var(--ink-faint)'
-    }, echoOn ? 'Hahn echo sequence' : 'Ramsey sequence'));
+    }, mode === 'echo' ? 'Hahn echo sequence' : 'Ramsey sequence'));
   }
 
   function updateDesc() {
     if (!descEl) return;
-    if (!echoOn) {
+    if (mode !== 'echo') {
       descEl.innerHTML =
         `<b style="color:var(--phos)">Ramsey (echo off).</b> Fringes damp under the T2* envelope. ` +
         `Every slow frequency wobble shows up as dephasing, so phase errors add rather than cancel.`;
@@ -759,22 +784,92 @@
       descEl.innerHTML =
         `<b style="color:var(--cyan)">Hahn echo on.</b> The middle π-pulse flips the Bloch vector, ` +
         `so whatever phase drift accumulated in the first half gets <i>undone</i> in the second half. ` +
-        `Slow drift cancels; only fast (non-refocusable) noise is left. Coherence envelope now decays as T2, which is longer than T2*. In short: echo acts like a rewind for slow errors, but not for rapid random kicks. ` +
+        `Slow drift cancels; only fast (non-refocusable) noise is left. Coherence envelope now decays as T2, which is longer than T2*.<a id="fnref-t10-2" class="expert-fn-ref" href="#fn-t10-2"><sup>[E2]</sup></a> In short: echo acts like a rewind for slow errors, but not for rapid random kicks. ` +
+        `<span id="fn-t10-2" style="display:block;margin-top:6px;color:var(--ink-faint)">[E2] The simplified model here shows T2 echo decay as a clean exponential, which is accurate when the residual noise is white (flat spectral density). In practice, superconducting qubits are dominated by 1/f noise — flux noise and charge noise whose power spectral density grows at low frequencies. For 1/f noise, the echo acts as a high-pass filter: it suppresses noise components slower than roughly 1/τ, where τ is the total free-precession time. This means the effective T2 measured by echo can itself depend on τ — longer wait times sample lower-frequency noise that the echo can no longer refocus, so the decay is not a pure exponential. This is why experimentalists fit echo decay curves carefully and why more sophisticated pulse sequences (CPMG, dynamical decoupling) use many refocusing pulses to push the high-pass filter cutoff even lower.</span> ` +
         `<span style="color:var(--ink-faint)">This is why published device cards report both T2* (Ramsey) and T2 (echo).</span>`;
     }
   }
 
-  if (toggleBtn) {
-    toggleBtn.addEventListener('click', () => {
-      echoOn = !echoOn;
-      ran++;
-      toggleBtn.textContent = echoOn ? '⏻ Echo: ON — turn off' : '⏻ Echo: OFF — turn on';
+  function classifySequence() {
+    const compact = built.filter(Boolean);
+    const sig = compact.join(',');
+    if (sig === 'pi2,wait,pi2') return 'ramsey';
+    if (sig === 'pi2,wait,pi,wait,pi2') return 'echo';
+    return 'invalid';
+  }
+
+  function refreshTimeline() {
+    slots.forEach((slot, i) => {
+      slot.innerHTML = '';
+      const token = built[i];
+      if (!token) {
+        slot.textContent = `slot ${i + 1}`;
+        return;
+      }
+      const block = document.createElement('div');
+      block.className = 'slot-block';
+      block.textContent = token === 'pi2' ? 'π/2' : (token === 'pi' ? 'π' : 'wait');
+      block.title = 'Click to remove';
+      block.addEventListener('click', () => {
+        built[i] = null;
+        refreshTimeline();
+      });
+      slot.appendChild(block);
+    });
+  }
+
+  function setupDnD() {
+    if (!palette || !timeline) return;
+    palette.querySelectorAll('[data-block]').forEach(btn => {
+      btn.addEventListener('dragstart', (evt) => {
+        evt.dataTransfer.setData('t10-block', btn.dataset.block);
+      });
+    });
+
+    slots.forEach(slot => {
+      slot.addEventListener('dragover', (evt) => {
+        evt.preventDefault();
+        slot.classList.add('drop-target');
+      });
+      slot.addEventListener('dragleave', () => slot.classList.remove('drop-target'));
+      slot.addEventListener('drop', (evt) => {
+        evt.preventDefault();
+        slot.classList.remove('drop-target');
+        const block = evt.dataTransfer.getData('t10-block');
+        if (!block) return;
+        built[parseInt(slot.dataset.slot, 10)] = block;
+        refreshTimeline();
+      });
+    });
+  }
+
+  if (runBtn) {
+    runBtn.addEventListener('click', () => {
+      const kind = classifySequence();
+      if (kind === 'invalid') {
+        if (descEl) {
+          descEl.innerHTML = `<b style="color:var(--amber)">Not a known sequence yet.</b> Build either <code>π/2 → wait → π/2</code> for Ramsey or <code>π/2 → wait → π → wait → π/2</code> for Hahn echo.`;
+        }
+        return;
+      }
+      mode = kind === 'echo' ? 'echo' : 'ramsey';
       draw();
       drawSequence();
       updateDesc();
-      if (ran >= 2) markDone('t10-5');
+      if (kind === 'ramsey') seenRamsey = true;
+      if (kind === 'echo') seenEcho = true;
+      if (seenRamsey && seenEcho) markDone('t10-5');
     });
   }
+  if (clearBtn) {
+    clearBtn.addEventListener('click', () => {
+      for (let i = 0; i < built.length; i++) built[i] = null;
+      refreshTimeline();
+    });
+  }
+
+  setupDnD();
+  refreshTimeline();
   draw();
   drawSequence();
   updateDesc();
@@ -783,6 +878,7 @@
 /* ---- T10 Step 6: pulse shape — square vs Gaussian, and leakage ---- */
 (function initT10Step6() {
   const svg = document.getElementById('t10-shape-envelope');
+  const specSvg = document.getElementById('t10-shape-spectrum');
   const shapeBtns = document.querySelectorAll('.t10-shape-btn');
   const leakEl = document.getElementById('t10-shape-leak');
   const descEl = document.getElementById('t10-shape-desc');
@@ -891,6 +987,63 @@
     }
   }
 
+  function drawSpectrum() {
+    if (!specSvg) return;
+    const mkEl = window.t10MkEl;
+    specSvg.innerHTML = '';
+    const W = 460, H = 180, padL = 40, padR = 16, padT = 18, padB = 28;
+    const innerW = W - padL - padR;
+    const innerH = H - padT - padB;
+    function xMap(f) { return padL + f * innerW; }
+    function yMap(v) { return padT + (1 - v) * innerH; }
+
+    specSvg.appendChild(mkEl('line', { x1: padL, y1: padT, x2: padL, y2: H - padB, stroke: 'var(--line-bright)', 'stroke-width': 1 }));
+    specSvg.appendChild(mkEl('line', { x1: padL, y1: H - padB, x2: W - padR, y2: H - padB, stroke: 'var(--line-bright)', 'stroke-width': 1 }));
+    specSvg.appendChild(mkEl('text', {
+      x: 10, y: padT + 10, 'font-family': 'var(--mono)', 'font-size': 10, fill: 'var(--ink-faint)'
+    }, '|S(f)|'));
+    specSvg.appendChild(mkEl('text', {
+      x: W - padR, y: H - 10, 'font-family': 'var(--mono)', 'font-size': 10, fill: 'var(--ink-faint)', 'text-anchor': 'end'
+    }, 'relative frequency'));
+
+    const N = 96;
+    const spectrum = [];
+    for (let k = 0; k < N; k++) {
+      const f = k / (N - 1); // normalized frequency
+      let v;
+      if (shape === 'square') {
+        v = Math.abs(Math.sin(8 * f) / (1 + 8 * f)) * 1.4 + 0.15 * Math.exp(-f * 0.8);
+      } else if (shape === 'gaussian') {
+        v = Math.exp(-18 * f * f);
+      } else {
+        // DRAG-like: gaussian core + derivative-weighted suppression of sidelobes
+        v = 0.85 * Math.exp(-20 * f * f) + 0.05 * Math.exp(-90 * (f - 0.2) * (f - 0.2));
+      }
+      spectrum.push(v);
+    }
+    const max = Math.max(...spectrum);
+    let d = '';
+    spectrum.forEach((raw, i) => {
+      const f = i / (N - 1);
+      const v = raw / max;
+      const X = xMap(f);
+      const Y = yMap(v);
+      d += i === 0 ? `M ${X} ${Y}` : ` L ${X} ${Y}`;
+    });
+    specSvg.appendChild(mkEl('path', {
+      d, fill: 'none',
+      stroke: shape === 'square' ? 'var(--amber)' : (shape === 'gaussian' ? 'var(--cyan)' : 'var(--phos)'),
+      'stroke-width': 2.3, 'stroke-linecap': 'round'
+    }));
+
+    [0, 0.5, 1].forEach(v => {
+      specSvg.appendChild(mkEl('text', {
+        x: padL - 6, y: yMap(v) + 4, 'font-family': 'var(--mono)', 'font-size': 10,
+        fill: 'var(--ink-faint)', 'text-anchor': 'end'
+      }, v.toFixed(v === 0.5 ? 1 : 0)));
+    });
+  }
+
   function updateLeak() {
     if (!leakEl) return;
     const score = leakScore[shape];
@@ -902,7 +1055,11 @@
   function updateDesc() {
     if (!descEl) return;
     const s = shapeDesc[shape];
-    descEl.innerHTML = `<b>${s.title}.</b> ${s.body}`;
+    let extra = '';
+    if (shape === 'derag') {
+      extra = ` <div style="margin-top:8px;color:var(--ink-faint)"><b>Why the derivative shape appears:</b> DRAG comes from perturbation theory: the leading leakage amplitude is proportional to the time-derivative of the drive envelope. Adding a quadrature correction proportional to dΩ/dt cancels that leakage term to first order.</div>`;
+    }
+    descEl.innerHTML = `<b>${s.title}.</b> ${s.body}${extra}`;
   }
 
   shapeBtns.forEach(btn => {
@@ -912,6 +1069,7 @@
       shape = btn.dataset.t10shape;
       seen.add(shape);
       draw();
+      drawSpectrum();
       updateLeak();
       updateDesc();
       if (seen.size >= 2) markDone('t10-6');
@@ -924,6 +1082,7 @@
     shape = shapeBtns[0].dataset.t10shape || 'square';
   }
   draw();
+  drawSpectrum();
   updateLeak();
   updateDesc();
 })();
@@ -1020,7 +1179,7 @@
       if (epsilon < 0.5) {
         descEl.innerHTML = `<b style="color:var(--phos)">Pulse infidelity ${epsilon.toFixed(1)}%</b> → X·X returns |0⟩ with ${(p0 * 100).toFixed(1)}% probability. Basically indistinguishable from a perfect gate at this scale.`;
       } else if (epsilon < 3) {
-        descEl.innerHTML = `<b style="color:var(--amber)">Pulse infidelity ${epsilon.toFixed(1)}%</b> → ${(p0 * 100).toFixed(1)}%. This is roughly where current-generation superconducting hardware lives, and why calibration loops run continuously.`;
+        descEl.innerHTML = `<b style="color:var(--amber)">Pulse infidelity ${epsilon.toFixed(1)}%</b> → ${(p0 * 100).toFixed(1)}%. This is where many current devices operate, though leading systems are pushing toward 0.1-0.5%, and it is why calibration loops run continuously.`;
       } else {
         descEl.innerHTML = `<b style="color:var(--magenta)">Pulse infidelity ${epsilon.toFixed(1)}%</b> → only ${(p0 * 100).toFixed(1)}%. Above a few percent per pulse, even two-gate circuits stop resembling their algorithmic spec. <span style="color:var(--ink-faint)">This is the same X·X echo you ran in Tutorial 4 — now you know the "noise slider" is pulse infidelity and why tiny per-pulse errors matter once many gates are chained.</span>`;
       }

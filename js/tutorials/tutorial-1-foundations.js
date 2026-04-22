@@ -331,6 +331,7 @@ function createBloch(hostId, readoutId, options = {}) {
    ========================================================================= */
 (function initStep3() {
   let gateApplications = 0;
+  const gateHistory = [];
   const bloch = createBloch('bloch-2', 'bloch-2-readout');
   blochInstances['bloch-2'] = bloch;
   document.querySelectorAll('[data-bloch="2"]').forEach(btn => {
@@ -338,6 +339,8 @@ function createBloch(hostId, readoutId, options = {}) {
       btn.addEventListener('click', () => {
         const g = GATES[btn.dataset.gate];
         bloch.applyGate(g);
+        gateHistory.push(btn.dataset.gate);
+        if (gateHistory.length > 24) gateHistory.shift();
         gateApplications++;
         if (gateApplications >= 4) markDone('t1-3');
       });
@@ -346,8 +349,25 @@ function createBloch(hostId, readoutId, options = {}) {
   document.querySelectorAll('.reset-gate-btn[data-bloch="2"]').forEach(btn => {
     btn.addEventListener('click', () => {
       bloch.reset();
+      gateHistory.length = 0;
     });
   });
+
+  const playBtn = document.getElementById('t1-gate-play');
+  if (playBtn) {
+    playBtn.addEventListener('click', () => {
+      if (!gateHistory.length) return;
+      bloch.reset();
+      let idx = 0;
+      function step() {
+        if (idx >= gateHistory.length) return;
+        const gateName = gateHistory[idx++];
+        if (GATES[gateName]) bloch.applyGate(GATES[gateName]);
+        setTimeout(step, 360);
+      }
+      step();
+    });
+  }
 })();
 
 /* =========================================================================

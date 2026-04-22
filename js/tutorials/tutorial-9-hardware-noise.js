@@ -403,7 +403,7 @@ Step 6
       const dephasePct = 100 - relaxPct;
       const limiter = relaxPct > dephasePct ? 'relaxation-limited' : 'dephasing-limited';
       cap.innerHTML = `
-        <b>Key relation:</b> 1/T<sub>2</sub> = 1/(2T<sub>1</sub>) + 1/T<sub>ϕ</sub><br>
+        <b>Key relation:</b> 1/T<sub>2</sub> = 1/(2T<sub>1</sub>) + 1/T<sub>ϕ</sub><a id="fnref-t9-1" class="expert-fn-ref" href="#fn-t9-1"><sup>[E1]</sup></a><br>
         <span style="color:var(--ink-faint)">
           Relaxation alone already hurts phase coherence, and any extra low-frequency phase noise makes T2 even shorter.
         </span>

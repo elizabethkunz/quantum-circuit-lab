@@ -964,7 +964,7 @@
       <span class="home-chapter-kicker">Interlude · Between off and on</span>
       <h2>A lamp is only dark or bright — a qubit can <em>shade</em> the gap.</h2>
       <p>A classical bit is like a wall switch: fully off or fully on.</p>
-      <p>A qubit can sit <strong>between</strong> \\(|0\\rangle\\) and \\(|1\\rangle\\). That extra space is what quantum algorithms use before measurement forces a 0 or 1.</p>
+      <p>A qubit can sit <strong>between</strong> \\(|0\\rangle\\) and \\(|1\\rangle\\). That extra space is what quantum algorithms use before measurement forces a 0 or 1.<a id="fnref-home-1" class="expert-fn-ref" href="#fn-home-1"><sup>[E1]</sup></a></p>
       <p class="rules" style="margin-top:1rem"><strong>Try both.</strong> Flip the classical switch: only pitch black or full glow. Drag the quantum slider: the bulb ramps through a continuum of “how much \\(|1\\rangle\\)‑ness” the state is carrying — a toy picture of how superposition sits between the extremes.</p>
     </div>
     <div class="home-chapter-visual home-reveal">
@@ -1038,7 +1038,7 @@
           Spin gives a concrete qubit model. Prepare \\(|+\\rangle\\), measure along z, and you get 50/50 outcomes: up \\(|0\\rangle\\) or down \\(|1\\rangle\\).
         </p>
         <p style="font-size:0.95rem;color:var(--ink-dim);line-height:1.75;margin-bottom:0.9rem">
-          The result is not pre-written. Measurement forces the state to pick one outcome.
+          The result is not pre-written. Measurement forces the state to pick one outcome.<a id="fnref-home-2" class="expert-fn-ref" href="#fn-home-2"><sup>[E2]</sup></a>
         </p>
         <p style="font-size:0.95rem;color:var(--ink-dim);line-height:1.75">
           Try repeated measurements and watch random shots settle into stable statistics.
@@ -1165,7 +1165,7 @@
 
   <!-- ══ PULLQUOTE ══════════════════════════════════════════════════════════ -->
   <div class="home-pullquote-lg home-reveal">
-    Einstein called entanglement <em>"spooky action at a distance"</em> and spent years trying to prove it was wrong. Experiments confirmed in 2022 that it's real — and it's the engine behind quantum cryptography and the power of quantum computing.
+    Einstein called entanglement 'spooky action at a distance' and argued for years that quantum mechanics must be incomplete — that hidden variables, not genuine nonlocality, had to explain the correlations. Bell's theorem, and the experiments it inspired, proved he was wrong.
   </div>
 
   <!-- ══ 06: ENTANGLEMENT / BELL STATES ════════════════════════════════════ -->
@@ -1180,7 +1180,7 @@
           Bell tests compare correlations between distant measurements. Classical hidden-variable models have a hard limit.
         </p>
         <p style="font-size:0.95rem;color:var(--ink-dim);line-height:1.75;margin-bottom:0.9rem">
-          Bell states can exceed that limit, showing behavior classical rules cannot explain.
+          Bell states can exceed that limit, showing behavior classical rules cannot explain.<a id="fnref-home-3" class="expert-fn-ref" href="#fn-home-3"><sup>[E3]</sup></a>
         </p>
         <p style="font-size:0.95rem;color:var(--ink-dim);line-height:1.75;margin-bottom:0.9rem">
           Here you first see the Bell-pair signature, then jump to labs for full Bell/CHSH experiments.
@@ -1260,7 +1260,7 @@
           <div class="home-app-title">Cryptography</div>
         </div>
         <div class="home-app-reveal">
-          <p>Grover speeds up brute-force search, which is why post-quantum cryptography matters.</p>
+          <p>Shor's algorithm can factor large integers exponentially faster than known classical methods, which is why RSA-style cryptography is vulnerable to fault-tolerant quantum machines.</p>
           <a href="#" class="home-app-open" onclick="switchTab('learn');switchSubtab('t7');return false;">Open Tutorial 7 →</a>
         </div>
         <span class="home-app-hint">hover ↑</span>
@@ -1376,6 +1376,15 @@
       </button>
     </div>
   </section>
+
+  <details class="expert-footnotes" style="max-width:960px;margin:16px auto 0;">
+    <summary>Expert Footnotes (Hidden)</summary>
+    <ol>
+      <li id="fn-home-1">The phrase "extra space" is intuitive but can create a subtle misconception worth naming. A classical probabilistic bit — one that is 0 or 1 with some probability, like an unread coin flip — also "sits between" two outcomes before you look. What makes a qubit genuinely different is not the uncertainty but the coherence: the amplitudes \(\alpha\) and \(\beta\) are complex numbers whose relative phase is physically meaningful and produces interference. A classical mixture has no phase relationship between its outcomes and cannot interfere. The computational power of superposition comes entirely from this interference capacity — the ability to have amplitudes cancel or reinforce across different computational paths — not merely from being undetermined before measurement. <a class="expert-fn-ref" href="#fnref-home-1">↩</a></li>
+      <li id="fn-home-2">This statement accurately reflects the standard operational interpretation used in quantum computing, but it brings up a genuine open question in physics. Whether measurement "forces a choice" that was truly undetermined beforehand, or whether the randomness reflects something about the measurement apparatus and environment rather than the state itself, is the <em>quantum measurement problem</em> — unresolved after a century of debate. The Copenhagen, many-worlds, and relational interpretations all agree on the probabilities (\(|\alpha|^2\) and \(|\beta|^2\)) but disagree on what "picking an outcome" physically means. <a class="expert-fn-ref" href="#fnref-home-2">↩</a></li>
+      <li id="fn-home-3">The Bell inequality violations that rule out classical explanations specifically rule out <em>local</em> hidden-variable theories — models where each particle carries predetermined answers and no faster-than-light influence is allowed. So-called "loophole-free" Bell tests, the kind honored by the 2022 Nobel Prize, additionally had to close the detection loophole (not all particle pairs being detected) and the locality loophole (detector settings being chosen too slowly). The 2022 experiments by Aspect, Clauser, and Zeilinger closed these loopholes convincingly. Non-local hidden-variable theories (like Bohmian mechanics) are not ruled out by Bell tests — they reproduce quantum predictions exactly but require instantaneous influences that cannot be used to send information. <a class="expert-fn-ref" href="#fnref-home-3">↩</a></li>
+    </ol>
+  </details>
   `;
 
   /* ─── Particle starfield on hero canvas ─────────────────────────────────── */

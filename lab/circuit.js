@@ -950,6 +950,289 @@ function interpretResult(probs, n, noise = 0) {
   return `The state is spread across ${nonzero.length} outcomes (above). The rest have negligible probability.`;
 }
 
+/* ---------------- CIRCUIT-TO-PULSE ANALYSIS ---------------- */
+const PULSE_LIBRARY = {
+  superconducting: {
+    X: [{ label: 'Gaussian/DRAG π', duration: 32, color: 'var(--phos)' }],
+    Y: [{ label: 'IQ phase-shifted π', duration: 32, color: 'var(--cyan)' }],
+    Z: [{ label: 'virtual Z frame update', duration: 1, color: 'var(--amber)' }],
+    H: [
+      { label: 'X90 pulse', duration: 20, color: 'var(--cyan)' },
+      { label: 'virtual Z', duration: 1, color: 'var(--amber)' }
+    ],
+    S: [{ label: 'virtual Z(π/2)', duration: 1, color: 'var(--amber)' }],
+    T: [{ label: 'virtual Z(π/4)', duration: 1, color: 'var(--amber)' }],
+    RX: [{ label: 'resonant drive (θ)', duration: 28, color: 'var(--phos)' }],
+    RY: [{ label: 'quadrature drive (θ)', duration: 28, color: 'var(--cyan)' }],
+    RZ: [{ label: 'virtual Z(θ)', duration: 1, color: 'var(--amber)' }],
+    CZ: [
+      { label: 'flux/parametric entangler', duration: 300, color: 'var(--magenta)' },
+      { label: '1Q correction', duration: 30, color: 'var(--cyan)' },
+      { label: 'virtual Z trims', duration: 1, color: 'var(--amber)' }
+    ],
+    CNOT: [
+      { label: 'echoed CR(+)', duration: 180, color: 'var(--magenta)' },
+      { label: 'echoed CR(-)', duration: 180, color: 'var(--magenta)' },
+      { label: '1Q correction', duration: 35, color: 'var(--cyan)' },
+      { label: 'virtual Z', duration: 1, color: 'var(--amber)' }
+    ],
+    M: [{ label: 'dispersive readout', duration: 400, color: 'var(--amber)' }]
+  },
+  trapped_ion: {
+    X: [{ label: 'resonant Raman pulse', duration: 18000, color: 'var(--phos)' }],
+    Y: [{ label: 'phase-shifted Raman pulse', duration: 18000, color: 'var(--cyan)' }],
+    Z: [{ label: 'phase advance', duration: 5, color: 'var(--amber)' }],
+    H: [
+      { label: 'R_y(π/2)', duration: 15000, color: 'var(--cyan)' },
+      { label: 'phase update', duration: 5, color: 'var(--amber)' }
+    ],
+    S: [{ label: 'phase advance (π/2)', duration: 5, color: 'var(--amber)' }],
+    T: [{ label: 'phase advance (π/4)', duration: 5, color: 'var(--amber)' }],
+    RX: [{ label: 'carrier rotation (θ)', duration: 16000, color: 'var(--phos)' }],
+    RY: [{ label: 'carrier rotation (θ)', duration: 16000, color: 'var(--cyan)' }],
+    RZ: [{ label: 'phase advance (θ)', duration: 5, color: 'var(--amber)' }],
+    CZ: [{ label: 'Mølmer-Sørensen entangler + phases', duration: 120000, color: 'var(--magenta)' }],
+    CNOT: [{ label: 'MS entangler + local rotations', duration: 150000, color: 'var(--magenta)' }],
+    M: [{ label: 'state-dependent fluorescence', duration: 250000, color: 'var(--amber)' }]
+  },
+  photonic: {
+    X: [{ label: 'waveplate/interferometer unitary', duration: 100, color: 'var(--phos)' }],
+    Y: [{ label: 'phase shifter + beamsplitter', duration: 120, color: 'var(--cyan)' }],
+    Z: [{ label: 'phase shifter', duration: 50, color: 'var(--amber)' }],
+    H: [{ label: '50:50 beamsplitter transform', duration: 110, color: 'var(--cyan)' }],
+    S: [{ label: 'quarter-wave phase element', duration: 50, color: 'var(--amber)' }],
+    T: [{ label: 'eighth-wave phase element', duration: 55, color: 'var(--amber)' }],
+    RX: [{ label: 'programmable interferometer (θ)', duration: 120, color: 'var(--phos)' }],
+    RY: [{ label: 'programmable interferometer (θ)', duration: 120, color: 'var(--cyan)' }],
+    RZ: [{ label: 'phase shifter (θ)', duration: 50, color: 'var(--amber)' }],
+    CZ: [{ label: 'measurement-induced entangler', duration: 2000, color: 'var(--magenta)' }],
+    CNOT: [{ label: 'linear-optical CNOT + ancilla', duration: 2500, color: 'var(--magenta)' }],
+    M: [{ label: 'single-photon detector window', duration: 800, color: 'var(--amber)' }]
+  }
+};
+const PLATFORM_LABELS = {
+  superconducting: 'Superconducting',
+  trapped_ion: 'Trapped ion',
+  photonic: 'Photonic'
+};
+let pulseHardware = 'superconducting';
+let pulseFocusGate = 'H';
+let lastPulseSchedule = null;
+
+function gateSegmentsForPlatform(gate, hardware) {
+  const lib = PULSE_LIBRARY[hardware] || PULSE_LIBRARY.superconducting;
+  return (lib[gate] || lib.X).map(seg => ({ ...seg }));
+}
+
+function gateDurationNs(gate, hardware) {
+  return gateSegmentsForPlatform(gate, hardware).reduce((sum, seg) => sum + seg.duration, 0);
+}
+
+function buildPulseScheduleFromCircuit(hardware) {
+  const lanes = Array.from({ length: circuit.nQubits }, () => []);
+  let cursorNs = 0;
+  let opIndex = 0;
+
+  for (let c = 0; c < circuit.columns.length; c++) {
+    const col = circuit.columns[c];
+    const ops = [];
+    const seen = new Set();
+    for (let q = 0; q < circuit.nQubits; q++) {
+      if (seen.has(q)) continue;
+      const e = col[q];
+      if (!e) continue;
+      if (e.type === 'single') {
+        ops.push({ gate: e.gate, qubits: [q] });
+      } else if (e.type === 'meas') {
+        ops.push({ gate: 'M', qubits: [q] });
+      } else if (e.type === 'ctrl') {
+        const target = e.partner;
+        const tgtEntry = col[target];
+        if (tgtEntry && tgtEntry.type === 'target') {
+          ops.push({ gate: tgtEntry.gate === 'X' ? 'CNOT' : 'CZ', qubits: [q, target] });
+          seen.add(target);
+        }
+      }
+    }
+    if (!ops.length) continue;
+
+    const colDuration = Math.max(...ops.map(op => gateDurationNs(op.gate, hardware)));
+    for (const op of ops) {
+      opIndex++;
+      const segments = gateSegmentsForPlatform(op.gate, hardware);
+      for (const q of op.qubits) {
+        let localStart = cursorNs;
+        segments.forEach(seg => {
+          lanes[q].push({
+            startNs: localStart,
+            durationNs: seg.duration,
+            label: seg.label,
+            color: seg.color,
+            gate: op.gate,
+            opIndex
+          });
+          localStart += seg.duration;
+        });
+      }
+    }
+    cursorNs += colDuration;
+  }
+
+  return { lanes, totalNs: Math.max(cursorNs, 1), operationCount: opIndex };
+}
+
+function renderPulseTimelineFromSchedule(schedule) {
+  const svg = document.getElementById('analysis-pulse-timeline');
+  const explain = document.getElementById('analysis-pulse-explain');
+  const source = document.getElementById('analysis-pulse-source');
+  const tomoSvg = document.getElementById('analysis-pulse-tomo');
+  const tomoNote = document.getElementById('analysis-pulse-tomo-note');
+  if (!svg || !explain) return;
+
+  const ns = 'http://www.w3.org/2000/svg';
+  function mk(tag, attrs, text) {
+    const e = document.createElementNS(ns, tag);
+    Object.entries(attrs).forEach(([k, v]) => e.setAttribute(k, v));
+    if (text) e.textContent = text;
+    return e;
+  }
+  const nQ = schedule.lanes.length;
+  const leftPad = 54;
+  const rightPad = 18;
+  const topPad = 16;
+  const rowPitch = 30;
+  const axisY = topPad + (nQ - 1) * rowPitch + 22;
+  const width = 620;
+  const height = Math.max(120, topPad + nQ * rowPitch + 34);
+  const usableWidth = width - leftPad - rightPad;
+  const pxPerNs = usableWidth / Math.max(schedule.totalNs, 1);
+  svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+  svg.innerHTML = '';
+
+  for (let q = 0; q < nQ; q++) {
+    const y = topPad + q * rowPitch;
+    svg.appendChild(mk('text', { x: 10, y: y + 4, 'font-family': 'var(--mono)', 'font-size': 10, fill: 'var(--ink-faint)' }, `q${q}`));
+    svg.appendChild(mk('line', { x1: leftPad, y1: y, x2: width - rightPad, y2: y, stroke: 'var(--line-bright)', 'stroke-width': 1 }));
+    for (const seg of schedule.lanes[q]) {
+      const x = leftPad + seg.startNs * pxPerNs;
+      const w = Math.max(3, seg.durationNs * pxPerNs);
+      const highlight = seg.gate === pulseFocusGate;
+      svg.appendChild(mk('rect', {
+        x, y: y - 9, width: w, height: 18, fill: 'var(--bg-0)', stroke: seg.color, 'stroke-width': highlight ? 1.8 : 1
+      }));
+      if (w > 28) {
+        svg.appendChild(mk('text', {
+          x: x + w / 2, y: y + 3, 'text-anchor': 'middle', 'font-family': 'var(--mono)', 'font-size': 8, fill: seg.color
+        }, `${seg.label} (${seg.durationNs} ns)`));
+      }
+    }
+  }
+
+  svg.appendChild(mk('line', { x1: leftPad, y1: axisY, x2: width - rightPad, y2: axisY, stroke: 'var(--ink-faint)', 'stroke-width': 1 }));
+  const ticks = 5;
+  for (let i = 0; i <= ticks; i++) {
+    const t = i / ticks;
+    const x = leftPad + t * usableWidth;
+    const nsVal = Math.round(t * schedule.totalNs);
+    svg.appendChild(mk('line', { x1: x, y1: axisY - 4, x2: x, y2: axisY + 4, stroke: 'var(--ink-faint)', 'stroke-width': 1 }));
+    svg.appendChild(mk('text', { x, y: axisY + 16, 'text-anchor': 'middle', 'font-family': 'var(--mono)', 'font-size': 9, fill: 'var(--ink-faint)' }, `${nsVal} ns`));
+  }
+  svg.appendChild(mk('text', { x: width - rightPad, y: axisY + 28, 'text-anchor': 'end', 'font-family': 'var(--mono)', 'font-size': 9, fill: 'var(--ink-faint)' }, 'time'));
+
+  const focusSegments = gateSegmentsForPlatform(pulseFocusGate, pulseHardware);
+  const focusDuration = focusSegments.reduce((sum, seg) => sum + seg.duration, 0);
+  explain.innerHTML = `
+    <div class="analysis-kv"><span>Platform</span><b>${PLATFORM_LABELS[pulseHardware]}</b></div>
+    <div class="analysis-kv"><span>Circuit operations mapped</span><b>${schedule.operationCount}</b></div>
+    <div class="analysis-kv"><span>Total schedule time</span><b>${Math.round(schedule.totalNs)} ns</b></div>
+    <div class="analysis-kv"><span>Focused gate</span><b>${pulseFocusGate} (~${focusDuration} ns)</b></div>
+    <div class="analysis-note">Durations are schematic hardware-typical values for the selected platform. Single-qubit transmon examples: X ~20-40 ns, CZ ~200-400 ns.</div>
+  `;
+  if (source) {
+    source.textContent = `Auto-linked to latest run circuit on ${PLATFORM_LABELS[pulseHardware]}. Palette focus: ${pulseFocusGate}.`;
+  }
+
+  if (tomoSvg) {
+    tomoSvg.innerHTML = '';
+    function tmk(tag, attrs, text) {
+      const e = document.createElementNS(ns, tag);
+      Object.entries(attrs).forEach(([k, v]) => e.setAttribute(k, v));
+      if (text) e.textContent = text;
+      return e;
+    }
+    function pulseBox(x, yMid, w, label, color) {
+      const y = yMid - 10;
+      tomoSvg.appendChild(tmk('rect', {
+        x, y, width: w, height: 20,
+        fill: color, 'fill-opacity': 0.22,
+        stroke: color, 'stroke-width': 1.2
+      }));
+      tomoSvg.appendChild(tmk('line', {
+        x1: x + 2, y1: y + 2, x2: x + w - 2, y2: y + 18,
+        stroke: color, 'stroke-opacity': 0.35, 'stroke-width': 1
+      }));
+      tomoSvg.appendChild(tmk('line', {
+        x1: x + 2, y1: y + 18, x2: x + w - 2, y2: y + 2,
+        stroke: color, 'stroke-opacity': 0.2, 'stroke-width': 1
+      }));
+      tomoSvg.appendChild(tmk('text', {
+        x: x + w / 2, y: yMid + 3, 'text-anchor': 'middle',
+        'font-family': 'var(--mono)', 'font-size': 9, fill: color
+      }, label));
+    }
+
+    const prepTag = `${pulseFocusGate} prep`;
+    const rows = [
+      { axis: 'X tomography', prerot: 'Rᵧ(−π/2)' },
+      { axis: 'Y tomography', prerot: 'Rₓ(+π/2)' },
+      { axis: 'Z tomography', prerot: 'none' }
+    ];
+    rows.forEach((row, i) => {
+      const y = 22 + i * 46;
+      tomoSvg.appendChild(tmk('text', {
+        x: 10, y: y + 3, 'font-family': 'var(--mono)', 'font-size': 9, fill: 'var(--ink-faint)'
+      }, row.axis));
+      tomoSvg.appendChild(tmk('line', {
+        x1: 104, y1: y, x2: 398, y2: y,
+        stroke: 'var(--line-bright)', 'stroke-width': 1.2
+      }));
+      pulseBox(118, y, 82, prepTag, 'var(--cyan)');
+      if (row.prerot !== 'none') {
+        pulseBox(224, y, 88, row.prerot, 'var(--amber)');
+      } else {
+        tomoSvg.appendChild(tmk('text', {
+          x: 268, y: y + 4, 'text-anchor': 'middle', 'font-family': 'var(--mono)', 'font-size': 9, fill: 'var(--ink-faint)'
+        }, 'direct'));
+      }
+      pulseBox(334, y, 58, 'M_z', 'var(--phos)');
+    });
+  }
+
+  if (tomoNote) tomoNote.innerHTML = `<div class="analysis-note">Tomography panel keeps the selected palette gate as the operation under test while the left panel shows the full circuit-derived pulse timeline.</div>`;
+}
+
+function setPulseFocusGate(gate) {
+  if (!gate || gate === 'M') return;
+  pulseFocusGate = gate;
+  renderPulseSection();
+}
+
+function renderPulseSection() {
+  if (!lastPulseSchedule) {
+    const source = document.getElementById('analysis-pulse-source');
+    const explain = document.getElementById('analysis-pulse-explain');
+    if (source) source.textContent = 'Run a circuit to auto-build a pulse schedule from your gate timeline.';
+    if (explain) {
+      const d = gateDurationNs(pulseFocusGate, pulseHardware);
+      explain.innerHTML = `<div class="analysis-kv"><span>Platform</span><b>${PLATFORM_LABELS[pulseHardware]}</b></div><div class="analysis-kv"><span>Focused gate</span><b>${pulseFocusGate} (~${d} ns)</b></div><div class="analysis-note">Run the circuit to view the complete multi-rail pulse schedule.</div>`;
+    }
+    const preview = { lanes: [[...gateSegmentsForPlatform(pulseFocusGate, pulseHardware).map((seg, i) => ({ ...seg, startNs: i === 0 ? 0 : gateSegmentsForPlatform(pulseFocusGate, pulseHardware).slice(0, i).reduce((s, x) => s + x.duration, 0), durationNs: seg.duration, gate: pulseFocusGate }))]], totalNs: gateDurationNs(pulseFocusGate, pulseHardware), operationCount: 1 };
+    renderPulseTimelineFromSchedule(preview);
+    return;
+  }
+  renderPulseTimelineFromSchedule(lastPulseSchedule);
+}
+
 /* ---------------- EVENTS ---------------- */
 function toast(msg, err=false) {
   const t = document.getElementById('toast');
@@ -964,8 +1247,10 @@ function bindDrag() {
     btn.addEventListener('dragstart', (e) => {
       e.dataTransfer.setData('gate', btn.dataset.gate);
       btn.classList.add('dragging');
+      setPulseFocusGate(btn.dataset.gate);
     });
     btn.addEventListener('dragend', () => btn.classList.remove('dragging'));
+    btn.addEventListener('click', () => setPulseFocusGate(btn.dataset.gate));
   });
 }
 
@@ -1005,9 +1290,11 @@ document.getElementById('narrative-toggle').addEventListener('click', () => {
 document.getElementById('btn-run').addEventListener('click', () => {
   const result = simulate();
   lastResult = result;
+  lastPulseSchedule = buildPulseScheduleFromCircuit(pulseHardware);
   renderOutput();
   renderNarrative(result, circuit.nQubits);
   renderAnalysis(result, circuit.nQubits);
+  renderPulseSection();
   // Auto-expand narrative panel on run
   const narrative = document.getElementById('narrative');
   const chevron = document.getElementById('narrative-chevron');
@@ -1036,6 +1323,7 @@ document.getElementById('btn-clear').addEventListener('click', () => {
   ensureColumns();
   render();
   lastResult = null;
+  lastPulseSchedule = null;
   dismissContextCard();
   document.getElementById('prob-output').innerHTML = '<div class="placeholder-output">Build a circuit and press run to see the outcome distribution.</div>';
   document.getElementById('narrative').innerHTML = '<div class="placeholder-output">A step-by-step reading of your circuit will appear here after you run it.</div>';
@@ -1044,6 +1332,7 @@ document.getElementById('btn-clear').addEventListener('click', () => {
   document.getElementById('shots-label').textContent = '1024 shots · simulated';
   updateAnalysisSelectors();
   renderAnalysis(null, circuit.nQubits);
+  renderPulseSection();
 });
 
 document.getElementById('qubit-plus').addEventListener('click', () => {
@@ -1069,6 +1358,14 @@ document.getElementById('analysis-qubit-select').addEventListener('change', () =
 document.getElementById('analysis-target-select').addEventListener('change', () => {
   renderAnalysis(lastResult, circuit.nQubits);
 });
+document.getElementById('analysis-hardware-select').addEventListener('change', (evt) => {
+  pulseHardware = evt.target.value;
+  if (lastResult) {
+    lastPulseSchedule = buildPulseScheduleFromCircuit(pulseHardware);
+  }
+  renderPulseSection();
+});
 
 updateAnalysisSelectors();
 renderAnalysis(null, circuit.nQubits);
+renderPulseSection();
