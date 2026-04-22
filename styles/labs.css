@@ -1,0 +1,130 @@
+/* Shared visual system for standalone lab pages. */
+
+body {
+  color: var(--ink);
+}
+
+.app {
+  max-width: 1120px !important;
+  padding: 28px 24px 64px !important;
+}
+
+.masthead {
+  border-bottom: 1px solid var(--line) !important;
+  padding: 14px 0 16px !important;
+  margin-bottom: 8px !important;
+}
+
+.brand-mark {
+  font-family: var(--serif) !important;
+  font-style: italic !important;
+  font-size: 30px !important;
+  letter-spacing: -0.015em !important;
+  color: var(--phos) !important;
+}
+
+.brand-tag {
+  font-family: var(--mono) !important;
+  font-size: 10px !important;
+  letter-spacing: 0.14em !important;
+  text-transform: uppercase !important;
+  color: var(--ink-faint) !important;
+}
+
+.lab-tools {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.lab-tools .theme-toggle {
+  margin-top: 0;
+  padding: 6px 10px;
+}
+
+.lab-hero {
+  border: 1px solid var(--line) !important;
+  border-left: 2px solid var(--line-bright) !important;
+  padding: 30px 26px !important;
+  margin: 24px 0 34px !important;
+  background:
+    radial-gradient(ellipse at 72% 0%, rgba(var(--cyan-rgb), 0.08), transparent 55%),
+    linear-gradient(180deg, rgba(var(--phos-rgb), 0.03), transparent 82%) !important;
+}
+
+.lab-hero::before {
+  color: var(--cyan) !important;
+  border-color: var(--cyan) !important;
+}
+
+.lab-hero h1 {
+  color: var(--ink) !important;
+}
+
+.lab-hero p,
+.lab-hero .lede,
+.task-body p,
+.setup-card li,
+.setup-card p {
+  color: var(--ink-dim) !important;
+}
+
+.task {
+  border: 1px solid var(--line) !important;
+  border-left: 2px solid var(--line-bright) !important;
+  background: var(--bg-1) !important;
+}
+
+.task-head {
+  border-bottom: 1px solid var(--line) !important;
+  background: linear-gradient(180deg, rgba(var(--cyan-rgb), 0.06), transparent 90%) !important;
+}
+
+.task-label {
+  color: var(--cyan) !important;
+}
+
+.task-title {
+  color: var(--ink) !important;
+}
+
+.task-body {
+  background: var(--bg-1) !important;
+}
+
+.setup-card,
+.knobs,
+.game-panel,
+.angle-card,
+.scenario-card,
+.mini-result,
+.mini-circuit,
+.noise-demo {
+  border-color: var(--line) !important;
+  background: var(--bg-2) !important;
+}
+
+.btn,
+button.btn {
+  border: 1px solid var(--line-bright) !important;
+  color: var(--ink-dim) !important;
+}
+
+.btn:hover,
+button.btn:hover {
+  border-color: var(--phos) !important;
+  color: var(--phos) !important;
+}
+
+.btn.primary,
+button.btn.primary {
+  border-color: var(--phos) !important;
+  background: var(--phos) !important;
+  color: var(--bg-0) !important;
+}
+
+.btn.primary:hover,
+button.btn.primary:hover {
+  border-color: var(--phos-dim) !important;
+  background: var(--phos-dim) !important;
+}

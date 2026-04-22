@@ -20,8 +20,7 @@
       <div class="brand-tag">Interactive circuit analysis environment · v0.1</div>
     </div>
     <div class="meta-stack">
-      <div><span class="live">Simulator online</span></div>
-      <div>Browser-native · state vector</div>
+      <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Enable light mode">Light mode</button>
     </div>
   </header>
 
@@ -44,7 +43,7 @@
     <button class="tab-btn" data-tab="templates" role="tab">
       <span class="tab-num">04</span>
       <span class="tab-name">Template Library</span>
-      <span class="tab-sub">Reference circuits · load and analyze</span>
+      <span class="tab-sub">Reference circuits</span>
     </button>
     <button class="tab-btn" data-tab="labs" role="tab">
       <span class="tab-num">05</span>
@@ -2454,7 +2453,7 @@
 
     <!-- ===== TIMELINE ===== -->
     <section style="margin-bottom:52px">
-      <div style="font-family:var(--mono);font-size:10px;letter-spacing:0.18em;text-transform:uppercase;color:var(--phos-dim);margin-bottom:20px;padding-bottom:10px;border-bottom:1px solid var(--line)">Landmark papers — click any entry to expand</div>
+      <div style="font-family:var(--mono);font-size:10px;letter-spacing:0.18em;text-transform:uppercase;color:var(--phos-dim);margin-bottom:20px;padding-bottom:10px;border-bottom:1px solid var(--line)">Landmark papers</div>
 
       <div id="timeline-container" style="position:relative;padding-left:40px">
         <div style="position:absolute;left:14px;top:8px;bottom:8px;width:2px;background:linear-gradient(180deg,var(--phos),var(--amber),var(--cyan),var(--magenta),var(--phos),var(--amber),var(--cyan));border-radius:2px;opacity:0.5"></div>
@@ -2843,8 +2842,8 @@
   </div><!-- /#view-docs -->
 
   <footer class="colophon">
-    <span>State vector simulator · up to 5 qubits · runs entirely in your browser</span>
-    <span>Made for the curious, not the credentialed</span>
+    <span>Quantum Lab</span>
+    <span>Interactive learning and experiments</span>
   </footer>
 </div>
 
@@ -2870,5 +2869,37 @@
 <script src="js/tutorials/tutorial-8-quantum-channels.js"></script>
 <script src="js/tutorials/tutorial-9-hardware-noise.js"></script>
 <script src="js/tutorials/bootstrap.js"></script>
+<script>
+  (function () {
+    var STORAGE_KEY = 'quantum-lab-theme';
+    var root = document.documentElement;
+    var button = document.getElementById('theme-toggle');
+    if (!button) return;
+
+    var saved = localStorage.getItem(STORAGE_KEY);
+    var currentTheme = saved === 'light' ? 'light' : 'dark';
+
+    function applyTheme(theme) {
+      if (theme === 'light') {
+        root.setAttribute('data-theme', 'light');
+      } else {
+        root.removeAttribute('data-theme');
+      }
+
+      button.setAttribute('data-theme', theme);
+      button.setAttribute('aria-pressed', String(theme === 'light'));
+      button.setAttribute('aria-label', theme === 'light' ? 'Switch to dark mode' : 'Enable light mode');
+      button.textContent = theme === 'light' ? 'Dark mode' : 'Light mode';
+    }
+
+    applyTheme(currentTheme);
+
+    button.addEventListener('click', function () {
+      currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+      localStorage.setItem(STORAGE_KEY, currentTheme);
+      applyTheme(currentTheme);
+    });
+  })();
+</script>
 </body>
 </html>

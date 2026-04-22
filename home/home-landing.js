@@ -6,13 +6,103 @@
 (function (global) {
   'use strict';
 
+  function cssRGB(varName, fallback) {
+    var raw = getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
+    return raw || fallback;
+  }
+
+  function rgbaVar(varName, alpha, fallback) {
+    return 'rgba(' + cssRGB(varName, fallback) + ',' + alpha + ')';
+  }
+
   /* ─── Scoped styles for new interactive elements only ───────────────────── */
   /* All colors reference the site's existing CSS variables. */
   const HOME_EXTRA_CSS = `
+  /* ── standardized "Continue in tutorial" CTAs ────────────────────────── */
+  .home-continue {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-top: 1.25rem;
+    padding: 0.55rem 0.95rem 0.55rem 0.75rem;
+    background: var(--bg-0);
+    border: 1px solid var(--line-bright);
+    border-left: 2px solid var(--phos);
+    border-radius: 3px;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: var(--ink-dim);
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.18s, border-color 0.18s, transform 0.18s, box-shadow 0.2s;
+  }
+  .home-continue:hover,
+  .home-continue:focus-visible {
+    background: var(--bg-2);
+    border-color: var(--phos-dim);
+    border-left-color: var(--phos);
+    color: var(--phos);
+    box-shadow: 0 0 16px rgba(var(--phos-rgb), 0.12);
+    outline: none;
+    transform: translateX(2px);
+  }
+  .home-continue-tag {
+    font-size: 9px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--cyan);
+    border-right: 1px solid var(--line);
+    padding-right: 0.6rem;
+  }
+  .home-continue:hover .home-continue-tag { color: var(--phos); }
+  .home-continue-arrow {
+    margin-left: 0.15rem;
+    transition: transform 0.2s;
+  }
+  .home-continue:hover .home-continue-arrow { transform: translateX(3px); }
+
   /* ── hero particle canvas ── */
   #home-hero-canvas {
     position: absolute; inset: 0; width: 100%; height: 100%;
     pointer-events: none; opacity: 0.5;
+  }
+
+  /* ── hero wave-function layer (scroll-reactive) ── */
+  #home-hero-waves {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    pointer-events: none; opacity: 0.55;
+  }
+  #home-hero-waves .wf-path {
+    fill: none;
+    stroke-width: 1.4;
+    stroke-linecap: round;
+    filter: drop-shadow(0 0 6px currentColor);
+  }
+  #home-hero-waves .wf-0 { color: rgba(var(--phos-rgb), 0.85); stroke: currentColor; }
+  #home-hero-waves .wf-1 { color: rgba(var(--cyan-rgb), 0.75); stroke: currentColor; }
+  #home-hero-waves .wf-2 { color: rgba(var(--magenta-rgb), 0.55); stroke: currentColor; stroke-dasharray: 2 5; }
+
+  /* ── hero floating spin arrows ── */
+  .home-hero-arrows {
+    position: absolute; inset: 0; pointer-events: none; z-index: 0;
+  }
+  .home-hero-arrow {
+    position: absolute;
+    font-family: var(--serif);
+    font-size: 22px;
+    color: var(--phos);
+    opacity: 0.55;
+    text-shadow: 0 0 12px rgba(var(--phos-rgb), 0.5);
+    animation: heroArrowBob 4s ease-in-out infinite;
+    will-change: transform, opacity;
+    user-select: none;
+  }
+  .home-hero-arrow.down { color: rgba(var(--magenta-rgb), 0.85); text-shadow: 0 0 12px rgba(var(--magenta-rgb), 0.45); }
+  .home-hero-arrow.cyan { color: rgba(var(--cyan-rgb), 0.8); text-shadow: 0 0 12px rgba(var(--cyan-rgb), 0.4); }
+  @keyframes heroArrowBob {
+    0%,100% { transform: translateY(0) rotate(var(--tilt, 0deg)); opacity: 0.4; }
+    50%     { transform: translateY(-10px) rotate(var(--tilt, 0deg)); opacity: 0.7; }
   }
 
   /* ── hero section ── */
@@ -20,6 +110,9 @@
     position: relative; overflow: hidden;
     padding: 5rem 2rem 4rem;
     border-bottom: 1px solid var(--line);
+    min-height: 72vh;
+    display: flex;
+    align-items: center;
   }
   .home-hero-inner {
     position: relative; z-index: 1;
@@ -37,6 +130,32 @@
     color: var(--ink-dim); margin-bottom: 2rem; max-width: 560px;
   }
   .home-hero-actions { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+  .home-floating-arrows {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+  .home-floating-arrow {
+    position: absolute;
+    font-family: var(--serif);
+    font-size: 18px;
+    color: var(--phos);
+    opacity: 0.2;
+    text-shadow: 0 0 10px rgba(var(--phos-rgb), 0.22);
+    user-select: none;
+    will-change: transform, opacity;
+    animation: homeFloatArrow 8s ease-in-out infinite;
+  }
+  .home-floating-arrow.down { transform: rotate(180deg); }
+  .home-floating-arrow.cyan { color: rgba(var(--cyan-rgb), 0.62); text-shadow: 0 0 10px rgba(var(--cyan-rgb), 0.22); }
+  .home-floating-arrow.magenta { color: rgba(var(--magenta-rgb), 0.55); text-shadow: 0 0 10px rgba(var(--magenta-rgb), 0.2); }
+  .home-floating-arrow.amber { color: rgba(var(--amber-rgb), 0.52); text-shadow: 0 0 10px rgba(var(--amber-rgb), 0.2); }
+  @keyframes homeFloatArrow {
+    0%, 100% { transform: translateY(0px) rotate(var(--rot, 0deg)); opacity: 0.14; }
+    50%      { transform: translateY(-12px) rotate(var(--rot, 0deg)); opacity: 0.28; }
+  }
   .home-eyebrow {
     font-family: var(--mono); font-size: 10px;
     letter-spacing: 0.18em; text-transform: uppercase;
@@ -55,8 +174,6 @@
   .home-hero-inner .home-reveal:nth-child(3) { transition-delay: 0.16s; }
   .home-hero-inner .home-reveal:nth-child(4) { transition-delay: 0.24s; }
   .home-hero-inner .home-reveal:nth-child(5) { transition-delay: 0.32s; }
-  .wrap-up .home-reveal:nth-child(1) { transition-delay: 0s; }
-  .wrap-up .home-reveal:nth-child(2) { transition-delay: 0.12s; }
   .home-learn-grid .home-reveal:nth-child(1) { transition-delay: 0s; }
   .home-learn-grid .home-reveal:nth-child(2) { transition-delay: 0.05s; }
   .home-learn-grid .home-reveal:nth-child(3) { transition-delay: 0.1s; }
@@ -90,8 +207,8 @@
   /* ── Home gate gallery (palette-style icons) ── */
   .home-gate-gallery {
     width: 100%;
-    margin-top: 1rem;
-    padding-top: 1rem;
+    margin-top: 0.35rem;
+    padding-top: 0.85rem;
     border-top: 1px dashed var(--line);
     display: flex;
     flex-direction: column;
@@ -115,10 +232,24 @@
     border: 1px solid var(--line);
     border-radius: 3px;
     transition: border-color 0.15s, box-shadow 0.15s;
+    cursor: pointer;
+    text-align: left;
+    font: inherit;
+    color: inherit;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .home-gate-card:focus-visible {
+    outline: 2px solid var(--cyan);
+    outline-offset: 2px;
   }
   .home-gate-card:hover {
     border-color: var(--phos-dim);
-    box-shadow: 0 0 14px rgba(127,255,196,0.08);
+    box-shadow: 0 0 14px rgba(var(--phos-rgb), 0.08);
+  }
+  .home-gate-card-reset .home-gate-icon {
+    font-family: var(--mono);
+    font-size: 17px;
   }
   .home-gate-icon {
     width: 48px; height: 48px;
@@ -134,7 +265,7 @@
   .home-gate-card:hover .home-gate-icon {
     border-color: var(--phos);
     color: var(--phos);
-    box-shadow: 0 0 10px rgba(127,255,196,0.15);
+    box-shadow: 0 0 10px rgba(var(--phos-rgb), 0.15);
   }
   .home-gate-card-body .home-gate-card-name {
     font-family: var(--mono);
@@ -149,6 +280,135 @@
     line-height: 1.55;
     color: var(--ink-dim);
     margin: 0;
+  }
+
+  /* ── Classical lamp vs quantum “dimmer” (between 01 and 02) ── */
+  .home-lamp-bridge .home-lamp-pair {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+    width: 100%;
+    max-width: 520px;
+    margin: 0 auto;
+  }
+  .home-lamp-pane {
+    background: var(--bg-0);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 1rem 1rem 1.15rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.85rem;
+  }
+  .home-lamp-col-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    align-self: flex-start;
+  }
+  .home-lamp-switch {
+    width: 44px; height: 72px;
+    border-radius: 4px;
+    border: 1px solid var(--line-bright);
+    background: linear-gradient(180deg, var(--bg-2) 0%, var(--bg-0) 100%);
+    cursor: pointer;
+    position: relative;
+    padding: 0;
+    transition: border-color 0.15s, box-shadow 0.2s;
+  }
+  .home-lamp-switch::after {
+    content: '';
+    position: absolute;
+    left: 5px; right: 5px;
+    top: 8px;
+    height: 28px;
+    border-radius: 2px;
+    background: var(--line-bright);
+    box-shadow: inset 0 1px 2px rgba(var(--ink-rgb), 0.2);
+    transition: top 0.18s ease, background 0.18s;
+  }
+  .home-lamp-switch.on {
+    border-color: var(--phos-dim);
+    box-shadow: 0 0 16px rgba(var(--phos-rgb), 0.12);
+  }
+  .home-lamp-switch.on::after {
+    top: 36px;
+    background: var(--phos);
+    box-shadow: 0 0 12px rgba(var(--phos-rgb), 0.45);
+  }
+  .home-lamp-fixture {
+    width: 72px; height: 72px;
+    border-radius: 50%;
+    border: 1px solid var(--line);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(circle at 30% 25%, rgba(var(--line-bright-rgb), 0.45), var(--bg-1));
+  }
+  .home-lamp-bulb {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 32% 28%, rgba(90, 105, 100, 0.55), rgba(48, 56, 54, 0.98));
+    border: 1px solid var(--line-bright);
+    transition: background 0.2s, box-shadow 0.25s, border-color 0.2s;
+    box-shadow:
+      inset 0 0 14px rgba(111, 212, 224, 0.06),
+      0 0 10px rgba(111, 212, 224, 0.08);
+  }
+  .home-lamp-bulb.on {
+    background: radial-gradient(circle at 32% 28%, #fffef0, rgba(255,220,120,0.95));
+    border-color: rgba(255, 210, 120, 0.85);
+    box-shadow:
+      inset 0 0 8px rgba(255, 255, 240, 0.35),
+      0 0 22px rgba(255, 210, 120, 0.55),
+      0 0 48px rgba(255, 184, 101, 0.35);
+  }
+  /* Quantum bulb: core fill and halo both track --q-glow (set from the slider in JS). */
+  .home-lamp-bulb-q {
+    --q-glow: 0.35;
+    background: radial-gradient(
+      circle at 32% 26%,
+      rgba(245, 255, 252, calc(0.12 + 0.78 * var(--q-glow))) 0%,
+      rgba(160, 248, 220, calc(0.1 + 0.72 * var(--q-glow))) 28%,
+      rgba(90, 210, 195, calc(0.08 + 0.55 * var(--q-glow))) 52%,
+      rgba(42, 78, 74, calc(0.82 - 0.45 * var(--q-glow))) 100%
+    );
+    border-color: rgba(140, 235, 230, calc(0.28 + 0.62 * var(--q-glow)));
+    box-shadow:
+      inset 0 0 16px rgba(255, 255, 255, calc(0.05 + 0.28 * var(--q-glow))),
+      0 0 calc(10px + 42px * var(--q-glow)) rgba(127, 255, 196, calc(0.22 + 0.58 * var(--q-glow))),
+      0 0 calc(4px + 28px * var(--q-glow)) rgba(160, 240, 255, calc(0.15 + 0.35 * var(--q-glow)));
+    transition: box-shadow 0.12s ease-out, border-color 0.12s ease-out;
+  }
+  .home-lamp-scale {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--mono);
+    font-size: 8px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-top: 0.15rem;
+  }
+  .home-lamp-q-slider {
+    width: 100%;
+    accent-color: var(--cyan);
+    margin: 0.25rem 0 0;
+  }
+  .home-lamp-hint {
+    font-size: 0.78rem;
+    line-height: 1.5;
+    color: var(--ink-faint);
+    text-align: center;
+    margin: 0;
+    padding: 0 0.25rem;
+  }
+  @media (max-width: 680px) {
+    .home-lamp-bridge .home-lamp-pair { grid-template-columns: 1fr; }
   }
 
   /* ── two-column chapter layout ── */
@@ -220,19 +480,6 @@
     color: var(--cyan); text-align: center; min-height: 1.4em;
   }
 
-  /* ── gate buttons ── */
-  .home-gate-btns {
-    display: flex; flex-wrap: wrap; gap: 0.4rem; justify-content: center;
-  }
-  .home-gate-btn {
-    font-family: var(--mono); font-size: 12px; font-weight: 500;
-    padding: 0.3rem 0.75rem; border-radius: 3px;
-    border: 1px solid var(--line-bright);
-    background: var(--bg-0); color: var(--ink);
-    cursor: pointer; transition: background 0.12s, border-color 0.12s;
-  }
-  .home-gate-btn:hover { background: var(--bg-2); border-color: var(--cyan); color: var(--cyan); }
-  .home-gate-btn.reset { color: var(--ink-dim); border-style: dashed; }
   .home-gate-history {
     font-family: var(--mono); font-size: 10px;
     color: var(--ink-faint); text-align: center; min-height: 1.4em;
@@ -280,11 +527,11 @@
     animation: coinPop 0.18s ease-out;
   }
   .home-coin.one {
-    background: rgba(127,255,196,0.08);
+    background: rgba(var(--phos-rgb), 0.08);
     border-color: var(--phos-dim); color: var(--phos);
   }
   .home-coin.zero {
-    background: rgba(180,100,255,0.08);
+    background: rgba(var(--magenta-rgb), 0.08);
     border-color: var(--magenta); color: var(--magenta);
     opacity: 0.75;
   }
@@ -310,13 +557,13 @@
   }
   .home-bell-orb.result-0 {
     border-color: var(--magenta); color: var(--magenta);
-    background: rgba(180,100,255,0.07);
-    box-shadow: 0 0 14px rgba(180,100,255,0.12);
+    background: rgba(var(--magenta-rgb), 0.07);
+    box-shadow: 0 0 14px rgba(var(--magenta-rgb), 0.12);
   }
   .home-bell-orb.result-1 {
     border-color: var(--phos); color: var(--phos);
-    background: rgba(127,255,196,0.07);
-    box-shadow: 0 0 14px rgba(127,255,196,0.12);
+    background: rgba(var(--phos-rgb), 0.07);
+    box-shadow: 0 0 14px rgba(var(--phos-rgb), 0.12);
   }
   .home-bell-wire {
     width: 52px; height: 2px;
@@ -376,11 +623,265 @@
   }
   .home-pullquote-lg em { color: var(--phos); font-style: normal; }
 
+  /* ── 3D spin Bloch panel (replaces 2D spin box) ── */
+  .home-spin3d-wrap {
+    display: flex; flex-direction: column; align-items: center; gap: 1rem;
+    padding: 1.75rem; background: var(--bg-1);
+    border: 1px solid var(--line); border-radius: 6px;
+    position: relative;
+  }
+  #home-spin3d-canvas {
+    display: block;
+    cursor: grab;
+    border-radius: 50%;
+  }
+  #home-spin3d-canvas:active { cursor: grabbing; }
+  .home-spin3d-collapse-ripple {
+    position: absolute;
+    pointer-events: none;
+    left: 50%; top: 50%;
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    transform: translate(-50%, -50%) scale(1);
+    border: 2px solid var(--phos);
+    opacity: 0;
+  }
+  .home-spin3d-collapse-ripple.go {
+    animation: spinRipple 0.9s ease-out forwards;
+  }
+  @keyframes spinRipple {
+    0%   { transform: translate(-50%, -50%) scale(0.4); opacity: 0.85; }
+    100% { transform: translate(-50%, -50%) scale(5);   opacity: 0; }
+  }
+
+  /* ── Applications icon cards with hover reveal ── */
+  .home-apps-section {
+    padding: 4rem 2rem; max-width: 1040px; margin: 0 auto;
+    border-bottom: 1px solid var(--line);
+  }
+  .home-apps-intro {
+    max-width: 640px; margin: 0 0 2.25rem;
+  }
+  .home-apps-section .analysis-head,
+  .home-apps-intro {
+    max-width: 960px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .home-apps-intro { margin-top: 0; margin-bottom: 2.25rem; }
+  .home-apps-intro p {
+    font-size: 0.98rem; line-height: 1.75; color: var(--ink-dim); margin: 0;
+  }
+  .home-apps-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    max-width: 960px;
+    margin: 0 auto;
+  }
+  .home-app-card {
+    position: relative;
+    min-height: 250px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: linear-gradient(165deg, var(--bg-2), var(--bg-1));
+    overflow: hidden;
+    cursor: pointer;
+    transition: border-color 0.22s, box-shadow 0.22s;
+  }
+  .home-app-card:hover,
+  .home-app-card.show-details {
+    border-color: var(--phos-dim);
+    box-shadow: 0 0 18px rgba(var(--phos-rgb), 0.1);
+  }
+  .home-app-head {
+    position: absolute;
+    left: 1.05rem;
+    right: 1.05rem;
+    top: 1.15rem;
+    z-index: 1;
+  }
+  .home-app-icon {
+    width: 46px; height: 46px;
+    display: flex; align-items: center; justify-content: center;
+    border: 1px solid var(--line-bright);
+    border-radius: 4px;
+    background: var(--bg-0);
+    margin-bottom: 0.85rem;
+    transition: border-color 0.25s, box-shadow 0.25s;
+  }
+  .home-app-card:hover .home-app-icon {
+    border-color: var(--phos);
+    box-shadow: 0 0 12px rgba(var(--phos-rgb), 0.25);
+  }
+  .home-app-icon svg { width: 24px; height: 24px; stroke: var(--phos); fill: none; stroke-width: 1.5; }
+  .home-app-title {
+    font-family: var(--serif);
+    font-size: 1.18rem;
+    line-height: 1.25;
+    color: var(--ink);
+    margin: 0 0 0.35rem;
+  }
+  .home-app-kicker {
+    font-family: var(--mono);
+    font-size: 8px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(var(--cyan-rgb), 0.9);
+    display: inline-block;
+    padding: 0.2rem 0.45rem;
+    border: 1px solid rgba(var(--cyan-rgb), 0.45);
+    border-radius: 999px;
+    background: rgba(var(--cyan-rgb), 0.12);
+  }
+  .home-app-reveal {
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    padding: 0.95rem 1rem 1rem;
+    border-top: 1px solid rgba(var(--phos-rgb), 0.24);
+    background: linear-gradient(to top, rgba(var(--bg-0-rgb, 10, 14, 12), 0.98), rgba(var(--bg-0-rgb, 10, 14, 12), 0.9) 65%, rgba(var(--bg-0-rgb, 10, 14, 12), 0.06));
+    transform: translateY(68%);
+    transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .home-app-card:hover .home-app-reveal,
+  .home-app-card.show-details .home-app-reveal {
+    transform: translateY(0);
+  }
+  .home-app-reveal .home-app-kicker { display: none; }
+  .home-app-reveal p {
+    font-size: 0.85rem;
+    line-height: 1.6;
+    color: var(--ink-dim);
+    margin: 0 0 0.65rem;
+  }
+  .home-app-open {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    color: var(--phos-dim);
+    text-decoration: none;
+  }
+  .home-app-hint {
+    position: absolute;
+    font-family: var(--mono); font-size: 8px;
+    letter-spacing: 0.12em;
+    color: rgba(var(--cyan-rgb), 0.78);
+    right: 1rem; bottom: 0.9rem;
+    opacity: 0.95;
+    border: 1px solid rgba(var(--cyan-rgb), 0.35);
+    border-radius: 999px;
+    padding: 0.18rem 0.45rem;
+    background: rgba(var(--cyan-rgb), 0.12);
+  }
+  .home-app-card:hover .home-app-hint,
+  .home-app-card.show-details .home-app-hint { opacity: 0; }
+  @media (max-width: 860px) {
+    .home-apps-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 520px) {
+    .home-apps-grid { grid-template-columns: 1fr; }
+  }
+
+  /* ── Schrödinger's cat section ── */
+  .home-cat-section {
+    padding: 4rem 2rem; max-width: 960px; margin: 0 auto;
+    border-bottom: 1px solid var(--line);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2.75rem;
+    align-items: center;
+  }
+  .home-cat-text p { font-size: 0.95rem; line-height: 1.75; color: var(--ink-dim); margin-bottom: 0.9rem; }
+  .home-cat-stage {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    max-width: 320px;
+    margin: 0 auto;
+    border: 1px solid var(--line-bright);
+    border-radius: 6px;
+    background:
+      linear-gradient(180deg, rgba(var(--line-bright-rgb), 0.32) 0%, var(--bg-1) 100%);
+    overflow: hidden;
+  }
+  .home-cat-box-lid {
+    position: absolute; left: 0; right: 0; top: 0; height: 34%;
+    background: linear-gradient(180deg, rgba(var(--line-bright-rgb), 0.65) 0%, var(--bg-2) 100%);
+    border-bottom: 1px solid var(--line-bright);
+    transform-origin: top center;
+    transition: transform 0.8s cubic-bezier(0.4, 1.4, 0.5, 1);
+    z-index: 3;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+  .home-cat-stage.open .home-cat-box-lid {
+    transform: rotateX(-115deg);
+  }
+  .home-cat-layer {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    transition: opacity 0.7s ease;
+  }
+  .home-cat-layer svg { width: 72%; height: 72%; }
+  .home-cat-layer.alive {
+    opacity: 0.7;
+    animation: catBreathe 3.8s ease-in-out infinite;
+  }
+  .home-cat-layer.dead {
+    opacity: 0.55;
+    transform: translate(4px, 4px);
+  }
+  @keyframes catBreathe {
+    0%,100% { transform: scale(1); }
+    50%     { transform: scale(1.02); }
+  }
+  .home-cat-stage.superposition .home-cat-layer.alive { animation: catSuperposeA 2.4s ease-in-out infinite; }
+  .home-cat-stage.superposition .home-cat-layer.dead  { animation: catSuperposeB 2.4s ease-in-out infinite; }
+  @keyframes catSuperposeA {
+    0%,100% { opacity: 0.75; }
+    50%     { opacity: 0.15; }
+  }
+  @keyframes catSuperposeB {
+    0%,100% { opacity: 0.15; }
+    50%     { opacity: 0.75; }
+  }
+  .home-cat-stage.resolved-alive .home-cat-layer.alive { opacity: 0.95; animation: catBreathe 3.8s ease-in-out infinite; }
+  .home-cat-stage.resolved-alive .home-cat-layer.dead  { opacity: 0; animation: none; }
+  .home-cat-stage.resolved-dead  .home-cat-layer.dead  { opacity: 0.92; animation: none; }
+  .home-cat-stage.resolved-dead  .home-cat-layer.alive { opacity: 0; animation: none; }
+
+  .home-cat-state-label {
+    position: absolute; bottom: 0.65rem; left: 50%; transform: translateX(-50%);
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    z-index: 4;
+    white-space: nowrap;
+  }
+  .home-cat-stage.resolved-alive .home-cat-state-label { color: var(--phos); }
+  .home-cat-stage.resolved-dead  .home-cat-state-label { color: var(--magenta); }
+
+  .home-cat-btns {
+    display: flex; gap: 0.6rem; flex-wrap: wrap; margin-top: 1.1rem;
+    justify-content: center;
+  }
+  @media (max-width: 680px) {
+    .home-cat-section { grid-template-columns: 1fr; padding: 2.5rem 1.25rem; gap: 1.75rem; }
+    .home-apps-section { padding: 2.5rem 1.25rem; }
+  }
+
   /* ── responsive ── */
   @media (max-width: 680px) {
     .home-chapter { grid-template-columns: 1fr; padding: 2.5rem 1.25rem; }
     .home-chapter.flip { direction: ltr; }
-    .home-hero-wrap { padding: 3rem 1.25rem 2.5rem; }
+    .home-hero-wrap { padding: 3rem 1.25rem 2.5rem; min-height: auto; }
+    .home-floating-arrow { font-size: 15px; opacity: 0.14; }
     .home-coin-section {
     background: var(--bg-1);
     border-left: 2px solid var(--cyan); padding: 2.5rem 1.25rem; }
@@ -393,13 +894,27 @@
   /* ─── HTML ──────────────────────────────────────────────────────────────── */
   const HOME_LANDING_HTML = `
   <style id="home-extra-styles">${HOME_EXTRA_CSS}</style>
+  <div class="home-floating-arrows" id="home-floating-arrows" aria-hidden="true"></div>
 
   <!-- ══ HERO ══════════════════════════════════════════════════════════════ -->
   <section class="home-hero-wrap">
     <canvas id="home-hero-canvas" aria-hidden="true"></canvas>
+    <svg id="home-hero-waves" aria-hidden="true" preserveAspectRatio="none">
+      <path class="wf-path wf-2" id="wf-envelope" d=""></path>
+      <path class="wf-path wf-1" id="wf-wave-1" d=""></path>
+      <path class="wf-path wf-0" id="wf-wave-0" d=""></path>
+    </svg>
+    <div class="home-hero-arrows" aria-hidden="true">
+      <span class="home-hero-arrow"      style="left:8%;  top:22%; --tilt: -4deg; animation-delay: 0s;">↑</span>
+      <span class="home-hero-arrow down" style="left:15%; top:68%; --tilt:  6deg; animation-delay: -1.2s;">↓</span>
+      <span class="home-hero-arrow cyan" style="right:10%;top:18%; --tilt: -8deg; animation-delay: -0.6s;">↑</span>
+      <span class="home-hero-arrow down" style="right:16%;top:62%; --tilt:  3deg; animation-delay: -2.0s;">↓</span>
+      <span class="home-hero-arrow cyan" style="right:4%; top:40%; --tilt:  0deg; animation-delay: -1.6s; font-size:16px;">↑</span>
+      <span class="home-hero-arrow"      style="left:3%;  top:48%; --tilt:  9deg; animation-delay: -2.4s; font-size:16px;">↓</span>
+    </div>
     <div class="home-hero-inner">
       <div class="home-eyebrow home-reveal">Quantum &amp; Lab · Interactive introduction</div>
-      <h1 class="home-reveal">The universe computes in ways<br/>that feel <em>impossible.</em></h1>
+      <h1 class="home-reveal">Quantum systems compute in ways<br/>that feel <em>impossible.</em></h1>
       <p class="home-reveal">Quantum theory can feel counterintuitive at first, but it is one of the most precise frameworks in science. This page is a guided journey — from the ordinary switch in your phone, through superposition and spin measurement, to two particles sharing correlations across distance. </p>
       <div class="home-hero-actions home-reveal">
         <button type="button" class="btn primary" onclick="switchTab('learn');switchSubtab('t1');">Begin Tutorial 1 →</button>
@@ -413,12 +928,16 @@
     <div class="home-chapter-text home-reveal">
       <span class="home-chapter-kicker">01 · The ordinary bit</span>
       <h2>Everything digital is a very fast <em>choice.</em></h2>
-      <p><a href="#" onclick="switchTab('learn');switchSubtab('t1');return false;" style="font-family:var(--mono);font-size:10px;letter-spacing:0.08em;color:var(--phos-dim);text-decoration:none;">→ Go deeper in Tutorial 1</a></p>
       <p>Your phone, laptop, and modern data centers all store information as long chains of the same elementary decision: <strong>0 or 1</strong>. Off or on — like a switch that has already committed to one side.</p>
       <p>Before you read it, a classical bit is <em>already</em> in a definite state. That reliability powers classical computing — and also marks a boundary that quantum systems can move beyond.</p>
       <div class="rules" style="margin-top:1.25rem">
         <strong>Try it.</strong> Notice how the switch is always definite, even before you look. We are about to shatter that assumption.
       </div>
+      <a href="#" class="home-continue" onclick="switchTab('learn');switchSubtab('t1');return false;">
+        <span class="home-continue-tag">Tutorial 1</span>
+        <span>Go deeper on bits &amp; qubits</span>
+        <span class="home-continue-arrow">→</span>
+      </a>
     </div>
     <div class="home-chapter-visual home-reveal">
       <div class="home-panel">
@@ -439,6 +958,39 @@
 
   <div class="home-mini-quote home-reveal">"Computation is, in a very real sense, the evolution of physical law." <b>— David Deutsch</b></div>
 
+  <!-- ══ Interlude: lamp vs quantum “dimmer” (between 01 and 02) ═══════════ -->
+  <div class="home-chapter home-lamp-bridge">
+    <div class="home-chapter-text home-reveal">
+      <span class="home-chapter-kicker">Interlude · Between off and on</span>
+      <h2>A lamp is only dark or bright — a qubit can <em>shade</em> the gap.</h2>
+      <p>A classical bit is like a wall switch: the bulb is either fully off or fully on. There is no stable “half‑lit” message in that picture — the hardware has already picked a side.</p>
+      <p>A qubit state \\(|\\psi\\rangle = \\alpha\\,|0\\rangle + \\beta\\,|1\\rangle\\) (with \\(|\\alpha|^2+|\\beta|^2=1\\)) can lean toward \\(|0\\rangle\\), toward \\(|1\\rangle\\), or sit <strong>between</strong> them in a way no single classical wire can store. That extra freedom is not “analog voltage noise”; it is coherent structure you can rotate, interfere, and <em>re‑encode</em> — which is why quantum protocols can carry strictly more nuance in the same small physical system, before measurement finally forces a 0/1 readout.</p>
+      <p class="rules" style="margin-top:1rem"><strong>Try both.</strong> Flip the classical switch: only pitch black or full glow. Drag the quantum slider: the bulb ramps through a continuum of “how much \\(|1\\rangle\\)‑ness” the state is carrying — a toy picture of how superposition sits between the extremes.</p>
+    </div>
+    <div class="home-chapter-visual home-reveal">
+      <div class="home-lamp-pair">
+        <div class="home-lamp-pane">
+          <div class="home-lamp-col-label">Classical</div>
+          <button type="button" class="home-lamp-switch" id="home-lamp-class-toggle" aria-pressed="false" aria-label="Toggle classical lamp"></button>
+          <div class="home-lamp-fixture" aria-hidden="true">
+            <div class="home-lamp-bulb" id="home-lamp-class-bulb"></div>
+          </div>
+          <p class="home-lamp-hint">Off or on — nothing in between survives as a stored bit.</p>
+        </div>
+        <div class="home-lamp-pane">
+          <div class="home-lamp-col-label">Quantum intuition</div>
+          <label for="home-lamp-q-slider" class="home-panel-label" style="align-self:stretch;margin:0">Amplitude toward \\(|1\\rangle\\) (toy brightness)</label>
+          <input type="range" class="home-lamp-q-slider" id="home-lamp-q-slider" min="0" max="100" value="38" aria-valuemin="0" aria-valuemax="100" aria-valuenow="38" />
+          <div class="home-lamp-scale"><span>\\(|0\\rangle\\) — dark</span><span>\\(|1\\rangle\\) — bright</span></div>
+          <div class="home-lamp-fixture" aria-hidden="true">
+            <div class="home-lamp-bulb home-lamp-bulb-q" id="home-lamp-q-bulb"></div>
+          </div>
+          <p class="home-lamp-hint">Brightness here stands in for how strongly the state points toward \\(|1\\rangle\\); phase is another knob the sphere will show next.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- ══ 02: BLOCH SPHERE ══════════════════════════════════════════════════ -->
   <div class="home-chapter flip">
     <div class="home-chapter-text home-reveal">
@@ -449,6 +1001,11 @@
       <div class="rules" style="margin-top:1.25rem">
         Drag the sphere to rotate your view, or click a preset. Notice that |+⟩ and |−⟩ look equally mixed but are fundamentally different states.
       </div>
+      <a href="#" class="home-continue" onclick="switchTab('learn');switchSubtab('t1');return false;">
+        <span class="home-continue-tag">Tutorial 1</span>
+        <span>Phase, amplitudes &amp; the sphere</span>
+        <span class="home-continue-arrow">→</span>
+      </a>
     </div>
     <div class="home-chapter-visual home-reveal">
       <div class="home-panel">
@@ -486,10 +1043,16 @@
         <p style="font-size:0.95rem;color:var(--ink-dim);line-height:1.75">
           Use the panel to prepare \\(|+\\rangle\\), measure repeatedly, and watch individual outcomes collapse while ensemble statistics converge.
         </p>
-        <p><a href="#" onclick="switchTab('learn');switchSubtab('t2');return false;" style="font-family:var(--mono);font-size:10px;letter-spacing:0.08em;color:var(--phos-dim);text-decoration:none;">→ Entanglement and measurement in Tutorial 2</a></p>
+        <a href="#" class="home-continue" onclick="switchTab('learn');switchSubtab('t2');return false;">
+          <span class="home-continue-tag">Tutorial 2</span>
+          <span>Entanglement &amp; measurement</span>
+          <span class="home-continue-arrow">→</span>
+        </a>
       </div>
-      <div class="home-spin-wrap home-reveal">
-        <canvas id="home-spin-canvas" width="360" height="185" aria-label="Electron spin superposition and measurement"></canvas>
+      <div class="home-spin3d-wrap home-reveal">
+        <div class="home-panel-label" style="align-self:flex-start">Electron spin vector</div>
+        <canvas id="home-spin3d-canvas" width="280" height="280" aria-label="Electron rendered as a glowing orb with a spin vector piercing through it"></canvas>
+        <div class="home-spin3d-collapse-ripple" id="home-spin3d-ripple" aria-hidden="true"></div>
         <div class="home-spin-state" id="home-spin-state">\\(|\\psi\\rangle = |+\\rangle = (|0\\rangle + |1\\rangle)/\\sqrt{2}\\)</div>
         <div class="home-spin-btns">
           <button class="btn" id="home-spin-super-btn">Prepare \\(|+\\rangle\\)</button>
@@ -506,44 +1069,49 @@
     <div class="home-chapter-text home-reveal">
       <span class="home-chapter-kicker">04 · Quantum gates</span>
       <h2>Gates are <em>rotations</em> of the sphere.</h2>
-      <p><a href="#" onclick="switchTab('learn');switchSubtab('t1');return false;" style="font-family:var(--mono);font-size:10px;letter-spacing:0.08em;color:var(--phos-dim);text-decoration:none;">→ Gate intuition in Tutorial 1</a></p>
       <p>In classical computing, a NOT gate flips 0 to 1. In quantum computing, single-qubit gates act as <strong>rotations</strong> on the Bloch sphere, moving the state vector continuously through Hilbert space.</p>
       <p>The <strong>H gate</strong> (Hadamard) is foundational: it maps \\(|0\\rangle\\) from the pole to equatorial superposition, preparing states used across algorithms, metrology, and communication protocols.</p>
       <p>Apply gates in sequence below. Order matters: H then X is not the same transformation as X then H. This non-commutativity is one of the defining structural differences from classical logic.</p>
+      <a href="#" class="home-continue" onclick="switchTab('learn');switchSubtab('t1');return false;">
+        <span class="home-continue-tag">Tutorial 1</span>
+        <span>Build intuition for gate dynamics</span>
+        <span class="home-continue-arrow">→</span>
+      </a>
     </div>
     <div class="home-chapter-visual home-reveal">
       <div class="home-panel">
         <div class="home-panel-label">Apply gates · start at |0⟩</div>
         <canvas id="home-gate-canvas" width="240" height="240" aria-label="Bloch sphere showing gate operations"></canvas>
-        <div class="home-gate-btns">
-          <button class="home-gate-btn" data-gate="H">H</button>
-          <button class="home-gate-btn" data-gate="X">X</button>
-          <button class="home-gate-btn" data-gate="Y">Y</button>
-          <button class="home-gate-btn reset" data-gate="RESET">↻ Reset</button>
-        </div>
         <div class="home-gate-gallery">
-          <div class="home-gate-gallery-label">Same icons as Explore</div>
-          <div class="home-gate-card">
+          <div class="home-gate-gallery-label">Apply gates</div>
+          <button type="button" class="home-gate-card" data-gate="H">
             <div class="home-gate-icon" aria-hidden="true">H</div>
             <div class="home-gate-card-body">
               <div class="home-gate-card-name">Hadamard</div>
               <p>Maps the poles to the equator, creating equal superpositions used in algorithms and measurement bases.</p>
             </div>
-          </div>
-          <div class="home-gate-card">
+          </button>
+          <button type="button" class="home-gate-card" data-gate="X">
             <div class="home-gate-icon" aria-hidden="true">X</div>
             <div class="home-gate-card-body">
               <div class="home-gate-card-name">Pauli-X</div>
               <p>A π rotation about the x-axis — the quantum NOT that swaps |0⟩ and |1⟩ amplitudes on the Bloch sphere.</p>
             </div>
-          </div>
-          <div class="home-gate-card">
+          </button>
+          <button type="button" class="home-gate-card" data-gate="Y">
             <div class="home-gate-icon" aria-hidden="true">Y</div>
             <div class="home-gate-card-body">
               <div class="home-gate-card-name">Pauli-Y</div>
               <p>A π rotation about the y-axis that mixes |0⟩ and |1⟩ while inserting a relative phase between the components.</p>
             </div>
-          </div>
+          </button>
+          <button type="button" class="home-gate-card home-gate-card-reset" data-gate="RESET">
+            <div class="home-gate-icon" aria-hidden="true">↻</div>
+            <div class="home-gate-card-body">
+              <div class="home-gate-card-name">Reset</div>
+              <p>Return to \\(|0\\rangle\\) and clear the gate history.</p>
+            </div>
+          </button>
         </div>
         <div class="home-gate-history" id="home-gate-history">No gates applied yet</div>
         <div class="home-state-text" id="home-gate-state">State: |0⟩</div>
@@ -565,7 +1133,11 @@
         <p style="font-size:0.95rem;color:var(--ink-dim);line-height:1.75;margin-bottom:0.9rem">
           Click to measure a fresh \\(|+\\rangle\\) state each time. The circles track shot-by-shot outcomes, while the Bloch panel shows post-measurement projection.
         </p>
-        <p><a href="#" onclick="switchTab('learn');switchSubtab('t1');return false;" style="font-family:var(--mono);font-size:10px;letter-spacing:0.08em;color:var(--phos-dim);text-decoration:none;">→ Measurement foundations in Tutorial 1</a></p>
+        <a href="#" class="home-continue" onclick="switchTab('learn');switchSubtab('t1');return false;">
+          <span class="home-continue-tag">Tutorial 1</span>
+          <span>Measurement foundations</span>
+          <span class="home-continue-arrow">→</span>
+        </a>
         <div style="margin-top:1.15rem;display:flex;gap:0.6rem;flex-wrap:wrap">
           <button class="btn primary" id="home-flip-btn">Measure one qubit</button>
           <button class="btn" id="home-flip-10-btn">Measure × 10</button>
@@ -605,18 +1177,23 @@
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:2.5rem;align-items:start">
       <div class="home-reveal">
         <p style="font-size:0.95rem;color:var(--ink-dim);line-height:1.75;margin-bottom:0.9rem">
-          Entanglement is a uniquely quantum correlation structure. Two qubits can be prepared in a joint state where measuring one constrains the other, even when the systems are widely separated.
+          In Bell's 1964 proposal, you compare correlations between measurements on two separated particles while changing detector settings. Local hidden-variable models predict a strict upper bound on those correlations (the Bell/CHSH bound).
         </p>
         <p style="font-size:0.95rem;color:var(--ink-dim);line-height:1.75;margin-bottom:0.9rem">
-          A canonical example is the <strong>Bell state</strong> \\(|\\Phi^+\\rangle = (|00\\rangle + |11\\rangle)/\\sqrt{2}\\). Measurements yield correlated pairs (both 0 or both 1), while neither subsystem carries an independent pre-assigned classical bit.
+          A Bell pair such as \\(|\\Phi^+\\rangle = (|00\\rangle + |11\\rangle)/\\sqrt{2}\\) violates that bound for the right measurement bases. The key point is not just that outcomes match — it's that the pattern of correlations cannot be explained by pre-assigned classical instructions carried by each qubit.
         </p>
         <p style="font-size:0.95rem;color:var(--ink-dim);line-height:1.75;margin-bottom:0.9rem">
-          Run the experiment. The \\(|01\\rangle\\) and \\(|10\\rangle\\) bars stay near zero, while \\(|00\\rangle\\) and \\(|11\\rangle\\) dominate — a direct signature of Bell-pair correlations.
+          In this simplified lab view, you'll see the Bell-pair fingerprint first: \\(|00\\rangle\\) and \\(|11\\rangle\\) dominate while \\(|01\\rangle\\) and \\(|10\\rangle\\) stay suppressed. Then use the Bell-test lab to vary settings and reproduce the inequality-style logic directly.
         </p>
         <div class="home-bell-formula-box" id="home-bell-formula-box">
           <div class="home-bell-formula-label">Bell state (maximally entangled)</div>
           <div class="home-bell-formula-katex">\\(|\\Phi^+\\rangle = \\dfrac{|00\\rangle + |11\\rangle}{\\sqrt{2}}\\)</div>
         </div>
+        <a href="#" class="home-continue" onclick="switchTab('labs');return false;">
+          <span class="home-continue-tag">Lab</span>
+          <span>Recreate the bell tests</span>
+          <span class="home-continue-arrow">→</span>
+        </a>
       </div>
       <div class="home-panel home-reveal">
         <div class="home-panel-label">Bell state experiment · |Φ+⟩</div>
@@ -663,34 +1240,115 @@
     </div>
   </div>
 
-  <div class="home-mini-quote home-reveal">"Those who are not shocked when they first come across quantum theory cannot possibly have understood it." <b>— Niels Bohr</b></div>
+  <div class="home-mini-quote home-reveal">"The result of an observation may reasonably depend not only on the state of the system but also on the complete disposition of the apparatus." <b>— John S. Bell</b></div>
+
+  <!-- ══ 07: APPLICATIONS (hover-reveal icon cards) ═════════════════════════ -->
+  <section class="home-apps-section">
+    <div class="analysis-head home-reveal">
+      <h3>What all this can actually do.</h3>
+      <div class="num">07 · Applications</div>
+    </div>
+    <div class="home-apps-intro home-reveal">
+      <p>Superposition, interference, and entanglement aren't just curiosities — they're computational resources. Hover a card to reveal where each idea appears in this lab.</p>
+    </div>
+    <div class="home-apps-grid">
+      <article class="home-app-card home-reveal" aria-label="Application: Grover search">
+        <div class="home-app-head">
+          <div class="home-app-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M5 5h14v14H5z"/><path d="M9 9h6v6H9z"/><path d="M12 3v4M21 12h-4M12 21v-4M3 12h4"/></svg>
+          </div>
+          <div class="home-app-title">Cryptography</div>
+        </div>
+        <div class="home-app-reveal">
+          <p>Grover's quadratic search speedup pressures key sizes and motivates post-quantum crypto choices.</p>
+          <a href="#" class="home-app-open" onclick="switchTab('learn');switchSubtab('t7');return false;">Open Tutorial 7 →</a>
+        </div>
+        <span class="home-app-hint">hover ↑</span>
+      </article>
+
+      <article class="home-app-card home-reveal" aria-label="Application: VQE chemistry">
+        <div class="home-app-head">
+          <div class="home-app-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><circle cx="7" cy="9" r="2.2"/><circle cx="17" cy="9" r="2.2"/><circle cx="12" cy="17" r="2.2"/><path d="M8.8 10.3L11 15.2M15.2 10.3L13 15.2M9 9h6"/></svg>
+          </div>
+          <div class="home-app-title">Chemistry</div>
+        </div>
+        <div class="home-app-reveal">
+          <p>Variational quantum eigensolvers approximate molecular ground states using tunable quantum ansatz circuits.</p>
+          <a href="#" class="home-app-open" onclick="switchTab('learn');switchSubtab('t6');return false;">Open Tutorial 6 →</a>
+        </div>
+        <span class="home-app-hint">hover ↑</span>
+      </article>
+
+      <article class="home-app-card home-reveal" aria-label="Application: QAOA optimization">
+        <div class="home-app-head">
+          <div class="home-app-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M3 20h18"/><path d="M5 20V9M10 20V6M15 20V12M20 20V4"/></svg>
+          </div>
+          <div class="home-app-title">Optimization</div>
+        </div>
+        <div class="home-app-reveal">
+          <p>QAOA alternates cost and mixer evolutions to steer amplitudes toward good combinatorial solutions.</p>
+          <a href="#" class="home-app-open" onclick="switchTab('templates');return false;">Open QAOA template →</a>
+        </div>
+        <span class="home-app-hint">hover ↑</span>
+      </article>
+
+      <article class="home-app-card home-reveal" aria-label="Application: VQE ansatz in machine learning">
+        <div class="home-app-head">
+          <div class="home-app-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><circle cx="5" cy="7" r="1.7"/><circle cx="5" cy="17" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="19" cy="7" r="1.7"/><circle cx="19" cy="17" r="1.7"/><path d="M6.5 7.7l4 3.6M6.5 16.3l4-3.6M13.5 11.3l4-3.6M13.5 12.7l4 3.6"/></svg>
+          </div>
+          <div class="home-app-title">Machine learning</div>
+        </div>
+        <div class="home-app-reveal">
+          <p>Parameterized ansatz circuits from VQE also serve as trainable models in variational quantum learning setups.</p>
+          <a href="#" class="home-app-open" onclick="switchTab('learn');switchSubtab('t6');return false;">Open ansatz tutorial →</a>
+        </div>
+        <span class="home-app-hint">hover ↑</span>
+      </article>
+
+      <article class="home-app-card home-reveal" aria-label="Application: GHZ sensing template">
+        <div class="home-app-head">
+          <div class="home-app-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/><path d="M12 12l5-3" stroke-linecap="round"/></svg>
+          </div>
+          <div class="home-app-title">Sensing</div>
+        </div>
+        <div class="home-app-reveal">
+          <p>GHZ entanglement amplifies phase sensitivity and exposes precision gains over uncorrelated probes.</p>
+          <a href="#" class="home-app-open" onclick="switchTab('templates');return false;">Open GHZ template →</a>
+        </div>
+        <span class="home-app-hint">hover ↑</span>
+      </article>
+
+      <article class="home-app-card home-reveal" aria-label="Application: Teleportation lab">
+        <div class="home-app-head">
+          <div class="home-app-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="6" cy="18" r="2"/><circle cx="18" cy="18" r="2"/><circle cx="12" cy="12" r="2"/><path d="M7.4 7.4l3.2 3.2M16.6 7.4l-3.2 3.2M7.4 16.6l3.2-3.2M16.6 16.6l-3.2-3.2"/></svg>
+          </div>
+          <div class="home-app-title">Networks</div>
+        </div>
+        <div class="home-app-reveal">
+          <p>Entanglement plus classical communication enables state transfer in teleportation and repeater-style network links.</p>
+          <a href="#" class="home-app-open" onclick="switchTab('labs');return false;">Open teleportation lab →</a>
+        </div>
+        <span class="home-app-hint">hover ↑</span>
+      </article>
+    </div>
+  </section>
 
   <!-- ══ WHAT'S NEXT ════════════════════════════════════════════════════════ -->
   <div class="home-pullquote home-reveal" style="margin-top:0">
     You have now seen the core ingredients: bits vs qubits, superposition, measurement, gate dynamics, and entanglement. The sections below extend each thread into deeper, fully interactive study.
   </div>
 
-  <div class="wrap-up">
-    <button type="button" class="wrap-card home-reveal" onclick="switchTab('learn');switchSubtab('t1');">
-      <div class="wrap-tag">03 · Tutorials</div>
-      <div class="wrap-title">Step-by-step interactives</div>
-      <div class="wrap-desc">Nine modules from single-qubit intuition through algorithms, noise channels, and hardware timescales — with checkpoints that unlock the next step.</div>
-      <div class="wrap-cta">Open Tutorial 1 →</div>
-    </button>
-    <button type="button" class="wrap-card alt home-reveal" onclick="switchTab('lab')">
-      <div class="wrap-tag">02 · Explore</div>
-      <div class="wrap-title">Build your own circuits</div>
-      <div class="wrap-desc">Drag gates, run the simulator, add noise, and read the plain-English trace — the main laboratory bench.</div>
-      <div class="wrap-cta">Open Explore →</div>
-    </button>
-  </div>
-
   <section class="analysis-section home-learn-wrap" id="what-you-learn">
     <div class="analysis-head home-reveal">
-      <h3>What you'll learn here</h3>
-      <div class="num">05 + refs</div>
+      <h3>Where to go next</h3>
+      <div class="num">Next steps</div>
     </div>
-    <p class="home-learn-sub home-reveal">Each card matches a tab along the top of the app.</p>
+    <p class="home-learn-sub home-reveal">Each card maps to a major part of the platform.</p>
     <div class="home-learn-grid">
       <button type="button" class="home-learn-card home-reveal" onclick="switchTab('lab')">
         <div class="tag">02 · Explore</div>
@@ -716,12 +1374,6 @@
         <p>Longer question-driven pages — Bell tests, BB84, surface-code decoding games, and teleportation scenarios.</p>
         <div class="go">Browse labs →</div>
       </button>
-      <button type="button" class="home-learn-card home-reveal" onclick="switchTab('docs')">
-        <div class="tag">06 · References</div>
-        <h3>Papers and notes</h3>
-        <p>Curated citations and short context for where the on-screen claims come from.</p>
-        <div class="go">Open references →</div>
-      </button>
     </div>
   </section>
   `;
@@ -733,10 +1385,34 @@
     const ctx = canvas.getContext('2d');
     let W, H, particles;
 
+    /* scroll-reactive wave-function SVG paths */
+    var svg   = document.getElementById('home-hero-waves');
+    var path0 = document.getElementById('wf-wave-0');
+    var path1 = document.getElementById('wf-wave-1');
+    var pathE = document.getElementById('wf-envelope');
+    var scrollPhase = 0;
+
+    function queueScrollUpdate() {
+      var hero = canvas.parentElement;
+      if (!hero) return;
+      var r = hero.getBoundingClientRect();
+      var vh = window.innerHeight || 800;
+      // range from 0 (hero fully in view at top) to ~1 as it scrolls up
+      var u = (-r.top) / Math.max(1, r.height * 0.85);
+      scrollPhase = Math.max(-0.2, Math.min(1.4, u));
+    }
+    window.addEventListener('scroll', queueScrollUpdate, { passive: true });
+    queueScrollUpdate();
+
     function resize() {
       const wrap = canvas.parentElement;
       W = canvas.width  = wrap ? wrap.offsetWidth  : window.innerWidth;
       H = canvas.height = wrap ? wrap.offsetHeight : 340;
+      if (svg) {
+        svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+        svg.setAttribute('width', W);
+        svg.setAttribute('height', H);
+      }
       particles = Array.from({ length: 110 }, function () {
         return {
           x: Math.random() * W,
@@ -750,6 +1426,32 @@
       });
     }
 
+    /* Build an SVG path string for a travelling wave packet. */
+    function buildWave(cy, amp, freq, phase, envWidth) {
+      var steps = 96;
+      var d = '';
+      var cx = W * 0.52;
+      for (var i = 0; i <= steps; i++) {
+        var x = (i / steps) * W;
+        var env = Math.exp(-Math.pow((x - cx) / envWidth, 2));
+        var y = cy + amp * env * Math.sin(freq * (x / W) * Math.PI * 2 + phase);
+        d += (i === 0 ? 'M' : 'L') + x.toFixed(1) + ' ' + y.toFixed(1) + ' ';
+      }
+      return d;
+    }
+    function buildEnvelope(cy, amp, envWidth) {
+      var steps = 96;
+      var top = '', bot = '';
+      var cx = W * 0.52;
+      for (var i = 0; i <= steps; i++) {
+        var x = (i / steps) * W;
+        var env = Math.exp(-Math.pow((x - cx) / envWidth, 2));
+        top += (i === 0 ? 'M' : 'L') + x.toFixed(1) + ' ' + (cy - amp * env).toFixed(1) + ' ';
+        bot += 'L' + (W - x).toFixed(1) + ' ' + (cy + amp * Math.exp(-Math.pow(((W - x) - cx) / envWidth, 2))).toFixed(1) + ' ';
+      }
+      return top + bot;
+    }
+
     var t = 0;
     function draw() {
       ctx.clearRect(0, 0, W, H);
@@ -758,19 +1460,36 @@
         p.x = (p.x + p.vx + W) % W;
         p.y = (p.y + p.vy + H) % H;
         var alpha = 0.22 + 0.32 * Math.sin(t * p.speed * 60 + p.phase);
-        var col = (p.phase < 1.0) ? ('rgba(127,255,196,' + alpha + ')')
-                : (p.phase < 2.1) ? ('rgba(100,220,255,' + alpha + ')')
-                :                   ('rgba(200,150,255,' + alpha + ')');
+        var col = (p.phase < 1.0) ? rgbaVar('--phos-rgb', alpha, '127,255,196')
+                : (p.phase < 2.1) ? rgbaVar('--cyan-rgb', alpha, '111,212,224')
+                :                   rgbaVar('--magenta-rgb', alpha, '230,127,184');
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
         ctx.fillStyle = col;
         ctx.fill();
       });
+
+      /* Update wave-function SVG paths. Scroll shifts phase & spreads envelope
+         (wave-packet delocalisation as you move down the page). */
+      if (path0 && path1 && pathE) {
+        var centerY = H * 0.58;
+        var baseAmp = Math.min(42, H * 0.09);
+        var scrollAmp = baseAmp * (1 - Math.min(1, scrollPhase * 0.6));
+        var env = Math.max(140, W * 0.28 * (1 + scrollPhase * 1.4));
+        var freq = 5.2 - scrollPhase * 2.2;
+        var phaseA = t * 1.3 - scrollPhase * 3.4;
+        var phaseB = t * 1.1 + Math.PI / 2 + scrollPhase * 2.2;
+        path0.setAttribute('d', buildWave(centerY, scrollAmp,       freq, phaseA, env));
+        path1.setAttribute('d', buildWave(centerY, scrollAmp * 0.7, freq * 1.4, phaseB, env * 0.85));
+        pathE.setAttribute('d', buildEnvelope(centerY, scrollAmp * 1.05, env));
+      }
+
       requestAnimationFrame(draw);
     }
 
     resize();
     window.addEventListener('resize', resize);
+    window.addEventListener('resize', queueScrollUpdate);
     draw();
   }
 
@@ -787,6 +1506,39 @@
     sw.addEventListener('keydown', function (e) {
       if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); flip(); }
     });
+  }
+
+  /* ─── Classical lamp vs quantum “dimmer” (interlude) ─────────────────────── */
+  function wireHomeLampBridge() {
+    var toggle = document.getElementById('home-lamp-class-toggle');
+    var bulb = document.getElementById('home-lamp-class-bulb');
+    var slider = document.getElementById('home-lamp-q-slider');
+    var qBulb = document.getElementById('home-lamp-q-bulb');
+    if (!toggle || !slider || !qBulb) return;
+
+    function syncClassical() {
+      var on = toggle.getAttribute('aria-pressed') === 'true';
+      toggle.classList.toggle('on', on);
+      if (bulb) bulb.classList.toggle('on', on);
+    }
+
+    toggle.addEventListener('click', function () {
+      var on = toggle.getAttribute('aria-pressed') !== 'true';
+      toggle.setAttribute('aria-pressed', on ? 'true' : 'false');
+      syncClassical();
+    });
+
+    function syncQuantum() {
+      var raw = parseInt(slider.value, 10);
+      if (isNaN(raw)) raw = 0;
+      raw = Math.max(0, Math.min(100, raw));
+      slider.setAttribute('aria-valuenow', String(raw));
+      qBulb.style.setProperty('--q-glow', String(raw / 100));
+    }
+
+    slider.addEventListener('input', syncQuantum);
+    syncQuantum();
+    syncClassical();
   }
 
   /* ─── Bloch sphere renderer (reusable) ───────────────────────────────────── */
@@ -813,17 +1565,24 @@
     function draw() {
       ctx.clearRect(0, 0, W, H);
 
-      // sphere circle + glow
-      var bg = ctx.createRadialGradient(CX - R * 0.22, CY - R * 0.3, R * 0.12, CX, CY, R * 1.05);
-      bg.addColorStop(0, 'rgba(111,212,224,0.25)');
-      bg.addColorStop(0.55, 'rgba(127,255,196,0.07)');
+      // sphere fill + rim — explicit bright colors so the sphere reads on near-black UI
+      var bg = ctx.createRadialGradient(CX - R * 0.22, CY - R * 0.3, R * 0.1, CX, CY, R * 1.08);
+      bg.addColorStop(0, rgbaVar('--cyan-rgb', 0.38, '111,212,224'));
+      bg.addColorStop(0.45, rgbaVar('--cyan-rgb', 0.16, '111,212,224'));
+      bg.addColorStop(0.78, rgbaVar('--line-bright-rgb', 0.12, '54,80,68'));
       bg.addColorStop(1, 'rgba(0,0,0,0)');
       ctx.fillStyle = bg;
       ctx.beginPath(); ctx.arc(CX, CY, R, 0, Math.PI * 2); ctx.fill();
 
       ctx.beginPath(); ctx.arc(CX, CY, R, 0, Math.PI * 2);
-      ctx.strokeStyle = 'var(--cyan)'; ctx.lineWidth = 1.2;
-      ctx.globalAlpha = 0.72; ctx.stroke(); ctx.globalAlpha = 1;
+      ctx.strokeStyle = rgbaVar('--cyan-rgb', 0.95, '111,212,224');
+      ctx.lineWidth = 2;
+      ctx.globalAlpha = 1;
+      ctx.stroke();
+      ctx.beginPath(); ctx.arc(CX, CY, R - 1.3, 0, Math.PI * 2);
+      ctx.strokeStyle = rgbaVar('--cyan-rgb', 0.35, '111,212,224');
+      ctx.lineWidth = 1;
+      ctx.stroke();
 
       // equator
       ctx.beginPath(); ctx.setLineDash([3, 4]);
@@ -832,8 +1591,10 @@
         var p = proj(Math.cos(a), Math.sin(a), 0);
         i === 0 ? ctx.moveTo(p.sx, p.sy) : ctx.lineTo(p.sx, p.sy);
       }
-      ctx.strokeStyle = 'var(--cyan)'; ctx.lineWidth = 0.95;
-      ctx.globalAlpha = 0.45; ctx.stroke();
+      ctx.strokeStyle = rgbaVar('--cyan-rgb', 0.72, '111,212,224');
+      ctx.lineWidth = 1.15;
+      ctx.globalAlpha = 1;
+      ctx.stroke();
       ctx.setLineDash([]); ctx.globalAlpha = 1;
 
       // meridian
@@ -843,23 +1604,27 @@
         var q = proj(Math.cos(b), 0, Math.sin(b));
         j === 0 ? ctx.moveTo(q.sx, q.sy) : ctx.lineTo(q.sx, q.sy);
       }
-      ctx.strokeStyle = 'var(--magenta)'; ctx.lineWidth = 0.9;
-      ctx.globalAlpha = 0.35; ctx.stroke(); ctx.globalAlpha = 1;
+      ctx.strokeStyle = rgbaVar('--magenta-rgb', 0.68, '230,127,184');
+      ctx.lineWidth = 1.05;
+      ctx.globalAlpha = 1;
+      ctx.stroke();
+      ctx.globalAlpha = 1;
 
       // x / y reference axes (drawn under the state vector)
       var axes = [
-        { d:[0,0, 0.95], lbl:'|0⟩', col:'var(--cyan)',    a:0.8, pole: true },
-        { d:[0,0,-0.88],  lbl:'|1⟩', col:'var(--phos)',    a:0.5, pole: true },
-        { d:[0.9,0,0],    lbl:'x',   col:'var(--magenta)', a:0.4, pole: false },
-        { d:[0,0.9,0],    lbl:'y',   col:'var(--amber)',   a:0.4, pole: false },
+        { d:[0,0, 0.95], lbl:'|0⟩', col:rgbaVar('--cyan-rgb', 1, '111,212,224'), line:rgbaVar('--cyan-rgb', 0.98, '111,212,224'), pole: true },
+        { d:[0,0,-0.88], lbl:'|1⟩', col:rgbaVar('--phos-rgb', 1, '127,255,196'), line:rgbaVar('--phos-rgb', 0.95, '127,255,196'), pole: true },
+        { d:[0.9,0,0], lbl:'x', col:rgbaVar('--magenta-rgb', 0.95, '230,127,184'), line:rgbaVar('--magenta-rgb', 0.88, '230,127,184'), pole: false },
+        { d:[0,0.9,0], lbl:'y', col:rgbaVar('--amber-rgb', 0.95, '255,184,101'), line:rgbaVar('--amber-rgb', 0.88, '255,184,101'), pole: false },
       ];
       axes.filter(function (ax) { return !ax.pole; }).forEach(function (ax) {
         var o = proj(0,0,0), e = proj(ax.d[0],ax.d[1],ax.d[2]);
         ctx.beginPath(); ctx.moveTo(o.sx,o.sy); ctx.lineTo(e.sx,e.sy);
-        ctx.strokeStyle = ax.col; ctx.lineWidth = 1;
-        ctx.globalAlpha = ax.a; ctx.stroke();
+        ctx.strokeStyle = ax.line; ctx.lineWidth = 1.25;
+        ctx.globalAlpha = 0.88;
+        ctx.stroke();
         ctx.font = '11px var(--mono)'; ctx.fillStyle = ax.col;
-        ctx.globalAlpha = ax.a * 0.9;
+        ctx.globalAlpha = 0.95;
         ctx.fillText(ax.lbl, e.sx+4, e.sy+4);
         ctx.globalAlpha = 1;
       });
@@ -872,15 +1637,19 @@
 
       // glow
       var grd = ctx.createRadialGradient(tp.sx,tp.sy,0,tp.sx,tp.sy,15);
-      grd.addColorStop(0,'rgba(127,255,196,0.45)');
-      grd.addColorStop(1,'rgba(127,255,196,0)');
+      grd.addColorStop(0, rgbaVar('--phos-rgb', 0.55, '127,255,196'));
+      grd.addColorStop(1, rgbaVar('--phos-rgb', 0, '127,255,196'));
       ctx.fillStyle = grd; ctx.beginPath();
       ctx.arc(tp.sx,tp.sy,15,0,Math.PI*2); ctx.fill();
 
       // shaft
       ctx.beginPath(); ctx.moveTo(o.sx,o.sy); ctx.lineTo(tp.sx,tp.sy);
-      ctx.strokeStyle = 'var(--phos)'; ctx.lineWidth = 2.2; ctx.lineCap = 'round';
-      ctx.globalAlpha = 0.9; ctx.stroke(); ctx.globalAlpha = 1;
+      ctx.strokeStyle = rgbaVar('--phos-rgb', 0.95, '127,255,196');
+      ctx.lineWidth = 2.35;
+      ctx.lineCap = 'round';
+      ctx.globalAlpha = 1;
+      ctx.stroke();
+      ctx.globalAlpha = 1;
 
       // arrowhead
       var dx = tp.sx-o.sx, dy = tp.sy-o.sy, len = Math.sqrt(dx*dx+dy*dy)||1;
@@ -889,37 +1658,39 @@
       ctx.moveTo(tp.sx,tp.sy);
       ctx.lineTo(tp.sx-ux*9+(-uy)*4.5, tp.sy-uy*9+ux*4.5);
       ctx.lineTo(tp.sx-ux*9-(-uy)*4.5, tp.sy-uy*9-ux*4.5);
-      ctx.closePath(); ctx.fillStyle = 'var(--phos)'; ctx.fill();
+      ctx.closePath();
+      ctx.fillStyle = rgbaVar('--phos-rgb', 0.98, '127,255,196');
+      ctx.fill();
 
       // tip dot
       ctx.beginPath(); ctx.arc(tp.sx,tp.sy,4,0,Math.PI*2);
-      ctx.fillStyle = 'var(--ink)'; ctx.fill();
+      ctx.fillStyle = rgbaVar('--ink-rgb', 0.98, '212,228,219');
+      ctx.fill();
 
-      // |0⟩, |1⟩ poles on top of glow + state arrow (readable at full opacity)
+      // |0⟩, |1⟩ poles on top of glow + state arrow
       axes.filter(function (ax) { return ax.pole; }).forEach(function (ax) {
         var o = proj(0,0,0), e = proj(ax.d[0],ax.d[1],ax.d[2]);
         ctx.beginPath(); ctx.moveTo(o.sx,o.sy); ctx.lineTo(e.sx,e.sy);
-        ctx.strokeStyle = ax.col;
-        ctx.lineWidth = 2;
+        ctx.strokeStyle = ax.line;
+        ctx.lineWidth = 2.4;
         ctx.globalAlpha = 1;
         ctx.stroke();
 
         ctx.beginPath();
-        ctx.arc(e.sx, e.sy, 5.5, 0, Math.PI * 2);
+        ctx.arc(e.sx, e.sy, 6, 0, Math.PI * 2);
         ctx.fillStyle = ax.col;
         ctx.globalAlpha = 1;
         ctx.fill();
-        ctx.strokeStyle = 'rgba(8,12,10,0.95)';
-        ctx.lineWidth = 1.2;
+        ctx.strokeStyle = 'rgba(30, 70, 75, 0.55)';
+        ctx.lineWidth = 1.25;
         ctx.stroke();
 
         var lx = e.sx + 6, ly = e.sy + 5;
         ctx.font = 'bold 12px var(--mono)';
         ctx.textBaseline = 'alphabetic';
         ctx.lineJoin = 'round';
-        ctx.lineWidth = 3.5;
-        ctx.strokeStyle = 'rgba(10,14,12,0.94)';
-        ctx.globalAlpha = 1;
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = 'rgba(18, 42, 46, 0.55)';
         ctx.strokeText(ax.lbl, lx, ly);
         ctx.fillStyle = ax.col;
         ctx.fillText(ax.lbl, lx, ly);
@@ -1029,148 +1800,146 @@
       return [Math.acos(Math.max(-1,Math.min(1,z))), Math.atan2(y,x)];
     }
 
-    document.querySelectorAll('.home-gate-btn').forEach(function (btn) {
-      btn.addEventListener('click', function () {
-        var g = btn.dataset.gate;
-        if (g==='RESET') {
-          state=[0,0]; history=[];
-          sphere.animateTo(0,0);
-          if (histEl) histEl.innerHTML='No gates applied yet';
-          if (stateEl) stateEl.textContent='State: |0⟩';
-          if (typeof global.scheduleMathRender === 'function') global.scheduleMathRender(stateEl || document.body);
-          return;
-        }
-        state = applyGate(g, state[0], state[1]);
-        history.push(g);
-        sphere.animateTo(state[0], state[1]);
-        if (histEl) histEl.innerHTML = history.map(function(g){return '<span class="gh-gate">'+g+'</span>';}).join(' → ');
-        if (stateEl) stateEl.textContent = stateLabel(state[0], state[1]);
+    function onGateActivate(btn) {
+      var g = btn.dataset.gate;
+      if (g==='RESET') {
+        state=[0,0]; history=[];
+        sphere.animateTo(0,0);
+        if (histEl) histEl.innerHTML='No gates applied yet';
+        if (stateEl) stateEl.textContent='State: |0⟩';
         if (typeof global.scheduleMathRender === 'function') global.scheduleMathRender(stateEl || document.body);
+        return;
+      }
+      state = applyGate(g, state[0], state[1]);
+      history.push(g);
+      sphere.animateTo(state[0], state[1]);
+      if (histEl) histEl.innerHTML = history.map(function(gg){return '<span class="gh-gate">'+gg+'</span>';}).join(' → ');
+      if (stateEl) stateEl.textContent = stateLabel(state[0], state[1]);
+      if (typeof global.scheduleMathRender === 'function') global.scheduleMathRender(stateEl || document.body);
+    }
+
+    document.querySelectorAll('.home-gate-card[data-gate]').forEach(function (btn) {
+      btn.addEventListener('click', function () { onGateActivate(btn); });
+      btn.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onGateActivate(btn); }
       });
     });
   }
 
-  /* ─── Electron spin superposition demo ─────────────────────────────────── */
+  /* ─── Electron spin superposition demo — 3D Bloch-style ───────────────── */
   function initSpinDemo() {
-    var canvas = document.getElementById('home-spin-canvas');
+    var canvas = document.getElementById('home-spin3d-canvas');
     if (!canvas) return;
     var ctx = canvas.getContext('2d');
     var W = canvas.width, H = canvas.height;
+    var CX = W / 2, CY = H / 2;
+    var ORB_R = W * 0.26;
+
     var state = 'plus';
-    var scrollSpinPhase = 0;
-    var spinScrollRaf = null;
-    var spinPlusAnimId = null;
+    var spinAngle = 0;          // 0 = right, -PI/2 = up, PI/2 = down
+    var targetAngle = spinAngle;
+    var precessing = true;
+    var pulse = 0;
 
-    function stopSpinPlusAnim() {
-      if (spinPlusAnimId) cancelAnimationFrame(spinPlusAnimId);
-      spinPlusAnimId = null;
-    }
-    function startSpinPlusAnim() {
-      if (state !== 'plus' || spinPlusAnimId) return;
-      function frame() {
-        if (state !== 'plus') { spinPlusAnimId = null; return; }
-        draw();
-        spinPlusAnimId = requestAnimationFrame(frame);
-      }
-      spinPlusAnimId = requestAnimationFrame(frame);
-    }
-
-    function drawArrow(x, y, len, ang, col) {
-      var ex = x + len * Math.cos(ang), ey = y + len * Math.sin(ang);
-      ctx.strokeStyle = col; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(ex, ey); ctx.stroke();
-      ctx.fillStyle = col;
+    function drawHead(px, py, ux, uy, col) {
       ctx.beginPath();
-      ctx.moveTo(ex, ey);
-      ctx.lineTo(ex - 8 * Math.cos(ang - 0.45), ey - 8 * Math.sin(ang - 0.45));
-      ctx.lineTo(ex - 8 * Math.cos(ang + 0.45), ey - 8 * Math.sin(ang + 0.45));
-      ctx.closePath(); ctx.fill();
+      ctx.moveTo(px, py);
+      ctx.lineTo(px - ux * 11 + (-uy) * 5, py - uy * 11 + ux * 5);
+      ctx.lineTo(px - ux * 11 - (-uy) * 5, py - uy * 11 - ux * 5);
+      ctx.closePath();
+      ctx.fillStyle = col;
+      ctx.fill();
     }
 
     function draw() {
       ctx.clearRect(0, 0, W, H);
-      ctx.fillStyle = 'rgba(16,22,19,0.95)';
-      ctx.fillRect(0, 0, W, H);
-      ctx.strokeStyle = 'var(--line-bright)';
-      ctx.strokeRect(18, 18, W - 36, H - 36);
 
-      // left: preparation axis x
-      ctx.font = '10px var(--mono)';
-      ctx.fillStyle = 'var(--ink-faint)';
-      ctx.fillText('prepare', 46, 36);
-      ctx.fillText('measure z', 226, 36);
+      var orb = ctx.createRadialGradient(CX - ORB_R * 0.3, CY - ORB_R * 0.35, ORB_R * 0.12, CX, CY, ORB_R * 1.2);
+      orb.addColorStop(0, rgbaVar('--cyan-rgb', 0.58, '111,212,224'));
+      orb.addColorStop(0.42, rgbaVar('--cyan-rgb', 0.26, '111,212,224'));
+      orb.addColorStop(0.85, rgbaVar('--line-bright-rgb', 0.24, '54,80,68'));
+      orb.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = orb;
+      ctx.beginPath(); ctx.arc(CX, CY, ORB_R, 0, Math.PI * 2); ctx.fill();
 
-      ctx.beginPath(); ctx.arc(92, 102, 38, 0, Math.PI * 2); ctx.strokeStyle = 'rgba(111,212,224,0.55)'; ctx.stroke();
-      var prepAng;
-      if (state === 'plus') {
-        var t = (typeof performance !== 'undefined' && performance.now) ? performance.now() * 0.0012 : 0;
-        prepAng = scrollSpinPhase + 0.1 * Math.sin(t * 1.6);
-      } else if (state === '0') {
-        prepAng = -Math.PI / 2;
-      } else {
-        prepAng = Math.PI / 2;
-      }
-      drawArrow(92, 102, 32, prepAng, 'var(--cyan)');
-      ctx.fillStyle = 'var(--cyan)'; ctx.fillText('|+>', 114, 105);
-
-      // right measurement outcomes
-      ctx.beginPath(); ctx.arc(268, 72, 24, 0, Math.PI * 2); ctx.strokeStyle = 'rgba(127,255,196,0.65)'; ctx.stroke();
-      ctx.beginPath(); ctx.arc(268, 132, 24, 0, Math.PI * 2); ctx.strokeStyle = 'rgba(230,127,184,0.65)'; ctx.stroke();
-      ctx.fillStyle = 'var(--phos)'; ctx.fillText('|0>', 258, 76);
-      ctx.fillStyle = 'var(--magenta)'; ctx.fillText('|1>', 258, 136);
+      ctx.beginPath(); ctx.arc(CX, CY, ORB_R, 0, Math.PI * 2);
+      ctx.strokeStyle = rgbaVar('--cyan-rgb', 0.95, '111,212,224');
+      ctx.lineWidth = 2;
+      ctx.stroke();
 
       if (state === 'plus') {
-        drawArrow(150, 102, 72, -0.28, 'rgba(255,184,101,0.85)');
-        drawArrow(150, 102, 72, 0.28, 'rgba(255,184,101,0.55)');
-      } else if (state === '0') {
-        drawArrow(150, 102, 72, -0.52, 'var(--phos)');
-      } else {
-        drawArrow(150, 102, 72, 0.52, 'var(--magenta)');
+        ctx.beginPath();
+        ctx.arc(CX, CY, ORB_R + 7 + 2.8 * Math.sin(performance.now() * 0.004), 0, Math.PI * 2);
+        ctx.strokeStyle = rgbaVar('--phos-rgb', 0.22, '127,255,196');
+        ctx.lineWidth = 1.1;
+        ctx.stroke();
       }
+
+      var len = ORB_R * 1.08;
+      var ux = Math.cos(spinAngle);
+      var uy = Math.sin(spinAngle);
+      var tip = { x: CX + ux * len, y: CY + uy * len };
+      var tail = { x: CX - ux * len, y: CY - uy * len };
+      var shaftCol = (state === '1') ? rgbaVar('--magenta-rgb', 0.96, '230,127,184') : rgbaVar('--phos-rgb', 0.96, '127,255,196');
+
+      ctx.beginPath();
+      ctx.moveTo(tail.x, tail.y);
+      ctx.lineTo(tip.x, tip.y);
+      ctx.strokeStyle = shaftCol;
+      ctx.lineWidth = 3.2;
+      ctx.lineCap = 'round';
+      ctx.stroke();
+
+      var dx = tip.x - tail.x, dy = tip.y - tail.y;
+      var vlen = Math.sqrt(dx * dx + dy * dy) || 1;
+      var vx = dx / vlen, vy = dy / vlen;
+      drawHead(tip.x, tip.y, vx, vy, shaftCol);
+      drawHead(tail.x, tail.y, -vx, -vy, shaftCol);
+
+      ctx.beginPath();
+      ctx.arc(CX, CY, 4 + pulse * 2.5, 0, Math.PI * 2);
+      ctx.fillStyle = rgbaVar('--ink-rgb', 0.94, '212,228,219');
+      ctx.fill();
+      if (pulse > 0) pulse = Math.max(0, pulse - 0.05);
     }
 
-    function queueSpinScrollDraw() {
-      if (spinScrollRaf) return;
-      spinScrollRaf = requestAnimationFrame(function () {
-        spinScrollRaf = null;
-        var sec = document.getElementById('home-spin-section');
-        if (!sec) return;
-        var r = sec.getBoundingClientRect();
-        var vh = window.innerHeight || 600;
-        if (r.bottom < 24 || r.top > vh - 24) return;
-        var u = (vh * 0.55 - r.top) / (vh * 0.65 + r.height * 0.5);
-        u = Math.max(0, Math.min(1, u));
-        scrollSpinPhase = u * Math.PI * 2.8;
-        if (state === 'plus') draw();
-      });
+    function frame() {
+      if (precessing && state === 'plus') {
+        spinAngle += 0.028;
+      } else {
+        spinAngle += (targetAngle - spinAngle) * 0.17;
+      }
+      draw();
+      requestAnimationFrame(frame);
     }
-    window.addEventListener('scroll', queueSpinScrollDraw, { passive: true });
-    window.addEventListener('resize', queueSpinScrollDraw, { passive: true });
-    queueSpinScrollDraw();
 
     var stateEl = document.getElementById('home-spin-state');
+    function setStateText(text, settled) {
+      if (!stateEl) return;
+      stateEl.textContent = text;
+      stateEl.classList.toggle('settled', !!settled);
+      if (typeof global.scheduleMathRender === 'function') global.scheduleMathRender(stateEl);
+    }
+
     document.getElementById('home-spin-super-btn').addEventListener('click', function () {
       state = 'plus';
-      stopSpinPlusAnim();
-      draw();
-      startSpinPlusAnim();
-      if (stateEl) {
-        stateEl.textContent = '\\(|\\psi\\rangle = |+\\rangle = (|0\\rangle + |1\\rangle)/\\sqrt{2}\\)';
-        stateEl.classList.remove('settled');
-        if (typeof global.scheduleMathRender === 'function') global.scheduleMathRender(stateEl);
-      }
+      precessing = true;
+      targetAngle = spinAngle;
+      setStateText('\\(|\\psi\\rangle = |+\\rangle = (|0\\rangle + |1\\rangle)/\\sqrt{2}\\)', false);
     });
     document.getElementById('home-spin-measure-btn').addEventListener('click', function () {
-      stopSpinPlusAnim();
-      state = (Math.random() > 0.5) ? '0' : '1';
-      draw();
-      if (stateEl) {
-        stateEl.textContent = state === '0' ? '\\(|\\psi\\rangle \\to |0\\rangle\\) (spin up)' : '\\(|\\psi\\rangle \\to |1\\rangle\\) (spin down)';
-        stateEl.classList.add('settled');
-        if (typeof global.scheduleMathRender === 'function') global.scheduleMathRender(stateEl);
-      }
+      var up = Math.random() > 0.5;
+      precessing = false;
+      state = up ? '0' : '1';
+      targetAngle = up ? (-Math.PI / 2) : (Math.PI / 2);
+      pulse = 1;
+      setStateText(
+        up ? '\\(|\\psi\\rangle \\to |0\\rangle\\) (spin up)' : '\\(|\\psi\\rangle \\to |1\\rangle\\) (spin down)',
+        true
+      );
     });
-    draw();
-    startSpinPlusAnim();
+
+    frame();
   }
 
   /* ─── Quantum coin flip ──────────────────────────────────────────────────── */
@@ -1257,7 +2026,95 @@
     });
   }
 
-  /* ─── Scroll reveal ──────────────────────────────────────────────────────── */
+  /* ─── Applications cards (tap-to-reveal on touch) ─────────────────────── */
+  function wireAppsCards() {
+    document.querySelectorAll('.home-app-card').forEach(function (card) {
+      if (!card.hasAttribute('tabindex')) card.setAttribute('tabindex', '0');
+      card.addEventListener('click', function () {
+        card.classList.toggle('show-details');
+      });
+      card.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          card.classList.toggle('show-details');
+        }
+      });
+    });
+  }
+
+  /* ─── Floating background arrows across page ───────────────────────────── */
+  function initFloatingArrows() {
+    var root = document.getElementById('home-floating-arrows');
+    if (!root) return;
+
+    function spawn() {
+      root.innerHTML = '';
+      var w = Math.max(900, window.innerWidth || 1200);
+      var h = Math.max(700, window.innerHeight || 900);
+      var count = Math.max(26, Math.floor((w * h) / 52000));
+      var palettes = ['', 'cyan', 'magenta', 'amber'];
+      for (var i = 0; i < count; i++) {
+        var el = document.createElement('span');
+        var col = palettes[(i + Math.floor(Math.random() * 4)) % 4];
+        el.className = 'home-floating-arrow' + (col ? (' ' + col) : '');
+        if (Math.random() > 0.52) el.classList.add('down');
+        el.textContent = '↑';
+        var x = Math.random() * 98;
+        var y = Math.random() * 98;
+        var rot = (Math.random() * 20 - 10).toFixed(1) + 'deg';
+        var delay = (-Math.random() * 8).toFixed(2) + 's';
+        var dur = (6.2 + Math.random() * 4.6).toFixed(2) + 's';
+        var size = (14 + Math.random() * 12).toFixed(1) + 'px';
+        el.style.left = x + '%';
+        el.style.top = y + '%';
+        el.style.setProperty('--rot', rot);
+        el.style.animationDelay = delay;
+        el.style.animationDuration = dur;
+        el.style.fontSize = size;
+        root.appendChild(el);
+      }
+    }
+
+    spawn();
+    window.addEventListener('resize', spawn, { passive: true });
+  }
+
+  /* ─── Schrödinger's cat — open the box ──────────────────────────────── */
+  function wireSchrodingerCat() {
+    var stage = document.getElementById('home-cat-stage');
+    var label = document.getElementById('home-cat-state-label');
+    var openBtn = document.getElementById('home-cat-open-btn');
+    var resetBtn = document.getElementById('home-cat-reset-btn');
+    if (!stage || !openBtn || !resetBtn) return;
+
+    function reset() {
+      stage.classList.remove('open', 'resolved-alive', 'resolved-dead');
+      stage.classList.add('superposition');
+      if (label) {
+        label.textContent = '\\(|\\text{cat}\\rangle = (|\\text{alive}\\rangle + |\\text{not}\\rangle)/\\sqrt{2}\\)';
+        if (typeof global.scheduleMathRender === 'function') global.scheduleMathRender(label);
+      }
+    }
+
+    function open() {
+      var alive = Math.random() > 0.5;
+      stage.classList.remove('superposition');
+      stage.classList.add('open');
+      stage.classList.add(alive ? 'resolved-alive' : 'resolved-dead');
+      if (label) {
+        label.textContent = alive
+          ? '\\(|\\text{cat}\\rangle \\to |\\text{alive}\\rangle\\) — ok, phew.'
+          : '\\(|\\text{cat}\\rangle \\to |\\text{not}\\rangle\\) — oh.';
+        if (typeof global.scheduleMathRender === 'function') global.scheduleMathRender(label);
+      }
+    }
+
+    openBtn.addEventListener('click', open);
+    resetBtn.addEventListener('click', reset);
+    reset();
+  }
+
+
   function initScrollReveal() {
     if (!window.IntersectionObserver) return;
     document.querySelectorAll('.home-reveal').forEach(function (el) {
@@ -1285,12 +2142,16 @@
 
     requestAnimationFrame(function () {
       initHeroCanvas();
+      initFloatingArrows();
       wireClassicalBit();
+      wireHomeLampBridge();
       wireBlochSphere();
       wireGateBloch();
       initSpinDemo();
       initCoinFlip();
       initBell();
+      wireAppsCards();
+      wireSchrodingerCat();
       initScrollReveal();
       if (typeof global.scheduleMathRender === 'function') global.scheduleMathRender(root);
     });

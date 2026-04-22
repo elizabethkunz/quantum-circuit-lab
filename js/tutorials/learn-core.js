@@ -31,6 +31,7 @@ function switchSubtab(which) {
     const el = document.getElementById('tut-' + id.slice(1));
     if (el) el.style.display = which === id ? '' : 'none';
   });
+  refreshTutorialProgressRails();
   if (which === 't1') {
     requestAnimationFrame(() => Object.values(blochInstances).forEach(b => b && b.draw()));
   }
@@ -50,12 +51,14 @@ function markDone(stepId) {
   const btn = card.querySelector('.step-next');
   if (btn) btn.disabled = false;
   updateProgressPills();
+  refreshTutorialProgressRails();
 }
 
 function unlockStep(stepId) {
   const card = document.querySelector(`[data-step="${stepId}"]`);
   if (!card) return;
   card.classList.remove('locked');
+  refreshTutorialProgressRails();
   setTimeout(() => {
     card.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }, 120);
@@ -79,4 +82,95 @@ function updateProgressPills() {
     const el = document.getElementById(t + '-progress');
     if (el) el.textContent = done[t] + ' / ' + totals[t];
   });
+}
+
+function createTutorialProgressRail(tutorialEl) {
+  const tutorialId = tutorialEl.id; // tut-1, tut-2, ...
+  if (!tutorialId) return;
+  const tutorialNum = tutorialId.split('-')[1];
+  const stepCards = Array.from(tutorialEl.querySelectorAll('.step-card[data-step]'));
+  if (!stepCards.length) return;
+
+  const existing = tutorialEl.querySelector('.tutorial-progress-rail');
+  if (existing) existing.remove();
+
+  const rail = document.createElement('nav');
+  rail.className = 'tutorial-progress-rail';
+  rail.setAttribute('aria-label', `Tutorial ${tutorialNum} progress`);
+  rail.dataset.tutorial = `t${tutorialNum}`;
+
+  stepCards.forEach((card, idx) => {
+    const stepNum = String(idx + 1).padStart(2, '0');
+    const title = (card.querySelector('.step-head h2') || {}).textContent || `Step ${stepNum}`;
+    const stepId = card.dataset.step;
+
+    const stepEl = document.createElement('div');
+    stepEl.className = 'tutorial-progress-step';
+    stepEl.dataset.stepRef = stepId;
+    const dot = document.createElement('div');
+    dot.className = 'tutorial-progress-dot';
+    dot.textContent = stepNum;
+    const label = document.createElement('div');
+    label.className = 'tutorial-progress-label';
+    label.title = title;
+    label.textContent = title;
+    stepEl.appendChild(dot);
+    stepEl.appendChild(label);
+    rail.appendChild(stepEl);
+
+    if (idx < stepCards.length - 1) {
+      const connector = document.createElement('div');
+      connector.className = 'tutorial-progress-connector';
+      rail.appendChild(connector);
+    }
+  });
+
+  const sourceBlock = tutorialEl.querySelector('.tutorial-sources');
+  if (sourceBlock && sourceBlock.parentNode === tutorialEl) {
+    sourceBlock.insertAdjacentElement('afterend', rail);
+  } else {
+    tutorialEl.insertBefore(rail, tutorialEl.firstChild);
+  }
+}
+
+function refreshTutorialProgressRails() {
+  document.querySelectorAll('.tutorial').forEach(tutorialEl => {
+    if (!tutorialEl.querySelector('.tutorial-progress-rail')) return;
+
+    const stepCards = Array.from(tutorialEl.querySelectorAll('.step-card[data-step]'));
+    const steps = Array.from(tutorialEl.querySelectorAll('.tutorial-progress-step'));
+    const connectors = Array.from(tutorialEl.querySelectorAll('.tutorial-progress-connector'));
+
+    let activeIndex = stepCards.findIndex(card => !stepProgress[card.dataset.step]);
+    if (activeIndex < 0) activeIndex = stepCards.length - 1;
+
+    steps.forEach((stepEl, idx) => {
+      const card = stepCards[idx];
+      if (!card) return;
+      const unlocked = !card.classList.contains('locked');
+      const done = !!stepProgress[card.dataset.step];
+      stepEl.classList.toggle('unlocked', unlocked);
+      stepEl.classList.toggle('done', done);
+      stepEl.classList.toggle('active', unlocked && idx === activeIndex && tutorialEl.style.display !== 'none');
+    });
+
+    connectors.forEach((conn, idx) => {
+      const currentDone = stepCards[idx] && stepProgress[stepCards[idx].dataset.step];
+      conn.classList.toggle('lit', !!currentDone);
+    });
+  });
+}
+
+function initTutorialProgressRails() {
+  ['tut-1', 'tut-2', 'tut-3', 'tut-4'].forEach(id => {
+    const tutorialEl = document.getElementById(id);
+    if (tutorialEl) createTutorialProgressRail(tutorialEl);
+  });
+  refreshTutorialProgressRails();
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initTutorialProgressRails);
+} else {
+  initTutorialProgressRails();
 }

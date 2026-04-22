@@ -18,9 +18,9 @@ function render2x2DM(containerId, rho00, rho01re, rho01im, rho11, opts) {
     ? rho01re.toFixed(3)
     : (rho01re.toFixed(2) + (rho01im >= 0 ? '−' : '+') + Math.abs(rho01im).toFixed(2) + 'i');
 
-  const diagBg0 = `rgba(127,255,196,${0.05 + rho00 * 0.35})`;
-  const diagBg1 = `rgba(127,255,196,${0.05 + rho11 * 0.35})`;
-  const offBg   = offZero ? 'var(--bg-2)' : `rgba(111,212,224,${0.08 + offAmt * 0.4})`;
+  const diagBg0 = `rgba(var(--phos-rgb), ${0.05 + rho00 * 0.35})`;
+  const diagBg1 = `rgba(var(--phos-rgb), ${0.05 + rho11 * 0.35})`;
+  const offBg   = offZero ? 'var(--bg-2)' : `rgba(var(--cyan-rgb), ${0.08 + offAmt * 0.4})`;
 
   el.innerHTML = `<div class="dm-2x2">
     <div class="dm-2x2-corner"></div>
@@ -258,8 +258,8 @@ function renderHist(containerId, p0, p1, barClass, label0, label1) {
       <circle cx="${cx}" cy="${cy}" r="${R}" fill="url(#bb-glow)" opacity="0.3"/>
       <defs>
         <radialGradient id="bb-glow" cx="50%" cy="40%" r="60%">
-          <stop offset="0%" stop-color="rgba(127,255,196,0.1)"/>
-          <stop offset="100%" stop-color="rgba(0,0,0,0)"/>
+          <stop offset="0%" stop-color="var(--phos)" stop-opacity="0.1"/>
+          <stop offset="100%" stop-color="var(--phos)" stop-opacity="0"/>
         </radialGradient>
       </defs>
       <path d="${pathFor(eq,false)}" stroke="var(--line-bright)" stroke-width="1" fill="none" stroke-dasharray="2 3" opacity="0.5"/>

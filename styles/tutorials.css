@@ -2,17 +2,24 @@
     display: flex;
     flex-direction: column;
     gap: 20px;
+    --tutorial-accent: var(--phos);
+    --tutorial-accent-dim: var(--phos-dim);
   }
+  #tut-1 { --tutorial-accent: var(--phos); --tutorial-accent-dim: var(--phos-dim); }
+  #tut-2 { --tutorial-accent: var(--cyan); --tutorial-accent-dim: var(--cyan); }
+  #tut-3 { --tutorial-accent: var(--magenta); --tutorial-accent-dim: var(--magenta); }
+  #tut-4 { --tutorial-accent: var(--amber); --tutorial-accent-dim: var(--amber-dim); }
   .step-card {
     background: var(--bg-1);
     border: 1px solid var(--line);
+    border-left: 2px solid var(--tutorial-accent-dim);
     border-radius: 2px;
     padding: 28px 32px;
     transition: opacity 0.3s, filter 0.3s;
     position: relative;
   }
   .step-card.locked {
-    opacity: 0.35;
+    opacity: 0.5;
     filter: saturate(0.3);
     pointer-events: none;
   }
@@ -25,16 +32,16 @@
     font-family: var(--mono);
     font-size: 11px;
     letter-spacing: 0.15em;
-    color: var(--phos);
+    color: var(--tutorial-accent);
     background: var(--bg-0);
-    padding: 8px 18px;
-    border: 1px solid var(--phos-dim);
+    padding: 8px 16px;
+    border: 1px solid var(--tutorial-accent-dim);
     text-transform: uppercase;
     pointer-events: none;
   }
   .step-card.done .step-num::after {
     content: ' · done';
-    color: var(--phos);
+    color: var(--tutorial-accent);
   }
   .step-head {
     margin-bottom: 18px;
@@ -45,7 +52,7 @@
     font-family: var(--mono);
     font-size: 10px;
     letter-spacing: 0.2em;
-    color: var(--phos-dim);
+    color: var(--tutorial-accent-dim);
     text-transform: uppercase;
     margin-bottom: 8px;
   }
@@ -105,12 +112,85 @@
     text-transform: uppercase;
   }
   .step-card.done .action-prompt {
-    color: var(--phos-dim);
+    color: var(--tutorial-accent-dim);
   }
   .step-card.done .action-prompt::before {
     content: '✓ ';
-    color: var(--phos);
+    color: var(--tutorial-accent);
   }
+
+  .tutorial-sources {
+    border-left: 2px solid var(--tutorial-accent-dim);
+  }
+
+  .tutorial-progress-rail {
+    display: flex;
+    align-items: center;
+    margin: 4px 0 2px;
+    padding: 14px 16px;
+    border: 1px solid var(--line);
+    border-left: 2px solid var(--tutorial-accent-dim);
+    background: var(--bg-1);
+    overflow-x: auto;
+  }
+  .tutorial-progress-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    min-width: 74px;
+    opacity: 0.3;
+    transition: opacity 0.25s;
+  }
+  .tutorial-progress-step.unlocked { opacity: 1; }
+  .tutorial-progress-dot {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 1.5px solid var(--line-bright);
+    background: var(--bg-2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--ink-faint);
+    transition: all 0.25s;
+  }
+  .tutorial-progress-step.unlocked .tutorial-progress-dot {
+    border-color: var(--tutorial-accent);
+    color: var(--tutorial-accent);
+  }
+  .tutorial-progress-step.active .tutorial-progress-dot {
+    box-shadow: 0 0 0 3px rgba(var(--phos-rgb), 0.18);
+  }
+  .tutorial-progress-step.done .tutorial-progress-dot {
+    background: var(--tutorial-accent);
+    border-color: var(--tutorial-accent);
+    color: var(--bg-0);
+  }
+  .tutorial-progress-label {
+    font-family: var(--mono);
+    font-size: 8px;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    text-align: center;
+    max-width: 72px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .tutorial-progress-step.unlocked .tutorial-progress-label { color: var(--ink-dim); }
+  .tutorial-progress-connector {
+    flex: 1;
+    height: 1px;
+    background: var(--line-bright);
+    margin-bottom: 22px;
+    min-width: 12px;
+    transition: background 0.25s;
+  }
+  .tutorial-progress-connector.lit { background: var(--tutorial-accent); }
   .step-next:disabled {
     opacity: 0.3;
     cursor: not-allowed;
@@ -151,13 +231,13 @@
     position: absolute;
     inset: 10px;
     border-radius: 50%;
-    background: radial-gradient(circle, rgba(127,255,196,0) 0%, rgba(127,255,196,0) 100%);
+    background: radial-gradient(circle, rgba(var(--phos-rgb), 0) 0%, rgba(var(--phos-rgb), 0) 100%);
     transition: background 0.3s;
   }
   .bit-switch.on .bit-glow {
-    background: radial-gradient(circle, rgba(127,255,196,0.5) 0%, rgba(127,255,196,0) 70%);
+    background: radial-gradient(circle, rgba(var(--phos-rgb), 0.5) 0%, rgba(var(--phos-rgb), 0) 70%);
   }
-  .bit-switch.on { border-color: var(--phos); box-shadow: 0 0 20px rgba(127,255,196,0.25); }
+  .bit-switch.on { border-color: var(--phos); box-shadow: 0 0 20px rgba(var(--phos-rgb), 0.25); }
   .bit-value {
     font-family: var(--serif);
     font-weight: 300;
@@ -246,7 +326,7 @@
   .preset-btn:hover, .apply-gate-btn:hover {
     border-color: var(--phos);
     color: var(--phos);
-    box-shadow: 0 0 10px rgba(127,255,196,0.2);
+    box-shadow: 0 0 10px rgba(var(--phos-rgb), 0.2);
   }
   .reset-gate-btn {
     font-family: var(--mono);
@@ -446,11 +526,11 @@
     background: var(--amber);
     border-radius: 50%;
     cursor: pointer;
-    box-shadow: 0 0 10px rgba(255,184,101,0.5);
+    box-shadow: 0 0 10px rgba(var(--amber-rgb), 0.5);
   }
   .t1-noise-slider::-moz-range-thumb {
     width: 14px; height: 14px; background: var(--amber); border-radius: 50%; border: none;
-    box-shadow: 0 0 10px rgba(255,184,101,0.5);
+    box-shadow: 0 0 10px rgba(var(--amber-rgb), 0.5);
   }
 
   /* =========================================================
@@ -936,7 +1016,7 @@
     transform: scale(1.4);
     z-index: 10;
     border-color: var(--phos);
-    box-shadow: 0 0 10px rgba(127,255,196,0.3);
+    box-shadow: 0 0 10px rgba(var(--phos-rgb), 0.3);
   }
   .dm-cell .cell-val {
     position: absolute;
@@ -980,7 +1060,7 @@
     letter-spacing: 0.08em;
     margin-bottom: 10px;
     padding: 6px 10px;
-    background: rgba(255,184,101,0.06);
+    background: rgba(var(--amber-rgb), 0.06);
     border-left: 2px solid var(--amber-dim);
   }
 
@@ -1040,7 +1120,7 @@
   }
   .ctx-fact-dropdown {
     border: 1px solid var(--line-bright);
-    background: rgba(0, 0, 0, 0.2);
+    background: rgba(var(--bg-0-rgb), 0.2);
   }
   .ctx-fact-toggle {
     width: 100%;
@@ -1124,7 +1204,7 @@
   .ctx-action-btn:hover {
     border-color: var(--ctx-color, var(--phos));
     color: var(--ctx-color, var(--phos));
-    box-shadow: 0 0 8px rgba(127,255,196,0.12);
+    box-shadow: 0 0 8px rgba(var(--phos-rgb), 0.12);
   }
   .ctx-dismiss {
     position: absolute;
@@ -1158,7 +1238,7 @@
   .cnot-inputs, .cnot-output { display: flex; flex-direction: column; gap: 10px; }
   .cnot-arrow { font-family: var(--mono); font-size: 12px; letter-spacing: 0.1em; color: var(--phos-dim); text-align: center; white-space: nowrap; }
   .cnot-ctrl-btn, .t2-product-btn { background: var(--bg-0); border: 1px solid var(--line-bright); color: var(--ink-dim); font-family: var(--serif); font-size: 15px; padding: 8px 14px; cursor: pointer; transition: all 0.15s; min-width: 54px; }
-  .cnot-ctrl-btn.active, .t2-product-btn.active { border-color: var(--phos); color: var(--phos); background: var(--bg-1); box-shadow: 0 0 8px rgba(127,255,196,0.15); }
+  .cnot-ctrl-btn.active, .t2-product-btn.active { border-color: var(--phos); color: var(--phos); background: var(--bg-1); box-shadow: 0 0 8px rgba(var(--phos-rgb), 0.15); }
   .cnot-ctrl-btn:hover:not(.active), .t2-product-btn:hover:not(.active) { border-color: var(--phos-dim); color: var(--ink); }
   .bell-builder { margin: 20px 0 8px; padding: 22px; background: var(--bg-2); border: 1px solid var(--line); }
   .bell-steps-nav { display: flex; gap: 8px; margin-bottom: 20px; border-bottom: 1px solid var(--line); padding-bottom: 14px; flex-wrap: wrap; }
@@ -1187,7 +1267,7 @@
   .hist-bar { height: 100%; transition: width 0.4s ease; }
   .hist-bar.superpos { background: linear-gradient(90deg, var(--phos-dim), var(--phos)); }
   .hist-bar.mixture  { background: linear-gradient(90deg, var(--amber-dim), var(--amber)); }
-  .hist-bar.neutral  { background: linear-gradient(90deg, var(--cyan), #5abbc8); }
+  .hist-bar.neutral  { background: linear-gradient(90deg, var(--cyan), rgba(var(--cyan-rgb), 0.8)); }
   .hist-val { color: var(--phos); text-align: right; }
   .hist-val.amber { color: var(--amber); }
   .hist-val.neutral { color: var(--cyan); }

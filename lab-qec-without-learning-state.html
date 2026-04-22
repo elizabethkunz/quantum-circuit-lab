@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,400&family=JetBrains+Mono:wght@300;400;500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles/base.css" />
+  <link rel="stylesheet" href="styles/labs.css" />
   <style>
     .lab-hero {
       border: 1px solid var(--line);
@@ -225,6 +226,9 @@
         <div class="brand-mark">Quantum <span class="amp">&amp;</span> Lab</div>
         <div class="brand-tag">Lab · Surface code (distance 5)</div>
       </div>
+    <div class="lab-tools">
+      <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Enable light mode">Light mode</button>
+    </div>
     </header>
 
     <section class="lab-hero">
@@ -307,6 +311,34 @@
   </div>
 
   <script>
+    (function initLabThemeToggle() {
+      var STORAGE_KEY = 'quantum-lab-theme';
+      var root = document.documentElement;
+      var button = document.getElementById('theme-toggle');
+      if (!button) return;
+
+      var currentTheme = localStorage.getItem(STORAGE_KEY) === 'light' ? 'light' : 'dark';
+
+      function applyTheme(theme) {
+        if (theme === 'light') {
+          root.setAttribute('data-theme', 'light');
+        } else {
+          root.removeAttribute('data-theme');
+        }
+        button.setAttribute('data-theme', theme);
+        button.setAttribute('aria-pressed', String(theme === 'light'));
+        button.setAttribute('aria-label', theme === 'light' ? 'Switch to dark mode' : 'Enable light mode');
+        button.textContent = theme === 'light' ? 'Dark mode' : 'Light mode';
+      }
+
+      applyTheme(currentTheme);
+      button.addEventListener('click', function () {
+        currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+        localStorage.setItem(STORAGE_KEY, currentTheme);
+        applyTheme(currentTheme);
+      });
+    })();
+
     (function initSurfaceCodeGame() {
       const D = 5;
       const P = D - 1;
