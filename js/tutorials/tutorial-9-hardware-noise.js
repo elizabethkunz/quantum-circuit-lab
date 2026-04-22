@@ -261,7 +261,26 @@ Step 6
     svg.appendChild(mk('text', { x: 20, y: 114, fill: 'var(--ink-faint)', 'font-size': 10, 'font-family': 'var(--mono)' }, kind === 'oneoverf' ? 'Echo sequence refocuses slow drift' : 'Ramsey-like free precession'));
   }
 
-  window.t9Utils = { fmt, drawCurve, drawTwoCurves, drawSpectrum, spectrumValue, drawPopulationMeter, drawPhaseDial, drawPulseSequence };
+  // Lightweight channel backend used by Tutorial 9 visuals.
+  // rho = { p0, p1, re01, im01 } for a single-qubit density matrix.
+  function applyAmplitudeDamping(rho, gamma) {
+    const g = Math.max(0, Math.min(1, gamma));
+    const s = Math.sqrt(1 - g);
+    const p1 = (1 - g) * rho.p1;
+    const p0 = 1 - p1;
+    return { p0, p1, re01: s * rho.re01, im01: s * rho.im01 };
+  }
+
+  function applyPureDephasing(rho, lambda) {
+    const l = Math.max(0, Math.min(1, lambda));
+    return { p0: rho.p0, p1: rho.p1, re01: l * rho.re01, im01: l * rho.im01 };
+  }
+
+  window.t9Utils = {
+    fmt, drawCurve, drawTwoCurves, drawSpectrum, spectrumValue,
+    drawPopulationMeter, drawPhaseDial, drawPulseSequence,
+    applyAmplitudeDamping, applyPureDephasing
+  };
 })();
 
 /* ---- T9 Step 1: T1 relaxation ---- */
@@ -275,7 +294,12 @@ Step 6
     const T1 = parseFloat(slider.value);
     if (val) val.textContent = `${T1} μs`;
 
-    t9Utils.drawCurve('t9-t1-plot', t => Math.exp(-5 * t / T1 * 4), {
+    t9Utils.drawCurve('t9-t1-plot', t => {
+      const tau = 20 * t;
+      const gamma = 1 - Math.exp(-tau / T1);
+      const out = t9Utils.applyAmplitudeDamping({ p0: 0, p1: 1, re01: 0, im01: 0 }, gamma);
+      return out.p1;
+    }, {
       yLabel: 'P(|1⟩)',
       xLabel: 'time'
     });
@@ -287,7 +311,7 @@ Step 6
       cap.innerHTML = `
         <b>T1 = energy relaxation time.</b> Start in |1⟩ and the excited-state population decays exponentially back toward |0⟩.
         <br><span style="color:var(--ink-faint)">
-          In an OQS picture, this is driven by bath noise near the qubit transition frequency.
+          In an OQS picture, this is an amplitude-damping channel driven by bath noise near the qubit transition frequency.
         </span>
         <div id="t9-t1-meter"></div>
         <div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--line);font-family:var(--mono);font-size:11px;color:var(--ink-dim)">
@@ -314,7 +338,12 @@ Step 6
     const Tphi = parseFloat(slider.value);
     if (val) val.textContent = `${Tphi} μs`;
 
-    t9Utils.drawCurve('t9-dephase-plot', t => Math.exp(-5 * t / Tphi * 4), {
+    t9Utils.drawCurve('t9-dephase-plot', t => {
+      const tau = 20 * t;
+      const lambda = Math.exp(-tau / Tphi);
+      const out = t9Utils.applyPureDephasing({ p0: 0.5, p1: 0.5, re01: 0.5, im01: 0 }, lambda);
+      return Math.hypot(out.re01, out.im01) * 2;
+    }, {
       yLabel: '|ρ01|',
       xLabel: 'time'
     });
@@ -449,7 +478,7 @@ Step 6
   renderSpectrum();
 })();
 
-/* ---- T9 Step 5: Ramsey vs echo ---- */
+/* ---- T9 Step 5: Ramsey vs echo (fringes with drift) ---- */
 (function initT9Step5() {
   const sel = document.getElementById('t9-echo-select');
   const run = document.getElementById('t9-echo-run');
@@ -460,32 +489,45 @@ Step 6
     const kind = sel.value;
     let probe = 0.5;
 
-    let ramsey, echo, txt;
+    let cfg;
     if (kind === 'oneoverf') {
-      ramsey = t => Math.exp(-8 * t * t);
-      echo = t => Math.exp(-4.2 * t * t);
-      txt = 'For slow 1/f-like noise, echo refocuses some of the drift, so coherence lasts noticeably longer.';
+      cfg = { TphiFast: 0.38, T1: 0.95, deltaBase: 58, sigmaSlow: 10, txt: 'For slow 1/f-like noise, Ramsey fringes wash out quickly from drift; echo cancels much of that slow component.' };
     } else if (kind === 'white') {
-      ramsey = t => Math.exp(-5.5 * t);
-      echo = t => Math.exp(-5.1 * t);
-      txt = 'For fast, memoryless noise, echo helps much less. There is not much slow drift to refocus.';
+      cfg = { TphiFast: 0.33, T1: 0.85, deltaBase: 42, sigmaSlow: 1.5, txt: 'For fast, memoryless noise, both Ramsey and echo decay similarly because there is little slow drift to refocus.' };
     } else {
-      ramsey = t => Math.exp(-5.7 * t) * (0.72 + 0.28 * Math.cos(24 * t));
-      echo = t => Math.exp(-5.0 * t);
-      txt = 'Structured noise can create beating or distortion in Ramsey. Echo often smooths that out if the noise is slow enough.';
+      cfg = { TphiFast: 0.30, T1: 0.9, deltaBase: 50, sigmaSlow: 5, txt: 'Structured noise gives visibly distorted Ramsey fringes; echo suppresses the slow wandering term and smooths the decay.' };
     }
 
-    t9Utils.drawTwoCurves('t9-echo-svg', ramsey, echo, ['Ramsey', 'Echo']);
+    function ramseySignal(tNorm) {
+      const nAvg = 25;
+      let acc = 0;
+      for (let k = 0; k < nAvg; k++) {
+        const drift = cfg.sigmaSlow * Math.sin(0.7 * (k + 1));
+        const phase = (cfg.deltaBase + drift) * tNorm;
+        const dephase = Math.exp(-tNorm / cfg.TphiFast);
+        const relax = Math.exp(-tNorm / (2 * cfg.T1));
+        acc += 0.5 * (1 + dephase * relax * Math.cos(phase));
+      }
+      return acc / nAvg;
+    }
+
+    function echoSignal(tNorm) {
+      const dephase = Math.exp(-tNorm / (cfg.TphiFast * 1.8));
+      const relax = Math.exp(-tNorm / (2 * cfg.T1));
+      return 0.5 * (1 + dephase * relax);
+    }
+
+    t9Utils.drawTwoCurves('t9-echo-svg', ramseySignal, echoSignal, ['Ramsey fringes', 'Echo (refocused)']);
 
     if (note) {
       function renderProbePanel() {
-        const ramseyProbe = Math.max(0, ramsey(probe));
-        const echoProbe = Math.max(0, echo(probe));
+        const ramseyProbe = Math.max(0, ramseySignal(probe));
+        const echoProbe = Math.max(0, echoSignal(probe));
         const gain = echoProbe / Math.max(ramseyProbe, 1e-6);
         note.innerHTML = `
-          ${txt}<br>
+          ${cfg.txt}<br>
           <span style="color:var(--ink-faint)">
-            This is why experimental papers often quote both T<sub>2</sub><sup>*</sup> (Ramsey) and T<sub>2</sub><sup>echo</sup>.
+            This reproduces the common experimental shape: oscillatory Ramsey fringes under a decaying envelope, with echo extending coherence by refocusing slow drift.
           </span>
           <div style="margin-top:8px;border:1px solid var(--line);border-radius:10px;padding:8px;background:var(--bg-2);">
             <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-family:var(--mono);font-size:11px;color:var(--ink-dim);">

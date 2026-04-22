@@ -126,7 +126,7 @@
       const x = window.t6ExpectX(theta);
       stateEl.innerHTML = `<span class="rlabel">⟨Z⟩</span> <span class="rval">${z.toFixed(3)}</span><br>` +
                           `<span class="rlabel">⟨X⟩</span> <span class="rval">${x.toFixed(3)}</span><br>` +
-                          `<span class="rlabel">idea</span> <span class="rmini">The ansatz angle moves the state around the Bloch sphere. VQE just keeps adjusting that angle until the measured energy is as low as possible.</span>`;
+                          `<span class="rlabel">idea</span> <span class="rmini">The ansatz angle moves the state around the Bloch sphere. VQE keeps adjusting that angle until measured energy is low; in larger ansatze, training can be harder because of barren-plateau regions.</span>`;
     }
     drawLandscape(theta);
     if (!touched) touched = true;
@@ -361,7 +361,7 @@
       if (verdict) {
         const gap = res.energy - window.t6GroundEnergy();
         verdict.innerHTML = `<b style="color:${gap < 0.02 ? 'var(--phos)' : 'var(--amber)'}">Ansatz lesson:</b> ${res.explain} ` +
-          `Energy gap to exact ground state: ${gap.toFixed(3)}.`;
+          `Energy gap to exact ground state: ${gap.toFixed(3)}. <span style="color:var(--ink-faint)">For deeper hardware-efficient ansatze, also watch for barren plateaus (flat gradients), not just expressivity limits.</span>`;
       }
       if (seen.size >= 2) markDone('t6-4');
     });

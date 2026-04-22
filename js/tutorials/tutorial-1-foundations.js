@@ -661,10 +661,26 @@ function renderMiniProbs(containerId, probs, n, maxShow = 6) {
     ]
   };
 
+  function renderDensityNote(noiseProb) {
+    const host = document.getElementById('mini-noise-probs');
+    if (!host) return;
+    const f = Math.max(0.25, 1 - 0.75 * noiseProb); // toy Werner-like fidelity trend
+    let note = document.getElementById('t1-noise-rho-note');
+    if (!note) {
+      note = document.createElement('div');
+      note.id = 't1-noise-rho-note';
+      note.style.cssText = 'margin-top:8px;padding-top:8px;border-top:1px solid var(--line);font-family:var(--mono);font-size:11px;color:var(--ink-dim);line-height:1.5';
+      host.parentElement.appendChild(note);
+    }
+    note.innerHTML = `Density-view intuition: this is no longer a pure Bell state; a Werner-like fidelity trend is <span style="color:var(--amber)">F ≈ ${f.toFixed(3)}</span>. ` +
+      `As F drops, off-diagonal Bell coherence terms shrink and |01⟩, |10⟩ populations rise.`;
+  }
+
   document.getElementById('mini-noise-run').addEventListener('click', () => {
     const p = parseFloat(slider.value) / 100;
     const probs = simulateConfig(cfg, p, 1024);
     renderMiniProbs('mini-noise-probs', probs, 2, 4);
+    renderDensityNote(p);
     usedLevels.add(slider.value);
     if (usedLevels.size >= 2) markDone('t1-7');
   });
@@ -682,6 +698,11 @@ document.querySelectorAll('.wrap-card').forEach(card => {
     else if (dest === 't3') { switchTab('learn'); switchSubtab('t3'); }
     else if (dest === 't4') { switchTab('learn'); switchSubtab('t4'); }
     else if (dest === 't5') { switchTab('learn'); switchSubtab('t5'); }
+    else if (dest === 't6') { switchTab('learn'); switchSubtab('t6'); }
+    else if (dest === 't7') { switchTab('learn'); switchSubtab('t7'); }
+    else if (dest === 't8') { switchTab('learn'); switchSubtab('t8'); }
+    else if (dest === 't9') { switchTab('learn'); switchSubtab('t9'); }
+    else if (dest === 't10') { switchTab('learn'); switchSubtab('t10'); }
   });
 });
 

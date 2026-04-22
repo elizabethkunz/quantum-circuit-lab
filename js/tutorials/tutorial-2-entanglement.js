@@ -107,7 +107,7 @@
     document.querySelectorAll('.kickback-tgt-btn').forEach(b => b.classList.toggle('active', b.dataset.tgt===tgt));
     const res = document.getElementById('kickback-result');
     if (tgt === 'minus') {
-      if(res) res.innerHTML = '<b style="color:var(--phos)">Phase kickback active.</b><br>Target |−⟩ is a −1-eigenstate of X. CNOT encodes the oracle as a <em>phase</em> on the control, not a flip of the target.<br><br>Control: |+⟩ → |−⟩ (phase flips). Target: |−⟩ unchanged.';
+      if(res) res.innerHTML = '<b style="color:var(--phos)">Phase kickback active.</b><br>Target |−⟩ is a −1-eigenstate of X. Oracle-style control contributes a phase factor <code>(−1)<sup>f(x)</sup></code> on the control branch, not a target flip.<br><br>Control: |+⟩ → |−⟩ (phase flips). Target: |−⟩ unchanged.';
     } else {
       if(res) res.innerHTML = '<b style="color:var(--amber)">Normal CNOT.</b><br>Target |0⟩ → flips to |1⟩ when control=|1⟩. No phase kickback.';
     }

@@ -662,8 +662,12 @@ Step 6
         </div>
         <div class="glass-card">
           <b>CPTP map</b><br>
-          The general quantum version of a physically allowed noisy update rule.
+          The general quantum version of a physically allowed noisy update rule (for initially system-environment uncorrelated states).
         </div>
+      </div>
+      <div class="glass-card" style="margin-top:12px;">
+        <b>Lindblad perspective</b><br>
+        For Markovian dynamics, a Lindblad generator is the infinitesimal version of a CPTP channel semigroup: finite-time channels come from integrating that generator.
       </div>
       <div class="glass-card" style="margin-top:12px;padding:12px;">
         <b>Cross-tutorial lab: Deutsch-Jozsa under channels</b><br>

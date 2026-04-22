@@ -1579,7 +1579,7 @@
   }
   .subtab-group.intro { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   .subtab-group.alg { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .subtab-group.noise { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .subtab-group.noise { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .subtab {
     background: var(--bg-1);
     border: 1px solid var(--line);

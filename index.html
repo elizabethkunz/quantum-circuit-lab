@@ -351,6 +351,12 @@
           <span class="tutorial-diff" aria-label="Difficulty 3 of 5"><span class="tutorial-diff-dot filled"></span><span class="tutorial-diff-dot filled"></span><span class="tutorial-diff-dot filled"></span><span class="tutorial-diff-dot"></span><span class="tutorial-diff-dot"></span></span>
           <span class="subtab-pill" id="t9-progress">0 / 6</span>
         </button>
+        <button class="subtab subtab-noise" data-subtab="t10">
+          <span class="subtab-num">Tutorial 10</span>
+          <span class="subtab-name">Pulses, not gates</span>
+          <span class="tutorial-diff" aria-label="Difficulty 4 of 5"><span class="tutorial-diff-dot filled"></span><span class="tutorial-diff-dot filled"></span><span class="tutorial-diff-dot filled"></span><span class="tutorial-diff-dot filled"></span><span class="tutorial-diff-dot"></span></span>
+          <span class="subtab-pill" id="t10-progress">0 / 8</span>
+        </button>
       </div>
     </nav>
 
@@ -457,7 +463,7 @@
         </header>
         <div class="step-body">
           <p>On the sphere, a qubit can be anywhere. But when you <b>measure</b> it, you only ever get a classical answer: <code>0</code> or <code>1</code>. The probability of each is set by the arrow's position — specifically, how far it leans toward the north or south pole.</p>
-          <p>Below is the simplest quantum circuit: a single Hadamard, then a measurement. It's a true quantum coin flip. Run it a few times. The outcome is different each time — but the long-run frequency is always 50/50. Unlike the classical bit, there's no hidden value before you look.</p>
+          <p>Below is the simplest quantum circuit: a single Hadamard, then a measurement. It's a quantum coin flip. Run it a few times. The outcome is different each time — but the long-run frequency is always 50/50. Unlike a classical hidden-value model, there is no stored classical bit to reveal here; the full Bell-test argument against local hidden variables is developed in <b>Tutorial 2</b>.</p>
           <div class="mini-runner">
             <div class="mini-circuit" id="mini-coin-circuit"></div>
             <div class="mini-result">
@@ -531,7 +537,7 @@
         </header>
         <div class="step-body">
           <p>Everything above has assumed perfect gates. Real quantum computers are short pulses of laser light, microwaves, or magnetic fields, and every pulse is slightly imperfect. Over a circuit's lifetime, tiny errors accumulate and the clean peaks smear.</p>
-          <p>Drag the noise slider and watch the Bell pair distribution drift. At 0%, only <code>00</code> and <code>11</code> appear. At 5%, the forbidden outcomes start leaking in. This is why quantum error correction is the central engineering problem of the field — you will meet stabilizers, thresholds, and surface-code intuition in <b>Tutorial 4</b>.</p>
+          <p>Drag the noise slider and watch the Bell pair distribution drift. At 0%, only <code>00</code> and <code>11</code> appear. At 5%, the forbidden outcomes start leaking in. In density-matrix terms this is no longer a pure Bell state (you can inspect that structure in the Lab density view). This is why quantum error correction is the central engineering problem of the field — you will meet stabilizers, thresholds, and surface-code intuition in <b>Tutorial 4</b>.</p>
           <div class="mini-runner">
             <div class="noise-demo">
               <div class="noise-demo-label">Noise level: <span id="t1-noise-val">0.0%</span></div>
@@ -663,7 +669,7 @@
           <!-- Part C: phase kickback visualizer -->
           <div style="margin:22px 0;padding:20px;background:var(--bg-2);border:1px solid var(--line)">
             <div style="font-family:var(--mono);font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:6px">Part C — phase kickback <span style="color:var(--amber)">(advanced)</span></div>
-            <p style="font-family:var(--serif);font-size:14px;color:var(--ink-dim);line-height:1.55;margin-bottom:14px">If the <em>target</em> is prepared in the \( |-\rangle \) eigenstate of \(X\) (i.e. \( |-\rangle = (|0\rangle-|1\rangle)/\sqrt{2} \)), a CNOT's phase kicks back onto the <em>control</em> qubit instead of flipping the target. This is the core trick behind Deutsch–Jozsa, phase estimation, and Shor's algorithm. Watch the control qubit's phase change.</p>
+            <p style="font-family:var(--serif);font-size:14px;color:var(--ink-dim);line-height:1.55;margin-bottom:14px">If the <em>target</em> is prepared in the \( |-\rangle \) eigenstate of \(X\) (i.e. \( |-\rangle = (|0\rangle-|1\rangle)/\sqrt{2} \)), a CNOT's phase kicks back onto the <em>control</em> qubit instead of flipping the target. Mechanically, the oracle action contributes a phase factor \( (-1)^{f(x)} \) on the control branch while the target stays in \( |-\rangle \). This is the core trick behind Deutsch–Jozsa, phase estimation, and Shor's algorithm. Watch the control qubit's phase change.</p>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:center">
               <div>
                 <div style="font-family:var(--mono);font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:8px">Target state</div>
@@ -729,7 +735,7 @@
           <h2>Measuring one qubit collapses the other — plus the CHSH witness.</h2>
         </header>
         <div class="step-body">
-          <p>In a Bell pair, neither qubit has a definite value — but they're perfectly correlated. When you measure q0, q1 <em>instantly</em> settles to the same value. Einstein called this "spooky action at a distance" and insisted there must be a hidden variable explanation. <b>Bell's theorem</b> (1964) says no classical explanation works.</p>
+          <p>In a Bell pair, neither qubit has a definite value — but they're perfectly correlated. Measuring q0 updates the joint-state description and predicts the matching q1 outcome when compared later; this is not a faster-than-light signal channel. Einstein called this "spooky action at a distance" and insisted there must be a hidden variable explanation. <b>Bell's theorem</b> (1964) says no local classical explanation works.</p>
 
           <!-- Part A: collapse visualizer -->
           <div style="margin:22px 0;padding:20px;background:var(--bg-2);border:1px solid var(--line)">
@@ -795,7 +801,7 @@
           <h2>What you've learned about entanglement.</h2>
         </header>
         <div class="step-body">
-          <p>Two-qubit state space is 4-dimensional, not 2+2. Product states can be described by their parts; entangled states <b>cannot</b>. The CNOT gate creates entanglement when its control is in superposition. Measuring one qubit of an entangled pair collapses the other — instantaneously, always, perfectly.</p>
+          <p>Two-qubit state space is 4-dimensional, not 2+2. Product states can be described by their parts; entangled states <b>cannot</b>. The CNOT gate creates entanglement when its control is in superposition. Measuring one qubit updates your description of the joint state and therefore the conditional prediction for the partner outcome; it does not transmit a usable superluminal message.</p>
           <p>These aren't philosophical curiosities. Entanglement is the <em>resource</em> that gives quantum computers and networks their power. The density matrix tutorial (next) shows how to distinguish genuine superposition from classical randomness — a distinction that matters enormously for quantum hardware.</p>
           <div class="wrap-up">
             <button class="wrap-card" data-go="lab">
@@ -1003,6 +1009,7 @@
         <a href="#ref-shor1995" class="tpl-cite" data-doc-ref="ref-shor1995">[Shor QEC]</a>
         <a href="#ref-kitaev2003" class="tpl-cite" data-doc-ref="ref-kitaev2003">[Kitaev]</a>
         <a href="#ref-fowler2012" class="tpl-cite" data-doc-ref="ref-fowler2012">[Fowler et al.]</a>
+        <a href="#ref-googleqec2024" class="tpl-cite" data-doc-ref="ref-googleqec2024">[Google QEC 2024]</a>
       </div>
 
       <article class="step-card" data-step="t4-1">
@@ -1039,7 +1046,7 @@
         </header>
         <div class="step-body">
           <p>Classical computers handle noise by <b>redundancy</b>. If a hard drive bit might flip, store it three times: <code>000</code>. Later, check all three — majority rules.</p>
-          <p>Quantum computers can't do this directly. The <b>no-cloning theorem</b> says there is no machine that, given an unknown qubit, produces an independent copy of it. This is a consequence of how quantum gates work — they're reversible linear operations, and a cloning operation would not be linear. The theorem was proved in 1982 and is completely airtight.</p>
+          <p>Quantum computers can't do this directly. The <b>no-cloning theorem</b> says there is no machine that, given an unknown qubit, produces an independent copy of it. The key point is linearity/unitarity: if a machine cloned basis states, applying it to a superposition would violate linear evolution because \(U(\alpha|\psi_1\rangle+\beta|\psi_2\rangle)|0\rangle\) cannot equal \((\alpha|\psi_1\rangle+\beta|\psi_2\rangle)\otimes(\alpha|\psi_1\rangle+\beta|\psi_2\rangle)\). The theorem was proved in 1982 and is completely airtight.</p>
           <div class="insight-box">
             <div class="insight-label">Implication</div>
             <p class="insight-text">Quantum error correction cannot copy a qubit. It has to protect it some other way — by <em>entangling it with helper qubits</em> so the information is spread across many physical qubits that can be measured safely.</p>
@@ -1117,13 +1124,13 @@
             <div style="font-family:var(--mono);font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:10px">Physical qubit overhead vs code distance</div>
             <svg id="overhead-chart" viewBox="0 0 500 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:500px"></svg>
             <div style="font-family:var(--mono);font-size:10px;color:var(--ink-faint);margin-top:6px;letter-spacing:0.06em">
-              A distance-<em>d</em> surface code uses 2d²−1 physical qubits per logical qubit. At d=21 (targeting RSA-2048), that's ~881 physical qubits <em>per logical qubit</em>.
+              A distance-<em>d</em> surface code uses 2d²−1 physical qubits per logical qubit. At d=21 (targeting RSA-2048), that's ~881 physical qubits <em>per logical qubit</em>. Full RSA-scale workloads require many logical qubits plus magic-state factories and routing overhead, pushing total physical-qubit counts far higher (order of tens of millions in common estimates).
             </div>
           </div>
 
           <div class="insight-box amber">
             <div class="insight-label">The threshold theorem</div>
-            <p class="insight-text">If the error rate per gate is below a certain threshold (roughly 1%, give or take depending on the code), then you can use enough redundancy to drive the logical error rate <em>arbitrarily low</em>. Machines today are just starting to cross this threshold. That's why this is the decade when things start to get interesting.</p>
+            <p class="insight-text">Under standard noise models, the surface-code threshold is near 1% (code- and decoder-dependent). If physical gates operate below that regime, enough redundancy can drive logical error rates <em>arbitrarily low</em>. Recent experiments now report sub-threshold operation in distance-scaled surface-code runs, including Google's 2024 demonstration.</p>
           </div>
           <div class="step-action">
             <div class="action-prompt">Inject an error, observe the syndrome, and correct it.</div>
@@ -1407,7 +1414,7 @@
           <h2>The variational energy landscape.</h2>
         </header>
         <div class="step-body">
-          <p>In VQE, you choose a parameterized circuit (an <em>ansatz</em>), measure the energy of the prepared state, then tune parameters to minimize that energy. Here we use a one-parameter ansatz \( R_y(\theta)|0\rangle \) and a toy Hamiltonian, so you can see the landscape directly.</p>
+          <p>In VQE, you choose a parameterized circuit (an <em>ansatz</em>), measure the energy of the prepared state, then tune parameters to minimize that energy. Here we use a one-parameter ansatz \( R_y(\theta)|0\rangle \) and a toy Hamiltonian, so you can see the landscape directly. Real ansatze are higher-dimensional and can suffer barren plateaus; see Step 4 and the hardware-efficient template notes.</p>
           <div style="margin:22px 0;padding:20px;background:var(--bg-2);border:1px solid var(--line)">
             <label style="font-family:var(--mono);font-size:10px;color:var(--ink-faint);letter-spacing:0.08em">
               Ansatz angle θ:
@@ -1803,7 +1810,7 @@
       <article class="step-card locked" data-step="t8-3">
         <header class="step-head"><div class="step-num">Step 03</div><h2>Kraus operators and CPTP consistency.</h2></header>
         <div class="step-body">
-          <p>Every physically valid quantum noise process is a <b>CPTP map</b> (completely positive, trace preserving). Kraus operators are the standard practical representation: \( \rho'=\sum_k K_k \rho K_k^\dagger \).</p>
+          <p>Every physically valid quantum noise process is modeled as a <b>CPTP map</b> (completely positive, trace preserving), assuming the system is initially uncorrelated with its environment. Kraus operators are the standard practical representation: \( \rho'=\sum_k K_k \rho K_k^\dagger \).</p>
           <p>The crucial sanity check is \( \sum_k K_k^\dagger K_k = I \). Change the map and parameter, and verify the check stays near identity.</p>
           <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:8px">
             <select id="t8-kraus-select" class="analysis-select" style="max-width:220px">
@@ -1855,7 +1862,7 @@
       <article class="step-card locked" data-step="t8-6">
         <header class="step-head"><div class="step-num">Step 06</div><h2>Channel family summary.</h2></header>
         <div class="step-body">
-          <p>This final card consolidates the three workhorse channels used across quantum engineering papers and simulators. Think of it as a quick mental lookup table before you move to hardware-level timescales in Tutorial 9.</p>
+          <p>This final card consolidates the three workhorse channels used across quantum engineering papers and simulators. Think of it as a quick mental lookup table before you move to hardware-level timescales in Tutorial 9. For Markovian dynamics, the Lindblad equation is the infinitesimal-generator view of the same channel picture.</p>
           <button class="btn primary" id="t8-summary-run">Generate summary</button>
           <div id="t8-summary-grid" style="margin-top:10px"></div>
           <div class="wrap-up" style="margin-top:22px">
@@ -1883,6 +1890,7 @@
         <a href="#ref-redfield1957" class="tpl-cite" data-doc-ref="ref-redfield1957">[Redfield]</a>
         <a href="#ref-hahn1950" class="tpl-cite" data-doc-ref="ref-hahn1950">[Hahn echo]</a>
         <a href="#ref-ramsey1950" class="tpl-cite" data-doc-ref="ref-ramsey1950">[Ramsey]</a>
+        <a href="#ref-bylander2011" class="tpl-cite" data-doc-ref="ref-bylander2011">[Bylander 2011]</a>
         <a href="#ref-preskill2018" class="tpl-cite" data-doc-ref="ref-preskill2018">[Preskill]</a>
       </div>
       <article class="step-card" data-step="t9-1">
@@ -1991,16 +1999,167 @@
               <div class="wrap-desc">Match noise sliders to the timescales you explored here, then stress-test longer circuits in the Laboratory.</div>
               <div class="wrap-cta">Open the Lab →</div>
             </button>
-            <button class="wrap-card alt" data-go="t1">
-              <div class="wrap-tag">Tutorial 1</div>
-              <div class="wrap-title">From bits to qubits</div>
-              <div class="wrap-desc">Loop back to the guided foundations — Bloch sphere, gates, Bell pairs, and the first noise preview.</div>
-              <div class="wrap-cta">Back to Tutorial 1 →</div>
+            <button class="wrap-card alt" data-go="t10">
+              <div class="wrap-tag">Tutorial 10</div>
+              <div class="wrap-title">Pulses, not gates</div>
+              <div class="wrap-desc">Continue to hardware control: pulse calibration, detuning, echo, and leakage-aware shaping.</div>
+              <div class="wrap-cta">Next tutorial →</div>
             </button>
           </div>
         </div>
       </article>
     </div><!-- /#tut-9 -->
+
+    <!-- ============================================================ Tutorial 10 -->
+    <div class="tutorial" id="tut-10" style="display:none">
+      <div class="tutorial-sources">
+        <span class="tutorial-sources-label">Sources</span>
+        <a href="#ref-nc2000" class="tpl-cite" data-doc-ref="ref-nc2000">[Nielsen &amp; Chuang]</a>
+        <a href="#ref-preskill2018" class="tpl-cite" data-doc-ref="ref-preskill2018">[Preskill]</a>
+        <a href="#ref-ramsey1950" class="tpl-cite" data-doc-ref="ref-ramsey1950">[Ramsey 1950]</a>
+        <a href="#ref-hahn1950" class="tpl-cite" data-doc-ref="ref-hahn1950">[Hahn 1950]</a>
+        <a href="#ref-redfield1957" class="tpl-cite" data-doc-ref="ref-redfield1957">[Redfield 1957]</a>
+      </div>
+
+      <article class="step-card" data-step="t10-1">
+        <header class="step-head"><div class="step-num">Step 01</div><h2>A gate is a pulse with area.</h2></header>
+        <div class="step-body">
+          <p>Hardware does not apply abstract boxes labeled X and H. It emits microwave pulses. For a resonant drive, the rotation angle is \( \theta = \Omega t \): amplitude times duration.</p>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start">
+            <div>
+              <label style="font-family:var(--mono);font-size:10px;color:var(--ink-faint)">Amplitude Ω:
+                <input type="range" id="t10-pulse-amp" min="0" max="1" step="0.01" value="0.5" style="width:180px;accent-color:var(--amber);vertical-align:middle"/>
+                <span id="t10-pulse-amp-val" style="color:var(--amber)">0.50</span>
+              </label>
+              <br>
+              <label style="font-family:var(--mono);font-size:10px;color:var(--ink-faint)">Duration t:
+                <input type="range" id="t10-pulse-dur" min="0" max="6.283" step="0.01" value="3.141" style="width:180px;accent-color:var(--cyan);vertical-align:middle"/>
+                <span id="t10-pulse-dur-val" style="color:var(--cyan)">3.14</span>
+              </label>
+              <svg id="t10-pulse-envelope" viewBox="0 0 380 130" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:380px;margin-top:8px"></svg>
+            </div>
+            <div>
+              <svg id="t10-pulse-bloch" viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:240px"></svg>
+              <div id="t10-pulse-readout" style="margin-top:8px;font-family:var(--serif);font-size:14px;color:var(--ink-dim);line-height:1.55"></div>
+            </div>
+          </div>
+          <div class="step-action"><div class="action-prompt">Hit at least one π-pulse and one other regime.</div><button class="btn primary step-next" data-unlocks="t10-2" disabled id="t10-1-next">Next →</button></div>
+        </div>
+      </article>
+
+      <article class="step-card locked" data-step="t10-2">
+        <header class="step-head"><div class="step-num">Step 02</div><h2>Rabi oscillations calibrate the π-pulse.</h2></header>
+        <div class="step-body">
+          <p>Sweep pulse duration and measure \(P(|1\rangle)\). The first peak is your calibrated π-pulse.</p>
+          <label style="font-family:var(--mono);font-size:10px;color:var(--ink-faint)">Drive amplitude:
+            <input type="range" id="t10-rabi-amp" min="0.4" max="1.4" step="0.01" value="1.0" style="width:180px;accent-color:var(--phos);vertical-align:middle"/>
+            <span id="t10-rabi-amp-val" style="color:var(--phos)">1.00</span>
+          </label>
+          <div style="margin-top:8px"><button class="btn primary" id="t10-rabi-run">Auto-calibrate π-pulse</button></div>
+          <svg id="t10-rabi-curve" viewBox="0 0 460 230" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:460px;margin-top:8px"></svg>
+          <div id="t10-rabi-found" style="font-family:var(--serif);font-size:14px;color:var(--ink-dim)"></div>
+          <div class="step-action"><div class="action-prompt">Find the first 100% peak.</div><button class="btn primary step-next" data-unlocks="t10-3" disabled id="t10-2-next">Next →</button></div>
+        </div>
+      </article>
+
+      <article class="step-card locked" data-step="t10-3">
+        <header class="step-head"><div class="step-num">Step 03</div><h2>Detuning limits control fidelity.</h2></header>
+        <div class="step-body">
+          <p>If your drive is off resonance, oscillations speed up but the achievable peak drops below 100%.</p>
+          <label style="font-family:var(--mono);font-size:10px;color:var(--ink-faint)">Detuning δ:
+            <input type="range" id="t10-detune" min="-2" max="2" step="0.01" value="0" style="width:220px;accent-color:var(--amber);vertical-align:middle"/>
+            <span id="t10-detune-val" style="color:var(--amber)">0.00</span>
+          </label>
+          <svg id="t10-detune-curve" viewBox="0 0 460 230" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:460px;margin-top:8px"></svg>
+          <div id="t10-detune-desc" style="font-family:var(--serif);font-size:14px;color:var(--ink-dim)"></div>
+          <div class="step-action"><div class="action-prompt">Try on-resonance and detuned values.</div><button class="btn primary step-next" data-unlocks="t10-4" disabled id="t10-3-next">Next →</button></div>
+        </div>
+      </article>
+
+      <article class="step-card locked" data-step="t10-4">
+        <header class="step-head"><div class="step-num">Step 04</div><h2>Ramsey turns phase drift into fringes.</h2></header>
+        <div class="step-body">
+          <p>The Ramsey sequence \( \pi/2 \rightarrow \tau \rightarrow \pi/2 \) reveals frequency drift and coherence envelope \(T_2^\*\).</p>
+          <div style="display:flex;gap:14px;flex-wrap:wrap">
+            <label style="font-family:var(--mono);font-size:10px;color:var(--ink-faint)">Wait τ:
+              <input type="range" id="t10-ramsey-tau" min="0" max="8" step="0.01" value="1.5" style="width:170px;accent-color:var(--amber);vertical-align:middle"/>
+              <span id="t10-ramsey-tau-val" style="color:var(--amber)">1.50</span>
+            </label>
+            <label style="font-family:var(--mono);font-size:10px;color:var(--ink-faint)">T2*:
+              <input type="range" id="t10-ramsey-t2s" min="0.8" max="6" step="0.01" value="2.0" style="width:170px;accent-color:var(--magenta);vertical-align:middle"/>
+              <span id="t10-ramsey-t2s-val" style="color:var(--magenta)">2.00</span>
+            </label>
+          </div>
+          <svg id="t10-ramsey-curve" viewBox="0 0 460 230" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:460px;margin-top:8px"></svg>
+          <div id="t10-ramsey-desc" style="font-family:var(--serif);font-size:14px;color:var(--ink-dim)"></div>
+          <div class="step-action"><div class="action-prompt">Change both τ and T2* at least once.</div><button class="btn primary step-next" data-unlocks="t10-5" disabled id="t10-4-next">Next →</button></div>
+        </div>
+      </article>
+
+      <article class="step-card locked" data-step="t10-5">
+        <header class="step-head"><div class="step-num">Step 05</div><h2>Echo refocuses slow noise.</h2></header>
+        <div class="step-body">
+          <p>Insert a π-pulse in the middle to refocus slow drift (Hahn echo), extending observed coherence.</p>
+          <button class="btn primary" id="t10-echo-toggle">⏻ Echo: OFF — turn on</button>
+          <svg id="t10-echo-seq" viewBox="0 0 460 80" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:460px;margin-top:8px"></svg>
+          <svg id="t10-echo-curve" viewBox="0 0 460 220" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:460px;margin-top:8px"></svg>
+          <div id="t10-echo-desc" style="font-family:var(--serif);font-size:14px;color:var(--ink-dim)"></div>
+          <div class="step-action"><div class="action-prompt">Toggle echo on and off.</div><button class="btn primary step-next" data-unlocks="t10-6" disabled id="t10-5-next">Next →</button></div>
+        </div>
+      </article>
+
+      <article class="step-card locked" data-step="t10-6">
+        <header class="step-head"><div class="step-num">Step 06</div><h2>Pulse shape controls leakage.</h2></header>
+        <div class="step-body">
+          <p>Smoother pulses reduce spectral spillover and unwanted excitation to higher levels.</p>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn t10-shape-btn active" data-t10shape="square">Square</button>
+            <button class="btn t10-shape-btn" data-t10shape="gaussian">Gaussian</button>
+            <button class="btn t10-shape-btn" data-t10shape="derag">DRAG-like</button>
+          </div>
+          <svg id="t10-shape-envelope" viewBox="0 0 460 180" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:460px;margin-top:8px"></svg>
+          <div id="t10-shape-leak" style="font-family:var(--mono);font-size:12px;color:var(--ink-dim);margin-top:8px"></div>
+          <div id="t10-shape-desc" style="font-family:var(--serif);font-size:14px;color:var(--ink-dim);margin-top:6px"></div>
+          <div class="step-action"><div class="action-prompt">Compare at least two pulse families.</div><button class="btn primary step-next" data-unlocks="t10-7" disabled id="t10-6-next">Next →</button></div>
+        </div>
+      </article>
+
+      <article class="step-card locked" data-step="t10-7">
+        <header class="step-head"><div class="step-num">Step 07</div><h2>From pulse error to circuit error.</h2></header>
+        <div class="step-body">
+          <p>Revisit the \(X \cdot X\) identity from circuit-level tutorials, now parameterized by per-pulse infidelity \( \varepsilon \).</p>
+          <label style="font-family:var(--mono);font-size:10px;color:var(--ink-faint)">Per-pulse infidelity ε:
+            <input type="range" id="t10-rebuild-err" min="0" max="8" step="0.1" value="0.5" style="width:220px;accent-color:var(--magenta);vertical-align:middle"/>
+            <span id="t10-rebuild-err-val" style="color:var(--magenta)">0.5%</span>
+          </label>
+          <div style="margin-top:8px"><button class="btn primary" id="t10-rebuild-run">Run model</button></div>
+          <svg id="t10-rebuild-bars" viewBox="0 0 380 180" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:380px;margin-top:8px"></svg>
+          <div id="t10-rebuild-desc" style="font-family:var(--serif);font-size:14px;color:var(--ink-dim)"></div>
+          <div class="step-action"><div class="action-prompt">Test at least three error levels.</div><button class="btn primary step-next" data-unlocks="t10-8" disabled id="t10-7-next">Next →</button></div>
+        </div>
+      </article>
+
+      <article class="step-card locked" data-step="t10-8">
+        <header class="step-head"><div class="step-num">Step 08</div><h2>Pulses and circuits are the same stack.</h2></header>
+        <div class="step-body">
+          <p>You now have the bridge from abstract gates to hardware control: calibration, detuning, dephasing, echo, and pulse shaping.</p>
+          <div class="wrap-up">
+            <button class="wrap-card" data-go="lab">
+              <div class="wrap-tag">Lab</div>
+              <div class="wrap-title">Apply this in the simulator</div>
+              <div class="wrap-desc">Use circuit-level noise controls with a pulse-level mental model.</div>
+              <div class="wrap-cta">Open the Lab →</div>
+            </button>
+            <button class="wrap-card alt" data-go="t9">
+              <div class="wrap-tag">Tutorial 9</div>
+              <div class="wrap-title">Hardware noise timescales</div>
+              <div class="wrap-desc">Revisit T1/T2/T2* with pulse intuition in mind.</div>
+              <div class="wrap-cta">Back to Tutorial 9 →</div>
+            </button>
+          </div>
+        </div>
+      </article>
+    </div><!-- /#tut-10 -->
 
   </div><!-- /#view-learn -->
 
@@ -2637,6 +2796,15 @@
             <div class="docs-tags"><span class="docs-tag">surface code</span><span class="docs-tag">resource estimates</span><span class="docs-tag">hardware</span></div>
           </div>
 
+          <div class="docs-entry" id="ref-googleqec2024">
+            <div class="docs-meta">Google Quantum AI · 2024 ·
+              <button onclick="switchTab('learn');switchSubtab('t4')" style="background:none;border:none;color:var(--phos-dim);font-family:var(--mono);font-size:10px;cursor:pointer;padding:0;letter-spacing:0.06em">→ Tutorial 4 Step 4</button>
+            </div>
+            <a class="docs-title" href="https://doi.org/10.1038/s41586-024-08449-y" target="_blank" rel="noopener">Quantum error correction below the surface code threshold</a>
+            <p class="docs-note">Experimental demonstration of sub-threshold surface-code operation with distance scaling, used here as a concrete modern reference for the threshold-theorem discussion in Tutorial 4.</p>
+            <div class="docs-tags"><span class="docs-tag">surface code</span><span class="docs-tag">threshold</span><span class="docs-tag">experiment</span></div>
+          </div>
+
 
 
 
@@ -2835,6 +3003,15 @@
             <div class="docs-tags"><span class="docs-tag">ramsey</span><span class="docs-tag">spectroscopy</span></div>
           </div>
 
+          <div class="docs-entry" id="ref-bylander2011">
+            <div class="docs-meta">Bylander et al. · 2011 ·
+              <button onclick="switchTab('learn');switchSubtab('t9')" style="background:none;border:none;color:var(--phos-dim);font-family:var(--mono);font-size:10px;cursor:pointer;padding:0;letter-spacing:0.06em">→ Tutorial 9</button>
+            </div>
+            <a class="docs-title" href="https://doi.org/10.1038/nphys1994" target="_blank" rel="noopener">Dynamical decoupling and noise spectroscopy with a superconducting flux qubit</a>
+            <p class="docs-note">Representative superconducting-qubit Ramsey/echo and noise-spectroscopy reference used for the Tutorial 9 fringe-with-drift and echo-comparison intuition.</p>
+            <div class="docs-tags"><span class="docs-tag">ramsey</span><span class="docs-tag">echo</span><span class="docs-tag">noise spectroscopy</span></div>
+          </div>
+
         </div>
       </div>
     </section>
@@ -2868,6 +3045,7 @@
 <script src="js/tutorials/tutorial-7-grover-search.js"></script>
 <script src="js/tutorials/tutorial-8-quantum-channels.js"></script>
 <script src="js/tutorials/tutorial-9-hardware-noise.js"></script>
+<script src="js/tutorials/tutorial-10-pulses-not-gates.js"></script>
 <script src="js/tutorials/bootstrap.js"></script>
 <script>
   (function () {
