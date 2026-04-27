@@ -19,202 +19,121 @@
     }
     .lab-hero::before {
       content: 'LAB';
-      position: absolute;
-      top: 14px;
-      right: 18px;
-      font-family: var(--mono);
-      font-size: 10px;
-      letter-spacing: 0.2em;
-      color: var(--phos);
-      border: 1px solid var(--phos);
-      padding: 2px 8px;
-      pointer-events: none;
+      position: absolute; top: 14px; right: 18px;
+      font-family: var(--mono); font-size: 10px; letter-spacing: 0.2em; color: var(--phos);
+      border: 1px solid var(--phos); padding: 2px 8px; pointer-events: none;
     }
     .lab-hero h1 {
-      font-family: var(--serif);
-      font-weight: 300;
-      font-size: 34px;
-      line-height: 1.15;
-      margin: 0 0 16px;
-      max-width: 880px;
+      font-family: var(--serif); font-weight: 300; font-size: 34px; line-height: 1.15;
+      margin: 0 0 16px; max-width: 880px;
     }
     .lab-hero h1 em { font-style: italic; color: var(--phos); }
-    .lab-hero p {
-      max-width: 760px;
-      font-size: 15px;
-      line-height: 1.6;
-      color: var(--ink-dim);
-      margin: 0 0 12px;
-    }
-    .task {
-      border: 1px solid var(--line);
-      margin: 28px 0;
-      position: relative;
-    }
+    .lab-hero p { max-width: 760px; font-size: 15px; line-height: 1.6; color: var(--ink-dim); margin: 0 0 12px; }
+    .task { border: 1px solid var(--line); margin: 28px 0; position: relative; }
     .task-head {
-      padding: 18px 24px 14px;
-      border-bottom: 1px solid var(--line);
-      display: flex;
-      align-items: baseline;
-      gap: 18px;
+      padding: 18px 24px 14px; border-bottom: 1px solid var(--line);
+      display: flex; align-items: baseline; gap: 18px;
     }
-    .task-label {
-      font-family: var(--mono);
-      font-size: 10px;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      color: var(--phos);
-    }
-    .task-title {
-      font-family: var(--serif);
-      font-style: italic;
-      font-weight: 400;
-      font-size: 22px;
-      margin: 0;
-      color: var(--ink);
-    }
+    .task-label { font-family: var(--mono); font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--phos); }
+    .task-title { font-family: var(--serif); font-style: italic; font-weight: 400; font-size: 22px; margin: 0; color: var(--ink); }
     .task-body { padding: 22px 24px; }
-    .task-body p {
-      font-size: 13.5px;
-      line-height: 1.65;
-      color: var(--ink-dim);
-      margin: 0 0 12px;
-    }
-    .game-wrap {
+    .task-body p { font-size: 13.5px; line-height: 1.65; color: var(--ink-dim); margin: 0 0 12px; }
+
+    /* unified grid panel */
+    .grid-layout {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: auto 1fr;
       gap: 28px;
-      margin-top: 16px;
       align-items: start;
+      margin-top: 14px;
     }
-    @media (max-width: 900px) { .game-wrap { grid-template-columns: 1fr; } }
-    .game-panel {
+    @media (max-width: 860px) { .grid-layout { grid-template-columns: 1fr; } }
+    .grid-wrap { line-height: 0; }
+    .grid-wrap svg { display: block; width: 100%; }
+    .grid-legend {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--ink-faint);
+      margin-top: 10px;
+      line-height: 1.7;
+    }
+    .legend-item { display: flex; align-items: center; gap: 8px; }
+    .lg-circle {
+      width: 16px; height: 16px; border-radius: 50%;
+      background: var(--bg-1); border: 1.5px solid var(--line-bright);
+      flex-shrink: 0;
+    }
+    .lg-diamond {
+      width: 14px; height: 14px;
+      background: rgba(120,212,255,0.12); border: 1.5px solid var(--phos);
+      transform: rotate(45deg); flex-shrink: 0;
+    }
+    .lg-diamond-r {
+      width: 14px; height: 14px;
+      background: rgba(255,80,80,0.2); border: 1.5px solid #e05050;
+      transform: rotate(45deg); flex-shrink: 0;
+    }
+    .side-panel { display: flex; flex-direction: column; gap: 14px; }
+    .info-card {
       border: 1px solid var(--line);
-      padding: 18px;
+      padding: 14px 16px;
       background: var(--bg-2);
-    }
-    .game-panel h3 {
-      font-family: var(--mono);
-      font-size: 10px;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      color: var(--ink-faint);
-      margin: 0 0 14px;
-    }
-    .legend {
-      font-family: var(--mono);
-      font-size: 11px;
-      color: var(--ink-faint);
-      margin-bottom: 12px;
+      font-size: 13px;
       line-height: 1.6;
+      color: var(--ink-dim);
     }
-    .legend span { display: inline-block; margin-right: 14px; }
-    .dot { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: middle; }
-    .dot-ok { background: var(--line-bright); border: 1px solid var(--line); }
-    .dot-v { background: rgba(255,112,112,0.35); border: 1px solid var(--red); }
-    .syndrome-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 8px;
-      max-width: 280px;
+    .info-card-head {
+      font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--ink-faint); margin-bottom: 8px;
     }
-    .syndrome-cell {
-      aspect-ratio: 1;
-      border: 1px solid var(--line-bright);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: var(--mono);
-      font-size: 11px;
-      background: var(--bg-1);
-      color: var(--ink-faint);
+    .info-caption {
+      padding: 12px 14px;
+      border-left: 3px solid var(--line-bright);
+      font-size: 13px; line-height: 1.6; color: var(--ink-dim);
     }
-    .syndrome-cell.violated {
-      background: rgba(255,112,112,0.12);
-      border-color: var(--red);
-      color: var(--red);
-    }
-    .data-grid {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 6px;
-      max-width: 340px;
-    }
-    .data-cell {
-      aspect-ratio: 1;
-      border: 1px solid var(--line-bright);
-      background: var(--bg-1);
-      cursor: pointer;
-      font-family: var(--mono);
-      font-size: 10px;
-      color: var(--ink-faint);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: border-color 0.15s, background 0.15s;
-    }
-    .data-cell:hover { border-color: var(--phos); color: var(--phos); }
-    .data-cell.selected {
-      border-color: var(--cyan);
-      background: rgba(111,212,224,0.12);
-      color: var(--cyan);
-    }
-    .data-cell.correct { border-color: var(--phos); background: rgba(120,212,255,0.15); color: var(--phos); }
-    .data-cell.wrong { border-color: var(--red); background: rgba(255,112,112,0.1); }
+    .info-caption.hl { border-left-color: var(--phos); }
+    .info-caption.warn { border-left-color: #e05050; }
+    .info-caption.ok { border-left-color: var(--phos); }
+
+    /* buttons */
     .run-bar { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
     .run-btn {
-      padding: 10px 16px;
-      font-family: var(--mono);
-      font-size: 11px;
-      letter-spacing: 0.06em;
-      background: var(--phos);
-      color: var(--bg-0);
-      border: none;
-      cursor: pointer;
+      padding: 10px 16px; font-family: var(--mono); font-size: 11px;
+      letter-spacing: 0.06em; background: var(--phos); color: var(--bg-0);
+      border: none; cursor: pointer; transition: opacity 0.15s;
     }
     .run-btn:hover { opacity: 0.88; }
     .run-btn.secondary {
-      background: transparent;
-      color: var(--ink-faint);
-      border: 1px solid var(--line-bright);
+      background: transparent; color: var(--ink-faint); border: 1px solid var(--line-bright);
     }
-    .score-line {
-      font-family: var(--mono);
-      font-size: 12px;
-      color: var(--phos);
-      margin-top: 12px;
-    }
+    .run-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* score + feedback */
+    .score-line { font-family: var(--mono); font-size: 12px; color: var(--phos); margin-top: 12px; }
     .feedback {
-      margin-top: 12px;
-      padding: 12px 14px;
+      margin-top: 12px; padding: 12px 14px;
       border-left: 3px solid var(--line-bright);
-      font-size: 13px;
-      line-height: 1.55;
-      color: var(--ink-dim);
+      font-size: 13px; line-height: 1.55; color: var(--ink-dim);
     }
     .feedback.win { border-left-color: var(--phos); color: var(--ink); }
-    .feedback.loss { border-left-color: var(--red); color: var(--ink); }
+    .feedback.loss { border-left-color: #e05050; color: var(--ink); }
+
+    /* explain box for Task 05 */
     .explain-box {
-      border: 1px solid var(--line);
-      padding: 18px 20px;
-      background: var(--bg-1);
-      margin-top: 12px;
+      border: 1px solid var(--line); padding: 18px 20px;
+      background: var(--bg-1); margin-top: 12px;
     }
+    .explain-box p { font-size: 13.5px; line-height: 1.65; color: var(--ink-dim); margin: 0 0 10px; }
+    .explain-box p:last-child { margin-bottom: 0; }
     .explain-box code { font-family: var(--mono); color: var(--cyan); font-size: 12px; }
+
     .lab-footer {
-      margin-top: 40px;
-      padding-top: 24px;
-      border-top: 1px solid var(--line);
-      display: flex;
-      justify-content: space-between;
-      gap: 16px;
-      flex-wrap: wrap;
+      margin-top: 40px; padding-top: 24px; border-top: 1px solid var(--line);
+      display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap;
     }
     .lab-footer a {
-      color: var(--ink-faint);
-      text-decoration: none;
-      font-family: var(--mono);
-      font-size: 12px;
+      color: var(--ink-faint); text-decoration: none;
+      font-family: var(--mono); font-size: 12px;
     }
     .lab-footer a:hover { color: var(--phos); }
   </style>
@@ -226,79 +145,238 @@
         <div class="brand-mark">Quantum <span class="amp">&amp;</span> Lab</div>
         <div class="brand-tag">Lab · Surface code (distance 5)</div>
       </div>
-    <div class="lab-tools">
-      <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Enable light mode">Light mode</button>
-    </div>
+      <div class="lab-tools">
+        <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Enable light mode">Light mode</button>
+      </div>
     </header>
 
     <section class="lab-hero">
-      <h1>Can you find the error from <em>parity checks alone?</em></h1>
+      <h1>How does the surface code catch errors <em>without reading the data?</em></h1>
       <p>
-        The surface code stores logical information redundantly. Many local <code>Z</code> stabilizers
-        (plaquette operators) each return a single parity bit. A single <code>X</code> error on one data
-        qubit flips the syndromes of every plaquette that touches that qubit — you see a pattern of
-        violations without learning the logical state.
-      </p>
-      <p>
-        In this simplified <code>d = 5</code> patch there are <code>5×5</code> data qubits and
-        <code>4×4</code> plaquette checks. One hidden <code>X</code> error has occurred. Use the violated
-        plaquettes to guess which qubit was hit, then press <b>Submit guess</b>.
+        Work through these five tasks in order. The first three build intuition using a small
+        distance-3 patch — you will explore the grid anatomy, understand what a stabilizer
+        measures, and see how errors light up alarms. Task 04 is the full challenge on a
+        distance-5 patch.
       </p>
     </section>
 
+    <!-- ====================================================== Task 01 -->
     <article class="task">
       <header class="task-head">
         <span class="task-label">Task 01</span>
-        <h2 class="task-title">Syndrome hunt — guess the error location.</h2>
+        <h2 class="task-title">Anatomy of the surface code.</h2>
       </header>
       <div class="task-body">
         <p>
-          Red plaquettes mean that stabilizer measured <code>−1</code> (parity violation). Your job is
-          the same as a decoder: infer the most likely error location from this syndrome pattern.
+          A surface code has two kinds of objects on a single grid. <b>Data qubits</b> (circles)
+          store the encoded information. <b>Z stabilizers</b> (rotated squares, shown in teal)
+          sit between groups of data qubits and measure their parity.
         </p>
-        <div class="game-wrap">
-          <div class="game-panel">
-            <h3>Plaquette syndromes (what you measure)</h3>
-            <div class="legend">
-              <span><i class="dot dot-ok"></i> happy (<code>+1</code>)</span>
-              <span><i class="dot dot-v"></i> violated (<code>−1</code>)</span>
+        <p>
+          Click a data qubit to see which stabilizers check it. Click a stabilizer to see which
+          data qubits it checks. The number of neighbors tells you how much information each
+          element contributes to the syndrome.
+        </p>
+        <div class="grid-layout">
+          <div>
+            <div class="grid-wrap" style="max-width:260px;">
+              <svg id="t01-grid" viewBox="0 0 228 228" xmlns="http://www.w3.org/2000/svg"
+                   style="width:100%;max-width:260px;" aria-label="d=3 surface code grid"></svg>
             </div>
-            <div class="syndrome-grid" id="syndrome-grid" aria-label="Syndrome grid"></div>
-            <div class="run-bar">
-              <button type="button" class="run-btn" id="new-round-btn">New round</button>
-              <button type="button" class="run-btn secondary" id="submit-btn">Submit guess</button>
+            <div class="grid-legend" style="max-width:260px;margin-top:10px;">
+              <div class="legend-item"><span class="lg-circle"></span>Data qubit (click to inspect)</div>
+              <div class="legend-item"><span class="lg-diamond"></span>Z stabilizer — quiet (+1)</div>
+              <div class="legend-item"><span class="lg-diamond-r"></span>Z stabilizer — violated (−1)</div>
             </div>
-            <p class="score-line" id="score-line">Score: 0 correct / 0 rounds</p>
-            <div class="feedback" id="feedback">Pick a data qubit below, then submit — or start a new round.</div>
           </div>
-          <div class="game-panel">
-            <h3>Data qubits (your guess)</h3>
-            <p style="font-size:12px; color:var(--ink-faint); margin:0 0 10px; font-family:var(--mono);">
-              Rows and columns are 0-indexed. Corners touch one plaquette; edges two; interior four.
-            </p>
-            <div class="data-grid" id="data-grid" aria-label="Data qubit grid"></div>
+          <div class="side-panel">
+            <div class="info-card">
+              <div class="info-card-head">What you're looking at</div>
+              A distance-3 surface code: 9 data qubits arranged in a 3×3 grid, with
+              4 Z-type stabilizers (one between each group of 4 neighboring data qubits).
+              On real hardware each stabilizer qubit is also a physical qubit — this diagram
+              shows the <em>logical</em> picture.
+            </div>
+            <div class="info-caption hl" id="t01-caption">
+              Click any element on the grid to inspect it.
+            </div>
           </div>
         </div>
       </div>
     </article>
 
+    <!-- ====================================================== Task 02 -->
     <article class="task">
       <header class="task-head">
         <span class="task-label">Task 02</span>
+        <h2 class="task-title">A stabilizer is a parity alarm.</h2>
+      </header>
+      <div class="task-body">
+        <p>
+          The highlighted stabilizer continuously measures the <em>joint</em> Z-parity of its
+          four neighboring data qubits. It returns <b>+1</b> if an even number of them have
+          been hit by X errors, and <b>−1</b> (a violation) if the count is odd.
+        </p>
+        <p>
+          Click the four highlighted data qubits to toggle X errors on and off. Watch the
+          stabilizer outcome change.
+        </p>
+        <div class="grid-layout">
+          <div>
+            <div class="grid-wrap" style="max-width:260px;">
+              <svg id="t02-grid" viewBox="0 0 228 228" xmlns="http://www.w3.org/2000/svg"
+                   style="width:100%;max-width:260px;" aria-label="parity check demo"></svg>
+            </div>
+            <div class="grid-legend" style="max-width:260px;margin-top:10px;">
+              <div class="legend-item"><span class="lg-diamond" style="border-color:var(--cyan);"></span>Focus stabilizer</div>
+              <div class="legend-item" style="color:var(--cyan);">Highlighted data qubits are toggleable</div>
+            </div>
+          </div>
+          <div class="side-panel">
+            <div class="info-card">
+              <div class="info-card-head">Parity rule</div>
+              An X error on a data qubit flips its contribution to the parity. An even total
+              leaves the stabilizer happy (+1). An odd total trips the alarm (−1). This works
+              for any combination of errors — the outcome only encodes the <em>count modulo 2</em>,
+              never the actual qubit state.
+            </div>
+            <div class="info-caption" id="t02-caption">
+              Toggle errors on the highlighted data qubits and watch the stabilizer outcome update.
+            </div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- ====================================================== Task 03 -->
+    <article class="task">
+      <header class="task-head">
+        <span class="task-label">Task 03</span>
+        <h2 class="task-title">Explore how location shapes the syndrome.</h2>
+      </header>
+      <div class="task-body">
+        <p>
+          Click any data qubit to toggle an X error on it. All stabilizers update immediately.
+          Try corner, edge, and interior qubits — notice how many alarms each location triggers.
+          You can add multiple errors and see how patterns combine.
+        </p>
+        <p>
+          This is the key insight behind syndrome decoding: the <em>pattern</em> of violations
+          tells a decoder where errors are, without ever measuring the encoded logical state.
+        </p>
+        <div class="grid-layout">
+          <div>
+            <div class="grid-wrap" style="max-width:260px;">
+              <svg id="t03-grid" viewBox="0 0 228 228" xmlns="http://www.w3.org/2000/svg"
+                   style="width:100%;max-width:260px;" aria-label="interactive error explorer"></svg>
+            </div>
+            <div class="run-bar" style="max-width:260px;margin-top:10px;">
+              <button type="button" class="run-btn secondary" id="t03-clear-btn">Clear all errors</button>
+            </div>
+            <div class="grid-legend" style="max-width:260px;margin-top:10px;">
+              <div class="legend-item" style="color:var(--ink-faint);">Click any circle to toggle X error</div>
+            </div>
+          </div>
+          <div class="side-panel">
+            <div class="info-card">
+              <div class="info-card-head">Location rules (d=3)</div>
+              <div style="font-family:var(--mono);font-size:12px;line-height:1.8;">
+                Corner qubit → 1 stabilizer<br>
+                Edge qubit → 2 stabilizers<br>
+                Interior qubit (center) → 4 stabilizers
+              </div>
+              Interior qubits produce the largest syndrome signature; corner qubits the smallest.
+              On a larger patch, decoding algorithms exploit these signatures to identify likely error locations.
+            </div>
+            <div class="info-caption" id="t03-caption">
+              No errors yet. Click a data qubit to begin.
+            </div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- ====================================================== Task 04 -->
+    <article class="task">
+      <header class="task-head">
+        <span class="task-label">Task 04</span>
+        <h2 class="task-title">Syndrome hunt — find the hidden error.</h2>
+      </header>
+      <div class="task-body">
+        <p>
+          Now the code distance is 5: a 5×5 grid of data qubits with 4×4 = 16 Z stabilizers.
+          One hidden X error has occurred. The violated stabilizers (shown in red) are all you
+          can see — no data qubit values are revealed. Use the syndrome pattern to locate the error,
+          then click a data qubit to submit your guess.
+        </p>
+        <p style="font-size:12.5px;color:var(--ink-faint);font-family:var(--mono);">
+          Tip: an interior qubit violates 4 stabilizers; an edge qubit violates 2; a corner qubit
+          violates 1. Look for the center of mass of the violated diamonds.
+        </p>
+        <div class="grid-layout">
+          <div>
+            <div class="grid-wrap" style="max-width:320px;">
+              <svg id="t04-grid" viewBox="0 0 296 296" xmlns="http://www.w3.org/2000/svg"
+                   style="width:100%;max-width:320px;" aria-label="d=5 syndrome hunt grid"></svg>
+            </div>
+            <div class="run-bar" style="max-width:320px;margin-top:10px;">
+              <button type="button" class="run-btn" id="t04-new-btn">New round</button>
+              <button type="button" class="run-btn secondary" id="t04-submit-btn">Submit guess</button>
+            </div>
+            <div class="score-line" id="t04-score">Score: 0 correct / 0 rounds</div>
+            <div class="feedback" id="t04-feedback">
+              Click a data qubit (circle) to mark your guess, then press Submit guess.
+            </div>
+          </div>
+          <div class="side-panel">
+            <div class="info-card">
+              <div class="info-card-head">How to read the grid</div>
+              Teal diamonds with <b style="color:var(--phos)">+1</b> are quiet stabilizers — all happy.
+              Red diamonds with <b style="color:#e05050">−1</b> are violations. The pattern of red diamonds
+              is your only clue. After you submit, the actual error location is revealed in teal.
+            </div>
+            <div class="info-card" id="t04-hint" style="display:none;">
+              <div class="info-card-head">Hint</div>
+              <div id="t04-hint-text"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- ====================================================== Task 05 -->
+    <article class="task">
+      <header class="task-head">
+        <span class="task-label">Task 05</span>
         <h2 class="task-title">Why this is quantum error correction.</h2>
       </header>
       <div class="task-body">
         <p>
-          Stabilizer outcomes only tell you about <em>errors</em>, not about the encoded logical
-          <code>|0⟩</code> vs <code>|1⟩</code>. That separation is why we can detect and later correct
-          noise while preserving superpositions of the logical subspace.
+          The surface code does not work by measuring the data qubits. Measuring them would
+          collapse any superposition stored in the logical qubit and destroy the quantum
+          information. Instead, stabilizer measurements are <em>non-destructive</em>.
         </p>
         <div class="explain-box">
-          <p style="margin:0 0 8px;">
-            On a larger patch, multiple errors create more complex syndrome patterns; a minimum-distance
-            <code>d</code> code can correct up to <code>(d−1)/2</code> physical errors. Here
-            <code>d = 5</code> is the size of the patch in the usual “one logical qubit” layout; this
-            toy game uses a single <code>X</code> so the pattern stays unique and beginner-friendly.
+          <p>
+            <b>The key property:</b> every Z stabilizer commutes with the logical operators
+            <code>X_L</code> and <code>Z_L</code>. Measuring a stabilizer projects the state
+            onto a definite error subspace without revealing whether the logical qubit is in
+            <code>|0_L⟩</code>, <code>|1_L⟩</code>, or any superposition of them.
+          </p>
+          <p>
+            <b>The syndrome tells you the error, not the data.</b> When you identified the
+            error location in Task 04, you did it using only the stabilizer outcomes — the
+            content of the logical qubit played no role. A decoder on real hardware works
+            exactly the same way: classify violations, infer the most likely error, apply
+            a classical correction.
+          </p>
+          <p>
+            <b>Code distance d = 5.</b> A minimum-weight decoder can correct any pattern of
+            <code>(d−1)/2 = 2</code> or fewer independent X errors. The more violations in
+            Task 04 you needed to reason about simultaneously, the closer you were to that
+            limit. Beyond <code>2</code> independent errors on a <code>d = 5</code> patch, a
+            naive decoder starts failing — which is why scaling to larger <code>d</code>
+            is the central engineering challenge in fault-tolerant quantum computing.
           </p>
         </div>
       </div>
@@ -306,31 +384,26 @@
 
     <div class="lab-footer">
       <a href="index.html">← Back to main app</a>
-      <a href="#" id="scroll-game">↑ Back to game</a>
+      <a href="#" id="scroll-game">↑ Back to Task 04</a>
     </div>
   </div>
 
   <script>
+    /* ---- theme toggle ---- */
     (function initLabThemeToggle() {
       var STORAGE_KEY = 'quantum-lab-theme';
       var root = document.documentElement;
       var button = document.getElementById('theme-toggle');
       if (!button) return;
-
       var currentTheme = localStorage.getItem(STORAGE_KEY) === 'light' ? 'light' : 'dark';
-
       function applyTheme(theme) {
-        if (theme === 'light') {
-          root.setAttribute('data-theme', 'light');
-        } else {
-          root.removeAttribute('data-theme');
-        }
+        if (theme === 'light') root.setAttribute('data-theme', 'light');
+        else root.removeAttribute('data-theme');
         button.setAttribute('data-theme', theme);
         button.setAttribute('aria-pressed', String(theme === 'light'));
         button.setAttribute('aria-label', theme === 'light' ? 'Switch to dark mode' : 'Enable light mode');
         button.textContent = theme === 'light' ? 'Dark mode' : 'Light mode';
       }
-
       applyTheme(currentTheme);
       button.addEventListener('click', function () {
         currentTheme = currentTheme === 'light' ? 'dark' : 'light';
@@ -339,74 +412,352 @@
       });
     })();
 
-    (function initSurfaceCodeGame() {
-      const D = 5;
-      const P = D - 1;
+    /* ================================================================
+       CORE: unified Google-style surface code grid renderer
+       
+       Data qubits  → circles at integer positions (r, c)
+       Z stabilizers → rotated diamonds centered between 4 data qubits
+       
+       Parameters:
+         svgEl    – SVG DOM element to render into
+         d        – code distance (number of data qubits per side)
+         errors   – Set<"r,c"> of data qubits with X errors (shown in red)
+         syndromes– 2D array[d-1][d-1] of 0/1 (1 = violated)
+         opts:
+           hlStab  [pr, pc]          – stabilizer to highlight (teal border)
+           hlData  [[r,c], ...]      – data qubits to highlight (teal border)
+           selData [r, c]            – selected data qubit (cyan fill)
+           onDataClick  fn(r, c)     – click handler for data qubits
+           onStabClick  fn(pr, pc)   – click handler for stabilizers
+    ================================================================ */
+    function drawUnifiedGrid(svgEl, d, errors, syndromes, opts) {
+      opts = opts || {};
+      var CELL = d <= 3 ? 74 : 58;
+      var PAD  = 34;
+      var R    = Math.round(CELL * 0.165);
+      var HD   = Math.round(CELL * 0.375);
+      var W    = (d - 1) * CELL + PAD * 2;
+      var H    = (d - 1) * CELL + PAD * 2;
 
-      const syndromeGrid = document.getElementById('syndrome-grid');
-      const dataGrid = document.getElementById('data-grid');
-      const feedback = document.getElementById('feedback');
-      const scoreLine = document.getElementById('score-line');
-      const newRoundBtn = document.getElementById('new-round-btn');
-      const submitBtn = document.getElementById('submit-btn');
+      svgEl.innerHTML = '';
+      svgEl.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
 
-      let secretR = 0;
-      let secretC = 0;
-      let syndromes = [];
-      let guessR = null;
-      let guessC = null;
-      let rounds = 0;
-      let correct = 0;
-      let submitted = false;
+      var NS = 'http://www.w3.org/2000/svg';
+      function mk(tag, attrs, text) {
+        var e = document.createElementNS(NS, tag);
+        for (var k in attrs) e.setAttribute(k, attrs[k]);
+        if (text !== undefined) e.textContent = String(text);
+        return e;
+      }
+
+      var MONO = "'Space Mono', monospace";
+
+      /* --- stabilizer diamonds (drawn first, behind data qubits) --- */
+      for (var pr = 0; pr < d - 1; pr++) {
+        for (var pc = 0; pc < d - 1; pc++) {
+          var cx = PAD + (pc + 0.5) * CELL;
+          var cy = PAD + (pr + 0.5) * CELL;
+          var violated = (syndromes[pr] || [])[pc];
+          var isHlStab = opts.hlStab && opts.hlStab[0] === pr && opts.hlStab[1] === pc;
+
+          var fill, stroke, sw;
+          if (violated) {
+            fill = 'rgba(224,80,80,0.18)'; stroke = '#d05050'; sw = 2;
+          } else if (isHlStab) {
+            fill = 'rgba(111,212,224,0.18)'; stroke = 'var(--cyan)'; sw = 2.5;
+          } else {
+            fill = 'rgba(120,212,255,0.07)'; stroke = 'var(--phos)'; sw = 1.5;
+          }
+
+          var pts = [cx, cy - HD, cx + HD, cy, cx, cy + HD, cx - HD, cy].join(' ');
+          var poly = mk('polygon', {
+            points: pts, fill: fill, stroke: stroke, 'stroke-width': sw, 'stroke-linejoin': 'round'
+          });
+          if (opts.onStabClick) {
+            poly.style.cursor = 'pointer';
+            (function (apr, apc) {
+              poly.addEventListener('click', function () { opts.onStabClick(apr, apc); });
+            })(pr, pc);
+          }
+          svgEl.appendChild(poly);
+
+          var fs = d <= 3 ? 11 : 9;
+          svgEl.appendChild(mk('text', {
+            x: cx, y: cy + Math.round(fs * 0.38),
+            'text-anchor': 'middle', 'font-family': MONO, 'font-size': fs,
+            fill: violated ? '#d05050' : 'var(--phos)',
+            'pointer-events': 'none', 'user-select': 'none'
+          }, violated ? '−1' : '+1'));
+        }
+      }
+
+      /* --- data qubit circles (drawn on top of diamonds) --- */
+      for (var r = 0; r < d; r++) {
+        for (var c = 0; c < d; c++) {
+          var qcx = PAD + c * CELL;
+          var qcy = PAD + r * CELL;
+          var hasError = errors.has(r + ',' + c);
+          var isSel = opts.selData && opts.selData[0] === r && opts.selData[1] === c;
+          var isHlData = opts.hlData && opts.hlData.some(function (p) { return p[0] === r && p[1] === c; });
+
+          var qfill, qstroke, qsw;
+          if (hasError) {
+            qfill = 'rgba(224,80,80,0.28)'; qstroke = '#d05050'; qsw = 2.5;
+          } else if (isSel) {
+            qfill = 'rgba(111,212,224,0.22)'; qstroke = 'var(--cyan)'; qsw = 2.5;
+          } else if (isHlData) {
+            qfill = 'rgba(120,212,255,0.15)'; qstroke = 'var(--cyan)'; qsw = 2;
+          } else {
+            qfill = 'var(--bg-1)'; qstroke = 'var(--line-bright)'; qsw = 1.5;
+          }
+
+          var circ = mk('circle', {
+            cx: qcx, cy: qcy, r: R, fill: qfill, stroke: qstroke, 'stroke-width': qsw
+          });
+          if (opts.onDataClick) {
+            circ.style.cursor = 'pointer';
+            (function (ar, ac) {
+              circ.addEventListener('click', function () { opts.onDataClick(ar, ac); });
+            })(r, c);
+          }
+          svgEl.appendChild(circ);
+
+          var lfs = d <= 3 ? 9 : 8;
+          var lbl = hasError ? 'X' : (r + ',' + c);
+          svgEl.appendChild(mk('text', {
+            x: qcx, y: qcy + Math.round(lfs * 0.4),
+            'text-anchor': 'middle', 'font-family': MONO, 'font-size': lfs,
+            fill: hasError ? '#d05050' : 'var(--ink-faint)',
+            'font-weight': hasError ? 'bold' : 'normal',
+            'pointer-events': 'none', 'user-select': 'none'
+          }, lbl));
+        }
+      }
+    }
+
+    /* utility: compute Z-stabilizer syndromes for a set of errors */
+    function computeSyndromes(d, errors) {
+      var s = [];
+      for (var pr = 0; pr < d - 1; pr++) {
+        s.push([]);
+        for (var pc = 0; pc < d - 1; pc++) {
+          var n = 0;
+          [[pr, pc], [pr, pc + 1], [pr + 1, pc], [pr + 1, pc + 1]].forEach(function (qp) {
+            if (errors.has(qp[0] + ',' + qp[1])) n++;
+          });
+          s[pr].push(n % 2);
+        }
+      }
+      return s;
+    }
+
+    function emptySyndromes(d) {
+      var s = [];
+      for (var pr = 0; pr < d - 1; pr++) {
+        s.push([]);
+        for (var pc = 0; pc < d - 1; pc++) s[pr].push(0);
+      }
+      return s;
+    }
+
+    /* ================================================================
+       Task 01: anatomy explorer — click to inspect elements
+    ================================================================ */
+    (function initTask01() {
+      var svgEl = document.getElementById('t01-grid');
+      var capEl = document.getElementById('t01-caption');
+      var D = 3;
+      var hlStab = null;
+      var hlData = null;
+
+      function render() {
+        drawUnifiedGrid(svgEl, D, new Set(), emptySyndromes(D), {
+          hlStab: hlStab,
+          hlData: hlData,
+          onDataClick: function (r, c) {
+            hlData = null;
+            hlStab = null;
+            // find adjacent stabilizers for this data qubit
+            var adjStabs = [];
+            for (var pr = Math.max(0, r - 1); pr <= Math.min(D - 2, r); pr++) {
+              for (var pc = Math.max(0, c - 1); pc <= Math.min(D - 2, c); pc++) {
+                adjStabs.push([pr, pc]);
+              }
+            }
+            var n = adjStabs.length;
+            var loc = (r === 0 || r === D - 1) && (c === 0 || c === D - 1)
+              ? 'corner' : (r === 0 || r === D - 1 || c === 0 || c === D - 1)
+              ? 'edge' : 'interior';
+            hlData = [[r, c]];
+            // highlight adjacent stabs — pick first one to show focus
+            hlStab = adjStabs.length > 0 ? adjStabs[0] : null;
+            capEl.className = 'info-caption hl';
+            capEl.innerHTML = '<b>Data qubit (' + r + ',' + c + ')</b> — ' + loc +
+              ' position. It is checked by <b>' + n + ' stabilizer' + (n === 1 ? '' : 's') + '</b>.' +
+              (n === 1 ? ' Corner qubits are least constrained by parity checks.'
+                : n === 2 ? ' Edge qubits touch two stabilizers — medium syndrome footprint.'
+                : ' Interior qubit: touched by all 4 adjacent stabilizers — the largest syndrome footprint.');
+            render();
+          },
+          onStabClick: function (pr, pc) {
+            hlStab = [pr, pc];
+            var neighbors = [[pr, pc], [pr, pc + 1], [pr + 1, pc], [pr + 1, pc + 1]];
+            hlData = neighbors;
+            capEl.className = 'info-caption hl';
+            capEl.innerHTML = '<b>Z stabilizer (' + pr + ',' + pc + ')</b> — it measures the joint parity of the <b>4 highlighted data qubits</b>. If an odd number of them have X errors, this diamond turns red (−1). Otherwise it stays quiet (+1).';
+            render();
+          }
+        });
+      }
+
+      render();
+    })();
+
+    /* ================================================================
+       Task 02: parity check demo — one focused stabilizer, toggle errors
+    ================================================================ */
+    (function initTask02() {
+      var svgEl = document.getElementById('t02-grid');
+      var capEl = document.getElementById('t02-caption');
+      var D = 3;
+      var FOCUS_PR = 0, FOCUS_PC = 0;
+      var FOCUS_DATA = [[0, 0], [0, 1], [1, 0], [1, 1]];
+      var errors = new Set();
+      var seenPlus = false, seenMinus = false;
+
+      function render() {
+        var n = 0;
+        FOCUS_DATA.forEach(function (p) { if (errors.has(p[0] + ',' + p[1])) n++; });
+        var violated = n % 2;
+        var syns = emptySyndromes(D);
+        syns[FOCUS_PR][FOCUS_PC] = violated;
+
+        drawUnifiedGrid(svgEl, D, errors, syns, {
+          hlStab: [FOCUS_PR, FOCUS_PC],
+          hlData: FOCUS_DATA,
+          onDataClick: function (r, c) {
+            var inFocus = FOCUS_DATA.some(function (p) { return p[0] === r && p[1] === c; });
+            if (!inFocus) return;
+            var key = r + ',' + c;
+            if (errors.has(key)) errors.delete(key); else errors.add(key);
+            render();
+          }
+        });
+
+        if (violated) seenMinus = true; else seenPlus = true;
+        var nErr = errors.size;
+        var outcome = violated ? '−1 ⚠ violated' : '+1 — quiet';
+        var parity = violated ? 'odd' : 'even';
+        capEl.className = 'info-caption' + (violated ? ' warn' : ' ok');
+        capEl.innerHTML = '<b>Stabilizer reads ' + outcome + '.</b> ' +
+          nErr + ' X error' + (nErr === 1 ? '' : 's') + ' among its 4 neighbors — ' +
+          'an <b>' + parity + '</b> count. ' +
+          (seenPlus && seenMinus
+            ? '<span style="color:var(--phos)">You\'ve seen both outcomes — parity detection works.</span>'
+            : 'Try to see both the +1 and −1 outcomes.');
+      }
+
+      render();
+    })();
+
+    /* ================================================================
+       Task 03: interactive error explorer — click anywhere to toggle errors
+    ================================================================ */
+    (function initTask03() {
+      var svgEl = document.getElementById('t03-grid');
+      var capEl = document.getElementById('t03-caption');
+      var clearBtn = document.getElementById('t03-clear-btn');
+      var D = 3;
+      var errors = new Set();
+
+      function render() {
+        var syns = computeSyndromes(D, errors);
+        drawUnifiedGrid(svgEl, D, errors, syns, {
+          onDataClick: function (r, c) {
+            var key = r + ',' + c;
+            if (errors.has(key)) errors.delete(key); else errors.add(key);
+            render();
+          }
+        });
+
+        var nViolated = 0;
+        for (var pr = 0; pr < D - 1; pr++) {
+          for (var pc = 0; pc < D - 1; pc++) {
+            if (syns[pr][pc]) nViolated++;
+          }
+        }
+
+        if (errors.size === 0) {
+          capEl.className = 'info-caption';
+          capEl.textContent = 'No errors. Click any data qubit to inject an X error and see which stabilizers respond.';
+          return;
+        }
+
+        var note = '';
+        if (errors.size === 1) {
+          var key = Array.from(errors)[0];
+          var parts = key.split(',');
+          var r = parseInt(parts[0], 10), c = parseInt(parts[1], 10);
+          var isCorner = (r === 0 || r === D - 1) && (c === 0 || c === D - 1);
+          var isInterior = !isCorner && r > 0 && r < D - 1 && c > 0 && c < D - 1;
+          if (isCorner) note = ' Corner position — minimum syndrome footprint.';
+          else if (isInterior) note = ' Interior position — maximum syndrome footprint.';
+          else note = ' Edge position — intermediate syndrome footprint.';
+        } else if (errors.size > 1) {
+          note = ' Multiple errors: syndromes at shared boundaries cancel (parity of parity = even).';
+        }
+
+        capEl.className = 'info-caption' + (nViolated > 0 ? ' warn' : ' ok');
+        capEl.innerHTML = '<b>' + errors.size + ' error' + (errors.size === 1 ? '' : 's') + '</b> → ' +
+          '<b>' + nViolated + ' stabilizer violation' + (nViolated === 1 ? '' : 's') + '.</b>' + note;
+      }
+
+      clearBtn.addEventListener('click', function () { errors.clear(); render(); });
+      render();
+    })();
+
+    /* ================================================================
+       Task 04: syndrome hunt on d=5 — full game with unified grid
+    ================================================================ */
+    (function initTask04() {
+      var svgEl     = document.getElementById('t04-grid');
+      var feedbackEl = document.getElementById('t04-feedback');
+      var scoreEl   = document.getElementById('t04-score');
+      var newBtn    = document.getElementById('t04-new-btn');
+      var submitBtn = document.getElementById('t04-submit-btn');
+      var hintCard  = document.getElementById('t04-hint');
+      var hintText  = document.getElementById('t04-hint-text');
+      var D = 5;
+
+      var secretR, secretC, syndromes;
+      var guessR = null, guessC = null;
+      var rounds = 0, correct = 0;
+      var submitted = false;
 
       function syndromeForError(er, ec) {
-        const s = [];
-        for (let pr = 0; pr < P; pr++) {
-          const row = [];
-          for (let pc = 0; pc < P; pc++) {
-            const hit = (er >= pr && er <= pr + 1 && ec >= pc && ec <= pc + 1);
-            row.push(hit ? 1 : 0);
+        var s = [];
+        for (var pr = 0; pr < D - 1; pr++) {
+          s.push([]);
+          for (var pc = 0; pc < D - 1; pc++) {
+            var hit = (er >= pr && er <= pr + 1 && ec >= pc && ec <= pc + 1) ? 1 : 0;
+            s[pr].push(hit);
           }
-          s.push(row);
         }
         return s;
       }
 
-      function renderSyndrome() {
-        syndromeGrid.innerHTML = '';
-        for (let pr = 0; pr < P; pr++) {
-          for (let pc = 0; pc < P; pc++) {
-            const cell = document.createElement('div');
-            cell.className = 'syndrome-cell' + (syndromes[pr][pc] ? ' violated' : '');
-            cell.textContent = syndromes[pr][pc] ? '−1' : '+1';
-            cell.title = `Plaquette (${pr},${pc})`;
-            syndromeGrid.appendChild(cell);
+      function renderGrid(revealError) {
+        var errors = new Set();
+        if (revealError) errors.add(secretR + ',' + secretC);
+        drawUnifiedGrid(svgEl, D, errors, syndromes, {
+          selData: (!submitted && guessR !== null) ? [guessR, guessC] : null,
+          onDataClick: submitted ? null : function (r, c) {
+            guessR = r; guessC = c;
+            renderGrid(false);
+            feedbackEl.className = 'feedback';
+            feedbackEl.textContent = 'Selected (' + r + ',' + c + '). Press Submit guess when ready.';
           }
-        }
-      }
-
-      function renderDataGrid() {
-        dataGrid.innerHTML = '';
-        for (let r = 0; r < D; r++) {
-          for (let c = 0; c < D; c++) {
-            const cell = document.createElement('button');
-            cell.type = 'button';
-            cell.className = 'data-cell';
-            cell.textContent = r + ',' + c;
-            cell.dataset.r = String(r);
-            cell.dataset.c = String(c);
-            cell.addEventListener('click', () => {
-              if (submitted) return;
-              guessR = r;
-              guessC = c;
-              dataGrid.querySelectorAll('.data-cell').forEach(el => el.classList.remove('selected'));
-              cell.classList.add('selected');
-              feedback.className = 'feedback';
-              feedback.textContent = `Selected (${r},${c}). Press Submit guess when ready.`;
-            });
-            dataGrid.appendChild(cell);
-          }
-        }
+        });
       }
 
       function newRound() {
@@ -414,49 +765,43 @@
         secretR = Math.floor(Math.random() * D);
         secretC = Math.floor(Math.random() * D);
         syndromes = syndromeForError(secretR, secretC);
-        guessR = null;
-        guessC = null;
-        renderSyndrome();
-        renderDataGrid();
-        feedback.className = 'feedback';
-        feedback.textContent = 'New syndrome pattern. Click a data qubit, then Submit guess.';
+        guessR = null; guessC = null;
+        hintCard.style.display = 'none';
+        renderGrid(false);
+        feedbackEl.className = 'feedback';
+        feedbackEl.textContent = 'New syndrome. Click a data qubit to mark your guess, then press Submit.';
       }
 
       function submitGuess() {
-        if (submitted) {
-          feedback.textContent = 'Already submitted for this round. Press New round.';
-          return;
-        }
-        if (guessR === null) {
-          feedback.textContent = 'Select a cell on the data grid first.';
-          return;
-        }
+        if (submitted) { feedbackEl.textContent = 'Round already submitted — press New round.'; return; }
+        if (guessR === null) { feedbackEl.textContent = 'Select a data qubit first.'; return; }
         submitted = true;
-        rounds += 1;
-        const ok = guessR === secretR && guessC === secretC;
-        if (ok) correct += 1;
+        rounds++;
+        var ok = guessR === secretR && guessC === secretC;
+        if (ok) correct++;
+        renderGrid(true);
+        feedbackEl.className = 'feedback ' + (ok ? 'win' : 'loss');
+        feedbackEl.innerHTML = ok
+          ? '<b>Correct.</b> The X error was at (' + secretR + ',' + secretC + ').'
+          : '<b>Not quite.</b> You guessed (' + guessR + ',' + guessC +
+            '); the error was at (' + secretR + ',' + secretC + ').';
+        scoreEl.textContent = 'Score: ' + correct + ' correct / ' + rounds + ' rounds';
 
-        dataGrid.querySelectorAll('.data-cell').forEach(el => {
-          const rr = parseInt(el.dataset.r, 10);
-          const cc = parseInt(el.dataset.c, 10);
-          el.classList.remove('selected', 'correct', 'wrong');
-          if (rr === secretR && cc === secretC) el.classList.add('correct');
-          else if (rr === guessR && cc === guessC) el.classList.add('wrong');
-        });
-
-        feedback.className = 'feedback ' + (ok ? 'win' : 'loss');
-        feedback.innerHTML = ok
-          ? `<b>Correct.</b> The <code>X</code> error was at (${secretR},${secretC}).`
-          : `<b>Not quite.</b> You guessed (${guessR},${guessC}); the error was at (${secretR},${secretC}).`;
-
-        scoreLine.textContent = `Score: ${correct} correct / ${rounds} rounds`;
+        // Show hint after first miss
+        if (!ok && rounds <= 3) {
+          var isCorner = (secretR === 0 || secretR === D - 1) && (secretC === 0 || secretC === D - 1);
+          var isEdge = !isCorner && (secretR === 0 || secretR === D - 1 || secretC === 0 || secretC === D - 1);
+          var pos = isCorner ? 'corner (1 violation)' : isEdge ? 'edge (2 violations)' : 'interior (4 violations)';
+          hintText.textContent = 'The error was at a ' + pos + ' position. Look for that pattern next round.';
+          hintCard.style.display = 'block';
+        }
       }
 
-      newRoundBtn.addEventListener('click', newRound);
+      newBtn.addEventListener('click', newRound);
       submitBtn.addEventListener('click', submitGuess);
-      document.getElementById('scroll-game').addEventListener('click', (e) => {
+      document.getElementById('scroll-game').addEventListener('click', function (e) {
         e.preventDefault();
-        document.getElementById('new-round-btn').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        document.getElementById('t04-new-btn').scrollIntoView({ behavior: 'smooth', block: 'center' });
       });
 
       newRound();

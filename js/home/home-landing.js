@@ -965,9 +965,9 @@
       <span class="home-hero-arrow"      style="left:3%;  top:48%; --tilt:  9deg; animation-delay: -2.4s; font-size:16px;">↓</span>
     </div>
     <div class="home-hero-inner">
-      <div class="home-eyebrow home-reveal">Quantum Circuit Lab · Interactive introduction</div>
-      <h1 class="home-reveal">Quantum algorithms rely on state evolution in <em>Hilbert space</em>:<br/>unitary dynamics, interference, and measurement.</h1>
-      <p class="home-reveal">Quantum ideas can feel strange at first. This page gives a quick, visual path from everyday bits to superposition, measurement, and entanglement.</p>
+      <div class="home-eyebrow home-reveal">Quantum Circuit Lab</div>
+      <h1 class="home-reveal">Quantum systems can compute in <em>fundamentally different</em><br/> ways.</h1>
+      <p class="home-reveal">THe science behind quantum computing can feel strange at first. This page gives a quick, visual path from everyday bits to superposition, measurement, and entanglement.</p>
       <div class="home-hero-actions home-reveal">
         <button type="button" class="btn primary" onclick="switchTab('learn');switchSubtab('t1');">Begin Tutorial 1 →</button>
         <button type="button" class="btn" onclick="switchTab('lab')">Open circuit lab</button>

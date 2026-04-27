@@ -27,7 +27,7 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
 
 function switchSubtab(which) {
   document.querySelectorAll('.subtab').forEach(b => b.classList.toggle('active', b.dataset.subtab === which));
-  ['t1','t2','t3','t4','t5','t6','t7','t8','t9','t10'].forEach(id => {
+  ['t1','t2','t3','t4','t5','t6','t7','t8','t9','t10','t11'].forEach(id => {
     const el = document.getElementById('tut-' + id.slice(1));
     if (el) el.style.display = which === id ? '' : 'none';
   });
@@ -72,13 +72,13 @@ document.querySelectorAll('.step-next').forEach(btn => {
 });
 
 function updateProgressPills() {
-  const totals = { t1: 8, t2: 5, t3: 7, t4: 6, t5: 6, t6: 6, t7: 7, t8: 6, t9: 6, t10: 8 };
-  const done = { t1: 0, t2: 0, t3: 0, t4: 0, t5: 0, t6: 0, t7: 0, t8: 0, t9: 0, t10: 0 };
+  const totals = { t1: 8, t2: 5, t3: 7, t4: 7, t5: 6, t6: 6, t7: 7, t8: 6, t9: 6, t10: 8, t11: 6 };
+  const done = { t1: 0, t2: 0, t3: 0, t4: 0, t5: 0, t6: 0, t7: 0, t8: 0, t9: 0, t10: 0, t11: 0 };
   for (const id in stepProgress) {
     const prefix = id.split('-')[0];
     if (done[prefix] !== undefined) done[prefix]++;
   }
-  ['t1','t2','t3','t4','t5','t6','t7','t8','t9','t10'].forEach(t => {
+  ['t1','t2','t3','t4','t5','t6','t7','t8','t9','t10','t11'].forEach(t => {
     const el = document.getElementById(t + '-progress');
     if (el) el.textContent = done[t] + ' / ' + totals[t];
   });

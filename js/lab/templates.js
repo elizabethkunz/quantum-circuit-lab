@@ -1,6 +1,8 @@
 let activeTemplateCtx = null;  // name of currently loaded template
 
 const TAG_MAP = {
+  popular: 'popular',
+  'beginner-friendly': 'beginners',
   superposition: 'state-prep',
   hadamard: 'state-prep',
   identity: 'gates',
@@ -65,6 +67,12 @@ const TAG_MAP = {
   'clifford group': 'gates'
 };
 
+/** Readable labels for curated filter keys (chip text and filter buttons). */
+const TAG_LABEL = {
+  popular: 'Popular',
+  beginners: 'For beginners'
+};
+
 const TEMPLATE_REF = {
   superposition: 'ref-nc2000',
   'gate-identity': 'ref-nc2000',
@@ -88,13 +96,10 @@ const TEMPLATE_REF = {
   'qaoa-layer': 'ref-qaoa2014',
   hea: 'ref-kandala2017',
   'swap-route': 'ref-nc2000',
-  'iswap-hop': 'ref-nc2000',
   'ising-iswap': 'ref-kandala2017',
   'ccx-toffoli': 'ref-nc2000',
   'cswap-fredkin': 'ref-nc2000',
-  'sqrtx-twice': 'ref-nc2000',
-  'sqrty-twice': 'ref-nc2000',
-  'sqrtz-twice': 'ref-nc2000'
+  'sqrtx-twice': 'ref-nc2000'
 };
 
 const FACT_DETAILS = {
@@ -208,11 +213,6 @@ const FACT_DETAILS = {
     'Classically, three CNOTs build a SWAP': 'The textbook decomposition is SWAP(0,1) = CNOT(0,1) CNOT(1,0) CNOT(0,1) — a standard identity in universal gate sets.',
     'Routing for limited qubit connectivity': 'When a hardware graph cannot CNOT two distant qubits directly, compilers insert SWAPs (or a cheaper equivalent) along paths between them.'
   },
-  'iswap-hop': {
-    'Measurement shows |10⟩; amplitude is +i in the comp. basis': 'iSWAP maps |01⟩ to i|10⟩; the factor i is a relative phase in the 2D subspace spanned by |01⟩ and |10⟩. Squared magnitudes for measurement match SWAP, so ideal Z readout always returns |10⟩ here.',
-    'Common native gate on transmon lattices': 'Many superconducting chips calibrate a full or partial iSWAP (or √iSWAP) as the entangling unitary between nearest neighbors, often paired with single-qubit Z rotations in firmware.',
-    'Phase matters in longer circuits': 'When you sum multiple paths that end in the same basis state, that i is exactly what can produce constructive or destructive interference — relevant for Trotter and variational cost layers.'
-  },
   'ising-iswap': {
     'Mimics a linear QAOA / HEA entangling brick': 'Alternating RY and nearest-neighbor iSWAP layers form a family of state preparations used when iSWAP (or a related XY interaction) is the primary native 2Q gate on the coupler graph.',
     'Heavy-hex and line topologies use this idea': 'IBM and other vendors route circuits so long-range CNOTs decompose into chains of iSWAP/CZ plus 1Q gates when that yields lower depth or error.',
@@ -233,16 +233,6 @@ const FACT_DETAILS = {
     'Matches RX(90°) in this simulator': 'The simulator’s SX is exactly makeRxGate(90°) — a common but not the only “principal” √X in the literature (global phases can differ by convention).',
     'Clifford gate: composer of many surface-code gadgets': 'S and Hadamard with Clifford two-qubit gates form the stabilizer group; non-Clifford T or CCZ injection enables universality.'
   },
-  'sqrty-twice': {
-    'R_y(π) is an X in the Y basis, but in Z it flips the bit from |0⟩ to |1⟩': 'The π rotation about y acting on the north pole of the Bloch sphere sends it to the south pole, giving deterministic |1⟩ in Z-basis readout here.',
-    'SY matches R_y(90°) here': 'The simulator’s √Y is makeRyGate(90°) — a square root of the full Y Pauli in the same sense as for X.',
-    'Useful in VQE and hardware-efficient Y-native stacks': 'Some trapped-ion and neutral-atom toolchains privilege Y rotations in calibration; √Y is a native-style primitive.'
-  },
-  'sqrtz-twice': {
-    'Two S gates = Z, invisible on |0⟩ in Z-basis': 'S²=Z, but S adds only global phase to |0⟩; Z|0⟩=|0⟩ so the composition is a global phase and readout is unchanged at 0%.',
-    'Visible when applied to |1⟩ or superpositions': 'S|+⟩ and SS on superpositions change relative phases that show up in interference later — try prepending an H in the Lab.',
-    'Third root of a Pauli is a non-Clifford (T) — try T, T, T, T = S': 'Four T gates in a row (up to global phase) implement S, linking third roots to T-count in fault-tolerant schemes.'
-  }
 };
 
 function normalizeFact(templateName, fact, idx) {
@@ -394,7 +384,11 @@ function normalizeTemplateTags() {
     card.dataset.tags = normalized.join(',');
     const wrap = card.querySelector('.tpl-tags');
     if (wrap) {
-      wrap.innerHTML = normalized.map(tag => `<span class="tpl-tag">${tag}</span>`).join('');
+      wrap.innerHTML = normalized.map(tag => {
+        const label = TAG_LABEL[tag] || tag;
+        const extra = tag === 'popular' ? ' tpl-tag-popular' : tag === 'beginners' ? ' tpl-tag-beginners' : '';
+        return `<span class="tpl-tag${extra}">${label}</span>`;
+      }).join('');
     }
   });
 }
@@ -407,8 +401,13 @@ function initTemplateTagFilter() {
   const cards = Array.from(document.querySelectorAll('.tpl-card'));
   const tags = new Set();
   cards.forEach(card => (card.dataset.tags || '').split(',').filter(Boolean).forEach(t => tags.add(t)));
-  const ordered = ['all', ...Array.from(tags).sort()];
-  row.innerHTML = ordered.map(tag => `<button class="tpl-filter-btn ${tag === 'all' ? 'active' : ''}" data-filter-tag="${tag}">${tag}</button>`).join('');
+  const priority = ['popular', 'beginners'];
+  const rest = Array.from(tags).filter(t => !priority.includes(t)).sort();
+  const ordered = ['all', ...priority.filter(t => tags.has(t)), ...rest];
+  row.innerHTML = ordered.map(tag => {
+    const label = tag === 'all' ? 'All' : (TAG_LABEL[tag] || tag.replace(/-/g, ' '));
+    return `<button class="tpl-filter-btn ${tag === 'all' ? 'active' : ''}" data-filter-tag="${tag}">${label}</button>`;
+  }).join('');
 
   row.addEventListener('click', (e) => {
     const btn = e.target.closest('.tpl-filter-btn');

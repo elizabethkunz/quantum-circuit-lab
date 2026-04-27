@@ -82,7 +82,7 @@
     }
     .bench {
       display: grid;
-      grid-template-columns: 340px 1fr;
+      grid-template-columns: 300px 1fr;
       gap: 24px;
       margin-top: 8px;
     }
@@ -269,6 +269,127 @@
       letter-spacing: 0.03em;
     }
     .lab-footer a:hover { color: var(--cyan); }
+
+    /* Task 01: measurement histogram */
+    .meas-bench {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 24px;
+      margin-top: 8px;
+      align-items: start;
+    }
+    @media (max-width: 800px) { .meas-bench { grid-template-columns: 1fr; } }
+    .histogram-panel {
+      padding: 18px;
+      border: 1px solid var(--line);
+      background: var(--bg-1);
+    }
+    .hist-bars {
+      display: flex;
+      gap: 24px;
+      align-items: flex-end;
+      height: 100px;
+      border-bottom: 1px solid var(--line-bright);
+      padding: 0 8px 4px;
+    }
+    .hist-col {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+    }
+    .hist-count {
+      font-family: var(--mono);
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--ink);
+      line-height: 1;
+    }
+    .hist-bar {
+      width: 100%;
+      max-width: 60px;
+      border-radius: 3px 3px 0 0;
+      transition: height 0.35s ease;
+      min-height: 3px;
+    }
+    .hist-bar-0 { background: linear-gradient(180deg, var(--cyan), rgba(111,212,224,0.4)); }
+    .hist-bar-1 { background: linear-gradient(180deg, var(--amber), rgba(224,133,60,0.4)); }
+    .hist-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      color: var(--ink-faint);
+      text-transform: uppercase;
+      margin-top: 6px;
+    }
+    .meas-caption {
+      margin-top: 14px;
+      padding: 11px 13px;
+      border-left: 3px solid var(--line-bright);
+      font-size: 13px;
+      line-height: 1.6;
+      color: var(--ink-soft);
+    }
+    .meas-caption.det { border-left-color: var(--phos); }
+    .meas-caption.rand { border-left-color: var(--amber); }
+
+    /* Task 02: CNOT copy machine */
+    .clone-bench {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-top: 8px;
+      align-items: start;
+    }
+    @media (max-width: 860px) { .clone-bench { grid-template-columns: 1fr; } }
+    .circuit-panel {
+      border: 1px solid var(--line);
+      padding: 18px;
+      background: var(--bg-2);
+    }
+    .circuit-panel svg { width: 100%; display: block; }
+    .clone-result-panel {
+      border: 1px solid var(--line);
+      padding: 18px;
+      background: var(--bg-1);
+    }
+    .clone-row {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .clone-field {
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 10px;
+    }
+    .clone-field:last-of-type { border-bottom: none; padding-bottom: 0; }
+    .clone-field-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      margin-bottom: 5px;
+    }
+    .clone-field-value {
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--ink);
+      line-height: 1.4;
+    }
+    .match-yes { color: var(--phos); font-weight: 600; }
+    .match-no { color: #e06060; font-weight: 600; }
+    .clone-note {
+      margin-top: 12px;
+      padding: 11px 13px;
+      border-left: 3px solid var(--line-bright);
+      font-size: 13px;
+      line-height: 1.6;
+      color: var(--ink-soft);
+    }
+    .clone-note.ok { border-left-color: var(--phos); }
+    .clone-note.fail { border-left-color: #e06060; }
   </style>
 </head>
 <body>
@@ -286,18 +407,148 @@
     <section class="lab-hero">
       <h1>Can an eavesdropper <em>copy a quantum message</em> without being detected?</h1>
       <p>
-        In BB84, Alice sends random qubits prepared in one of two incompatible bases. Bob measures each qubit
-        in a random basis and later compares basis choices with Alice over a public channel.
-      </p>
-      <p>
-        If Eve intercepts and measures qubits to copy the message, she must guess a basis. Wrong guesses
-        disturb the state. That disturbance appears as extra errors in Alice and Bob's sifted key.
+        Work through these five tasks in order. Tasks 01 and 02 build the intuition — quantum states
+        cannot be freely read or duplicated. Tasks 03–05 then connect that fact directly to BB84 key
+        exchange and why eavesdropping always leaves a detectable trace.
       </p>
     </section>
 
+    <!-- ====================================================== Task 01 -->
     <article class="task">
       <header class="task-head">
         <span class="task-label">Task 01</span>
+        <h2 class="task-title">Probe the two measurement bases.</h2>
+      </header>
+      <div class="task-body">
+        <p>
+          Quantum mechanics has two incompatible single-qubit bases. Z-basis states {|0⟩, |1⟩} and
+          X-basis states {|+⟩, |−⟩} cannot both be sharp at once. Pick a prepared state, pick a
+          measurement basis, and run 20 shots — see whether the outcome is forced or genuinely random.
+        </p>
+        <p style="color:var(--ink-faint); font-size:12.5px; font-family:var(--mono);">
+          Hint: try every combination of state × basis. Four cells where the outcome is deterministic,
+          four where it is random.
+        </p>
+        <div class="meas-bench">
+          <div class="knobs">
+            <div class="knob-group">
+              <div class="knob-label"><span>Prepared state</span></div>
+              <div class="radio-row" id="t01-state-btns">
+                <button class="radio-btn active" data-state="|0⟩">|0⟩</button>
+                <button class="radio-btn" data-state="|1⟩">|1⟩</button>
+                <button class="radio-btn" data-state="|+⟩">|+⟩</button>
+                <button class="radio-btn" data-state="|−⟩">|−⟩</button>
+              </div>
+            </div>
+            <div class="knob-group">
+              <div class="knob-label"><span>Measurement basis</span></div>
+              <div class="radio-row" id="t01-basis-btns">
+                <button class="radio-btn active" data-basis="Z">Z-basis</button>
+                <button class="radio-btn" data-basis="X">X-basis</button>
+              </div>
+            </div>
+            <div class="run-bar">
+              <button class="run-btn" id="t01-run-btn">▶ Run 20 shots</button>
+            </div>
+          </div>
+          <div class="histogram-panel">
+            <div style="font-family:var(--mono);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:14px;">Measurement outcomes</div>
+            <div class="hist-bars">
+              <div class="hist-col">
+                <div class="hist-count" id="t01-count-0">—</div>
+                <div class="hist-bar hist-bar-0" id="t01-bar-0" style="height:3px;"></div>
+                <div class="hist-label">outcome 0</div>
+              </div>
+              <div class="hist-col">
+                <div class="hist-count" id="t01-count-1">—</div>
+                <div class="hist-bar hist-bar-1" id="t01-bar-1" style="height:3px;"></div>
+                <div class="hist-label">outcome 1</div>
+              </div>
+            </div>
+            <div class="meas-caption" id="t01-caption">Choose a state and basis, then run shots.</div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- ====================================================== Task 02 -->
+    <article class="task">
+      <header class="task-head">
+        <span class="task-label">Task 02</span>
+        <h2 class="task-title">Can we build a quantum copy machine?</h2>
+      </header>
+      <div class="task-body">
+        <p>
+          The obvious way to copy a qubit is a CNOT gate: use the qubit as the control and a fresh
+          |0⟩ ancilla as the target. This works perfectly for computational-basis states — but
+          <em>entangles</em> superpositions instead of cloning them.
+        </p>
+        <p>
+          Select each input state in turn and compare the actual CNOT output to what a true copy would look like.
+        </p>
+        <div class="clone-bench">
+          <div class="circuit-panel">
+            <div style="font-family:var(--mono);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:12px;">CNOT copy circuit</div>
+            <div class="knob-group">
+              <div class="knob-label"><span>Input state |ψ⟩</span></div>
+              <div class="radio-row" id="t02-state-btns">
+                <button class="radio-btn active" data-state="|0⟩">|0⟩</button>
+                <button class="radio-btn" data-state="|1⟩">|1⟩</button>
+                <button class="radio-btn" data-state="|+⟩">|+⟩</button>
+                <button class="radio-btn" data-state="|−⟩">|−⟩</button>
+              </div>
+            </div>
+            <svg id="t02-circuit-svg" viewBox="0 0 340 110" xmlns="http://www.w3.org/2000/svg" style="margin-top:14px;display:block;width:100%;">
+              <!-- Control wire -->
+              <line x1="10" y1="38" x2="330" y2="38" stroke="var(--line-bright)" stroke-width="1.5"/>
+              <!-- Target wire -->
+              <line x1="10" y1="80" x2="330" y2="80" stroke="var(--line-bright)" stroke-width="1.5"/>
+              <!-- CNOT gate: control dot + vertical + XOR circle -->
+              <line x1="175" y1="38" x2="175" y2="68" stroke="var(--cyan)" stroke-width="2"/>
+              <circle cx="175" cy="38" r="5" fill="var(--cyan)"/>
+              <circle cx="175" cy="80" r="12" fill="none" stroke="var(--cyan)" stroke-width="2"/>
+              <line x1="175" y1="68" x2="175" y2="92" stroke="var(--cyan)" stroke-width="2"/>
+              <line x1="163" y1="80" x2="187" y2="80" stroke="var(--cyan)" stroke-width="2"/>
+              <!-- Input labels -->
+              <text id="t02-ctrl-label" x="10" y="32" font-family="'Space Mono',monospace" font-size="13" fill="var(--ink)">|0⟩</text>
+              <text x="10" y="74" font-family="'Space Mono',monospace" font-size="13" fill="var(--ink-faint)">|0⟩</text>
+              <text x="4" y="55" font-family="'Space Mono',monospace" font-size="9" fill="var(--ink-faint)">wire 1</text>
+              <text x="4" y="97" font-family="'Space Mono',monospace" font-size="9" fill="var(--ink-faint)">wire 2</text>
+              <!-- Gate label -->
+              <text x="175" y="108" text-anchor="middle" font-family="'Space Mono',monospace" font-size="9" fill="var(--ink-faint)">CNOT</text>
+              <!-- Arrow labels right side -->
+              <text x="196" y="35" font-family="'Space Mono',monospace" font-size="10" fill="var(--ink-faint)">→ "copy" attempt</text>
+            </svg>
+          </div>
+          <div class="clone-result-panel">
+            <div style="font-family:var(--mono);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:14px;">Result for input <span id="t02-input-label" style="color:var(--cyan)">|0⟩</span></div>
+            <div class="clone-row">
+              <div class="clone-field">
+                <div class="clone-field-label">Actual CNOT output</div>
+                <div class="clone-field-value" id="t02-actual">|00⟩</div>
+              </div>
+              <div class="clone-field">
+                <div class="clone-field-label">Ideal copy would be</div>
+                <div class="clone-field-value" id="t02-ideal">|0⟩|0⟩ = |00⟩</div>
+              </div>
+              <div class="clone-field">
+                <div class="clone-field-label">Match?</div>
+                <div class="clone-field-value match-yes" id="t02-match">✓ Match</div>
+              </div>
+            </div>
+            <div class="clone-note ok" id="t02-note">
+              The ancilla stays |0⟩ — the control was |0⟩ so the CNOT did not fire.
+              The output really is |0⟩|0⟩.
+            </div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- ====================================================== Task 03 (was 01) -->
+    <article class="task">
+      <header class="task-head">
+        <span class="task-label">Task 03</span>
         <h2 class="task-title">Configure the BB84 channel.</h2>
       </header>
       <div class="task-body">
@@ -305,14 +556,14 @@
 
         <svg class="flow-svg" viewBox="0 0 700 132" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
           <rect x="20" y="38" width="130" height="56" rx="3" fill="var(--bg-2)" stroke="var(--cyan)" />
-          <text x="85" y="62" text-anchor="middle" font-family="var(--mono)" font-size="11" fill="var(--cyan)">Alice</text>
-          <text x="85" y="77" text-anchor="middle" font-family="var(--mono)" font-size="9" fill="var(--ink-faint)">prepare qubits</text>
+          <text x="85" y="62" text-anchor="middle" font-family="'Space Mono',monospace" font-size="11" fill="var(--cyan)">Alice</text>
+          <text x="85" y="77" text-anchor="middle" font-family="'Space Mono',monospace" font-size="9" fill="var(--ink-faint)">prepare qubits</text>
           <rect x="288" y="38" width="130" height="56" rx="3" fill="var(--bg-2)" stroke="var(--amber)" />
-          <text x="353" y="62" text-anchor="middle" font-family="var(--mono)" font-size="11" fill="var(--amber)">Channel / Eve</text>
-          <text x="353" y="77" text-anchor="middle" font-family="var(--mono)" font-size="9" fill="var(--ink-faint)">intercept-resend</text>
+          <text x="353" y="62" text-anchor="middle" font-family="'Space Mono',monospace" font-size="11" fill="var(--amber)">Channel / Eve</text>
+          <text x="353" y="77" text-anchor="middle" font-family="'Space Mono',monospace" font-size="9" fill="var(--ink-faint)">intercept-resend</text>
           <rect x="550" y="38" width="130" height="56" rx="3" fill="var(--bg-2)" stroke="var(--phos)" />
-          <text x="615" y="62" text-anchor="middle" font-family="var(--mono)" font-size="11" fill="var(--phos)">Bob</text>
-          <text x="615" y="77" text-anchor="middle" font-family="var(--mono)" font-size="9" fill="var(--ink-faint)">measure qubits</text>
+          <text x="615" y="62" text-anchor="middle" font-family="'Space Mono',monospace" font-size="11" fill="var(--phos)">Bob</text>
+          <text x="615" y="77" text-anchor="middle" font-family="'Space Mono',monospace" font-size="9" fill="var(--ink-faint)">measure qubits</text>
           <line x1="150" y1="66" x2="288" y2="66" stroke="var(--line-bright)"/>
           <line x1="418" y1="66" x2="550" y2="66" stroke="var(--line-bright)"/>
         </svg>
@@ -380,34 +631,46 @@
       </div>
     </article>
 
+    <!-- ====================================================== Task 04 (was 02) -->
     <article class="task">
       <header class="task-head">
-        <span class="task-label">Task 02</span>
+        <span class="task-label">Task 04</span>
         <h2 class="task-title">Interpret the no-cloning limit.</h2>
       </header>
       <div class="task-body">
-        <p>BB84 security comes from a structural fact about quantum mechanics, not from Eve lacking compute power.</p>
+        <p>
+          Task 01 showed that the Z-basis states and X-basis states are <em>mutually unbiased</em>: knowing
+          the value in one basis gives you no information about the other. Task 02 showed that CNOT cannot
+          clone a superposition — it produces an entangled Bell pair instead.
+        </p>
+        <p>
+          BB84 security is built on exactly this structural fact.
+        </p>
         <div class="theorem-box">
           <div class="tag">No-cloning theorem</div>
           <p>
             There is no universal unitary operation <code>U</code> such that
-            <code>U |psi⟩|0⟩ = |psi⟩|psi⟩</code> for every unknown state <code>|psi⟩</code>.
+            <code>U |ψ⟩|0⟩ = |ψ⟩|ψ⟩</code> for every unknown state <code>|ψ⟩</code>.
           </p>
           <p>
             In BB84, states from the Z and X bases are non-orthogonal as a set. Eve cannot perfectly copy
-            an unknown incoming qubit and delay measurement until basis information is announced.
+            an unknown incoming qubit and delay measurement until basis information is announced. Any
+            attempt to extract information forces her to guess a basis — and wrong guesses disturb the state.
           </p>
           <p>
-            Intercept-resend forces Eve to measure immediately in a guessed basis. Wrong guesses randomize
-            Bob outcomes in sifted bits, producing a detectable error signature.
+            Intercept-resend is the best Eve can do without a quantum memory: measure immediately, resend
+            a freshly prepared qubit in the measured basis. Half the time she guesses wrong, producing a
+            state orthogonal to what Alice sent. That is the source of the detectable QBER signature
+            you saw in Task 03.
           </p>
         </div>
       </div>
     </article>
 
+    <!-- ====================================================== Task 05 (was 03) -->
     <article class="task">
       <header class="task-head">
-        <span class="task-label">Task 03</span>
+        <span class="task-label">Task 05</span>
         <h2 class="task-title">Operational question and answer.</h2>
       </header>
       <div class="task-body">
@@ -415,14 +678,14 @@
           <b>Question:</b> Can an eavesdropper copy a quantum message without being detected?
         </p>
         <p id="final-answer" style="font-family:var(--serif); font-size:20px; color:var(--ink);">
-          No result yet. Run a round above.
+          No result yet. Run a round in Task 03 above.
         </p>
       </div>
     </article>
 
     <div class="lab-footer">
       <a href="index.html">← Back to main app</a>
-      <a href="#" onclick="document.getElementById('run-btn').scrollIntoView({behavior:'smooth', block:'center'}); return false;">↑ Back to simulation</a>
+      <a href="#" onclick="document.getElementById('t01-run-btn').scrollIntoView({behavior:'smooth', block:'center'}); return false;">↑ Back to top</a>
     </div>
   </div>
 
@@ -432,21 +695,15 @@
       var root = document.documentElement;
       var button = document.getElementById('theme-toggle');
       if (!button) return;
-
       var currentTheme = localStorage.getItem(STORAGE_KEY) === 'light' ? 'light' : 'dark';
-
       function applyTheme(theme) {
-        if (theme === 'light') {
-          root.setAttribute('data-theme', 'light');
-        } else {
-          root.removeAttribute('data-theme');
-        }
+        if (theme === 'light') root.setAttribute('data-theme', 'light');
+        else root.removeAttribute('data-theme');
         button.setAttribute('data-theme', theme);
         button.setAttribute('aria-pressed', String(theme === 'light'));
         button.setAttribute('aria-label', theme === 'light' ? 'Switch to dark mode' : 'Enable light mode');
         button.textContent = theme === 'light' ? 'Dark mode' : 'Light mode';
       }
-
       applyTheme(currentTheme);
       button.addEventListener('click', function () {
         currentTheme = currentTheme === 'light' ? 'dark' : 'light';
@@ -455,157 +712,263 @@
       });
     })();
 
+    /* ---- Task 01: measurement paradox ---- */
+    (function initTask01() {
+      var state = '|0⟩';
+      var basis = 'Z';
+
+      // Deterministic outcomes: state+basis → outcome (0 or 1).
+      // Anything not in this map is genuinely random (50/50).
+      var DETS = {
+        '|0⟩Z': 0, '|1⟩Z': 1,
+        '|+⟩X': 0, '|−⟩X': 1
+      };
+      var N_SHOTS = 20;
+
+      function measureOnce() {
+        var key = state + basis;
+        if (key in DETS) return DETS[key];
+        return Math.random() < 0.5 ? 0 : 1;
+      }
+
+      function runShots() {
+        var c0 = 0, c1 = 0;
+        for (var i = 0; i < N_SHOTS; i++) {
+          if (measureOnce() === 0) c0++; else c1++;
+        }
+        var MAX_H = 90; // px
+        var h0 = Math.round((c0 / N_SHOTS) * MAX_H);
+        var h1 = Math.round((c1 / N_SHOTS) * MAX_H);
+        document.getElementById('t01-bar-0').style.height = h0 + 'px';
+        document.getElementById('t01-bar-1').style.height = h1 + 'px';
+        document.getElementById('t01-count-0').textContent = c0;
+        document.getElementById('t01-count-1').textContent = c1;
+
+        var key = state + basis;
+        var cap = document.getElementById('t01-caption');
+        if (key in DETS) {
+          var out = DETS[key] === 0 ? '"0"' : '"1"';
+          cap.className = 'meas-caption det';
+          cap.innerHTML = '<b style="color:var(--phos)">Deterministic.</b> ' + state +
+            ' prepared in the ' + basis + '-basis always returns ' + out +
+            ' — it has a definite eigenvalue in this basis.';
+        } else {
+          cap.className = 'meas-caption rand';
+          cap.innerHTML = '<b style="color:var(--amber)">Random.</b> ' + state +
+            ' has no definite value in the ' + basis + '-basis.' +
+            ' Each shot is an independent coin flip — the qubit was in a superposition relative to this basis.';
+        }
+      }
+
+      document.querySelectorAll('#t01-state-btns .radio-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          document.querySelectorAll('#t01-state-btns .radio-btn').forEach(function (b) { b.classList.remove('active'); });
+          btn.classList.add('active');
+          state = btn.dataset.state;
+          document.getElementById('t01-bar-0').style.height = '3px';
+          document.getElementById('t01-bar-1').style.height = '3px';
+          document.getElementById('t01-count-0').textContent = '—';
+          document.getElementById('t01-count-1').textContent = '—';
+          document.getElementById('t01-caption').className = 'meas-caption';
+          document.getElementById('t01-caption').textContent = 'Press Run to see results for ' + state + ' in ' + basis + '-basis.';
+        });
+      });
+
+      document.querySelectorAll('#t01-basis-btns .radio-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          document.querySelectorAll('#t01-basis-btns .radio-btn').forEach(function (b) { b.classList.remove('active'); });
+          btn.classList.add('active');
+          basis = btn.dataset.basis;
+          document.getElementById('t01-bar-0').style.height = '3px';
+          document.getElementById('t01-bar-1').style.height = '3px';
+          document.getElementById('t01-count-0').textContent = '—';
+          document.getElementById('t01-count-1').textContent = '—';
+          document.getElementById('t01-caption').className = 'meas-caption';
+          document.getElementById('t01-caption').textContent = 'Press Run to see results for ' + state + ' in ' + basis + '-basis.';
+        });
+      });
+
+      document.getElementById('t01-run-btn').addEventListener('click', runShots);
+    })();
+
+    /* ---- Task 02: CNOT copy attempt ---- */
+    (function initTask02() {
+      var state = '|0⟩';
+
+      var RESULTS = {
+        '|0⟩': {
+          actual: '|00⟩',
+          ideal:  '|0⟩|0⟩  =  |00⟩',
+          match:  true,
+          note:   'The CNOT does not fire — the control qubit is |0⟩, so the ancilla stays |0⟩. ' +
+                  'The output really is |0⟩|0⟩: a valid copy for this basis state.'
+        },
+        '|1⟩': {
+          actual: '|11⟩',
+          ideal:  '|1⟩|1⟩  =  |11⟩',
+          match:  true,
+          note:   'The CNOT fires and flips the ancilla from |0⟩ to |1⟩ because the control is |1⟩. ' +
+                  'Output is |11⟩: again a valid copy for this basis state.'
+        },
+        '|+⟩': {
+          actual: '(|00⟩ + |11⟩) / √2   (Bell state Φ⁺)',
+          ideal:  '|+⟩|+⟩  =  (|00⟩ + |01⟩ + |10⟩ + |11⟩) / 2',
+          match:  false,
+          note:   'The superposition |+⟩ = (|0⟩+|1⟩)/√2 entangles both wires: the CNOT turns it into ' +
+                  'a Bell pair. You cannot separate that Bell state back into |+⟩ ⊗ |+⟩ — the two ' +
+                  'qubits are correlated, not independent copies.'
+        },
+        '|−⟩': {
+          actual: '(|00⟩ − |11⟩) / √2   (Bell state Φ⁻)',
+          ideal:  '|−⟩|−⟩  =  (|00⟩ − |01⟩ − |10⟩ + |11⟩) / 2',
+          match:  false,
+          note:   'Same story: |−⟩ becomes another Bell pair. The relative minus sign lands in the ' +
+                  'inter-qubit correlation, not in each qubit separately. The output is entangled, not cloned.'
+        }
+      };
+
+      function render() {
+        var d = RESULTS[state];
+        document.getElementById('t02-input-label').textContent = state;
+        document.getElementById('t02-ctrl-label').textContent = state;
+        document.getElementById('t02-actual').textContent = d.actual;
+        document.getElementById('t02-ideal').textContent = d.ideal;
+        var matchEl = document.getElementById('t02-match');
+        matchEl.textContent = d.match ? '✓ Match' : '✗ Mismatch — no copy produced';
+        matchEl.className = 'clone-field-value ' + (d.match ? 'match-yes' : 'match-no');
+        var noteEl = document.getElementById('t02-note');
+        noteEl.textContent = d.note;
+        noteEl.className = 'clone-note ' + (d.match ? 'ok' : 'fail');
+      }
+
+      document.querySelectorAll('#t02-state-btns .radio-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          document.querySelectorAll('#t02-state-btns .radio-btn').forEach(function (b) { b.classList.remove('active'); });
+          btn.classList.add('active');
+          state = btn.dataset.state;
+          render();
+        });
+      });
+
+      render();
+    })();
+
+    /* ---- Task 03: BB84 simulation ---- */
     (function initBB84Lab() {
-      const el = id => document.getElementById(id);
-
-      const sliders = {
-        n: el('n-slider'),
-        noise: el('noise-slider'),
-        eveRate: el('eve-rate-slider')
+      var el = function (id) { return document.getElementById(id); };
+      var sliders = {
+        n: el('n-slider'), noise: el('noise-slider'), eveRate: el('eve-rate-slider')
       };
-      const vals = {
-        n: el('n-val'),
-        noise: el('noise-val'),
-        eveRate: el('eve-rate-val')
-      };
-      const runBtn = el('run-btn');
-      const resetBtn = el('reset-btn');
-      const eveBtns = document.querySelectorAll('#eve-radio .radio-btn');
-
-      let eveMode = 'off';
+      var vals = { n: el('n-val'), noise: el('noise-val'), eveRate: el('eve-rate-val') };
+      var runBtn = el('run-btn'), resetBtn = el('reset-btn');
+      var eveBtns = document.querySelectorAll('#eve-radio .radio-btn');
+      var eveMode = 'off';
 
       function randBit() { return Math.random() < 0.5 ? 0 : 1; }
       function randBasis() { return Math.random() < 0.5 ? 'Z' : 'X'; }
-
       function prepState(bit, basis) {
         if (basis === 'Z') return bit === 0 ? '0' : '1';
         return bit === 0 ? '+' : '-';
       }
-
       function measureState(state, basis) {
-        const zStates = state === '0' || state === '1';
-        const xStates = state === '+' || state === '-';
+        var zStates = state === '0' || state === '1';
+        var xStates = state === '+' || state === '-';
         if ((basis === 'Z' && zStates) || (basis === 'X' && xStates)) {
           if (state === '0' || state === '+') return 0;
           return 1;
         }
         return randBit();
       }
-
       function stateFromMeasurement(bit, basis) {
         if (basis === 'Z') return bit === 0 ? '0' : '1';
         return bit === 0 ? '+' : '-';
       }
 
       function runRound() {
-        const N = parseInt(sliders.n.value, 10);
-        const pNoise = parseFloat(sliders.noise.value) / 100;
-        const pIntercept = eveMode === 'off' ? 0 : parseFloat(sliders.eveRate.value) / 100;
-
-        let sifted = 0;
-        let mismatches = 0;
-
-        for (let i = 0; i < N; i++) {
-          const aBit = randBit();
-          const aBasis = randBasis();
-          const bBasis = randBasis();
-          const sentState = prepState(aBit, aBasis);
-
-          let deliveredState = sentState;
+        var N = parseInt(sliders.n.value, 10);
+        var pNoise = parseFloat(sliders.noise.value) / 100;
+        var pIntercept = eveMode === 'off' ? 0 : parseFloat(sliders.eveRate.value) / 100;
+        var sifted = 0, mismatches = 0;
+        for (var i = 0; i < N; i++) {
+          var aBit = randBit(), aBasis = randBasis(), bBasis = randBasis();
+          var sentState = prepState(aBit, aBasis);
+          var deliveredState = sentState;
           if (Math.random() < pIntercept) {
-            const eBasis = randBasis();
-            const eBit = measureState(deliveredState, eBasis);
+            var eBasis = randBasis();
+            var eBit = measureState(deliveredState, eBasis);
             deliveredState = stateFromMeasurement(eBit, eBasis);
           }
-
-          let bBit = measureState(deliveredState, bBasis);
+          var bBit = measureState(deliveredState, bBasis);
           if (Math.random() < pNoise) bBit = 1 - bBit;
-
-          if (aBasis === bBasis) {
-            sifted++;
-            if (aBit !== bBit) mismatches++;
-          }
+          if (aBasis === bBasis) { sifted++; if (aBit !== bBit) mismatches++; }
         }
+        var sampled = Math.min(Math.floor(sifted * 0.3), 400);
+        var qber = sifted > 0 ? mismatches / sifted : 0;
+        var qberPct = qber * 100;
+        var eveOnlyQberPct = pIntercept * 25;
+        var detect = qberPct > 11;
 
-        const sampled = Math.min(Math.floor(sifted * 0.3), 400);
-        const qber = sifted > 0 ? mismatches / sifted : 0;
-        const qberPct = qber * 100;
-        const eveOnlyQberPct = pIntercept * 25;
-        const detect = qberPct > 11;
-
-        el('status-line').textContent = `1 round complete · sifted ${sifted} bits`;
+        el('status-line').textContent = '1 round complete · sifted ' + sifted + ' bits';
         el('st-transmitted').textContent = N.toString();
         el('st-sifted').textContent = sifted.toString();
         el('st-sampled').textContent = sampled.toString();
-        el('st-qber').textContent = `${qberPct.toFixed(2)}%`;
-        el('st-qber-eve').textContent = `${eveOnlyQberPct.toFixed(2)}%`;
+        el('st-qber').textContent = qberPct.toFixed(2) + '%';
+        el('st-qber-eve').textContent = eveOnlyQberPct.toFixed(2) + '%';
 
-        const pctForBar = Math.min(qberPct, 30);
-        el('qber-bar').style.width = `${(pctForBar / 30 * 100).toFixed(1)}%`;
-        el('qber-line').textContent = `QBER: ${qberPct.toFixed(2)}%`;
+        var pctForBar = Math.min(qberPct, 30);
+        el('qber-bar').style.width = (pctForBar / 30 * 100).toFixed(1) + '%';
+        el('qber-line').textContent = 'QBER: ' + qberPct.toFixed(2) + '%';
 
-        const verdict = el('verdict');
+        var verdict = el('verdict');
         verdict.classList.remove('alert', 'safe');
         if (detect) {
           verdict.classList.add('alert');
-          verdict.innerHTML = `<b>Abort recommended.</b> QBER is above 11%, which is inconsistent with a secure key at this noise level. Eve or excess channel disturbance is detectable.`;
+          verdict.innerHTML = '<b>Abort recommended.</b> QBER is above 11%, inconsistent with a secure key at this noise level. Eve or excess channel disturbance is detectable.';
         } else {
           verdict.classList.add('safe');
-          verdict.innerHTML = `<b>Below threshold.</b> QBER is under 11%. The channel may still be noisy, but this round does not force an eavesdropping conclusion.`;
+          verdict.innerHTML = '<b>Below threshold.</b> QBER is under 11%. This round does not force an eavesdropping conclusion.';
         }
 
-        const ans = el('final-answer');
+        var ans = el('final-answer');
         if (pIntercept > 0.01 && qberPct > 11) {
-          ans.innerHTML = `No. In BB84, copying unknown qubits causes disturbance, and that disturbance is statistically detectable as elevated QBER.`;
+          ans.innerHTML = 'No. In BB84, copying unknown qubits causes disturbance, and that disturbance is statistically detectable as elevated QBER. Tasks 01–02 explained why: wrong-basis measurement is irreversible, and cloning superpositions is impossible.';
         } else if (pIntercept > 0.01) {
-          ans.innerHTML = `Not reliably. Small interception can hide within finite statistics, but increasing sample size reveals the disturbance trend predicted by no-cloning.`;
+          ans.innerHTML = 'Not reliably. Small interception can hide within finite statistics, but increasing sample size reveals the disturbance trend predicted by no-cloning.';
         } else {
-          ans.innerHTML = `With no eavesdropper, QBER is set mainly by channel noise. Use this as the baseline before adding Eve.`;
+          ans.innerHTML = 'With no eavesdropper, QBER is set mainly by channel noise. Add Eve in Task 03 to see the signature.';
         }
       }
 
-      sliders.n.addEventListener('input', () => { vals.n.textContent = sliders.n.value; });
-      sliders.noise.addEventListener('input', () => { vals.noise.textContent = sliders.noise.value; });
-      sliders.eveRate.addEventListener('input', () => { vals.eveRate.textContent = sliders.eveRate.value; });
+      sliders.n.addEventListener('input', function () { vals.n.textContent = sliders.n.value; });
+      sliders.noise.addEventListener('input', function () { vals.noise.textContent = sliders.noise.value; });
+      sliders.eveRate.addEventListener('input', function () { vals.eveRate.textContent = sliders.eveRate.value; });
 
-      eveBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-          eveBtns.forEach(b => b.classList.remove('active'));
+      eveBtns.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          eveBtns.forEach(function (b) { b.classList.remove('active'); });
           btn.classList.add('active');
           eveMode = btn.dataset.mode;
-          if (eveMode === 'off') {
-            sliders.eveRate.value = 0;
-            vals.eveRate.textContent = '0';
-          } else if (parseInt(sliders.eveRate.value, 10) === 0) {
-            sliders.eveRate.value = 40;
-            vals.eveRate.textContent = '40';
-          }
+          if (eveMode === 'off') { sliders.eveRate.value = 0; vals.eveRate.textContent = '0'; }
+          else if (parseInt(sliders.eveRate.value, 10) === 0) { sliders.eveRate.value = 40; vals.eveRate.textContent = '40'; }
         });
       });
 
       runBtn.addEventListener('click', runRound);
-      resetBtn.addEventListener('click', () => {
-        sliders.n.value = 400;
-        sliders.noise.value = 2;
-        sliders.eveRate.value = 0;
-        vals.n.textContent = '400';
-        vals.noise.textContent = '2';
-        vals.eveRate.textContent = '0';
-        eveBtns.forEach(b => b.classList.remove('active'));
+      resetBtn.addEventListener('click', function () {
+        sliders.n.value = 400; sliders.noise.value = 2; sliders.eveRate.value = 0;
+        vals.n.textContent = '400'; vals.noise.textContent = '2'; vals.eveRate.textContent = '0';
+        eveBtns.forEach(function (b) { b.classList.remove('active'); });
         document.querySelector('#eve-radio .radio-btn[data-mode="off"]').classList.add('active');
         eveMode = 'off';
-
         el('status-line').textContent = 'no data yet';
-        el('st-transmitted').textContent = '—';
-        el('st-sifted').textContent = '—';
-        el('st-sampled').textContent = '—';
-        el('st-qber').textContent = '—';
+        el('st-transmitted').textContent = '—'; el('st-sifted').textContent = '—';
+        el('st-sampled').textContent = '—'; el('st-qber').textContent = '—';
         el('st-qber-eve').textContent = '—';
         el('qber-bar').style.width = '0%';
         el('qber-line').textContent = 'QBER: —';
         el('verdict').className = 'verdict';
         el('verdict').textContent = 'Run the simulation. If Eve copies qubits by measurement, the extra disturbance appears as higher QBER.';
-        el('final-answer').textContent = 'No result yet. Run a round above.';
+        el('final-answer').textContent = 'No result yet. Run a round in Task 03 above.';
       });
     })();
   </script>

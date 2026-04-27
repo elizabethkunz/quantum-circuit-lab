@@ -171,3 +171,150 @@
 
   drawSurface(); updateStatus(); drawOverhead();
 })();
+
+/* =========================================================================
+   T4 STEP 6: TOY "TOO MANY ERRORS" + THRESHOLD INTUITION
+   ========================================================================= */
+(function initT4Step6Burst() {
+  const slider = document.getElementById('t4-burst-p-slider');
+  const valEl = document.getElementById('t4-burst-p-val');
+  const svg = document.getElementById('t4-burst-curve-svg');
+  const readout = document.getElementById('t4-burst-readout');
+  const runBtn = document.getElementById('t4-burst-run');
+  if (!slider || !svg) return;
+
+  const ns = 'http://www.w3.org/2000/svg';
+  function probAtLeast2(p) {
+    if (p <= 0) return 0;
+    if (p >= 1) return 1;
+    const q = 1 - p;
+    return 1 - q ** 9 - 9 * p * q ** 8;
+  }
+
+  const W = 420, H = 168, padL = 46, padR = 18, padT = 16, padB = 34;
+  const pMax = 0.2;
+  const pTh = 0.01;
+
+  function xScale(p) {
+    return padL + (p / pMax) * (W - padL - padR);
+  }
+  function yScale(v) {
+    return H - padB - v * (H - padT - padB);
+  }
+
+  function drawCurve(currentP) {
+    svg.innerHTML = '';
+    const axis = 'var(--line-bright)';
+    function line(x1, y1, x2, y2, sw, color) {
+      const l = document.createElementNS(ns, 'line');
+      l.setAttribute('x1', x1); l.setAttribute('y1', y1);
+      l.setAttribute('x2', x2); l.setAttribute('y2', y2);
+      l.setAttribute('stroke', color || axis);
+      l.setAttribute('stroke-width', sw || 1);
+      svg.appendChild(l);
+    }
+    function txt(x, y, t, opts) {
+      const el = document.createElementNS(ns, 'text');
+      el.setAttribute('x', x); el.setAttribute('y', y);
+      el.textContent = t;
+      const o = opts || {};
+      if (o.size) el.setAttribute('font-size', o.size);
+      if (o.anchor) el.setAttribute('text-anchor', o.anchor);
+      if (o.transform) el.setAttribute('transform', o.transform);
+      el.setAttribute('font-family', 'var(--mono)');
+      el.setAttribute('fill', o.fill || 'var(--ink-faint)');
+      svg.appendChild(el);
+    }
+    line(padL, yScale(0), W - padR, yScale(0));
+    line(padL, yScale(0), padL, padT);
+    [0, 0.25, 0.5, 0.75, 1].forEach(v => {
+      const y = yScale(v);
+      line(padL - 3, y, padL, y);
+      txt(padL - 6, y + 3, String(v), { anchor: 'end', size: '8' });
+    });
+    [0, 0.05, 0.1, 0.15, 0.2].forEach(p => {
+      const x = xScale(p);
+      line(x, H - padB, x, H - padB + 3);
+      txt(x, H - 8, (p * 100).toFixed(0) + '%', { anchor: 'middle', size: '8' });
+    });
+    txt(W / 2, H - 1, 'physical p (per line)', { anchor: 'middle', size: '8' });
+    txt(10, H / 2, 'P(fail round)', {
+      anchor: 'middle', size: '8', fill: 'var(--ink-faint)',
+      transform: 'rotate(-90,10,' + (H / 2) + ')'
+    });
+
+    const xTh = xScale(pTh);
+    line(xTh, padT, xTh, H - padB, 1, 'var(--amber)');
+    txt(xTh + 3, padT + 10, '~p_th', { size: '8', fill: 'var(--amber)', anchor: 'start' });
+
+    let d = '';
+    for (let i = 0; i <= 80; i++) {
+      const p = (i / 80) * pMax;
+      const v = probAtLeast2(p);
+      const x = xScale(p), y = yScale(v);
+      d += (i === 0 ? 'M' : 'L') + x + ' ' + y + ' ';
+    }
+    const path = document.createElementNS(ns, 'path');
+    path.setAttribute('d', d.trim());
+    path.setAttribute('stroke', 'var(--mint)');
+    path.setAttribute('stroke-width', '2');
+    path.setAttribute('fill', 'none');
+    svg.appendChild(path);
+
+    const vCur = probAtLeast2(currentP);
+    const cx = xScale(currentP), cy = yScale(vCur);
+    const dot = document.createElementNS(ns, 'circle');
+    dot.setAttribute('cx', cx); dot.setAttribute('cy', cy); dot.setAttribute('r', '5');
+    dot.setAttribute('fill', 'var(--amber)');
+    dot.setAttribute('stroke', 'var(--bg-0)');
+    dot.setAttribute('stroke-width', '2');
+    svg.appendChild(dot);
+  }
+
+  function getP() {
+    return parseFloat(slider.value) / 100;
+  }
+
+  function refresh() {
+    const p = getP();
+    if (valEl) valEl.textContent = p.toFixed(1) + '%';
+    drawCurve(p);
+  }
+
+  let runCount = 0;
+  const pLevels = new Set();
+
+  if (runBtn) {
+    runBtn.addEventListener('click', () => {
+      const p = getP();
+      pLevels.add(slider.value);
+      let fail = 0;
+      const rounds = 400;
+      for (let r = 0; r < rounds; r++) {
+        let k = 0;
+        for (let i = 0; i < 9; i++) {
+          if (Math.random() < p) k++;
+        }
+        if (k >= 2) fail++;
+      }
+      const emp = fail / rounds;
+      const theo = probAtLeast2(p);
+      runCount++;
+      if (readout) {
+        const hi = p > pTh;
+        readout.innerHTML =
+          `<span style="color:var(--mint)">Monte Carlo (${rounds} rounds):</span> uncorrectable fraction <b>${(emp * 100).toFixed(1)}%</b> ` +
+          `(theory P(≥2 flips) = <b>${(theo * 100).toFixed(2)}%</b>). ` +
+          (p < 0.005
+            ? 'At very small <em>p</em>, double flips are rare — a code has room to work.'
+            : p < pTh * 3
+              ? 'Still in a “gentle” regime for this toy; real systems use full decoder noise models.'
+              : '<span style="color:var(--amber)">Here multi-error bursts are common — the same idea as being <em>above threshold</em>: correction is fighting a losing battle until physical noise is reduced or the code is enlarged.</span>');
+      }
+      if (runCount >= 2 && pLevels.size >= 2) markDone('t4-6');
+    });
+  }
+
+  slider.addEventListener('input', refresh);
+  refresh();
+})();

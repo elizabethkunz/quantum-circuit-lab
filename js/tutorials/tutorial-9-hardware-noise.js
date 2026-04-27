@@ -389,10 +389,15 @@ Step 6
     if (tphiv) tphiv.textContent = `${Tphi} μs`;
     if (t2v) t2v.textContent = `${t9Utils.fmt(T2, 2)} μs`;
 
+    // Normalized abscissa tt ∈ [0,1] on the plot (not literal μs on the tick marks).
+    // We plot exp(−(tt/T) · k) with k = 6·4: ~6 e-folds of “story” across the width, 4× stretch so T1 vs T2 stay visually distinct (schematic).
+    const T2_PLOT_EFOLDS = 6;
+    const T2_PLOT_EMPH = 4;
+    const t2PlotK = T2_PLOT_EFOLDS * T2_PLOT_EMPH;
     t9Utils.drawTwoCurves(
       't9-t2-plot',
-      tt => Math.exp(-6 * tt / T1 * 4),
-      tt => Math.exp(-6 * tt / T2 * 4),
+      tt => Math.exp(-t2PlotK * tt / T1),
+      tt => Math.exp(-t2PlotK * tt / T2),
       ['population decay ~ T1', 'coherence decay ~ T2']
     );
 
@@ -498,6 +503,7 @@ Step 6
       cfg = { TphiFast: 0.30, T1: 0.9, deltaBase: 50, sigmaSlow: 5, txt: 'Structured noise gives visibly distorted Ramsey fringes; echo suppresses the slow wandering term and smooths the decay.' };
     }
 
+    // Same shot ensemble as Ramsey: static detuning (deltaBase) + per-shot inhomogeneous drift. Ramsey keeps full (δ+ε) in the fringe phase.
     function ramseySignal(tNorm) {
       const nAvg = 25;
       let acc = 0;
@@ -511,10 +517,19 @@ Step 6
       return acc / nAvg;
     }
 
+    // Hahn-style echo: same τ ensemble; phase uses only the residual inhomogeneous part after refocusing δ (first order). Slightly looser Tφ on the echo envelope to mimic refocusing of the fast dephasing channel (1.55 ≈ old schematic 1.8).
     function echoSignal(tNorm) {
-      const dephase = Math.exp(-tNorm / (cfg.TphiFast * 1.8));
-      const relax = Math.exp(-tNorm / (2 * cfg.T1));
-      return 0.5 * (1 + dephase * relax);
+      const nAvg = 25;
+      let acc = 0;
+      const echoTphiScale = 1.55;
+      for (let k = 0; k < nAvg; k++) {
+        const drift = cfg.sigmaSlow * Math.sin(0.7 * (k + 1));
+        const phaseEcho = drift * tNorm;
+        const dephase = Math.exp(-tNorm / (cfg.TphiFast * echoTphiScale));
+        const relax = Math.exp(-tNorm / (2 * cfg.T1));
+        acc += 0.5 * (1 + dephase * relax * Math.cos(phaseEcho));
+      }
+      return acc / nAvg;
     }
 
     t9Utils.drawTwoCurves('t9-echo-svg', ramseySignal, echoSignal, ['Ramsey fringes', 'Echo (refocused)']);
@@ -569,15 +584,38 @@ Step 6
     transmon: `
       <b>Transmon-style intuition</b><br>
       Usually engineered to suppress charge noise strongly, but still sensitive to dielectric loss, quasiparticles, Purcell loss, and flux noise if tunable.
+      In Step 1, when you dragged T1 toward the <i>shorter</i> end (e.g. a few μs), you were in a regime where dielectric and surface loss often dominate—exactly the story these chips are tuned to fight with materials and purcell filters.
     `,
     flux: `
       <b>Flux-tunable device intuition</b><br>
       Flux tuning is powerful, but it exposes the qubit more directly to low-frequency flux noise, which often shows up as dephasing away from sweet spots.
+      That lines up with Step 2: pushing pure dephasing T<sub>ϕ</sub> shorter mimics what happens when you leave a flux sweet spot—T2 drops even if T1 still looks “okay.”
     `,
     generic: `
       <b>Big picture</b><br>
       T1 is often limited by dissipation channels and spectral weight near the qubit frequency.
       T2 is often limited by both T1 and slow wandering from low-frequency noise sources.
+      Step 3’s sliders made that explicit: 1/T<sub>2</sub> = 1/(2T<sub>1</sub>) + 1/T<sub>ϕ</sub> is the same decomposition you use when reading vendor spec sheets.
+    `,
+    compare: `
+      <b>T1 vs T2 tradeoffs (rule-of-thumb)</b><br>
+      <div style="margin-top:8px;overflow-x:auto">
+        <table style="width:100%;border-collapse:collapse;font-family:var(--mono);font-size:12px">
+          <thead>
+            <tr style="border-bottom:1px solid var(--line)">
+              <th style="text-align:left;padding:4px 8px 4px 0">Archetype</th>
+              <th style="text-align:left;padding:4px 8px">T1 (typ. trend)</th>
+              <th style="text-align:left;padding:4px 8px">T2 (typ. limiter)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td style="padding:6px 8px 4px 0;vertical-align:top">Transmon (fixed freq.)</td><td style="padding:4px 8px;vertical-align:top">Often strong (10–100+ μs in good films)</td><td style="padding:4px 8px;vertical-align:top">T<sub>ϕ</sub> from 1/f flux &amp; photon shot; echo helps</td></tr>
+            <tr><td style="padding:4px 8px 4px 0;vertical-align:top">Flux-tunable / tunable coupler</td><td style="padding:4px 8px;vertical-align:top">Competitive, but can trade off with control wiring</td><td style="padding:4px 8px;vertical-align:top">Extra flux — often T2 &lt; T1/2 at non-sweet spots</td></tr>
+            <tr><td style="padding:4px 8px 0 0;vertical-align:top">“Generic” multi-q</td><td style="padding:4px 8px;vertical-align:top">Varies with packaging &amp; line</td><td style="padding:4px 8px;vertical-align:top">Crosstalk + readout + bath — use Steps 1–3 as a mental dashboard</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div style="margin-top:8px;color:var(--ink-faint);font-size:13px">Numbers are <i>archetype-level</i> trends, not benchmarks; use them to know what to re-check first when a device’s T1 and T2 disagree.</div>
     `
   };
 

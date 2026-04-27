@@ -52,6 +52,15 @@ Step 6
     return Number(n).toFixed(d).replace(/\.000$/, '');
   };
 
+  /** One complex matrix entry for display, e.g. 0.5+0.3i (omits "0i" when imaginary part ≈0). */
+  function fmtMatrixEntry(z, d = 2) {
+    const er = Math.abs(z.re) < 1e-12 ? 0 : z.re;
+    const ei = Math.abs(z.im) < 1e-12 ? 0 : z.im;
+    if (Math.abs(ei) < 1e-12) return fmt(er, d);
+    const sign = ei >= 0 ? '+' : '−';
+    return `${fmt(er, d)} ${sign} ${fmt(Math.abs(ei), d)}i`;
+  }
+
   function c(re, im = 0) { return { re, im }; }
   function cAdd(a, b) { return c(a.re + b.re, a.im + b.im); }
   function cSub(a, b) { return c(a.re - b.re, a.im - b.im); }
@@ -161,6 +170,7 @@ Step 6
     return applyKraus(rho, channelKraus(kind, p));
   }
 
+  /** ½ ||ρA−ρB||_F — Frobenius (not trace) distance, used as a simple scale for “how different” two 2×2 states are. */
   function traceDistance2x2(rhoA, rhoB) {
     const d00 = rhoA[0][0].re - rhoB[0][0].re;
     const d11 = rhoA[1][1].re - rhoB[1][1].re;
@@ -329,7 +339,7 @@ Step 6
   window.t8Utils = {
     c, matMul, dagger, matAdd, applyKraus, channelKraus, applyChannel, rhoFromState,
     blochFromRho, probsHTML, rhoHTML, purity, drawBlochDisc, drawBlochSphereProjection,
-    traceDistance2x2, blochRadius, djNoisyDistribution, fmt
+    traceDistance2x2, blochRadius, djNoisyDistribution, fmt, fmtMatrixEntry
   };
 })();
 
@@ -516,7 +526,7 @@ Step 6
   function renderMatrix(K) {
     return `
       <div style="font-family:var(--mono); font-size:12px; line-height:1.5">
-        [ ${t8Utils.fmt(K[0][0].re,2)} , ${t8Utils.fmt(K[0][1].re,2)} ; ${t8Utils.fmt(K[1][0].re,2)} , ${t8Utils.fmt(K[1][1].re,2)} ]
+        [ ${t8Utils.fmtMatrixEntry(K[0][0])} , ${t8Utils.fmtMatrixEntry(K[0][1])} ; ${t8Utils.fmtMatrixEntry(K[1][0])} , ${t8Utils.fmtMatrixEntry(K[1][1])} ]
       </div>
     `;
   }
@@ -543,7 +553,7 @@ Step 6
     if (check) {
       check.innerHTML = `
         <b>Trace-preserving check:</b><br>
-        Σ K†K = [ ${t8Utils.fmt(sum[0][0].re,2)} , ${t8Utils.fmt(sum[0][1].re,2)} ; ${t8Utils.fmt(sum[1][0].re,2)} , ${t8Utils.fmt(sum[1][1].re,2)} ]<br>
+        Σ K†K = [ ${t8Utils.fmtMatrixEntry(sum[0][0])} , ${t8Utils.fmtMatrixEntry(sum[0][1])} ; ${t8Utils.fmtMatrixEntry(sum[1][0])} , ${t8Utils.fmtMatrixEntry(sum[1][1])} ]<br>
         <span style="color:var(--ink-faint)">For a CPTP map, this should equal the identity.</span>
       `;
     }
@@ -616,6 +626,7 @@ Step 6
     if (aThenD) aThenD.innerHTML = `<b>Amplitude → dephasing</b>${t8Utils.rhoHTML(rhoAD)}`;
     if (dThenA) dThenA.innerHTML = `<b>Dephasing → amplitude</b>${t8Utils.rhoHTML(rhoDA)}`;
 
+    // ½||ρ_AD−ρ_DA||_F; rough commutativity proxy = 1−2·(that), clamped in [0,1] (1 = same order, 0 = maximally different in this scale).
     const diff = t8Utils.traceDistance2x2(rhoAD, rhoDA);
     const commutativity = Math.max(0, 1 - 2 * diff);
 
@@ -627,7 +638,8 @@ Step 6
           The larger point is that noisy evolution is generally not a single “random gate mistake” — it is a map acting on ρ.
         </span>
         <div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--line);font-family:var(--mono);font-size:11px;">
-          Order sensitivity (trace-distance proxy): <span style="color:var(--amber)">${t8Utils.fmt(diff, 3)}</span><br>
+          ½||ρ<sub>AD</sub>−ρ<sub>DA</sub>||<sub>F</sub> (Frobenius): <span style="color:var(--amber)">${t8Utils.fmt(diff, 3)}</span><br>
+          <span style="color:var(--ink-faint)">Commutativity score ≈ 1 − 2·(value above) — 100% if the two orders agree, lower if order matters.</span><br>
           Commutativity score: <span style="color:var(--cyan)">${Math.round(100 * commutativity)}%</span>
         </div>
       `;
@@ -769,10 +781,15 @@ Step 6
       if (bars) bars.innerHTML = barsHTML(probs, n, focusIndex);
       if (note) {
         note.innerHTML = `
+          <span style="color:var(--ink-faint);display:block;margin-bottom:6px;">
+            <b>Schematic model</b> — this is a heuristic distribution over readout bitstrings, not a full state-vector or density-matrix simulation of the DJ circuit. It is meant to show <i>qualitative</i> trends, not to replace a real simulator.
+          </span>
           Focus state ${labelBits(focusIndex, n)}: <span style="color:var(--amber)">${t8Utils.fmt(100 * focusProb, 1)}%</span>
           · leakage to wrong signatures: <span style="color:var(--cyan)">${t8Utils.fmt(100 * leakage, 1)}%</span>
           <br><span style="color:var(--ink-faint);">
-            Dephasing mainly erodes interference, depolarizing randomizes toward uniform, and amplitude damping biases toward low-energy bitstrings.
+            <b>By channel (qualitative):</b> dephasing blurs the interference that makes constant vs. balanced look different — watch focus probability drop while wrong signatures grow.
+            Depolarizing smears the whole output toward a flatter distribution. Amplitude damping drags amplitudes toward low Hamming weight (favoring |00…0⟩-like bitstrings) more than the other two, so a balanced case’s “far” signature can lose contrast differently.
+            In real hardware, the dominant error channel and readout crosstalk together determine which failure mode you see.
           </span>
         `;
       }

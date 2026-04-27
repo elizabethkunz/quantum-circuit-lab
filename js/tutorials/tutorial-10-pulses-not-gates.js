@@ -245,6 +245,11 @@
   const foundEl = document.getElementById('t10-rabi-found');
   let pickedTime = null;
   const tries = new Set();
+  const W = 460; const H = 230; const padL = 44; const padR = 16; const padT = 18; const padB = 32;
+  const innerW = W - padL - padR;
+  const tMax = 3 * Math.PI;
+  /** Reused so draw() can clear the SVG without stacking duplicate click listeners. */
+  let rabiClickLayer = null;
 
   // P(|1⟩) vs pulse duration at given amplitude
   function rabi(t, amp) {
@@ -256,10 +261,7 @@
     if (!svg) return;
     const mkEl = window.t10MkEl;
     svg.innerHTML = '';
-    const W = 460, H = 230, padL = 44, padR = 16, padT = 18, padB = 32;
-    const innerW = W - padL - padR;
     const innerH = H - padT - padB;
-    const tMax = 3 * Math.PI;
     const amp = parseFloat(ampSlider.value);
 
     function xMap(t) { return padL + (t / tMax) * innerW; }
@@ -335,21 +337,29 @@
       }, `P = ${(p * 100).toFixed(0)}%`));
     }
 
-    // click-to-pick: mount overlay rect
-    const hit = mkEl('rect', {
-      x: padL, y: padT, width: innerW, height: innerH,
-      fill: 'transparent', style: 'cursor:crosshair;'
-    });
-    hit.addEventListener('click', (evt) => {
-      const rect = svg.getBoundingClientRect();
-      const xPx = evt.clientX - rect.left - padL;
-      const t = (xPx / innerW) * tMax;
-      pickedTime = window.t10Clamp(t, 0, tMax);
-      tries.add(parseFloat(pickedTime.toFixed(1)));
-      draw();
-      updateFound();
-    });
-    svg.appendChild(hit);
+    // click-to-pick: one overlay, single listener (re-appended after each full redraw)
+    if (!rabiClickLayer) {
+      rabiClickLayer = mkEl('rect', {
+        x: padL, y: padT, width: innerW, height: innerH,
+        fill: 'transparent', style: 'cursor:crosshair;'
+      });
+      rabiClickLayer.addEventListener('click', (evt) => {
+        if (!ampSlider) return;
+        const rect = svg.getBoundingClientRect();
+        const xPx = evt.clientX - rect.left - padL;
+        const t = (xPx / innerW) * tMax;
+        pickedTime = window.t10Clamp(t, 0, tMax);
+        tries.add(parseFloat(pickedTime.toFixed(1)));
+        draw();
+        updateFound();
+      });
+    } else {
+      rabiClickLayer.setAttribute('x', String(padL));
+      rabiClickLayer.setAttribute('y', String(padT));
+      rabiClickLayer.setAttribute('width', String(innerW));
+      rabiClickLayer.setAttribute('height', String(innerH));
+    }
+    svg.appendChild(rabiClickLayer);
   }
 
   function updateFound() {
@@ -365,7 +375,7 @@
       foundEl.innerHTML = `<b style="color:var(--mint)">Calibrated.</b> You found the π-pulse at t ≈ ${pickedTime.toFixed(2)} (units of 1/Ω). <span style="color:var(--ink-faint)">This is day 1 of every superconducting qubit lab: sweep duration, fit the sinusoid, pick the first peak. Once this point is known, every X-style gate built from this channel becomes much more reliable.</span>`;
       markDone('t10-2');
     } else if (err < 0.5) {
-      foundEl.innerHTML = `Close — you're at P(|1⟩) = ${(rabi(pickedTime, amp) * 100).toFixed(0)}%. The true π-pulse is at t ≈ ${piTime.toFixed(2)} ns.`;
+      foundEl.innerHTML = `Close — you're at P(|1⟩) = ${(rabi(pickedTime, amp) * 100).toFixed(0)}%. The true π-pulse is at t ≈ ${piTime.toFixed(2)} (units of 1/Ω).`;
     } else {
       foundEl.innerHTML = `Not quite. You're at P(|1⟩) = ${(rabi(pickedTime, amp) * 100).toFixed(0)}%. Try clicking nearer the first peak of the curve.`;
     }
@@ -488,7 +498,9 @@
     const maxP = 1 / (1 + delta * delta);
     if (descEl) {
       if (Math.abs(delta) < 0.05) {
-        descEl.innerHTML = `<b style="color:var(--mint)">On resonance.</b> Clean Rabi. P(|1⟩) reaches 100% at the π-pulse. "On resonance" simply means your microwave tone matches the qubit transition frequency.<a id="fnref-t10-1" class="expert-fn-ref" href="#fn-t10-1"><sup>[E1]</sup></a><br><span id="fn-t10-1" style="display:block;margin-top:6px;color:var(--ink-faint)">[E1] This description is exact for an ideal two-level system. Real superconducting qubits — transmons in particular — are weakly anharmonic: the |1⟩→|2⟩ transition sits only 100–300 MHz below the |0⟩→|1⟩ transition, close enough that a resonant drive also has partial spectral overlap with the leakage transition. So "on resonance with the qubit" does not mean "off resonance with everything else." This is why detuning alone is insufficient to suppress leakage on transmons, and why pulse shaping (Step 6) is necessary even when your drive frequency is perfectly calibrated.</span>`;
+        if (!descEl.querySelector('#fn-t10-1')) {
+          descEl.innerHTML = `<b style="color:var(--mint)">On resonance.</b> Clean Rabi. P(|1⟩) reaches 100% at the π-pulse. "On resonance" simply means your microwave tone matches the qubit transition frequency.<a id="fnref-t10-1" class="expert-fn-ref" href="#fn-t10-1"><sup>[E1]</sup></a><br><span id="fn-t10-1" style="display:block;margin-top:6px;color:var(--ink-faint)">[E1] This description is exact for an ideal two-level system. Real superconducting qubits — transmons in particular — are weakly anharmonic: the |1⟩→|2⟩ transition sits only 100–300 MHz below the |0⟩→|1⟩ transition, close enough that a resonant drive also has partial spectral overlap with the leakage transition. So "on resonance with the qubit" does not mean "off resonance with everything else." This is why detuning alone is insufficient to suppress leakage on transmons, and why pulse shaping (Step 6) is necessary even when your drive frequency is perfectly calibrated.</span>`;
+        }
       } else if (Math.abs(delta) < 1.0) {
         descEl.innerHTML = `<b style="color:var(--amber)">Small detuning.</b> Oscillations are <i>faster</i> (generalized Rabi Ω' = √(Ω² + δ²)) but don't reach the top — the ceiling is ${(maxP * 100).toFixed(0)}%. So you can still wiggle the qubit, but you cannot fully flip it with this mistuned drive.`;
       } else {

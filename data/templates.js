@@ -100,19 +100,6 @@ const EXAMPLES = {
       return c;
     }
   },
-  'iswap-hop': {
-    nQubits: 2,
-    noisePreset: 0,
-    place: (c) => {
-      c.columns = Array(MIN_COLUMNS).fill(0).map(() => new Array(2).fill(null));
-      c.columns[0][0] = { type: 'single', gate: 'X' };
-      c.columns[1][0] = { type: 'swap2', gate: 'iSWAP', partner: 1 };
-      c.columns[1][1] = { type: 'swap2', gate: 'iSWAP', partner: 0 };
-      c.columns[3][0] = { type: 'meas' };
-      c.columns[3][1] = { type: 'meas' };
-      return c;
-    }
-  },
   'ising-iswap': {
     nQubits: 3,
     noisePreset: 0,
@@ -172,28 +159,6 @@ const EXAMPLES = {
       c.columns = Array(MIN_COLUMNS).fill(0).map(() => new Array(1).fill(null));
       c.columns[0][0] = { type: 'single', gate: 'SX' };
       c.columns[1][0] = { type: 'single', gate: 'SX' };
-      c.columns[3][0] = { type: 'meas' };
-      return c;
-    }
-  },
-  'sqrty-twice': {
-    nQubits: 1,
-    noisePreset: 0,
-    place: (c) => {
-      c.columns = Array(MIN_COLUMNS).fill(0).map(() => new Array(1).fill(null));
-      c.columns[0][0] = { type: 'single', gate: 'SY' };
-      c.columns[1][0] = { type: 'single', gate: 'SY' };
-      c.columns[3][0] = { type: 'meas' };
-      return c;
-    }
-  },
-  'sqrtz-twice': {
-    nQubits: 1,
-    noisePreset: 0,
-    place: (c) => {
-      c.columns = Array(MIN_COLUMNS).fill(0).map(() => new Array(1).fill(null));
-      c.columns[0][0] = { type: 'single', gate: 'SZ' };
-      c.columns[1][0] = { type: 'single', gate: 'SZ' };
       c.columns[3][0] = { type: 'meas' };
       return c;
     }
@@ -542,17 +507,6 @@ const TEMPLATE_CONTEXT = {
       { label: 'NISQ-like noise (2%)', action: { type: 'set-noise', value: 2 } }
     ]
   },
-  'iswap-hop': {
-    eyebrow: 'Entanglement · E·05',
-    title: 'iSWAP: hop with a built-in relative phase',
-    color: 'var(--cyan)',
-    why: `The <b>iSWAP</b> is the natural two-qubit interaction on many <b>superconducting</b> coplanar architectures: it implements <code>|01⟩↔|10⟩</code> and multiplies the swapped amplitude by <code>i</code>. The measurement outcomes match what a plain SWAP would give, but the relative phase is not idle — in longer circuits, that phase is what <em>enables interference</em> on equal computational outcomes. Check the <b>Amplitudes</b> view: the <code>|10⟩</code> entry is purely imaginary after this hop. <a href="#ref-nc2000" class="ctx-cite" data-doc-ref="ref-nc2000">[Nielsen & Chuang]</a>`,
-    facts: [
-      'Measurement shows |10⟩; amplitude is +i in the comp. basis',
-      'Common native gate on transmon lattices',
-      'Phase matters in longer circuits'
-    ]
-  },
   'ising-iswap': {
     eyebrow: 'Variational · V·04',
     title: 'Linear iSWAP layer (hardware-style brick)',
@@ -591,7 +545,7 @@ const TEMPLATE_CONTEXT = {
     ]
   },
   'sqrtx-twice': {
-    eyebrow: 'Foundations · F·06',
+    eyebrow: 'Foundations · F·04',
     title: 'Two √X ≈ one X',
     color: 'var(--phos)',
     why: `Each <b>√X</b> is a 90° rotation about the x-axis. Two in a row give a 180° rotation, which in the Z basis is the <b>NOT</b> up to a global phase — so you always read out <code>|1⟩</code>. This is the same gate IBM and others label <code>sx</code> in their native set.`,
@@ -599,28 +553,6 @@ const TEMPLATE_CONTEXT = {
       'Measurement: |1⟩ with certainty',
       'Matches RX(90°) in this simulator',
       'Clifford gate: composer of many surface-code gadgets'
-    ]
-  },
-  'sqrty-twice': {
-    eyebrow: 'Foundations · F·07',
-    title: 'Two √Y ≈ one Y (bit flip in Y eigenbasis path)',
-    color: 'var(--phos)',
-    why: `Two <b>√Y</b> (90° about y) compose to a 180° y-rotation, which flips <code>|0⟩</code> to <code>|1⟩</code> with the same probability pattern as a single Pauli <b>X</b> in this measurement view — the outcome is <code>1</code> with certainty. Compare to the √X template: different path on the Bloch sphere, same readout for this initial state.`,
-    facts: [
-      'R_y(π) is an X in the Y basis, but in Z it flips the bit from |0⟩ to |1⟩',
-      'SY matches R_y(90°) here',
-      'Useful in VQE and hardware-efficient Y-native stacks'
-    ]
-  },
-  'sqrtz-twice': {
-    eyebrow: 'Foundations · F·08',
-    title: '√Z as S: (SZ)² = Z on the |1⟩ component',
-    color: 'var(--phos)',
-    why: `Here <b>√Z</b> is implemented as the <b>S</b> phase gate (π/2 on the <code>|1⟩</code> branch). Starting from <code>|0⟩</code>, a single S leaves the state fixed; <b>two S gates equal one Z</b> on the logical state — but on <code>|0⟩</code> that is still a global phase, so the measurement is still <code>0</code> with 100% probability. Load <b>√X</b> to see a π rotation built from two halves that <em>does</em> show a bit flip. <a href="#ref-nc2000" class="ctx-cite" data-doc-ref="ref-nc2000">[Nielsen & Chuang]</a>`,
-    facts: [
-      'Two S gates = Z, invisible on |0⟩ in Z-basis',
-      'Visible when applied to |1⟩ or superpositions',
-      'Third root of a Pauli is a non-Clifford (T) — try T, T, T, T = S'
     ]
   },
   teleport: {

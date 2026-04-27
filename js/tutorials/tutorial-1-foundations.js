@@ -723,6 +723,7 @@ document.querySelectorAll('.wrap-card').forEach(card => {
     else if (dest === 't8') { switchTab('learn'); switchSubtab('t8'); }
     else if (dest === 't9') { switchTab('learn'); switchSubtab('t9'); }
     else if (dest === 't10') { switchTab('learn'); switchSubtab('t10'); }
+    else if (dest === 't11') { switchTab('learn'); switchSubtab('t11'); }
   });
 });
 
@@ -979,12 +980,12 @@ document.querySelectorAll('.wrap-card').forEach(card => {
   }, 'nine data qubits, four face checks (compare Step 5)'));
 })();
 
-/* Step t4-6: wrap-up — mark done when the card unlocks (reading-only) */
-(function initT4Step6Wrap() {
-  const card = document.querySelector('[data-step="t4-6"]');
+/* Step t4-7: wrap-up — mark done when the card unlocks (reading-only) */
+(function initT4Step7Wrap() {
+  const card = document.querySelector('[data-step="t4-7"]');
   if (!card) return;
   const obs = new MutationObserver(() => {
-    if (!card.classList.contains('locked')) { markDone('t4-6'); obs.disconnect(); }
+    if (!card.classList.contains('locked')) { markDone('t4-7'); obs.disconnect(); }
   });
   obs.observe(card, { attributes: true, attributeFilter: ['class'] });
 })();
