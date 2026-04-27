@@ -46,8 +46,12 @@
       <span class="tab-num">05</span>
       <span class="tab-name">Labs</span>
     </button>
-    <button class="tab-btn" data-tab="docs" role="tab">
+    <button class="tab-btn" data-tab="glossary" role="tab">
       <span class="tab-num">06</span>
+      <span class="tab-name">Glossary</span>
+    </button>
+    <button class="tab-btn" data-tab="docs" role="tab">
+      <span class="tab-num">07</span>
       <span class="tab-name">References</span>
     </button>
   </nav>
@@ -140,12 +144,6 @@
       <div class="canvas-head">
         <h2>Circuit canvas</h2>
         <div class="btns">
-          <div class="noise-ctrl off" id="noise-ctrl" title="Depolarizing noise: each gate has this chance of randomly misfiring">
-            <span class="noise-label">Noise</span>
-            <input type="range" id="noise-slider" min="0" max="10" step="0.5" value="0" />
-            <span class="noise-val" id="noise-val">off</span>
-          </div>
-          <button class="btn" id="btn-clear">Clear</button>
           <div class="export-toolbar" title="Download the current circuit in portable formats">
             <label class="export-label" for="export-format">Export</label>
             <select id="export-format" class="export-select" aria-label="Export circuit as file">
@@ -156,6 +154,12 @@
               <option value="markdown">Markdown</option>
             </select>
           </div>
+          <div class="noise-ctrl off" id="noise-ctrl" title="Depolarizing noise: each gate has this chance of randomly misfiring">
+            <span class="noise-label">Noise</span>
+            <input type="range" id="noise-slider" min="0" max="10" step="0.5" value="0" />
+            <span class="noise-val" id="noise-val">off</span>
+          </div>
+          <button class="btn" id="btn-clear">Clear</button>
           <button class="btn primary" id="btn-run">▶ Run simulation</button>
         </div>
       </div>
@@ -391,7 +395,7 @@
           <span class="subtab-num">Tutorial 9</span>
           <span class="subtab-name">Hardware noise timescales</span>
           <span class="tutorial-diff" aria-label="Difficulty 3 of 5"><span class="tutorial-diff-dot filled"></span><span class="tutorial-diff-dot filled"></span><span class="tutorial-diff-dot filled"></span><span class="tutorial-diff-dot"></span><span class="tutorial-diff-dot"></span></span>
-          <span class="subtab-pill" id="t9-progress">0 / 6</span>
+          <span class="subtab-pill" id="t9-progress">0 / 7</span>
         </button>
         <button class="subtab subtab-noise" data-subtab="t10">
           <span class="subtab-num">Tutorial 10</span>
@@ -401,9 +405,9 @@
         </button>
         <button class="subtab subtab-noise" data-subtab="t11">
           <span class="subtab-num">Tutorial 11</span>
-          <span class="subtab-name">Cat codes (bosonic encoding)</span>
-          <span class="tutorial-diff" aria-label="Difficulty 4 of 5"><span class="tutorial-diff-dot filled"></span><span class="tutorial-diff-dot filled"></span><span class="tutorial-diff-dot filled"></span><span class="tutorial-diff-dot filled"></span><span class="tutorial-diff-dot"></span></span>
-          <span class="subtab-pill" id="t11-progress">0 / 6</span>
+          <span class="subtab-name">From chip to circuit</span>
+          <span class="tutorial-diff" aria-label="Difficulty 3 of 5"><span class="tutorial-diff-dot filled"></span><span class="tutorial-diff-dot filled"></span><span class="tutorial-diff-dot filled"></span><span class="tutorial-diff-dot"></span><span class="tutorial-diff-dot"></span></span>
+          <span class="subtab-pill" id="t11-progress">0 / 8</span>
         </button>
       </div>
     </nav>
@@ -447,8 +451,8 @@
           <h2>A qubit lives on a sphere.</h2>
         </header>
         <div class="step-body">
-          <p>A <b>qubit</b> is the quantum analogue of a bit — but its state isn't just <code>0</code> or <code>1</code>. It's any point on the surface of a sphere, called the <em>Bloch sphere</em>. The north pole is <code>|0⟩</code>. The south pole is <code>|1⟩</code>. Everything in between is a <span class="punch">superposition</span> — a genuine blend of the two.</p>
-          <p>Drag the arrow below, or click one of the preset states. Notice that points around the equator are <em>equal</em> superpositions of <code>|0⟩</code> and <code>|1⟩</code> — they differ only in their <em>phase</em>, which matters later but is invisible to a simple measurement.</p>
+          <p>A <b>qubit</b> is the quantum analogue of a bit — but its state isn't just <code>0</code> or <code>1</code>. It's any point on the surface of a sphere, called the <em>Bloch sphere</em>. The north pole is <code>|0⟩</code>. The south pole is <code>|1⟩</code>. Everything in between is a <span class="punch"><span class="tut-tip" tabindex="0">superposition<span class="tut-tip-bubble">Think of a coin spinning in the air — genuinely both heads and tails at once, not just unknown. Only when you "catch" it (measure it) does it settle on one side. Superposition is that real in-between, not a shorthand for ignorance.</span></span></span> — a genuine blend of the two.</p>
+          <p>Drag the arrow below, or click one of the preset states. Notice that points around the equator are <em>equal</em> superpositions of <code>|0⟩</code> and <code>|1⟩</code> — they differ only in their <span class="tut-tip" tabindex="0"><em>phase</em><span class="tut-tip-bubble">Like the timing between two musical notes: the notes can have the same volume but clash or harmonise depending on when they hit. Phase controls whether quantum paths add up or cancel — two states can look identical in a basic measurement yet behave differently in a circuit.</span></span>, which matters later but is invisible to a simple measurement.</p>
           <div class="bloch-wrap">
             <div class="bloch-host" id="bloch-1"></div>
             <div class="bloch-side">
@@ -478,7 +482,7 @@
           <h2>Gates are rotations.</h2>
         </header>
         <div class="step-body">
-          <p>On the Bloch sphere, every single-qubit gate is a <b>rotation</b>. The <code>X</code> gate rotates 180° around the x-axis — it flips <code>|0⟩</code> to <code>|1⟩</code>. The <code>Z</code> gate rotates 180° around the z-axis. The <code>H</code> (Hadamard) gate takes <code>|0⟩</code> to <code>|+⟩</code> — halfway to the equator, the birthplace of superposition.</p>
+          <p>On the Bloch sphere, every single-qubit gate is a <b>rotation</b>. The <code>X</code> gate rotates 180° around the x-axis — it flips <code>|0⟩</code> to <code>|1⟩</code>. The <code>Z</code> gate rotates 180° around the z-axis. The <span class="tut-tip" tabindex="0"><code>H</code> (Hadamard) gate<span class="tut-tip-bubble">The "coin-flip" gate: it takes a definite |0⟩ and puts the qubit into a perfect 50/50 superposition. Think of it as giving the coin a spin. It's one of the most used gates in quantum computing because creating superposition is the first step in almost every quantum algorithm.</span></span> takes <code>|0⟩</code> to <code>|+⟩</code> — halfway to the equator, the birthplace of superposition.</p>
           <p>Reset the qubit to <code>|0⟩</code>, then press gates in different orders. <em>Gate order matters</em> — XH is not the same as HX. This is one of the clearest ways quantum differs from classical logic.</p>
           <div class="bloch-wrap">
             <div class="bloch-host" id="bloch-2"></div>
@@ -514,7 +518,7 @@
         </header>
         <div class="step-body">
           <p>On the sphere, a qubit can be anywhere. But when you <b>measure</b> it, you only ever get a classical answer: <code>0</code> or <code>1</code>. The probability of each is set by the arrow's position — specifically, how far it leans toward the north or south pole.</p>
-          <p>Below is the simplest quantum circuit: a single Hadamard, then a measurement. It's a quantum coin flip. Run it a few times. The outcome is different each time — but the long-run frequency is always 50/50. Unlike a classical hidden-value model, there is no stored classical bit to reveal here; the full Bell-test argument against local hidden variables is developed in <b>Tutorial 2</b>.</p>
+          <p>Below is the simplest quantum circuit: a single Hadamard, then a measurement. It's a quantum coin flip. Run it a few times. The outcome is different each time — but the long-run frequency is always 50/50. Unlike a classical hidden-value model, there is no stored classical bit to reveal here; the full Bell-test argument against <span class="tut-tip" tabindex="0">local hidden variables<span class="tut-tip-bubble">The idea that quantum randomness might be fake — particles secretly carry hidden instructions ("I'll say 0 when measured this way, 1 that way"). Bell's theorem proved this can't explain quantum results: the correlations are too strong for any such pre-agreed plan, no matter how clever.</span></span> is developed in <b>Tutorial 2</b>.</p>
           <div class="mini-runner">
             <div class="mini-circuit" id="mini-coin-circuit"></div>
             <div class="mini-result">
@@ -540,7 +544,7 @@
         </header>
         <div class="step-body">
           <p>Two classical bits have four states: <code>00</code>, <code>01</code>, <code>10</code>, <code>11</code>. Two qubits also have four basis states — but a qubit system can be in a weighted combination of <em>all four at once</em>. That's the real reason quantum computers can explore large state spaces so efficiently.</p>
-          <p>The circuit below puts Hadamard on <em>both</em> qubits. The result: all four outcomes appear with equal probability. This is a <b>product state</b> — each qubit is independent. Run it and see.</p>
+          <p>The circuit below puts Hadamard on <em>both</em> qubits. The result: all four outcomes appear with equal probability. This is a <span class="tut-tip" tabindex="0"><b>product state</b><span class="tut-tip-bubble">When two qubits are completely independent — like two separate coins being flipped at the same time. Knowing what one came up as tells you nothing about the other. Most two-qubit states start here; entanglement only happens after a two-qubit gate like CNOT.</span></span> — each qubit is independent. Run it and see.</p>
           <div class="mini-runner">
             <div class="mini-circuit" id="mini-two-circuit"></div>
             <div class="mini-result">
@@ -563,8 +567,8 @@
           <h2>Entanglement: two qubits, one fate.</h2>
         </header>
         <div class="step-body">
-          <p>Now add a <code>CNOT</code> between the two qubits, right after the first Hadamard. The circuit is suddenly doing something no classical system can. Run it — only <code>00</code> and <code>11</code> appear, <em>never</em> <code>01</code> or <code>10</code>. The two qubits always agree, even though each one individually is random.</p>
-          <p>This is <b>entanglement</b>. Not "correlated" in the everyday sense — <em>linked</em> in a way that can't be reproduced by hidden prior agreement. Bell's theorem, proven in the 1960s and experimentally confirmed many times (most recently earning a Nobel prize in 2022), shows this is a genuinely new kind of relationship.</p>
+          <p>Now add a <span class="tut-tip" tabindex="0"><code>CNOT</code><span class="tut-tip-bubble">A two-qubit gate: "if the first qubit is 1, flip the second." On ordinary bits it's just conditional logic. When the first qubit is in superposition, the CNOT can create entanglement — a deep quantum link between the two qubits that has no classical equivalent.</span></span> between the two qubits, right after the first Hadamard. The circuit is suddenly doing something no classical system can. Run it — only <code>00</code> and <code>11</code> appear, <em>never</em> <code>01</code> or <code>10</code>. The two qubits always agree, even though each one individually is random.</p>
+          <p>This is <span class="tut-tip" tabindex="0"><b>entanglement</b><span class="tut-tip-bubble">Two qubits become so interlinked that you can't describe one without the other — like two magic dice that always match when rolled, no matter how far apart, in a way that's provably impossible to fake with any pre-agreed plan. Measuring one qubit instantly "settles" what the other will give.</span></span>. Not "correlated" in the everyday sense — <em>linked</em> in a way that can't be reproduced by hidden prior agreement. Bell's theorem, proven in the 1960s and experimentally confirmed many times (most recently earning a Nobel prize in 2022), shows this is a genuinely new kind of relationship.</p>
           <div class="mini-runner">
             <div class="mini-circuit" id="mini-bell-circuit"></div>
             <div class="mini-result">
@@ -588,12 +592,12 @@
         </header>
         <div class="step-body">
           <p>Everything above has assumed perfect gates. Real quantum computers are short pulses of laser light, microwaves, or magnetic fields, and every pulse is slightly imperfect. Over a circuit's lifetime, tiny errors accumulate and the clean peaks smear.</p>
-          <p>Drag the noise slider and watch the Bell pair distribution drift. At 0%, only <code>00</code> and <code>11</code> appear. At 5%, the forbidden outcomes start leaking in. In density-matrix terms this is no longer a pure Bell state (you can inspect that structure in the Lab density view). This is why quantum error correction is the central engineering problem of the field — you will meet stabilizers, thresholds, and surface-code intuition in <b>Tutorial 4</b>.<a id="fnref-t1-1" class="expert-fn-ref" href="#fn-t1-1"><sup>[E1]</sup></a></p>
+          <p>Drag the noise slider and watch the Bell pair distribution drift. At 0%, only <code>00</code> and <code>11</code> appear. At 5%, the forbidden outcomes start leaking in. In density-matrix terms this is no longer a pure Bell state (you can inspect that structure in the Lab density view). This is why quantum error correction is the central engineering problem of the field — you will meet <span class="tut-tip" tabindex="0">stabilizers<span class="tut-tip-bubble">Multi-qubit parity checks that should read "all fine" when the code is healthy. When noise hits, their answers flip in a pattern (a syndrome) that tells a decoder where to fix — without reading the logical qubit directly.</span></span>, <span class="tut-tip" tabindex="0">thresholds<span class="tut-tip-bubble">A crossover error rate: below it, bigger codes make logical qubits more reliable; above it, noise wins. Real fault-tolerant machines must stay under threshold and decode well.</span></span>, and surface-code intuition in <b>Tutorial 4</b>.<a id="fnref-t1-1" class="expert-fn-ref" href="#fn-t1-1"><sup>[E1]</sup></a></p>
           <div class="mini-runner">
             <div class="noise-demo">
               <div class="noise-demo-label">Noise level: <span id="t1-noise-val">0.0%</span></div>
               <input type="range" min="0" max="10" step="0.5" value="0" id="t1-noise-slider" class="t1-noise-slider" />
-              <div class="noise-demo-sublabel">Depolarizing: each gate has this chance of misfiring.</div>
+              <div class="noise-demo-sublabel"><span class="tut-tip" tabindex="0">Depolarizing<span class="tut-tip-bubble">A simple error model: after each gate, with some probability, a random Pauli mistake (X, Y, or Z) happens instead of nothing. It smears pure quantum states toward mixed ones — a good first picture, not a perfect map of real hardware.</span></span>: each gate has this chance of misfiring.</div>
             </div>
             <div class="mini-result">
               <div class="mini-result-head">Bell pair outcomes (1024 shots)</div>
@@ -655,10 +659,10 @@
       <article class="step-card" data-step="t2-1">
         <header class="step-head">
           <div class="step-num">Step 01</div>
-          <h2>Two qubits: four outcomes, one tensor product.</h2>
+          <h2>Two qubits, four outcomes.</h2>
         </header>
         <div class="step-body">
-          <p>Two classical bits can be in four states: <code>00</code>, <code>01</code>, <code>10</code>, <code>11</code>. Two qubits also span four basis states — but a quantum system can be in a <b>superposition of all four simultaneously</b>. The state space grows as 2ⁿ: each qubit you add doubles the dimensions.</p>
+          <p>Two classical bits can be in four states: <code>00</code>, <code>01</code>, <code>10</code>, <code>11</code>. Two qubits also span four basis states — but a quantum system can be in a <b>superposition of all four simultaneously</b>. The state space grows as 2ⁿ: each qubit you add doubles the dimensions, in what is called the "<span class="tut-tip" tabindex="0">Hilbert space<span class="tut-tip-bubble">The mathematical arena of all states a quantum system can have — like the full list of directions a state arrow can point, including combinations of many qubits. Each new qubit doubles the number of dimensions in that space.</span></span>". We call combinations of qubits <span class="tut-tip" tabindex="0"><em>entangled states</em><span class="tut-tip-bubble">When qubits are so interlinked that you cannot describe the whole system as "qubit A separately ⊗ qubit B separately." The joint state carries correlations stronger than independent coins.</span></span> when they cannot be described as a product of individual qubit states.</p>
           <p>When two qubits are <em>independent</em> (a product state), you can describe them separately. Put H on q0 only and see what happens — q0 is 50/50, q1 stays at |0⟩, so the joint outcomes are 50% <code>|00⟩</code> and 50% <code>|10⟩</code>. Now put H on both and all four outcomes appear equally.</p>
           <div class="mini-runner">
             <div style="display:flex;flex-direction:column;gap:10px">
@@ -1437,8 +1441,8 @@
           <h2>The problem: one query or two?</h2>
         </header>
         <div class="step-body">
-          <p>Imagine a black-box function <em>f</em> that takes an n-bit string and outputs 0 or 1. You're promised it is either <b>constant</b> (outputs the same value for every input) or <b>balanced</b> (outputs 0 for exactly half the inputs and 1 for the rest). <em>How many queries does it take to decide which?</em></p>
-          <p>Classically, you might need to evaluate f on up to 2<sup>n−1</sup>+1 inputs — more than half the input space — before you can be certain. Quantum mechanics does it in <b>exactly one query</b>, regardless of n. This is the Deutsch–Jozsa (D-J) algorithm, the first proof of quantum computational advantage.<a id="fnref-t5-1" class="expert-fn-ref" href="#fn-t5-1"><sup>[E1]</sup></a></p>
+          <p>Imagine a <span class="tut-tip" tabindex="0">black-box function <em>f</em><span class="tut-tip-bubble">A "black box" (or oracle) is a function you can call but not look inside — you only know what input you gave and what output came back. In this problem, f takes a string of 0s and 1s and returns a single 0 or 1.</span></span> that takes an n-bit string and outputs 0 or 1. You're promised it is either <b>constant</b> (outputs the same value for every input) or <b>balanced</b> (outputs 0 for exactly half the inputs and 1 for the rest). <em>How many queries does it take to decide which?</em></p>
+          <p>Classically, you might need to evaluate f on up to 2<sup>n−1</sup>+1 inputs — more than half the input space — before you can be certain. Quantum mechanics does it in <b>exactly one query</b>, regardless of n. This is the <span class="tut-tip" tabindex="0">Deutsch–Jozsa (D-J) algorithm<span class="tut-tip-bubble">The first proof that a quantum computer can solve a particular problem with exponentially fewer steps than any classical algorithm. It's a "toy" problem in practice, but the circuit pattern it uses — superpose, query once, interfere, read result — appears inside Shor's factoring algorithm and many others.</span></span>, the first proof of quantum computational advantage.<a id="fnref-t5-1" class="expert-fn-ref" href="#fn-t5-1"><sup>[E1]</sup></a></p>
           <!-- Classical comparison interactive -->
           <div style="margin:22px 0;padding:20px;background:var(--bg-2);border:1px solid var(--line)">
             <div style="font-family:var(--mono);font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:12px">Classical worst-case query count</div>
@@ -1470,14 +1474,14 @@
           <h2>The circuit: Hadamards, an oracle, more Hadamards.</h2>
         </header>
         <div class="step-body">
-          <p>The D-J algorithm uses n+1 qubits. The top n qubits start as <code>|0⟩</code> and the bottom ancilla starts as <code>|1⟩</code>. The key steps:</p>
+          <p>The D-J algorithm uses n+1 qubits. The top n qubits start as <code>|0⟩</code> and the bottom <span class="tut-tip" tabindex="0">ancilla<span class="tut-tip-bubble">An extra qubit you add to the circuit as workspace — not part of the main answer register, but needed for tricks like phase kickback. Here it starts in |1⟩ so Hadamard puts it in |−⟩, the right setup for the oracle to imprint phases on the inputs.</span></span> starts as <code>|1⟩</code>. The key steps:</p>
           <ol style="font-family:var(--serif);font-size:15px;color:var(--ink);margin:12px 0 14px 24px;line-height:1.8;list-style:decimal">
             <li>Apply H to all n+1 qubits → uniform superposition + ancilla in |−⟩</li>
-            <li>Apply the oracle Uf (one query, encodes f as a phase)</li>
+            <li>Apply the <span class="tut-tip" tabindex="0">oracle U<sub>f</sub><span class="tut-tip-bubble">A quantum gate that implements the black-box function f in one shot: it flips an ancilla (or adds a phase) depending on f(x) for the input x you feed in. "One query" means you run this gate once — that is where the quantum speedup is counted.</span></span> (one query, encodes f as a phase)</li>
             <li>Apply H to the top n qubits</li>
             <li>Measure the top n qubits — all 0s means constant, any 1 means balanced</li>
           </ol>
-          <p>The magic is <em>phase kickback</em> (you saw it in Tutorial 2): the oracle flips the ancilla's phase onto the input register, encoding the function's structure in interference patterns. The final H layer then constructively interferes the inputs that "agree" and destructively cancels the rest.</p>
+          <p>The magic is <em>phase kickback</em> (you saw it in Tutorial 2): the oracle flips the ancilla's phase onto the input register, encoding the function's structure in <span class="tut-tip" tabindex="0">interference patterns<span class="tut-tip-bubble">When waves overlap, they can reinforce (constructive interference) or cancel (destructive interference). Quantum amplitudes work the same way: the final Hadamard layer turns "all inputs at once" into an outcome where the right answer's probability grows to 1 and everything else cancels to 0.</span></span>. The final H layer then constructively interferes the inputs that "agree" and destructively cancels the rest.</p>
           <!-- Circuit diagram SVG -->
           <div style="margin:22px 0;padding:20px;background:var(--bg-2);border:1px solid var(--line)">
             <div style="font-family:var(--mono);font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:12px">D-J circuit structure (n=2)</div>
@@ -1573,7 +1577,7 @@
           <h2>What noise does to the algorithm.</h2>
         </header>
         <div class="step-body">
-          <p>The D-J algorithm gives a <b>deterministic</b> answer with zero noise — it either returns all zeros (constant) or at least one 1 (balanced), never wrong. But with noise, gate errors contaminate the interference pattern and the answer becomes probabilistic. Crucially, a noisy D-J is now <em>no better than random guessing</em> at high noise.</p>
+          <p>The D-J algorithm gives a <span class="tut-tip" tabindex="0"><b>deterministic</b><span class="tut-tip-bubble">With perfect hardware, the same problem always yields the same measurement outcome — no coin-flip in the answer. Noise breaks that: small gate errors add randomness until the output looks like guessing.</span></span> answer with zero noise — it either returns all zeros (constant) or at least one 1 (balanced), never wrong. But with noise, gate errors contaminate the interference pattern and the answer becomes probabilistic. Crucially, a noisy D-J is now <em>no better than random guessing</em> at high noise.</p>
           <p>Below: run D-J side-by-side with and without noise, using the same balanced oracle. Watch the clean all-zeros result (constant) vs at-least-one-1 (balanced) distinction blur as noise rises.</p>
           <div style="margin:22px 0;padding:20px;background:var(--bg-2);border:1px solid var(--line)">
             <div style="font-family:var(--mono);font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:10px">D-J with and without noise (balanced oracle, 1024 shots)</div>
@@ -1628,8 +1632,8 @@
         </header>
         <div class="step-body">
           <p>Deutsch–Jozsa was the first demonstration that quantum computers can solve a specific problem with exponentially fewer queries than any classical algorithm. The speedup is not about raw speed — it's about the number of times you need to evaluate the oracle.</p>
-          <p>The key ideas you've now seen: <b>phase kickback</b> encodes the oracle's output into qubit phases. A global <b>superposition</b> queries all inputs at once. <b>Interference</b> combines the results — the Hadamards at the end constructively amplify the answer and cancel everything else.</p>
-          <p>D-J is a toy problem — no one actually cares whether mystery functions are constant or balanced. But the same circuit structure, scaled up, powers <b>phase estimation</b> (which is inside Shor's algorithm) and <b>Grover's search</b>. The idiom of "superpose → oracle → interfere → measure" runs through the whole field.</p>
+          <p>The key ideas you've now seen: <b>phase kickback</b> encodes the oracle's output into qubit phases. A global <b>superposition</b> queries all inputs at once. <span class="tut-tip" tabindex="0"><b>Interference</b><span class="tut-tip-bubble">Quantum amplitudes add like waves: they can reinforce toward one outcome or cancel each other. D-J's final Hadamard layer is engineered so "constant" and "balanced" land on different measurement patterns — that's how one query can distinguish them.</span></span> combines the results — the Hadamards at the end constructively amplify the answer and cancel everything else.</p>
+          <p>D-J is a toy problem — no one actually cares whether mystery functions are constant or balanced. But the same circuit structure, scaled up, powers <span class="tut-tip" tabindex="0"><b>phase estimation</b><span class="tut-tip-bubble">An algorithm that figures out an unknown rotation angle hidden inside a quantum gate, with precision that grows with the number of qubits. It sits at the heart of Shor's factoring algorithm — the quantum speedup for breaking RSA encryption comes from phase estimation finding a hidden period.</span></span> (which is inside Shor's algorithm) and <b>Grover's search</b>. The idiom of "superpose → oracle → interfere → measure" runs through the whole field.</p>
           <div class="insight-box">
             <div class="insight-label">Historical note</div>
             <p class="insight-text">Deutsch's original 1985 paper introduced the 1-bit version. Deutsch and Jozsa extended it to n bits in 1992. The circuit you've been running is essentially theirs, minus some optimisations discovered in 1998. The original paper is in the Docs section under <em>Algorithms</em>.</p>
@@ -1675,7 +1679,7 @@
           <h2>The variational energy landscape.</h2>
         </header>
         <div class="step-body">
-          <p>In VQE, you choose a parameterized circuit (an <em>ansatz</em>), measure the energy of the prepared state, then tune parameters to minimize that energy. Here we use a one-parameter ansatz \( R_y(\theta)|0\rangle \) and a toy Hamiltonian, so you can see the landscape directly. Real ansatze are higher-dimensional and can suffer barren plateaus; see Step 4 and the hardware-efficient template notes.</p>
+          <p>In <span class="tut-tip" tabindex="0">VQE<span class="tut-tip-bubble">The Variational Quantum Eigensolver: a hybrid algorithm where a quantum computer prepares a trial state and measures its energy, and a classical computer updates the circuit parameters to lower that energy — like a thermostat for quantum states. Promising for simulating molecules on near-term hardware.</span></span>, you choose a parameterized circuit (an <span class="tut-tip" tabindex="0"><em>ansatz</em><span class="tut-tip-bubble">The "trial shape" — a circuit with tunable rotation angles defining which family of quantum states you're searching over. Like choosing what class of curve to fit to data: a line can't fit an exponential no matter how well you tune it. A limited ansatz sets the ceiling on the best energy you can reach.</span></span>), measure the energy of the prepared state, then tune parameters to minimize that energy. Here we use a one-parameter ansatz \( R_y(\theta)|0\rangle \) and a toy <span class="tut-tip" tabindex="0">Hamiltonian<span class="tut-tip-bubble">The mathematical object that encodes the total energy of a system — what VQE is trying to minimize. For a molecule, the Hamiltonian captures how electrons and nuclei interact. Finding its lowest-energy solution (ground state) is the main goal of quantum chemistry simulations.</span></span>, so you can see the landscape directly. Real ansatze are higher-dimensional and can suffer <span class="tut-tip" tabindex="0">barren plateaus<span class="tut-tip-bubble">A flat landscape where the gradient — the slope that tells the optimizer which direction to step — becomes exponentially tiny. Like trying to find the lowest point on a perfectly flat plane: every direction looks equally flat, so the optimizer wanders aimlessly. A known hard obstacle for scaling VQE to large circuits.</span></span>; see Step 4 and the hardware-efficient template notes.</p>
           <div style="margin:22px 0;padding:20px;background:var(--bg-2);border:1px solid var(--line)">
             <label style="font-family:var(--mono);font-size:10px;color:var(--ink-faint);letter-spacing:0.08em">
               Ansatz angle θ:
@@ -1702,7 +1706,7 @@
           <h2>Sample candidate parameters.</h2>
         </header>
         <div class="step-body">
-          <p>Real VQE evaluates many parameter settings and keeps the lowest observed energy. Click several θ values and compare the measured expectations and energy estimates.</p>
+          <p>Real VQE evaluates many parameter settings and keeps the lowest observed energy — like trying different knob positions on a radio until the signal is strongest. Click several θ values and compare the measured expectations and energy estimates.</p>
           <div style="margin:22px 0;padding:20px;background:var(--bg-2);border:1px solid var(--line)">
             <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
               <button class="btn vqe-sample-btn" id="vqe-sample-btn" data-key="a" data-theta="0.30" data-label="0.30">θ = 0.30</button>
@@ -1727,7 +1731,7 @@
           <h2>Run a tiny optimizer loop.</h2>
         </header>
         <div class="step-body">
-          <p>Now automate the search: evaluate nearby points, move downhill, shrink the step size, repeat. This mirrors a basic classical optimization pass wrapped around quantum energy estimation.</p>
+          <p>Now automate the search: evaluate nearby points, move downhill, shrink the step size, repeat. This mirrors a basic <span class="tut-tip" tabindex="0">classical optimization<span class="tut-tip-bubble">Algorithms like gradient descent that run on an ordinary computer: they propose new angles θ, the quantum device estimates energy at those angles, and the classical side decides the next guess. VQE is a partnership between the two.</span></span> pass wrapped around quantum energy estimation.</p>
           <div style="margin:22px 0;padding:20px;background:var(--bg-2);border:1px solid var(--line)">
             <button class="btn primary" id="vqe-opt-run">▶ Run optimizer</button>
             <svg id="vqe-opt-chart" viewBox="0 0 420 150" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:420px;margin:12px 0 10px"></svg>
@@ -1748,7 +1752,7 @@
           <h2>Ansatz quality sets the performance ceiling.</h2>
         </header>
         <div class="step-body">
-          <p>Optimization only works within the state family your circuit can represent. Compare a flexible ansatz to restricted forms and see the energy gap that remains even after "best possible" tuning.</p>
+          <p>Optimization only works within the state family your circuit can represent — you cannot tune your way out of a cage you never left. Compare a flexible ansatz to restricted forms and see the energy gap that remains even after "best possible" tuning.</p>
           <div style="margin:22px 0;padding:20px;background:var(--bg-2);border:1px solid var(--line)">
             <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
               <button class="btn vqe-ansatz-btn" id="vqe-ansatz-btn" data-mode="good">Flexible R<sub>y</sub>(θ)</button>
@@ -1772,7 +1776,7 @@
           <h2>Finite-shot noise in the cost function.</h2>
         </header>
         <div class="step-body">
-          <p>VQE objective values come from measurement statistics. With fewer shots, estimates are noisier and the optimizer sees a rougher landscape. Increase shots to reduce variance.</p>
+          <p>VQE objective values come from measurement statistics. With fewer <span class="tut-tip" tabindex="0">shots<span class="tut-tip-bubble">One "shot" is one full run of the circuit ending in measurement. To estimate an energy you repeat many shots and average — like polling more people to get a clearer vote tally. Fewer shots mean a fuzzier average and a bumpier landscape for the optimizer.</span></span>, estimates are noisier and the optimizer sees a rougher landscape. Increase shots to reduce variance.</p>
           <div style="margin:22px 0;padding:20px;background:var(--bg-2);border:1px solid var(--line)">
             <label style="font-family:var(--mono);font-size:10px;color:var(--ink-faint);letter-spacing:0.08em">
               Measurement shots:
@@ -1808,8 +1812,8 @@
           <h2>VQE in one sentence.</h2>
         </header>
         <div class="step-body">
-          <p>VQE is a hybrid loop: prepare a parameterized quantum state, estimate energy from measurements, and let a classical optimizer update parameters to reduce that energy. Its success depends on three things: expressive ansatz design, optimizer robustness, and low-noise measurement statistics.<a id="fnref-t6-1" class="expert-fn-ref" href="#fn-t6-1"><sup>[E1]</sup></a></p>
-          <p>What you just explored — landscape shape, ansatz limitations, and shot noise — is exactly what practitioners tune when running VQE for chemistry and materials models on NISQ-era hardware.</p>
+          <p>VQE is a <span class="tut-tip" tabindex="0">hybrid loop<span class="tut-tip-bubble">Hybrid means part of the computation runs on the quantum processor (preparing and measuring states) and part runs on a classical computer (updating parameters). The quantum and classical computers alternate: quantum prepares → classical evaluates → classical updates → repeat. This is the main strategy for using today's noisy quantum hardware productively.</span></span>: prepare a parameterized quantum state, estimate energy from measurements, and let a classical optimizer update parameters to reduce that energy. Its success depends on three things: expressive ansatz design, optimizer robustness, and low-noise measurement statistics.<a id="fnref-t6-1" class="expert-fn-ref" href="#fn-t6-1"><sup>[E1]</sup></a></p>
+          <p>What you just explored — landscape shape, ansatz limitations, and shot noise — is exactly what practitioners tune when running VQE for chemistry and materials models on <span class="tut-tip" tabindex="0">NISQ-era hardware<span class="tut-tip-bubble">"Noisy Intermediate-Scale Quantum" — today's devices: tens to hundreds of qubits, not yet fault-tolerant, every gate and measurement carries error. Algorithms like VQE are designed to do something useful anyway by keeping circuits shallow and leaning on classical correction loops.</span></span>.</p>
           <div class="wrap-up">
             <button class="wrap-card" data-go="lab">
               <div class="wrap-tag">Lab</div>
@@ -1849,7 +1853,7 @@
           <h2>Quadratic speedup in search scaling.</h2>
         </header>
         <div class="step-body">
-          <p>Grover's algorithm searches an unstructured database of N items in O(sqrt(N)) oracle calls, versus O(N) classically. Sweep the problem size and compare the query growth.</p>
+          <p><span class="tut-tip" tabindex="0">Grover's algorithm<span class="tut-tip-bubble">A quantum algorithm for searching an unordered list. Classically you'd have to check items one at a time — on average half the list. Grover needs only about √N checks. For a billion items that's 31,623 quantum checks vs 500 million classical ones. The speedup is real but quadratic, not exponential like Shor's.</span></span> searches an unstructured database of N items in O(sqrt(N)) oracle calls, versus O(N) classically. Sweep the problem size and compare the query growth.</p>
           <div style="margin:22px 0;padding:20px;background:var(--bg-2);border:1px solid var(--line)">
             <label style="font-family:var(--mono);font-size:10px;color:var(--ink-faint)">
               Qubits n:
@@ -1873,7 +1877,7 @@
           <h2>Amplitude amplification as geometric rotation.</h2>
         </header>
         <div class="step-body">
-          <p>Each Grover iteration is two reflections (oracle then diffusion), which compose into a rotation toward the marked state subspace. Step through the geometry.</p>
+          <p>Each Grover iteration is two reflections (oracle then <span class="tut-tip" tabindex="0">diffusion<span class="tut-tip-bubble">The diffusion operator is the second half of a Grover step. It "reflects" all amplitudes around their average — states with above-average amplitude get boosted, below-average get suppressed. Together with the oracle (which flips the target's sign), one iteration nudges the probability mass toward the marked item.</span></span>), which compose into a <span class="tut-tip" tabindex="0">rotation toward the marked state subspace<span class="tut-tip-bubble">Think of the quantum state as a clock hand. Each Grover iteration rotates it by a fixed angle toward the "marked" direction. After the right number of rotations the hand points almost exactly at the target — one measurement then finds it with high probability.</span></span>. Step through the geometry.</p>
           <div style="margin:22px 0;padding:20px;background:var(--bg-2);border:1px solid var(--line)">
             <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
               <button class="btn grover-rot-step-btn" data-groverstep="0">① Start</button>
@@ -1897,7 +1901,7 @@
           <h2>Choose the marked item (oracle target).</h2>
         </header>
         <div class="step-body">
-          <p>Set which basis state is "marked" by the oracle. Running the oracle alone flips phase on the marked state but does not immediately change measurement probabilities.</p>
+          <p>Set which basis state is "<span class="tut-tip" tabindex="0">marked<span class="tut-tip-bubble">The one special item Grover's search is looking for — the needle in the haystack. The oracle tags that item by flipping its quantum phase (multiplying its amplitude by −1) without yet making it the most likely measurement outcome; the diffusion steps do that.</span></span>" by the oracle. Running the oracle alone flips phase on the marked state but does not immediately change measurement probabilities.</p>
           <div style="margin:22px 0;padding:20px;background:var(--bg-2);border:1px solid var(--line)">
             <div id="grover-oracle-grid" style="display:flex;flex-wrap:wrap;gap:4px"></div>
             <button class="btn primary" id="grover-oracle-run" style="margin-top:10px">▶ Apply oracle</button>
@@ -2000,8 +2004,8 @@
           <h2>What Grover taught the field.</h2>
         </header>
         <div class="step-body">
-          <p>Grover showed that unstructured search is one of the cleanest places where quantum mechanics gives a provable asymptotic advantage: from <b>O(N)</b> classical queries down to <b>O(√N)</b> oracle calls.</p>
-          <p>The mechanism is geometric: repeated oracle-plus-diffusion steps perform a controlled rotation of the state vector toward the marked subspace. The gain comes from <b>interference</b> and <b>phase structure</b>, not from reading all answers at once.</p>
+          <p>Grover showed that <span class="tut-tip" tabindex="0">unstructured search<span class="tut-tip-bubble">You have a list with no shortcuts — no sorted order, no hash table — so classically you might have to check items one by one. Grover is the optimal quantum black-box search for finding a marked item in that setting.</span></span> is one of the cleanest places where quantum mechanics gives a provable asymptotic advantage: from <b>O(N)</b> classical queries down to <b>O(√N)</b> oracle calls.</p>
+          <p>The mechanism is geometric: repeated oracle-plus-diffusion steps perform a controlled rotation of the state vector toward the marked subspace. The gain comes from <span class="tut-tip" tabindex="0"><b>amplitude amplification</b><span class="tut-tip-bubble">A family of techniques that boost the probability of the "right" outcome step by step — Grover is the famous example. Each iteration nudges more probability mass onto the marked state until a measurement is likely to find it.</span></span> — <b>interference</b> and <b>phase structure</b>, not from reading all answers at once.</p>
           <p>Just as importantly, Grover teaches limits. The speedup is quadratic, not exponential, and practical performance is sensitive to noise and to choosing the right number of iterations before overshoot.</p>
           <div class="insight-box">
             <div class="insight-label">Historical note</div>
@@ -2037,8 +2041,8 @@
       <article class="step-card" data-step="t8-1">
         <header class="step-head"><div class="step-num">Step 01</div><h2>A channel acts on states, not just amplitudes.</h2></header>
         <div class="step-body">
-          <p>In a closed system, evolution is unitary: a pure state stays pure and simply rotates on the Bloch sphere. Real devices are open systems. They leak information to the environment, and that means the correct object to evolve is the <em>density matrix</em> \( \rho \), not just a state vector.</p>
-          <p>Pick a channel and noise strength, then compare input vs output on a Bloch-disk slice. Watch how different channels either preserve geometry, shrink coherence, or pull the state toward a preferred direction.</p>
+          <p>In a closed system, evolution is unitary: a pure state stays pure and simply rotates on the Bloch sphere. Real devices are <span class="tut-tip" tabindex="0">open systems<span class="tut-tip-bubble">The qubit is not isolated — it talks to heat, wiring, and stray fields. Information leaks out, so pure states can become mixed and you need the density matrix ρ, not just a single wavefunction, to describe what you know.</span></span>. They leak information to the environment, and that means the correct object to evolve is the <em>density matrix</em> \( \rho \), not just a state vector.</p>
+          <p>Pick a <span class="tut-tip" tabindex="0">quantum channel<span class="tut-tip-bubble">A formal description of how noise maps an input density matrix to an output — the quantum version of "what this noisy gate does on average." Channels compose: many small errors in a row multiply into one messier map.</span></span> and noise strength, then compare input vs output on a Bloch-disk slice. Watch how different channels either preserve geometry, shrink coherence, or pull the state toward a preferred direction — <span class="tut-tip" tabindex="0">amplitude damping<span class="tut-tip-bubble">Energy loss: excited |1⟩ slowly leaks toward |0⟩, like a hot object cooling. It shrinks the Bloch vector toward the north pole and is the main toy model for T₁ relaxation.</span></span> does the latter.</p>
           <div style="margin:22px 0;padding:20px;background:var(--bg-2);border:1px solid var(--line)">
             <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center">
               <select id="t8-map-select" class="analysis-select" style="max-width:220px">
@@ -2077,7 +2081,7 @@
       <article class="step-card locked" data-step="t8-3">
         <header class="step-head"><div class="step-num">Step 03</div><h2>Kraus operators and CPTP consistency.</h2></header>
         <div class="step-body">
-          <p>Every physically valid quantum noise process is modeled as a <b>CPTP map</b> (completely positive, trace preserving), assuming the system is initially uncorrelated with its environment. Kraus operators are the standard practical representation: \( \rho'=\sum_k K_k \rho K_k^\dagger \).</p>
+          <p>Every physically valid quantum noise process is modeled as a <span class="tut-tip" tabindex="0"><b>CPTP map</b><span class="tut-tip-bubble">"Completely positive, trace preserving" — the math guarantee that a noise process turns valid quantum states into valid quantum states and keeps total probability 1. If a map weren't CPTP, it could create negative probabilities or break physics; only CPTP models are allowed.</span></span>, assuming the system is initially uncorrelated with its environment. <span class="tut-tip" tabindex="0">Kraus operators<span class="tut-tip-bubble">A concrete list of matrices Kₖ that describe noise: the state becomes a weighted sum of "what happens if error k occurred." They are the standard way to program noise in simulators and proofs.</span></span> are the standard practical representation: \( \rho'=\sum_k K_k \rho K_k^\dagger \).</p>
           <p>The crucial sanity check is \( \sum_k K_k^\dagger K_k = I \). Change the map and parameter, and verify the check stays near identity.</p>
           <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:8px">
             <select id="t8-kraus-select" class="analysis-select" style="max-width:220px">
@@ -2099,7 +2103,7 @@
       <article class="step-card locked" data-step="t8-4">
         <header class="step-head"><div class="step-num">Step 04</div><h2>Unital vs non-unital channels.</h2></header>
         <div class="step-body">
-          <p>Unital channels keep the maximally mixed state fixed; non-unital channels do not. This distinction matters physically: some noise just "blurs" states, while other noise also introduces a preferred direction (often energy relaxation toward \( |0\rangle \)).</p>
+          <p><span class="tut-tip" tabindex="0">Unital channels<span class="tut-tip-bubble">Noise that does not change the fully mixed state on average — it smears states but does not systematically pull them toward |0⟩ or |1⟩. Dephasing and depolarizing are examples. Contrast with amplitude damping, which prefers the ground state.</span></span> keep the maximally mixed state fixed; non-unital channels do not. This distinction matters physically: some noise just "blurs" states, while other noise also introduces a preferred direction (often energy relaxation toward \( |0\rangle \)).</p>
           <button class="btn primary" id="t8-unital-run">Run comparison</button>
           <div id="t8-unital-compare" style="margin-top:10px"></div>
           <div id="t8-unital-caption" style="margin-top:10px;font-family:var(--serif);font-size:14px;color:var(--ink-dim);line-height:1.55"></div>
@@ -2129,7 +2133,7 @@
       <article class="step-card locked" data-step="t8-6">
         <header class="step-head"><div class="step-num">Step 06</div><h2>Channel family summary.</h2></header>
         <div class="step-body">
-          <p>This final card consolidates the three workhorse channels used across quantum engineering papers and simulators. Think of it as a quick mental lookup table before you move to hardware-level timescales in Tutorial 9. For Markovian dynamics, the Lindblad equation is the infinitesimal-generator view of the same channel picture.</p>
+          <p>This final card consolidates the three workhorse channels used across quantum engineering papers and simulators. Think of it as a quick mental lookup table before you move to hardware-level timescales in Tutorial 9. For Markovian dynamics, the <span class="tut-tip" tabindex="0">Lindblad equation<span class="tut-tip-bubble">A differential equation for how ρ evolves continuously in time when noise acts smoothly — the continuous-time cousin of applying a noise channel after each gate. Used to model T₁ and T₂-style decay in more detail.</span></span> is the infinitesimal-generator view of the same channel picture.</p>
           <button class="btn primary" id="t8-summary-run">Generate summary</button>
           <div id="t8-summary-grid" style="margin-top:10px"></div>
           <div class="wrap-up" style="margin-top:22px">
@@ -2142,7 +2146,7 @@
             <button class="wrap-card alt" data-go="t9">
               <div class="wrap-tag">Tutorial 9</div>
               <div class="wrap-title">Hardware noise timescales</div>
-              <div class="wrap-desc">T1, dephasing, T2, spectra, Ramsey vs echo — connect abstract channels to device-level intuition.</div>
+              <div class="wrap-desc">T1, dephasing, T2, spectra, Ramsey vs echo, and how labs infer timescales (Ramsey, RB, tomography) — connect abstract channels to device-level intuition.</div>
               <div class="wrap-cta">Next tutorial →</div>
             </button>
           </div>
@@ -2170,7 +2174,7 @@
       <article class="step-card" data-step="t9-1">
         <header class="step-head"><div class="step-num">Step 01</div><h2>T1 relaxation curve.</h2></header>
         <div class="step-body">
-          <p>\(T_1\) is the energy-relaxation timescale: how quickly excited population decays toward the ground state. In superconducting hardware this is often linked to dielectric loss, Purcell loss, quasiparticles, and other dissipative channels.</p>
+          <p><span class="tut-tip" tabindex="0">\(T_1\)<span class="tut-tip-bubble">The characteristic time for energy relaxation — how long an excited qubit typically survives before falling back toward |0⟩. Longer T₁ means you can run longer circuits before losing amplitude on |1⟩.</span></span> is the energy-relaxation timescale: how quickly excited population decays toward the ground state. In superconducting hardware this is often linked to dielectric loss, Purcell loss, quasiparticles, and other dissipative channels.</p>
           <p>Move the slider and watch the decay envelope. Longer \(T_1\) means population persists longer, which generally improves algorithm depth before energy loss dominates.</p>
           <label style="font-family:var(--mono);font-size:10px;color:var(--ink-faint)">T1:
             <input type="range" id="t9-t1-slider" min="5" max="120" step="1" value="40" style="width:210px;accent-color:var(--mint);vertical-align:middle"/>
@@ -2224,7 +2228,7 @@
       <article class="step-card locked" data-step="t9-4">
         <header class="step-head"><div class="step-num">Step 04</div><h2>Spectral-density intuition.</h2></header>
         <div class="step-body">
-          <p>Noise is best understood in frequency space via a spectral density \(S(\omega)\). Different shapes emphasize different physical processes and therefore different failure signatures in experiments.</p>
+          <p>Noise is best understood in frequency space via a <span class="tut-tip" tabindex="0">spectral density \(S(\omega)\)<span class="tut-tip-bubble">A plot of "how loud" the environment is at each frequency. Slow 1/f noise hurts phase over long waits; white noise acts more uniformly. Device physicists use spectra to guess whether relaxation or dephasing will dominate.</span></span>. Different shapes emphasize different physical processes and therefore different failure signatures in experiments.</p>
           <p>Try several spectra and compare where they place power relative to \( \omega_q \) and low frequency. That separation maps directly onto "mostly relaxation" vs "mostly dephasing" behavior.</p>
           <select id="t9-spectrum-select" class="analysis-select" style="max-width:240px">
             <option value="white">White-like</option>
@@ -2242,7 +2246,7 @@
       <article class="step-card locked" data-step="t9-5">
         <header class="step-head"><div class="step-num">Step 05</div><h2>Ramsey vs echo.</h2></header>
         <div class="step-body">
-          <p>Ramsey and echo are two complementary probes of phase noise. Ramsey is highly sensitive to slow drift; echo can refocus some of that drift and reveal what remains from faster components.</p>
+          <p><span class="tut-tip" tabindex="0">Ramsey<span class="tut-tip-bubble">A pulse sequence: π/2, wait, π/2 — interference during the wait turns slow frequency drift into oscillating "fringes" in measurement probability. It measures how fast phase coherence decays when you do nothing to cancel drift (often called T₂*).</span></span> and <span class="tut-tip" tabindex="0">echo<span class="tut-tip-bubble">A π pulse in the middle of a wait flips the qubit so slow noise that wandered the phase one way unwinds on the way back — like walking around a block clockwise then counterclockwise. Hahn echo recovers longer coherence when low-frequency drift dominates.</span></span> are two complementary probes of phase noise. Ramsey is highly sensitive to slow drift; echo can refocus some of that drift and reveal what remains from faster components.</p>
           <p>Compare the traces across noise models to build intuition for why papers often report both \(T_2^\*\) (Ramsey) and \(T_2^{\mathrm{echo}}\).</p>
           <select id="t9-echo-select" class="analysis-select" style="max-width:240px">
             <option value="oneoverf">1/f-like drift</option>
@@ -2257,7 +2261,22 @@
       </article>
 
       <article class="step-card locked" data-step="t9-6">
-        <header class="step-head"><div class="step-num">Step 06</div><h2>Device-level intuition cards.</h2></header>
+        <header class="step-head"><div class="step-num">Step 06</div><h2>Where T1 and T2 come from on a real device.</h2></header>
+        <div class="step-body">
+          <p>The sliders above are idealized exponentials. On hardware, those timescales are <em>inferred</em> from specific calibration experiments. Pick a method below to see what physicists actually fit and how it connects to \(T_1\), \(T_2^\*\), \(T_2^{\mathrm{echo}}\), or gate-quality metrics.</p>
+          <div id="t9-measure-buttons" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+            <button type="button" class="btn" data-measure="ramsey">Ramsey &amp; \(T_1\) recovery</button>
+            <button type="button" class="btn" data-measure="rb"><span class="tut-tip" tabindex="0">Randomized benchmarking<span class="tut-tip-bubble">A lab protocol: run random sequences of gates of varying length and see how quickly fidelity decays. Fits a single average error rate per gate — a practical scorecard for comparing devices without full process tomography.</span></span></button>
+            <button type="button" class="btn" data-measure="tomography">Process tomography</button>
+          </div>
+          <svg id="t9-measure-svg" viewBox="0 0 380 230" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:380px;margin-top:12px"></svg>
+          <div id="t9-measure-detail" style="margin-top:10px;padding:12px;background:var(--bg-2);border:1px solid var(--line);font-family:var(--serif);font-size:14px;color:var(--ink-dim);line-height:1.55"></div>
+          <div class="step-action"><div class="action-prompt">Explore at least two characterization methods.</div><button class="btn primary step-next" data-unlocks="t9-7" disabled id="t9-6-next">Next →</button></div>
+        </div>
+      </article>
+
+      <article class="step-card locked" data-step="t9-7">
+        <header class="step-head"><div class="step-num">Step 07</div><h2>Device-level intuition cards.</h2></header>
         <div class="step-body">
           <p>Different hardware modalities have different dominant noise sources and tradeoffs. These cards are not exhaustive, but they capture the practical "first-order" intuition experimentalists use when diagnosing device behavior.</p>
           <div id="t9-device-buttons" style="display:flex;gap:8px;flex-wrap:wrap">
@@ -2305,7 +2324,7 @@
       <article class="step-card" data-step="t10-1">
         <header class="step-head"><div class="step-num">Step 01</div><h2>A gate is a pulse with area.</h2></header>
         <div class="step-body">
-          <p>Hardware does not apply abstract boxes labeled X and H. It emits microwave pulses. For a resonant drive, the rotation angle is \( \theta = \Omega t \): amplitude times duration.</p>
+          <p>Hardware does not apply abstract boxes labeled X and H. It emits microwave pulses. For a resonant drive, the rotation angle is \( \theta = \Omega t \): amplitude times duration — a <span class="tut-tip" tabindex="0">π-pulse<span class="tut-tip-bubble">A pulse calibrated to rotate the qubit by 180° on the Bloch sphere — the physical realization of an X gate (up to global phase). Shorter or weaker pulses undershoot; stronger ones overshoot.</span></span> is when that area equals π.</p>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start">
             <div>
               <label style="font-family:var(--mono);font-size:10px;color:var(--ink-faint)">Amplitude Ω:
@@ -2331,7 +2350,7 @@
       <article class="step-card locked" data-step="t10-2">
         <header class="step-head"><div class="step-num">Step 02</div><h2>Rabi oscillations calibrate the π-pulse.</h2></header>
         <div class="step-body">
-          <p>Sweep pulse duration and measure \(P(|1\rangle)\). The first peak is your calibrated π-pulse.</p>
+          <p>Sweep pulse duration and measure \(P(|1\rangle)\). The oscillation you see is a <span class="tut-tip" tabindex="0">Rabi oscillation<span class="tut-tip-bubble">The qubit toggles between |0⟩ and |1⟩ as you lengthen the drive — like a pendulum swinging back and forth. The first time probability hits ~1 is the π-pulse length labs lock into their calibration tables.</span></span>; the first peak is your calibrated π-pulse.</p>
           <label style="font-family:var(--mono);font-size:10px;color:var(--ink-faint)">Drive amplitude:
             <input type="range" id="t10-rabi-amp" min="0.4" max="1.4" step="0.01" value="1.0" style="width:180px;accent-color:var(--mint);vertical-align:middle"/>
             <span id="t10-rabi-amp-val" style="color:var(--mint)">1.00</span>
@@ -2346,7 +2365,7 @@
       <article class="step-card locked" data-step="t10-3">
         <header class="step-head"><div class="step-num">Step 03</div><h2>Detuning limits control fidelity.</h2></header>
         <div class="step-body">
-          <p>If your drive is off resonance, oscillations speed up but the achievable peak drops below 100%.</p>
+          <p>If your drive is <span class="tut-tip" tabindex="0">off resonance<span class="tut-tip-bubble">The microwave tone does not match the qubit's natural transition frequency — like pushing a swing at slightly the wrong rhythm. You still get motion, but you cannot reach a perfect flip to |1⟩ in one shot.</span></span>, oscillations speed up but the achievable peak drops below 100%.</p>
           <label style="font-family:var(--mono);font-size:10px;color:var(--ink-faint)">Detuning δ:
             <input type="range" id="t10-detune" min="-2" max="2" step="0.01" value="0" style="width:220px;accent-color:var(--amber);vertical-align:middle"/>
             <span id="t10-detune-val" style="color:var(--amber)">0.00</span>
@@ -2360,7 +2379,7 @@
       <article class="step-card locked" data-step="t10-4">
         <header class="step-head"><div class="step-num">Step 04</div><h2>Ramsey turns phase drift into fringes.</h2></header>
         <div class="step-body">
-          <p>The Ramsey sequence \( \pi/2 \rightarrow \tau \rightarrow \pi/2 \) reveals frequency drift and coherence envelope \(T_2^\*\).</p>
+          <p>The Ramsey sequence \( \pi/2 \rightarrow \tau \rightarrow \pi/2 \) reveals frequency drift and coherence envelope \(T_2^\*\) — the <span class="tut-tip" tabindex="0">fringes<span class="tut-tip-bubble">The measurement probability wiggles as you change the wait time τ because the qubit picks up phase at a rate set by how far off resonance you are. The envelope of those wiggles dying out is the coherence time T₂*.</span></span> you see in plots.</p>
           <div style="display:flex;gap:14px;flex-wrap:wrap">
             <label style="font-family:var(--mono);font-size:10px;color:var(--ink-faint)">Wait τ:
               <input type="range" id="t10-ramsey-tau" min="0" max="8" step="0.01" value="1.5" style="width:170px;accent-color:var(--amber);vertical-align:middle"/>
@@ -2380,7 +2399,7 @@
       <article class="step-card locked" data-step="t10-5">
         <header class="step-head"><div class="step-num">Step 05</div><h2>Echo refocuses slow noise.</h2></header>
         <div class="step-body">
-          <p>Build a pulse sequence by dragging blocks onto a timeline, then run it. Ramsey and Hahn echo emerge from what you construct.</p>
+          <p>Build a pulse sequence by dragging blocks onto a timeline, then run it. Ramsey and <span class="tut-tip" tabindex="0">Hahn echo<span class="tut-tip-bubble">Wait, hit a π pulse halfway, wait again — slow noise that nudges phase forward then backward cancels, so coherence lasts longer than in a bare Ramsey. Named after Erwin Hahn's 1950 spin-echo idea.</span></span> emerge from what you construct.</p>
           <div class="t10-builder-wrap">
             <div class="t10-builder-palette" id="t10-builder-palette">
               <div class="t10-builder-label">Pulse palette</div>
@@ -2472,8 +2491,9 @@
       </article>
     </div><!-- /#tut-10 -->
 
-    <!-- ============================================================ Tutorial 11 -->
-    <div class="tutorial" id="tut-11" style="display:none">
+    <!-- Archived cat-code tutorial (bosonic): inert <template id="archived-tutorial-11-cat-codes">; steps use data-step t11archive-*; script js/tutorials/archived-tutorial-11-cat-codes.js (commented at page foot). -->
+    <template id="archived-tutorial-11-cat-codes">
+    <div class="tutorial" id="tut-11-archive-cat-codes" style="display:none">
       <div class="tutorial-sources">
         <span class="tutorial-sources-label">Sources</span>
         <a href="#ref-gkp2001" class="tpl-cite" data-doc-ref="ref-gkp2001">[GKP 2001]</a>
@@ -2481,110 +2501,110 @@
         <a href="#ref-nc2000" class="tpl-cite" data-doc-ref="ref-nc2000">[Nielsen &amp; Chuang]</a>
       </div>
 
-      <article class="step-card" data-step="t11-1">
+      <article class="step-card" data-step="t11archive-1">
         <header class="step-head"><div class="step-num">Step 01</div><h2>Why cats in a bosonic mode?</h2></header>
         <div class="step-body">
           <p>Many physical platforms store quantum information in a <b>harmonic oscillator</b> — a single electromagnetic mode in a mirror or a superconducting cavity, or an optical pulse sent from <b>Alice</b> to <b>Bob</b> in continuous-variable (CV) protocols. The natural errors are not i.i.d. Pauli flips on thousands of transmons, but <b>photon loss</b> and <b>dephasing</b> in that one mode <a href="#ref-nc2000" class="tpl-cite" data-doc-ref="ref-nc2000">[Nielsen &amp; Chuang, Ch. 7]</a>.</p>
           <p><b>Cat codes</b> (and the related <b>GKP</b> code <a href="#ref-gkp2001" class="tpl-cite" data-doc-ref="ref-gkp2001">[GKP 2001]</a>) address this by encoding a logical qubit in superpositions of <em>macroscopically distinguishable</em> excitations of the oscillator — often written with coherent-state components aligned along a line in phase space, \(|\alpha\rangle\) and \(|-\alpha\rangle\). The name comes from the same “two classical-looking alternatives in superposition” idea as Schrödinger’s thought experiment.</p>
           <p class="t11-model-note" style="font-size:13px;color:var(--ink-faint)">In the next steps, a <b>1D Gaussian line</b> stands in for a single quadrature in phase space: it is a <em>pedagogical cartoon</em>, not a full CV Hilbert space — but the interference and distinguishability you will see are the right mental picture.</p>
           <div class="t11-motivation-grid">
-            <div class="t11-mot-card" id="t11-mot-loss" style="padding:12px 14px;border:1px solid var(--line);border-radius:6px;cursor:pointer;background:var(--bg-2)">
+            <div class="t11-mot-card" id="t11archive-mot-loss" style="padding:12px 14px;border:1px solid var(--line);border-radius:6px;cursor:pointer;background:var(--bg-2)">
               <div style="font-family:var(--mono);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--amber)">Bosonic error</div>
               <p style="margin:8px 0 0;font-family:var(--serif);font-size:14px;color:var(--ink-dim);line-height:1.5">Annihilation \(a\) removes quanta. Dominant error: <b>loss / leakage</b> from the code manifold — not a simple independent bit flip on every cycle.</p>
             </div>
-            <div class="t11-mot-card" id="t11-mot-cv" style="padding:12px 14px;border:1px solid var(--line);border-radius:6px;cursor:pointer;background:var(--bg-2)">
+            <div class="t11-mot-card" id="t11archive-mot-cv" style="padding:12px 14px;border:1px solid var(--line);border-radius:6px;cursor:pointer;background:var(--bg-2)">
               <div style="font-family:var(--mono);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--cyan)">CV setting</div>
               <p style="margin:8px 0 0;font-family:var(--serif);font-size:14px;color:var(--ink-dim);line-height:1.5">Alice and Bob’s optical mode is described by <b>quadratures</b> and homodyne data; many experiments stabilize cat-like states in microwave cavities to fight loss.</p>
             </div>
           </div>
-          <p id="t11-mot-hint" style="margin-top:10px;font-family:var(--serif);font-size:14px;color:var(--ink-dim)">Select both cards to see how the story differs from a surface-code array.</p>
-          <div class="step-action"><div class="action-prompt">Read both panels (click each once).</div><button class="btn primary step-next" data-unlocks="t11-2" disabled id="t11-1-next">Next →</button></div>
+          <p id="t11archive-mot-hint" style="margin-top:10px;font-family:var(--serif);font-size:14px;color:var(--ink-dim)">Select both cards to see how the story differs from a surface-code array.</p>
+          <div class="step-action"><div class="action-prompt">Read both panels (click each once).</div><button class="btn primary step-next" data-unlocks="t11archive-2" disabled id="t11archive-1-next">Next →</button></div>
         </div>
       </article>
 
-      <article class="step-card locked" data-step="t11-2">
+      <article class="step-card locked" data-step="t11archive-2">
         <header class="step-head"><div class="step-num">Step 02</div><h2>Coherent bumps: separation \(\alpha\)</h2></header>
         <div class="step-body">
           <p>A (normalized) complex amplitude on our 1D axis plays the role of a coherent state along one quadrature. The probability density is a Gaussian of width \(\sigma\) centered at \(x=\alpha\): \(|\psi_\alpha(x)|^2\propto e^{-(x-\alpha)^2/\sigma^2}\).</p>
           <label style="font-family:var(--mono);font-size:10px;color:var(--ink-faint)">Separation α (center of the right lobe)
-            <input type="range" id="t11-coh-alpha" min="0.3" max="3.5" step="0.01" value="1.0" style="width:220px;accent-color:var(--mint);vertical-align:middle"/>
-            <span id="t11-coh-alpha-val" style="color:var(--mint)">1.00</span>
+            <input type="range" id="t11archive-coh-alpha" min="0.3" max="3.5" step="0.01" value="1.0" style="width:220px;accent-color:var(--mint);vertical-align:middle"/>
+            <span id="t11archive-coh-alpha-val" style="color:var(--mint)">1.00</span>
           </label>
-          <svg id="t11-coh-plot" viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:400px;margin-top:8px"></svg>
-          <div id="t11-coh-caption" style="font-family:var(--serif);font-size:14px;color:var(--ink-dim);line-height:1.55"></div>
-          <div class="step-action"><div class="action-prompt">Try a <em>tight</em> separation (α &lt; 1.2) and a <em>wide</em> one (α &gt; 2.2).</div><button class="btn primary step-next" data-unlocks="t11-3" disabled id="t11-2-next">Next →</button></div>
+          <svg id="t11archive-coh-plot" viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:400px;margin-top:8px"></svg>
+          <div id="t11archive-coh-caption" style="font-family:var(--serif);font-size:14px;color:var(--ink-dim);line-height:1.55"></div>
+          <div class="step-action"><div class="action-prompt">Try a <em>tight</em> separation (α &lt; 1.2) and a <em>wide</em> one (α &gt; 2.2).</div><button class="btn primary step-next" data-unlocks="t11archive-3" disabled id="t11archive-2-next">Next →</button></div>
         </div>
       </article>
 
-      <article class="step-card locked" data-step="t11-3">
+      <article class="step-card locked" data-step="t11archive-3">
         <header class="step-head"><div class="step-num">Step 03</div><h2>Even and odd cats — interference</h2></header>
         <div class="step-body">
           <p>The <b>even cat</b> (often used as a logical \(|0_L\rangle\)) is \(|\text{cat}_+\rangle \propto |\alpha\rangle + |-\alpha\rangle\); the <b>odd cat</b> is \(|\text{cat}_-\rangle \propto |\alpha\rangle - |-\alpha\rangle\), superposable with a logical \(|1_L\rangle\) when the overlap is small enough.</p>
           <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center">
             <span style="font-family:var(--mono);font-size:10px;color:var(--ink-faint)">State:</span>
-            <button type="button" class="btn t11-cat-toggle active" data-t11cat="even" id="t11-cat-b-even">Even |cat+⟩</button>
-            <button type="button" class="btn t11-cat-toggle" data-t11cat="odd" id="t11-cat-b-odd">Odd |cat−⟩</button>
+            <button type="button" class="btn t11-cat-toggle active" data-t11cat="even" id="t11archive-cat-b-even">Even |cat+⟩</button>
+            <button type="button" class="btn t11-cat-toggle" data-t11cat="odd" id="t11archive-cat-b-odd">Odd |cat−⟩</button>
             <label style="font-family:var(--mono);font-size:10px;color:var(--ink-faint)">α
-              <input type="range" id="t11-cat-alpha" min="0.3" max="3.2" step="0.01" value="1.1" style="width:180px;accent-color:var(--amber);vertical-align:middle"/>
-              <span id="t11-cat-alpha-val" style="color:var(--amber)">1.10</span>
+              <input type="range" id="t11archive-cat-alpha" min="0.3" max="3.2" step="0.01" value="1.1" style="width:180px;accent-color:var(--amber);vertical-align:middle"/>
+              <span id="t11archive-cat-alpha-val" style="color:var(--amber)">1.10</span>
             </label>
           </div>
-          <svg id="t11-cat-plot" viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:400px;margin-top:8px"></svg>
-          <div id="t11-cat-readout" style="font-family:var(--mono);font-size:12px;color:var(--cyan);margin-top:6px"></div>
-          <div id="t11-cat-caption" style="font-family:var(--serif);font-size:14px;color:var(--ink-dim);line-height:1.55;margin-top:4px"></div>
-          <div class="step-action"><div class="action-prompt">View <b>both</b> even and odd cats and move α at least once.</div><button class="btn primary step-next" data-unlocks="t11-4" disabled id="t11-3-next">Next →</button></div>
+          <svg id="t11archive-cat-plot" viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:400px;margin-top:8px"></svg>
+          <div id="t11archive-cat-readout" style="font-family:var(--mono);font-size:12px;color:var(--cyan);margin-top:6px"></div>
+          <div id="t11archive-cat-caption" style="font-family:var(--serif);font-size:14px;color:var(--ink-dim);line-height:1.55;margin-top:4px"></div>
+          <div class="step-action"><div class="action-prompt">View <b>both</b> even and odd cats and move α at least once.</div><button class="btn primary step-next" data-unlocks="t11archive-4" disabled id="t11archive-3-next">Next →</button></div>
         </div>
       </article>
 
-      <article class="step-card locked" data-step="t11-4">
+      <article class="step-card locked" data-step="t11archive-4">
         <header class="step-head"><div class="step-num">Step 04</div><h2>Loss smears the fringes</h2></header>
         <div class="step-body">
           <p>Real loss channels destroy superposition and leave a remnant in a <b>single-lobe</b> (classical-like) state. This toy model mixes the ideal <b>even cat</b> with a <b>one-bump</b> Gaussian at \(+α\) to mimic losing the \(-\alpha\) component and washing out fringes between the two lobes.</p>
           <div style="display:flex;flex-wrap:wrap;gap:14px;align-items:center">
             <label style="font-family:var(--mono);font-size:10px;color:var(--ink-faint)">Mixing (loss) λ
-              <input type="range" id="t11-loss" min="0" max="1" step="0.01" value="0" style="width:200px;accent-color:var(--magenta);vertical-align:middle"/>
-              <span id="t11-loss-val" style="color:var(--magenta)">0.00</span>
+              <input type="range" id="t11archive-loss" min="0" max="1" step="0.01" value="0" style="width:200px;accent-color:var(--magenta);vertical-align:middle"/>
+              <span id="t11archive-loss-val" style="color:var(--magenta)">0.00</span>
             </label>
             <label style="font-family:var(--mono);font-size:10px;color:var(--ink-faint)">Cat α
-              <input type="range" id="t11-loss-alpha" min="0.5" max="3" step="0.01" value="1.2" style="width:160px;accent-color:var(--amber);vertical-align:middle"/>
-              <span id="t11-loss-alpha-val" style="color:var(--amber)">1.20</span>
+              <input type="range" id="t11archive-loss-alpha" min="0.5" max="3" step="0.01" value="1.2" style="width:160px;accent-color:var(--amber);vertical-align:middle"/>
+              <span id="t11archive-loss-alpha-val" style="color:var(--amber)">1.20</span>
             </label>
           </div>
-          <svg id="t11-loss-plot" viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:400px;margin-top:8px"></svg>
-          <div id="t11-loss-readout" style="font-family:var(--mono);font-size:12px;color:var(--ink-dim);line-height:1.6"></div>
-          <div class="step-action"><div class="action-prompt">Turn λ from 0 to something visibly destructive, then nudge α.</div><button class="btn primary step-next" data-unlocks="t11-5" disabled id="t11-4-next">Next →</button></div>
+          <svg id="t11archive-loss-plot" viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:400px;margin-top:8px"></svg>
+          <div id="t11archive-loss-readout" style="font-family:var(--mono);font-size:12px;color:var(--ink-dim);line-height:1.6"></div>
+          <div class="step-action"><div class="action-prompt">Turn λ from 0 to something visibly destructive, then nudge α.</div><button class="btn primary step-next" data-unlocks="t11archive-5" disabled id="t11archive-4-next">Next →</button></div>
         </div>
       </article>
 
-      <article class="step-card locked" data-step="t11-5">
+      <article class="step-card locked" data-step="t11archive-5">
         <header class="step-head"><div class="step-num">Step 05</div><h2>Parity as a bosonic stabilizer</h2></header>
         <div class="step-body">
           <p>Ideal even (odd) cats are eigenstates of the <b>photon number parity</b> operator \(e^{i\pi\hat n}\) with eigenvalue \(+1\) (\(-1\)). Measuring parity detects loss events without full tomography — it is the CV analogue of reading a <b>stabilizer syndrome</b> <a href="#ref-nohgirvin2022" class="tpl-cite" data-doc-ref="ref-nohgirvin2022">[Noh &amp; Girvin 2021]</a>.</p>
           <p>Our 1D cartoon decomposes any wavefunction into <b>symmetric</b> and <b>antisymmetric</b> parts under \(x\mapsto -x\); we report those weights as a stand-in for parity +/−. Try repeated measurements on a <b>mixed</b> state (λ &gt; 0).</p>
           <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center">
             <label style="font-family:var(--mono);font-size:10px;color:var(--ink-faint)">Truth (hidden prep)
-              <select id="t11-parity-truth" class="analysis-select" style="max-width:200px">
+              <select id="t11archive-parity-truth" class="analysis-select" style="max-width:200px">
                 <option value="even">Even cat</option>
                 <option value="odd">Odd cat</option>
               </select>
             </label>
             <label style="font-family:var(--mono);font-size:10px;color:var(--ink-faint)">λ
-              <input type="range" id="t11-parity-loss" min="0" max="0.85" step="0.01" value="0.2" style="width:150px;accent-color:var(--magenta);vertical-align:middle"/>
-              <span id="t11-parity-loss-val" style="color:var(--magenta)">0.20</span>
+              <input type="range" id="t11archive-parity-loss" min="0" max="0.85" step="0.01" value="0.2" style="width:150px;accent-color:var(--magenta);vertical-align:middle"/>
+              <span id="t11archive-parity-loss-val" style="color:var(--magenta)">0.20</span>
             </label>
             <label style="font-family:var(--mono);font-size:10px;color:var(--ink-faint)">α
-              <input type="range" id="t11-parity-alpha" min="0.5" max="3" step="0.01" value="1.1" style="width:150px;accent-color:var(--amber);vertical-align:middle"/>
-              <span id="t11-parity-alpha-val" style="color:var(--amber)">1.10</span>
+              <input type="range" id="t11archive-parity-alpha" min="0.5" max="3" step="0.01" value="1.1" style="width:150px;accent-color:var(--amber);vertical-align:middle"/>
+              <span id="t11archive-parity-alpha-val" style="color:var(--amber)">1.10</span>
             </label>
           </div>
-          <div id="t11-parity-pred" style="font-family:var(--serif);font-size:14px;color:var(--ink-dim);margin-top:8px"></div>
-          <button type="button" class="btn primary" id="t11-parity-btn">Measure parity (±1)</button>
-          <div id="t11-parity-log" style="font-family:var(--mono);font-size:12px;color:var(--ink-dim);margin-top:8px;min-height:2.2em"></div>
-          <div class="step-action"><div class="action-prompt">Get at least one +1 and one −1 outcome (or run 4 times).</div><button class="btn primary step-next" data-unlocks="t11-6" disabled id="t11-5-next">Next →</button></div>
+          <div id="t11archive-parity-pred" style="font-family:var(--serif);font-size:14px;color:var(--ink-dim);margin-top:8px"></div>
+          <button type="button" class="btn primary" id="t11archive-parity-btn">Measure parity (±1)</button>
+          <div id="t11archive-parity-log" style="font-family:var(--mono);font-size:12px;color:var(--ink-dim);margin-top:8px;min-height:2.2em"></div>
+          <div class="step-action"><div class="action-prompt">Get at least one +1 and one −1 outcome (or run 4 times).</div><button class="btn primary step-next" data-unlocks="t11archive-6" disabled id="t11archive-5-next">Next →</button></div>
         </div>
       </article>
 
-      <article class="step-card locked" data-step="t11-6">
+      <article class="step-card locked" data-step="t11archive-6">
         <header class="step-head"><div class="step-num">Step 06</div><h2>Where to go from here</h2></header>
         <div class="step-body">
           <p>Cat encodings are a workhorse in <b>bosonic QEC</b>: they convert continuous leakage into a discrete error model that you can track with parity, then correct with additional layers — often autonomously in cavity QED. <b>GKP</b> encodings <a href="#ref-gkp2001" class="tpl-cite" data-doc-ref="ref-gkp2001">[GKP 2001]</a> add grid structure in phase space and are a natural “upgrade path” with stronger protection but heavier control.</p>
@@ -2600,6 +2620,211 @@
               <div class="wrap-title">Pulses, not gates</div>
               <div class="wrap-desc">Cavity control in the lab is still pulse-based — gates are a summary layer.</div>
               <div class="wrap-cta">Continue to Tutorial 10 →</div>
+            </button>
+          </div>
+        </div>
+      </article>
+    </div><!-- /#tut-11-archive-cat-codes -->
+    </template>
+
+    <!-- ============================================================ Tutorial 11: From chip to circuit -->
+    <div class="tutorial" id="tut-11" style="display:none">
+      <div class="tutorial-sources">
+        <span class="tutorial-sources-label">Sources</span>
+        <a href="#ref-naghiloo2019" class="tpl-cite" data-doc-ref="ref-naghiloo2019">[Naghiloo 2019]</a>
+        <a href="#ref-krantz2019" class="tpl-cite" data-doc-ref="ref-krantz2019">[Krantz 2019]</a>
+        <a href="#ref-arute2019" class="tpl-cite" data-doc-ref="ref-arute2019">[Arute 2019]</a>
+        <a href="#ref-kjaergaard2020" class="tpl-cite" data-doc-ref="ref-kjaergaard2020">[Kjaergaard 2020]</a>
+      </div>
+
+      <article class="step-card" data-step="t11-1">
+        <header class="step-head"><div class="step-num">Step 01</div><h2>Resonator bring-up and punchout.</h2></header>
+        <div class="step-body">
+          <p>Before you address the qubit, you locate the <b>readout resonator</b> (or filter mode) in frequency–power space. A <b>punchout</b> / bias sweep is a coarse map: probe frequency vs applied power to see where the line lives, how it shifts with power, and where it stays in a regime compatible with dispersive readout — so you avoid accidental qubit excitation or nonlinear “bad” operating points <a href="#ref-krantz2019" class="tpl-cite" data-doc-ref="ref-krantz2019">[Krantz 2019]</a>.</p>
+          <p style="font-size:13px;color:var(--ink-faint)">Set probe power to a <b>low</b> value (&lt; −18 dBm), click on the dark vertical feature (the resonance dip), then continue. The colormap is a toy model, not your VNA trace — but the goal matches experiment: find the mode and a sane power window.</p>
+          <div id="t11-chip-punchout-host" style="margin-top:10px;padding:14px;border:1px solid var(--line);border-radius:10px;background:var(--bg-2)">
+            <div style="display:flex;flex-wrap:wrap;align-items:center;gap:14px;margin-bottom:10px">
+              <label style="font-size:13px;display:flex;align-items:center;gap:8px"><span style="color:var(--ink-faint);white-space:nowrap">Probe power (dBm)</span>
+                <input type="range" id="t11-punchout-power" min="-40" max="0" step="1" value="-35" style="width:180px" />
+              </label>
+              <span id="t11-punchout-freq-label" style="font-family:var(--mono);font-size:12px;color:var(--ink-faint)"></span>
+            </div>
+            <svg id="t11-punchout-svg" viewBox="0 0 400 220" width="100%" style="max-width:420px;display:block;border-radius:6px;background:var(--bg-0)"></svg>
+            <p id="t11-punchout-hint" style="margin:10px 0 0;font-size:12px;color:var(--ink-faint)">Tip: the magenta line is the power row you are “sweeping” — click the dip along that row.</p>
+          </div>
+          <p style="margin-top:10px"><button type="button" class="btn primary" id="t11-chip-continue-1" disabled>Continue</button></p>
+          <div class="step-action"><div class="action-prompt">Identify the resonator dip, then continue.</div><button class="btn primary step-next" data-unlocks="t11-2" disabled id="t11-1-next">Next →</button></div>
+        </div>
+      </article>
+
+      <article class="step-card locked" data-step="t11-2">
+        <header class="step-head"><div class="step-num">Step 02</div><h2>Qubit spectroscopy.</h2></header>
+        <div class="step-body">
+          <p>A 1D <b>spectroscopy</b> sweep locates the qubit transition \( \omega_{01} \). In real data you also see splittings, avoided crossings, or multi-photon features — the same diagrams as in textbooks, but on an oscilloscope trace <a href="#ref-naghiloo2019" class="tpl-cite" data-doc-ref="ref-naghiloo2019">[Naghiloo 2019]</a>. This anchors detuning for later pulses.</p>
+          <p style="font-size:13px;color:var(--ink-faint)">Toggle drive power: at <b>high</b> drive, a toy extra dip near 5.08 GHz hints at a multi-photon line (illustrative). Click the main qubit dip (~5.23 GHz) to mark \( \omega_{01} \), then continue.</p>
+          <div id="t11-chip-spec-host" style="margin-top:10px;padding:14px;border:1px solid var(--line);border-radius:10px;background:var(--bg-2)">
+            <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:8px;font-size:13px">
+              <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="radio" name="t11-spec-power" id="t11-spec-power-low" checked /> Low drive</label>
+              <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="radio" name="t11-spec-power" id="t11-spec-power-high" /> High drive</label>
+              <span id="t11-spec-f01-label" style="font-family:var(--mono);font-size:12px;color:var(--ink-faint)"></span>
+            </div>
+            <svg id="t11-spec-svg" viewBox="0 0 400 200" width="100%" style="max-width:420px;display:block;border-radius:6px;background:var(--bg-0)"></svg>
+          </div>
+          <p style="margin-top:10px"><button type="button" class="btn primary" id="t11-chip-continue-2" disabled>Continue</button></p>
+          <div class="step-action"><div class="action-prompt">Mark ω₀₁ on the plot, then continue.</div><button class="btn primary step-next" data-unlocks="t11-3" disabled id="t11-2-next">Next →</button></div>
+        </div>
+      </article>
+
+      <article class="step-card locked" data-step="t11-3">
+        <header class="step-head"><div class="step-num">Step 03</div><h2>IQ plane and demodulated readout.</h2></header>
+        <div class="step-body">
+          <p>Demodulation maps each shot to a point in the <b>I–Q plane</b>. Single-shot <b>blobs</b> for prepared \(|0\rangle\) vs \(|1\rangle\) are what turn microwave voltage into digital outcomes and thus into estimated \(P(0), P(1)\) after thresholding (often after a rotation) <a href="#ref-naghiloo2019" class="tpl-cite" data-doc-ref="ref-naghiloo2019">[Naghiloo 2019]</a>. Separation and width set SNR and assignment fidelity — see also population statistics in Tutorial&nbsp;3 and \(T_1\) in Tutorial&nbsp;9.</p>
+          <p style="font-size:13px;color:var(--ink-faint)">Drag the magenta decision line. Move the SNR slider at least once, set the line near the midpoint (optimal for symmetric blobs), then continue.</p>
+          <div id="t11-chip-iq-host" style="margin-top:10px;padding:14px;border:1px solid var(--line);border-radius:10px;background:var(--bg-2)">
+            <div style="display:flex;flex-wrap:wrap;gap:14px;align-items:center;margin-bottom:8px;font-size:13px">
+              <label style="display:flex;align-items:center;gap:8px">SNR <input type="range" id="t11-iq-snr" min="0.5" max="4" step="0.05" value="2.2" style="width:140px" /></label>
+              <label style="display:flex;align-items:center;gap:8px">Rotate IQ (°) <input type="range" id="t11-iq-rotation" min="-45" max="45" step="1" value="0" style="width:120px" /></label>
+              <span style="display:flex;gap:10px;align-items:center"><span style="color:var(--ink-faint)">View:</span>
+                <label style="display:flex;align-items:center;gap:4px;cursor:pointer"><input type="radio" name="t11-iq-mode" id="t11-iq-mode-shot" checked /> Single-shot</label>
+                <label style="display:flex;align-items:center;gap:4px;cursor:pointer"><input type="radio" name="t11-iq-mode" id="t11-iq-mode-avg" /> Average</label>
+              </span>
+              <span id="t11-iq-fidelity" style="font-family:var(--mono);font-size:11px;color:var(--ink-faint);flex:1;min-width:200px"></span>
+            </div>
+            <svg id="t11-iq-svg" viewBox="0 0 380 320" width="100%" style="max-width:400px;display:block;border-radius:6px;background:var(--bg-0);touch-action:none;cursor:crosshair"></svg>
+          </div>
+          <p style="margin-top:10px"><button type="button" class="btn primary" id="t11-chip-continue-3" disabled>Continue</button></p>
+          <div class="step-action"><div class="action-prompt">Calibrate the threshold, then continue.</div><button class="btn primary step-next" data-unlocks="t11-4" disabled id="t11-3-next">Next →</button></div>
+        </div>
+      </article>
+
+      <article class="step-card locked" data-step="t11-4">
+        <header class="step-head"><div class="step-num">Step 04</div><h2>Rabi oscillations and chevrons.</h2></header>
+        <div class="step-body">
+          <p><b>Rabi</b> drives calibrate rotation angle vs pulse duration or amplitude. A <b>chevron</b> (duration vs detuning) is the 2D view of the same physics as Tutorial&nbsp;10: you pick an operating point where the \(\pi\) pulse is stable on resonance <a href="#ref-arute2019" class="tpl-cite" data-doc-ref="ref-arute2019">[Arute 2019]</a>. Inset: \(P_1(\tau)\) at \(\Delta=0\).</p>
+          <p style="font-size:13px;color:var(--ink-faint)">Adjust Rabi rate Ω, then click near the on-resonance \(\pi\) time (magenta circle on the \(\Delta=0\) row, mint vertical guide). Continue when marked.</p>
+          <div id="t11-chip-chevron-host" style="margin-top:10px;padding:14px;border:1px solid var(--line);border-radius:10px;background:var(--bg-2)">
+            <div style="margin-bottom:8px;font-size:13px">
+              <label style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">Rabi rate Ω (rad/ns)
+                <input type="range" id="t11-chevron-detune" min="0.05" max="0.14" step="0.002" value="0.08" style="width:200px" />
+                <span id="t11-chevron-pi-label" style="font-family:var(--mono);font-size:11px;color:var(--ink-faint)"></span>
+              </label>
+            </div>
+            <svg id="t11-chevron-svg" viewBox="0 0 400 280" width="100%" style="max-width:420px;display:block;border-radius:6px;background:var(--bg-0)"></svg>
+          </div>
+          <p style="margin-top:10px"><button type="button" class="btn primary" id="t11-chip-continue-4" disabled>Continue</button></p>
+          <div class="step-action"><div class="action-prompt">Mark π on the chevron, then continue.</div><button class="btn primary step-next" data-unlocks="t11-5" disabled id="t11-4-next">Next →</button></div>
+        </div>
+      </article>
+
+      <article class="step-card locked" data-step="t11-5">
+        <header class="step-head"><div class="step-num">Step 05</div><h2>Populations and readout calibration.</h2></header>
+        <div class="step-body">
+          <p>1D histograms of an integrated quadrature (or a rotated IQ coordinate) are the workhorse for <b>populations</b> and readout calibration — same statistics you use for \(T_1\) fits and error budgets <a href="#ref-naghiloo2019" class="tpl-cite" data-doc-ref="ref-naghiloo2019">[Naghiloo 2019]</a>. Papers often show 2D IQ or 3D histograms; overlapping 1D marginals carry the same overlap / misclassification intuition <a href="#ref-krantz2019" class="tpl-cite" data-doc-ref="ref-krantz2019">[Krantz 2019]</a>. <b>Readout-induced transitions</b> can smear \(|1\rangle\) into \(|0\rangle\) over many shots — one more reason calibration is never perfect.</p>
+          <p style="font-size:13px;color:var(--ink-faint)">Real calibration plots stack or overlay \(|0\rangle\) vs \(|1\rangle\) marginals along the readout quadrature (after rotation). Drag the threshold (magenta). Touch the delay slider, then drag on the plot — both are required to continue.</p>
+          <div id="t11-chip-pop-host" style="margin-top:10px;padding:14px;border:1px solid var(--line);border-radius:10px;background:var(--bg-2)">
+            <label style="display:flex;align-items:center;gap:10px;font-size:13px;margin-bottom:8px">Delay before readout (µs)
+              <input type="range" id="t11-pop-t1delay" min="0" max="5" step="0.05" value="0" style="width:200px" />
+              <span style="font-family:var(--mono);font-size:11px;color:var(--ink-faint)">\(T_1 \approx 1.5\) µs (toy)</span>
+            </label>
+            <svg id="t11-pop-svg" viewBox="0 0 400 260" width="100%" style="max-width:420px;display:block;border-radius:6px;background:var(--bg-0);touch-action:none;cursor:crosshair"></svg>
+            <p id="t11-pop-f-ro" style="margin:8px 0 0;font-family:var(--mono);font-size:12px;color:var(--ink-faint)"></p>
+            <table id="t11-pop-confusion" style="margin-top:12px;font-size:12px;border-collapse:collapse;font-family:var(--mono)">
+              <caption style="text-align:left;font-size:11px;color:var(--ink-faint);padding-bottom:6px">Assignment rates (same style as single-qubit readout confusion in bring-up notes)</caption>
+              <thead>
+                <tr><th style="border:1px solid var(--line);padding:6px 10px"></th><th style="border:1px solid var(--line);padding:6px 10px">assign 0</th><th style="border:1px solid var(--line);padding:6px 10px">assign 1</th></tr>
+              </thead>
+              <tbody>
+                <tr><th style="border:1px solid var(--line);padding:6px 10px;text-align:left">prep |0⟩</th><td style="border:1px solid var(--line);padding:6px 10px" id="t11-pop-c00">—</td><td style="border:1px solid var(--line);padding:6px 10px" id="t11-pop-c01">—</td></tr>
+                <tr><th style="border:1px solid var(--line);padding:6px 10px;text-align:left">prep |1⟩</th><td style="border:1px solid var(--line);padding:6px 10px" id="t11-pop-c10">—</td><td style="border:1px solid var(--line);padding:6px 10px" id="t11-pop-c11">—</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p style="margin-top:10px"><button type="button" class="btn primary" id="t11-chip-continue-5" disabled>Continue</button></p>
+          <div class="step-action"><div class="action-prompt">Explore threshold and delay, then continue.</div><button class="btn primary step-next" data-unlocks="t11-6" disabled id="t11-5-next">Next →</button></div>
+        </div>
+      </article>
+
+      <article class="step-card locked" data-step="t11-6">
+        <header class="step-head"><div class="step-num">Step 06</div><h2>Run the gate — theory meets experiment.</h2></header>
+        <div class="step-body">
+          <p>You now have a calibrated system: a resonator mode (Step 1), a qubit frequency (Step 2), a readout threshold (Step 3), and a \(\pi\)-pulse duration (Step 4). <b>Apply an X gate</b> (\(\pi\) rotation on \(|0\rangle\)) and compare the single-shot outcome to what the circuit layer promises.</p>
+          <p>The gap between ideal and measured \(P(\text{assign }|1\rangle)\) comes from three independent sources: <b>T\(_1\) decay during the pulse</b> (\(\approx 1-e^{-t_\pi/T_1}\), roughly 2–3\% here), <b>pulse amplitude drift</b> (rotating past or short of \(\pi\), controlled by the slider), and <b>SPAM errors</b> (state prep + measurement, set by the SNR from Step 3). Abstract gate models assume none of these — bring-up is how you measure them <a href="#ref-naghiloo2019" class="tpl-cite" data-doc-ref="ref-naghiloo2019">[Naghiloo 2019]</a>.</p>
+          <p style="font-size:13px;color:var(--ink-faint)">Click <b>Apply X gate</b> to fire 60 single shots. <span style="color:var(--mint)">Green dots</span> are correctly assigned \(|1\rangle\); <span style="color:#e04444">red</span> are misclassified. Drag the <b>Ω drift</b> slider to mis-calibrate the pulse and watch the assignment rate fall. Run multiple times to accumulate statistics.</p>
+          <div id="t11-chip-run-host" style="margin-top:10px;padding:14px;border:1px solid var(--line);border-radius:10px;background:var(--bg-2)">
+            <div style="display:flex;flex-wrap:wrap;align-items:center;gap:14px;margin-bottom:10px;font-size:13px">
+              <button type="button" class="btn primary" id="t11-run-btn">Apply X gate (60 shots)</button>
+              <button type="button" class="btn" id="t11-run-clear" style="font-size:12px">Clear</button>
+              <label style="display:flex;align-items:center;gap:8px;margin-left:4px">
+                <span style="color:var(--ink-faint);white-space:nowrap">Ω drift (%)</span>
+                <input type="range" id="t11-run-drift" min="-50" max="50" step="1" value="0" style="width:130px" />
+                <span id="t11-run-drift-label" style="font-family:var(--mono);font-size:11px;color:var(--ink-faint);min-width:40px"></span>
+              </label>
+              <span id="t11-run-shot-count" style="font-family:var(--mono);font-size:11px;color:var(--ink-faint)"></span>
+            </div>
+            <svg id="t11-run-svg" viewBox="0 0 380 300" width="100%" style="max-width:400px;display:block;border-radius:6px;background:var(--bg-0)"></svg>
+            <div id="t11-run-result" style="margin-top:12px;font-size:12px;line-height:1.9;font-family:var(--mono);color:var(--ink-faint)"></div>
+          </div>
+          <p style="margin-top:10px"><button type="button" class="btn primary" id="t11-chip-continue-6" disabled>Continue</button></p>
+          <div class="step-action"><div class="action-prompt">Apply the gate at least once, then continue.</div><button class="btn primary step-next" data-unlocks="t11-7" disabled id="t11-6-next">Next →</button></div>
+        </div>
+      </article>
+
+      <article class="step-card locked" data-step="t11-7">
+        <header class="step-head"><div class="step-num">Step 07</div><h2>Why the gap exists — the error budget.</h2></header>
+        <div class="step-body">
+          <p>Every discrepancy between the circuit-layer prediction (100% P(|1⟩)) and what you just measured has a specific physical origin. Understanding the size of each source is what an <b>error budget</b> is for — and why experimentalists run Rabi, T₁, and randomized benchmarking continuously, not just at bring-up.</p>
+          <p style="font-size:13px;color:var(--ink-faint)">Use the slider to set pulse drift. The waterfall chart and Bloch disk update together.</p>
+          <div id="t11-budget-host" style="margin-top:10px;padding:14px;border:1px solid var(--line);border-radius:10px;background:var(--bg-2)">
+            <label style="display:flex;align-items:center;gap:10px;font-size:13px;margin-bottom:12px">
+              Ω drift (%) <input type="range" id="t11-budget-drift" min="-50" max="50" step="1" value="0" style="width:160px" />
+              <span id="t11-budget-drift-lbl" style="font-family:var(--mono);font-size:11px;color:var(--ink-faint);min-width:44px"></span>
+            </label>
+            <div style="display:flex;flex-wrap:wrap;gap:20px;align-items:flex-start">
+              <div>
+                <svg id="t11-budget-waterfall" viewBox="0 0 340 220" width="100%" style="max-width:360px;display:block;border-radius:6px;background:var(--bg-0)"></svg>
+                <p style="font-size:11px;color:var(--ink-faint);margin:6px 0 0">Waterfall: each bar shows what is left of P(|1⟩) after each physical error is applied in sequence.</p>
+              </div>
+              <div>
+                <svg id="t11-budget-bloch" viewBox="0 0 210 210" width="100%" style="max-width:220px;display:block;border-radius:6px;background:var(--bg-0)"></svg>
+                <p style="font-size:11px;color:var(--ink-faint);margin:6px 0 0">Bloch x–z slice: <span style="color:#888">grey</span> = ideal π, <span style="color:var(--mint)">green</span> = real rotation.</p>
+              </div>
+            </div>
+            <div id="t11-budget-breakdown" style="margin-top:16px;font-size:12px;line-height:1.9;font-family:var(--mono);color:var(--ink-faint)"></div>
+          </div>
+          <div style="margin-top:18px;font-size:13px;line-height:1.7">
+            <p><b>T₁ during the gate.</b> Even while the microwave pulse is on, the qubit is coupled to its environment and can spontaneously decay. For a 40 ns π-pulse and T₁ = 1.5 µs, the probability of decay mid-gate is only ∼2.6 % — small but nonzero, and it scales linearly with gate time. Faster pulses (at the cost of more bandwidth / leakage risk) reduce this contribution.</p>
+            <p><b>Pulse amplitude (Rabi rate) drift.</b> The control hardware, flux lines, and amplifier chain all drift over minutes to hours, shifting the effective drive amplitude Ω. A 10 % drift means the rotation angle is 1.1π instead of π: the Bloch vector overshoots |1⟩ and ends up partially back towards |0⟩, losing P(|1⟩) as ∼ cos²(π·δ/2). Experimentalists run automated Rabi recalibration every few minutes on live systems <a href="#ref-arute2019" class="tpl-cite" data-doc-ref="ref-arute2019">[Arute 2019]</a>.</p>
+            <p><b>State preparation and measurement (SPAM).</b> Even a perfectly rotated qubit is read through a noisy channel: finite readout SNR, thermal population in |1⟩ before the gate, and the readout photons themselves causing transitions. This contribution is set by the IQ blob separation you calibrated in Step 3. Increasing SNR (longer readout, stronger drive up to the Kerr limit) directly reduces SPAM <a href="#ref-naghiloo2019" class="tpl-cite" data-doc-ref="ref-naghiloo2019">[Naghiloo 2019]</a>.</p>
+            <p><b>What experimentalists actually do.</b> Before any algorithm: Rabi (Step 4) → T₁/T₂ check (Step 5 logic) → readout matrix inversion. During long jobs: interleaved recalibration sequences — exactly the bring-up loop you just walked through, automated and running at 0.1 Hz.</p>
+          </div>
+          <p style="margin-top:12px"><button type="button" class="btn primary" id="t11-chip-continue-7">Continue</button></p>
+          <div class="step-action"><div class="action-prompt">Read, then continue.</div><button class="btn primary step-next" data-unlocks="t11-8" disabled id="t11-7-next">Next →</button></div>
+        </div>
+      </article>
+
+      <article class="step-card locked" data-step="t11-8">
+        <header class="step-head"><div class="step-num">Step 08</div><h2>From calibrated pulses to a circuit layer.</h2></header>
+        <div class="step-body">
+          <p>The π pulse you picked on the chevron, the IQ threshold you tuned, and the per-shot error budget you just measured are exactly what a <b>pulse library</b> and measurement kernel encode before any algorithm sees “X” or “measure.” That is the bridge to the gate-based <b>Lab</b> on this site: the same abstract P(0),P(1), without simulating the full microwave chain <a href="#ref-kjaergaard2020" class="tpl-cite" data-doc-ref="ref-kjaergaard2020">[Kjaergaard 2020]</a>.</p>
+          <p style="margin-top:10px"><button type="button" class="btn primary" id="t11-chip-finish">Mark tutorial complete</button></p>
+          <div class="wrap-up" style="margin-top:18px">
+            <button class="wrap-card" data-go="t10">
+              <div class="wrap-tag">Tutorial 10</div>
+              <div class="wrap-title">Pulses, not gates</div>
+              <div class="wrap-desc">Pulse shapes, detuning, and echo — the control layer behind bring-up.</div>
+              <div class="wrap-cta">Open Tutorial 10 →</div>
+            </button>
+            <button class="wrap-card alt" data-go="t9">
+              <div class="wrap-tag">Tutorial 9</div>
+              <div class="wrap-title">Hardware noise timescales</div>
+              <div class="wrap-desc">Connect measured decays to the noise models you use when sketching circuits.</div>
+              <div class="wrap-cta">Open Tutorial 9 →</div>
+            </button>
+            <button class="wrap-card" data-go="lab">
+              <div class="wrap-tag">Lab</div>
+              <div class="wrap-title">Build circuits</div>
+              <div class="wrap-desc">Try algorithms once you are comfortable with how pulses become gates.</div>
+              <div class="wrap-cta">Open the Lab →</div>
             </button>
           </div>
         </div>
@@ -3122,6 +3347,405 @@
   </div><!-- /#view-labs -->
 
   <!-- ============================================================
+       GLOSSARY VIEW — same terms as Home / tutorial hovers
+       ============================================================ -->
+  <div id="view-glossary" class="view">
+    <section class="docs-intro">
+      <div>
+        <h1>Glossary</h1>
+        <p>Plain-language definitions matching the hover hints on the Home page and in Tutorials 1–10. Entries are alphabetical under letter headings; citation-style links open the corresponding card on the <b>References</b> tab.</p>
+      </div>
+    </section>
+    <section class="docs-glossary" id="docs-glossary" aria-label="Glossary entries">
+
+      <div class="glossary-alpha">
+        <h2 class="glossary-letter" id="glossary-A">A</h2>
+        <div class="glossary-list">
+          <div class="glossary-item" id="gloss-amplitude-amplification">
+            <div class="glossary-term">Amplitude amplification</div>
+            <p class="glossary-def">Iteratively boosting probability on a target outcome — the core of Grover search. Each oracle-plus-diffusion step rotates the state toward the marked subspace. <a href="#ref-grover1996" class="tpl-cite" data-doc-ref="ref-grover1996">Grover (1996)</a></p>
+          </div>
+          <div class="glossary-item" id="gloss-amplitude-damping">
+            <div class="glossary-term">Amplitude damping</div>
+            <p class="glossary-def">Energy-relaxation noise: |1⟩ leaks toward |0⟩ over time — the main toy model behind <em>T</em><sub>1</sub> on hardware. See <a href="#ref-nc2000" class="tpl-cite" data-doc-ref="ref-nc2000">Nielsen &amp; Chuang</a> (noise).</p>
+          </div>
+          <div class="glossary-item" id="gloss-ancilla">
+            <div class="glossary-term">Ancilla qubit</div>
+            <p class="glossary-def">Extra workspace qubit in a circuit — not the main answer register, but needed for tricks like phase kickback in Deutsch–Jozsa.</p>
+          </div>
+          <div class="glossary-item" id="gloss-ansatz">
+            <div class="glossary-term">Ansatz</div>
+            <p class="glossary-def">A parameterized circuit family (tunable rotation angles) that defines which quantum states an optimizer can reach. A poor ansatz caps performance no matter how good the classical loop is.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="glossary-alpha">
+        <h2 class="glossary-letter" id="glossary-B">B</h2>
+        <div class="glossary-list">
+          <div class="glossary-item" id="gloss-barren-plateau">
+            <div class="glossary-term">Barren plateau</div>
+            <p class="glossary-def">When gradients of a variational cost vanish exponentially in qubit count — optimizers lose steering signal. <a href="#ref-barren2018" class="tpl-cite" data-doc-ref="ref-barren2018">McClean et al. (2018)</a></p>
+          </div>
+          <div class="glossary-item" id="gloss-black-box">
+            <div class="glossary-term">Black-box function (oracle)</div>
+            <p class="glossary-def">A function you may call on inputs but cannot inspect internally — query complexity counts how many such calls an algorithm needs.</p>
+          </div>
+          <div class="glossary-item" id="gloss-bloch-sphere">
+            <div class="glossary-term">Bloch sphere</div>
+            <p class="glossary-def">A picture of one qubit: each direction from the center to the surface is a possible state. The arrow shows the state you are viewing; north and south are |0⟩ and |1⟩.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="glossary-alpha">
+        <h2 class="glossary-letter" id="glossary-C">C</h2>
+        <div class="glossary-list">
+          <div class="glossary-item" id="gloss-chsh">
+            <div class="glossary-term">CHSH inequality (Clauser–Horne–Shimony–Holt)</div>
+            <p class="glossary-def">A concrete Bell-type test: local hidden-variable theories score at most 2; quantum entanglement can reach ~2.83. Original: <a href="#ref-chsh1969" class="tpl-cite" data-doc-ref="ref-chsh1969">CHSH (1969)</a>; context: <a href="#ref-bell1964" class="tpl-cite" data-doc-ref="ref-bell1964">Bell (1964)</a>.</p>
+          </div>
+          <div class="glossary-item" id="gloss-cnot">
+            <div class="glossary-term">CNOT (controlled-NOT) gate</div>
+            <p class="glossary-def">A two-qubit gate: “if the first qubit is 1, flip the second.” On ordinary bits it is conditional logic; with superposition it can create entanglement.</p>
+          </div>
+          <div class="glossary-item" id="gloss-coherences">
+            <div class="glossary-term">Coherences (in a density matrix)</div>
+            <p class="glossary-def">Off-diagonal entries of ρ — they carry phase between |0⟩ and |1⟩ and control interference. When they vanish, superposition fades even if Z odds stay fixed.</p>
+          </div>
+          <div class="glossary-item" id="gloss-code-distance">
+            <div class="glossary-term">Code distance (<em>d</em>)</div>
+            <p class="glossary-def">Rough count of independent physical errors a code can correct. Larger <em>d</em> → more protection and usually more qubits. <a href="#ref-fowler2012" class="tpl-cite" data-doc-ref="ref-fowler2012">Fowler et al.</a></p>
+          </div>
+          <div class="glossary-item" id="gloss-complex-numbers">
+            <div class="glossary-term">Complex numbers and probability amplitudes</div>
+            <p class="glossary-def">Amplitudes use two coordinates (magnitude and phase), enabling interference beyond classical probability alone.</p>
+          </div>
+          <div class="glossary-item" id="gloss-cptp">
+            <div class="glossary-term">CPTP map</div>
+            <p class="glossary-def">Completely positive, trace-preserving — the mathematical guarantee that a noise process maps valid states to valid states with total probability 1. <a href="#ref-nc2000" class="tpl-cite" data-doc-ref="ref-nc2000">Nielsen &amp; Chuang</a>; <a href="#ref-kraus1983" class="tpl-cite" data-doc-ref="ref-kraus1983">Kraus</a></p>
+          </div>
+        </div>
+      </div>
+
+      <div class="glossary-alpha">
+        <h2 class="glossary-letter" id="glossary-D">D</h2>
+        <div class="glossary-list">
+          <div class="glossary-item" id="gloss-decoder">
+            <div class="glossary-term">Decoder (quantum error correction)</div>
+            <p class="glossary-def">Turns a syndrome pattern into a recovery guess — which error likely occurred — without reading the logical qubit directly.</p>
+          </div>
+          <div class="glossary-item" id="gloss-density-matrix">
+            <div class="glossary-term">Density matrix (ρ)</div>
+            <p class="glossary-def">Full quantum state description, pure or mixed; diagonals are populations, off-diagonals are coherences. <a href="#ref-nc2000" class="tpl-cite" data-doc-ref="ref-nc2000">Nielsen &amp; Chuang</a></p>
+          </div>
+          <div class="glossary-item" id="gloss-dephasing">
+            <div class="glossary-term">Dephasing and <em>T</em><sub>2</sub></div>
+            <p class="glossary-def">Phase-scrambling noise; often shrinks coherences while Z populations stay put. <em>T</em><sub>2</sub> is the coherence timescale.</p>
+          </div>
+          <div class="glossary-item" id="gloss-depolarizing">
+            <div class="glossary-term">Depolarizing noise</div>
+            <p class="glossary-def">Random Pauli (X/Y/Z) errors after gates with some probability — a simple symmetric error model. <a href="#ref-nc2000" class="tpl-cite" data-doc-ref="ref-nc2000">Nielsen &amp; Chuang</a></p>
+          </div>
+          <div class="glossary-item" id="gloss-deutsch-jozsa">
+            <div class="glossary-term">Deutsch–Jozsa algorithm</div>
+            <p class="glossary-def">Decides constant vs balanced black-box functions in one quantum query vs exponentially many classical queries in the worst case. <a href="#ref-dj1992" class="tpl-cite" data-doc-ref="ref-dj1992">Deutsch &amp; Jozsa (1992)</a>; 1-bit precursor: <a href="#ref-deutsch1985" class="tpl-cite" data-doc-ref="ref-deutsch1985">Deutsch (1985)</a></p>
+          </div>
+          <div class="glossary-item" id="gloss-diffusion-grover">
+            <div class="glossary-term">Diffusion operator (Grover)</div>
+            <p class="glossary-def">Reflects amplitudes about the average — the second half of a Grover iteration, pairing with the oracle to rotate toward the marked item.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="glossary-alpha">
+        <h2 class="glossary-letter" id="glossary-E">E</h2>
+        <div class="glossary-list">
+          <div class="glossary-item" id="gloss-entanglement">
+            <div class="glossary-term">Entanglement</div>
+            <p class="glossary-def">Correlations too strong for independent classical randomness; joint states are not product states.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="glossary-alpha">
+        <h2 class="glossary-letter" id="glossary-F">F</h2>
+        <div class="glossary-list">
+          <div class="glossary-item" id="gloss-threshold">
+            <div class="glossary-term">Fault-tolerance threshold</div>
+            <p class="glossary-def">Crossover physical error rate: below it, larger codes improve logical qubits; above it, scaling hurts. <a href="#ref-kitaev2003" class="tpl-cite" data-doc-ref="ref-kitaev2003">Kitaev</a></p>
+          </div>
+        </div>
+      </div>
+
+      <div class="glossary-alpha">
+        <h2 class="glossary-letter" id="glossary-G">G</h2>
+        <div class="glossary-list">
+          <div class="glossary-item" id="gloss-grover">
+            <div class="glossary-term">Grover's algorithm</div>
+            <p class="glossary-def">Quantum search in an unstructured list: O(√N) oracle queries vs O(N) classically — quadratic, not exponential, speedup. <a href="#ref-grover1996" class="tpl-cite" data-doc-ref="ref-grover1996">Grover (1996)</a></p>
+          </div>
+        </div>
+      </div>
+
+      <div class="glossary-alpha">
+        <h2 class="glossary-letter" id="glossary-H">H</h2>
+        <div class="glossary-list">
+          <div class="glossary-item" id="gloss-hadamard">
+            <div class="glossary-term">Hadamard (<code>H</code>) gate</div>
+            <p class="glossary-def">Maps |0⟩ to an equal superposition — the standard way to start most quantum algorithms.</p>
+          </div>
+          <div class="glossary-item" id="gloss-hamiltonian">
+            <div class="glossary-term">Hamiltonian</div>
+            <p class="glossary-def">The energy operator of a system; ground-state energy minimization (as in chemistry) is a central VQE goal.</p>
+          </div>
+          <div class="glossary-item" id="gloss-hahn-echo">
+            <div class="glossary-term">Hahn echo</div>
+            <p class="glossary-def">A π pulse midway through a wait refocuses slow phase drift, often recovering longer coherence than Ramsey alone. <a href="#ref-hahn1950" class="tpl-cite" data-doc-ref="ref-hahn1950">Hahn (1950)</a></p>
+          </div>
+          <div class="glossary-item" id="gloss-hilbert-space">
+            <div class="glossary-term">Hilbert space</div>
+            <p class="glossary-def">Full state space of a quantum system; each qubit doubles the dimension.</p>
+          </div>
+          <div class="glossary-item" id="gloss-hybrid">
+            <div class="glossary-term">Hybrid quantum–classical algorithm</div>
+            <p class="glossary-def">Alternates quantum circuits (prepare / measure) with classical optimization — the standard NISQ pattern, e.g. VQE.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="glossary-alpha">
+        <h2 class="glossary-letter" id="glossary-I">I</h2>
+        <div class="glossary-list">
+          <div class="glossary-item" id="gloss-interference">
+            <div class="glossary-term">Interference (quantum)</div>
+            <p class="glossary-def">Amplitudes add like waves — reinforcing toward one outcome or canceling another — the engine behind D-J, Grover, and many algorithms.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="glossary-alpha">
+        <h2 class="glossary-letter" id="glossary-K">K</h2>
+        <div class="glossary-list">
+          <div class="glossary-item" id="gloss-ket">
+            <div class="glossary-term">Ket notation (e.g. |0⟩)</div>
+            <p class="glossary-def">Bracket notation for quantum state vectors — |0⟩, |1⟩, |+⟩, etc.</p>
+          </div>
+          <div class="glossary-item" id="gloss-kraus">
+            <div class="glossary-term">Kraus operators</div>
+            <p class="glossary-def">Matrices Kₖ such that ρ′ = Σ Kₖ ρ Kₖ† describes a CPTP noise channel. <a href="#ref-kraus1983" class="tpl-cite" data-doc-ref="ref-kraus1983">Kraus (1983)</a></p>
+          </div>
+        </div>
+      </div>
+
+      <div class="glossary-alpha">
+        <h2 class="glossary-letter" id="glossary-L">L</h2>
+        <div class="glossary-list">
+          <div class="glossary-item" id="gloss-lindblad">
+            <div class="glossary-term">Lindblad master equation</div>
+            <p class="glossary-def">Continuous-time differential equation for ρ under Markovian noise — linked to common <em>T</em><sub>1</sub>/<em>T</em><sub>2</sub> models. <a href="#ref-lindblad1976" class="tpl-cite" data-doc-ref="ref-lindblad1976">Lindblad (1976)</a></p>
+          </div>
+          <div class="glossary-item" id="gloss-lhv">
+            <div class="glossary-term">Local hidden variables</div>
+            <p class="glossary-def">Classical pre-agreed instructions meant to fake quantum randomness — ruled out by Bell/CHSH violations. <a href="#ref-bell1964" class="tpl-cite" data-doc-ref="ref-bell1964">Bell (1964)</a></p>
+          </div>
+          <div class="glossary-item" id="gloss-logical-qubit">
+            <div class="glossary-term">Logical qubit</div>
+            <p class="glossary-def">Error-corrected qubit spread across many physical qubits — what an algorithm “sees” after QEC.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="glossary-alpha">
+        <h2 class="glossary-letter" id="glossary-M">M</h2>
+        <div class="glossary-list">
+          <div class="glossary-item" id="gloss-marked-state">
+            <div class="glossary-term">Marked state</div>
+            <p class="glossary-def">The single basis state (the “needle”) that the search oracle tags — usually by a phase flip (−1) — before diffusion rotates amplitude onto it. <a href="#ref-grover1996" class="tpl-cite" data-doc-ref="ref-grover1996">Grover (1996)</a></p>
+          </div>
+          <div class="glossary-item" id="gloss-maximally-mixed">
+            <div class="glossary-term">Maximally mixed state</div>
+            <p class="glossary-def">50/50 Z odds with zero coherence — total single-qubit ignorance.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="glossary-alpha">
+        <h2 class="glossary-letter" id="glossary-N">N</h2>
+        <div class="glossary-list">
+          <div class="glossary-item" id="gloss-nisq">
+            <div class="glossary-term">NISQ</div>
+            <p class="glossary-def">Noisy Intermediate-Scale Quantum — near-term devices with limited qubit counts and significant gate error; hybrid algorithms target this era. <a href="#ref-preskill2018" class="tpl-cite" data-doc-ref="ref-preskill2018">Preskill (2018)</a></p>
+          </div>
+          <div class="glossary-item" id="gloss-no-cloning">
+            <div class="glossary-term">No-cloning theorem</div>
+            <p class="glossary-def">Unknown quantum states cannot be copied perfectly — forcing QEC to use entanglement, not classical duplication. <a href="#ref-noclone1982" class="tpl-cite" data-doc-ref="ref-noclone1982">Wootters &amp; Zurek (1982)</a></p>
+          </div>
+        </div>
+      </div>
+
+      <div class="glossary-alpha">
+        <h2 class="glossary-letter" id="glossary-O">O</h2>
+        <div class="glossary-list">
+          <div class="glossary-item" id="gloss-open-system">
+            <div class="glossary-term">Open quantum system</div>
+            <p class="glossary-def">A qubit coupled to an environment — information leaks out, so ρ and channels, not just unitary evolution on a pure state, are required.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="glossary-alpha">
+        <h2 class="glossary-letter" id="glossary-P">P</h2>
+        <div class="glossary-list">
+          <div class="glossary-item" id="gloss-phase">
+            <div class="glossary-term">Phase</div>
+            <p class="glossary-def">Relative alignment of |0⟩ and |1⟩ amplitudes — controls interference; invisible in a simple Z readout alone.</p>
+          </div>
+          <div class="glossary-item" id="gloss-phase-estimation">
+            <div class="glossary-term">Phase estimation</div>
+            <p class="glossary-def">Extracts hidden eigenphases from unitaries — core subroutine inside Shor's algorithm and many others.</p>
+          </div>
+          <div class="glossary-item" id="gloss-phase-kickback">
+            <div class="glossary-term">Phase kickback</div>
+            <p class="glossary-def">Oracle action on an ancilla in |−⟩ becomes a phase on the control register — key to D-J and beyond. <a href="#ref-dj1992" class="tpl-cite" data-doc-ref="ref-dj1992">Deutsch &amp; Jozsa (1992)</a></p>
+          </div>
+          <div class="glossary-item" id="gloss-pi-pulse">
+            <div class="glossary-term">π-pulse</div>
+            <p class="glossary-def">Microwave pulse area calibrated for a 180° Bloch rotation — physical implementation of an X-like gate on many platforms.</p>
+          </div>
+          <div class="glossary-item" id="gloss-populations">
+            <div class="glossary-term">Populations (in a density matrix)</div>
+            <p class="glossary-def">Diagonal entries of ρ — Z-basis outcome probabilities.</p>
+          </div>
+          <div class="glossary-item" id="gloss-product-state">
+            <div class="glossary-term">Product state</div>
+            <p class="glossary-def">Independent qubits: joint state factors as A ⊗ B.</p>
+          </div>
+          <div class="glossary-item" id="gloss-purity">
+            <div class="glossary-term">Purity (Tr(ρ²))</div>
+            <p class="glossary-def">1 for pure states, lower for mixed; ½ is maximally mixed for one qubit. <a href="#ref-nc2000" class="tpl-cite" data-doc-ref="ref-nc2000">Nielsen &amp; Chuang</a></p>
+          </div>
+        </div>
+      </div>
+
+      <div class="glossary-alpha">
+        <h2 class="glossary-letter" id="glossary-Q">Q</h2>
+        <div class="glossary-list">
+          <div class="glossary-item" id="gloss-quantum-channel">
+            <div class="glossary-term">Quantum channel</div>
+            <p class="glossary-def">A CPTP map describing noise: input ρ → output ρ′, possibly mixed. Channels compose gate-by-gate in a circuit.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="glossary-alpha">
+        <h2 class="glossary-letter" id="glossary-R">R</h2>
+        <div class="glossary-list">
+          <div class="glossary-item" id="gloss-rabi">
+            <div class="glossary-term">Rabi oscillation</div>
+            <p class="glossary-def">|0⟩ ↔ |1⟩ oscillation as pulse duration increases under a drive — used to calibrate π-pulse length.</p>
+          </div>
+          <div class="glossary-item" id="gloss-randomized-benchmarking">
+            <div class="glossary-term">Randomized benchmarking</div>
+            <p class="glossary-def">Random gate sequences of varying depth to estimate an average gate error rate. <a href="#ref-rb2011" class="tpl-cite" data-doc-ref="ref-rb2011">Magesan et al. (2011)</a></p>
+          </div>
+          <div class="glossary-item" id="gloss-ramsey">
+            <div class="glossary-term">Ramsey interference</div>
+            <p class="glossary-def">π/2–wait–π/2 sequence producing fringes vs wait time; measures detuning and short coherence (<em>T</em><sub>2</sub><sup>*</sup>). <a href="#ref-ramsey1950" class="tpl-cite" data-doc-ref="ref-ramsey1950">Ramsey (1950)</a></p>
+          </div>
+        </div>
+      </div>
+
+      <div class="glossary-alpha">
+        <h2 class="glossary-letter" id="glossary-S">S</h2>
+        <div class="glossary-list">
+          <div class="glossary-item" id="gloss-schrodinger-cat">
+            <div class="glossary-term">Schrödinger's cat state (|+⟩)</div>
+            <p class="glossary-def">Equal superposition of |0⟩ and |1⟩ before measurement — genuinely both, not secretly one.</p>
+          </div>
+          <div class="glossary-item" id="gloss-shots">
+            <div class="glossary-term">Shots (measurement repetitions)</div>
+            <p class="glossary-def">Independent circuit runs whose 0/1 outcomes are averaged — more shots reduce statistical noise in estimates.</p>
+          </div>
+          <div class="glossary-item" id="gloss-spectral-density">
+            <div class="glossary-term">Spectral density</div>
+            <p class="glossary-def">Noise power vs frequency — predicts whether relaxation or dephasing dominates and how echo vs Ramsey behaves. <a href="#ref-redfield1957" class="tpl-cite" data-doc-ref="ref-redfield1957">Redfield (1957)</a></p>
+          </div>
+          <div class="glossary-item" id="gloss-stabilizer">
+            <div class="glossary-term">Stabilizer (check operator)</div>
+            <p class="glossary-def">Multi-qubit parity measurement for QEC. <a href="#ref-kitaev2003" class="tpl-cite" data-doc-ref="ref-kitaev2003">Kitaev</a>, <a href="#ref-fowler2012" class="tpl-cite" data-doc-ref="ref-fowler2012">Fowler et al.</a></p>
+          </div>
+          <div class="glossary-item" id="gloss-superposition">
+            <div class="glossary-term">Superposition</div>
+            <p class="glossary-def">Coherent blend of basis states until measurement.</p>
+          </div>
+          <div class="glossary-item" id="gloss-syndrome">
+            <div class="glossary-term">Syndrome</div>
+            <p class="glossary-def">Pattern of failed stabilizer checks pointing to likely errors.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="glossary-alpha">
+        <h2 class="glossary-letter" id="glossary-T">T</h2>
+        <div class="glossary-list">
+          <div class="glossary-item" id="gloss-t1">
+            <div class="glossary-term"><em>T</em><sub>1</sub> relaxation</div>
+            <p class="glossary-def">Energy decay timescale — how long |1⟩ survives before leaking toward |0⟩.</p>
+          </div>
+          <div class="glossary-item" id="gloss-tensor-product">
+            <div class="glossary-term">Tensor product (ρ<sub>A</sub> ⊗ ρ<sub>B</sub>)</div>
+            <p class="glossary-def">Combines independent subsystems; entangled states are not tensor products of separate one-qubit states.</p>
+          </div>
+          <div class="glossary-item" id="gloss-tsirelson">
+            <div class="glossary-term">Tsirelson bound</div>
+            <p class="glossary-def">Quantum CHSH maximum 2√2. <a href="#ref-nc2000" class="tpl-cite" data-doc-ref="ref-nc2000">Nielsen &amp; Chuang</a></p>
+          </div>
+        </div>
+      </div>
+
+      <div class="glossary-alpha">
+        <h2 class="glossary-letter" id="glossary-U">U</h2>
+        <div class="glossary-list">
+          <div class="glossary-item" id="gloss-unital">
+            <div class="glossary-term">Unital channel</div>
+            <p class="glossary-def">Noise that leaves the maximally mixed state fixed — pure “blurring” without a preferred energy direction.</p>
+          </div>
+          <div class="glossary-item" id="gloss-unstructured-search">
+            <div class="glossary-term">Unstructured search</div>
+            <p class="glossary-def">Finding one marked item in a list with no extra structure (no sorted order or hash lookup): classically Θ(N) queries in the worst case; Grover achieves O(√N) oracle calls. <a href="#ref-grover1996" class="tpl-cite" data-doc-ref="ref-grover1996">Grover (1996)</a></p>
+          </div>
+          <div class="glossary-item" id="gloss-unitary">
+            <div class="glossary-term">Unitary transformation</div>
+            <p class="glossary-def">Reversible gate on quantum states; preserves total probability.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="glossary-alpha">
+        <h2 class="glossary-letter" id="glossary-V">V</h2>
+        <div class="glossary-list">
+          <div class="glossary-item" id="gloss-vqe">
+            <div class="glossary-term">Variational Quantum Eigensolver (VQE)</div>
+            <p class="glossary-def">Hybrid minimization of energy over a parameterized circuit — key NISQ approach to chemistry and materials. <a href="#ref-vqe2014" class="tpl-cite" data-doc-ref="ref-vqe2014">Peruzzo et al. (2014)</a></p>
+          </div>
+        </div>
+      </div>
+
+      <div class="glossary-alpha">
+        <h2 class="glossary-letter" id="glossary-Z">Z</h2>
+        <div class="glossary-list">
+          <div class="glossary-item" id="gloss-z-x-basis">
+            <div class="glossary-term">Z-basis and X-basis</div>
+            <p class="glossary-def">Different measurement axes — Z is standard 0/1; X probes superposition structure (often via H before measure).</p>
+          </div>
+        </div>
+      </div>
+
+    </section>
+  </div><!-- /#view-glossary -->
+
+  <!-- ============================================================
        DOCS VIEW — timeline + curated references
        ============================================================ -->
   <div id="view-docs" class="view">
@@ -3291,6 +3915,15 @@
             <div class="docs-tags"><span class="docs-tag">bell inequality</span><span class="docs-tag">chsh</span><span class="docs-tag">entanglement</span></div>
           </div>
 
+          <div class="docs-entry" id="ref-chsh1969">
+            <div class="docs-meta">Clauser, Horne, Shimony &amp; Holt · 1969 ·
+              <button onclick="switchTab('learn');switchSubtab('t2')" style="background:none;border:none;color:var(--mint-dim);font-family:var(--mono);font-size:10px;cursor:pointer;padding:0;letter-spacing:0.06em">→ Tutorial 2 Step 4</button>
+            </div>
+            <a class="docs-title" href="https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.23.880" target="_blank" rel="noopener">Proposed Experiment to Test Local Hidden-Variable Theories</a>
+            <p class="docs-note">Introduces the four-setting inequality later called CHSH: any local hidden-variable model satisfies |⟨CHSH⟩| ≤ 2. The Tutorial 2 Step 4 interactive tester implements this witness; quantum mechanics can reach 2√2 (the Tsirelson bound).</p>
+            <div class="docs-tags"><span class="docs-tag">chsh</span><span class="docs-tag">bell test</span><span class="docs-tag">local hidden variables</span></div>
+          </div>
+
           <div class="docs-entry" id="ref-noclone1982">
             <div class="docs-meta">Wootters &amp; Zurek · 1982 ·
               <button onclick="switchTab('learn');switchSubtab('t4')" style="background:none;border:none;color:var(--mint-dim);font-family:var(--mono);font-size:10px;cursor:pointer;padding:0;letter-spacing:0.06em">→ Tutorial 4 Step 2</button>
@@ -3330,19 +3963,19 @@
 
           <div class="docs-entry" id="ref-gkp2001">
             <div class="docs-meta">Gottesman, Kitaev &amp; Preskill · 2001 ·
-              <button onclick="switchTab('learn');switchSubtab('t11')" style="background:none;border:none;color:var(--mint-dim);font-family:var(--mono);font-size:10px;cursor:pointer;padding:0;letter-spacing:0.06em">→ Tutorial 11</button>
+              <span style="color:var(--ink-faint);font-family:var(--mono);font-size:10px">Bosonic cat-code module archived in <code>&lt;template id="archived-tutorial-11-cat-codes"&gt;</code>; live Tutorial&nbsp;11 is chip bring-up.</span>
             </div>
             <a class="docs-title" href="https://arxiv.org/abs/quant-ph/0008040" target="_blank" rel="noopener">Encoding a qubit in an oscillator</a>
-            <p class="docs-note">Foundational GKP encoding of a qubit in a harmonic oscillator. Tutorial 11 cites it as the “upgrade path” from cat codes to grid states in phase space. Cat codes are a simpler two-component bosonic code family in the same spirit.</p>
+            <p class="docs-note">Foundational GKP encoding of a qubit in a harmonic oscillator. The archived bosonic-encoding tutorial on this site used it as the “upgrade path” from cat codes to grid states in phase space. Cat codes are a simpler two-component bosonic code family in the same spirit.</p>
             <div class="docs-tags"><span class="docs-tag">bosonic QEC</span><span class="docs-tag">GKP</span><span class="docs-tag">oscillator</span></div>
           </div>
 
           <div class="docs-entry" id="ref-nohgirvin2022">
             <div class="docs-meta">Noh &amp; Girvin · 2021 ·
-              <button onclick="switchTab('learn');switchSubtab('t11')" style="background:none;border:none;color:var(--mint-dim);font-family:var(--mono);font-size:10px;cursor:pointer;padding:0;letter-spacing:0.06em">→ Tutorial 11 Step 5</button>
+              <span style="color:var(--ink-faint);font-family:var(--mono);font-size:10px">Bosonic tutorial archived in <code>archived-tutorial-11-cat-codes</code>; live Tutorial&nbsp;11 is lab bring-up.</span>
             </div>
             <a class="docs-title" href="https://arxiv.org/abs/2110.11517" target="_blank" rel="noopener">Introduction to quantum error correction with bosonic qubits</a>
-            <p class="docs-note">Review of cat, binomial, and GKP encodings in oscillators. Tutorial 11’s parity / stabilizer discussion aligns with the measurement-based error detection picture developed here. The 1D toy model on this site is not a full CV simulation.</p>
+            <p class="docs-note">Review of cat, binomial, and GKP encodings in oscillators. The archived cat-code tutorial’s parity / stabilizer discussion aligns with the measurement-based error detection picture developed here. The 1D toy model on this site is not a full CV simulation.</p>
             <div class="docs-tags"><span class="docs-tag">bosonic</span><span class="docs-tag">cat code</span><span class="docs-tag">QEC</span></div>
           </div>
 
@@ -3477,7 +4110,7 @@
               <button onclick="switchTab('templates')" style="background:none;border:none;color:var(--mint-dim);font-family:var(--mono);font-size:10px;cursor:pointer;padding:0;letter-spacing:0.06em">→ Template library</button>
             </div>
             <a class="docs-title" href="https://doi.org/10.1103/PhysRevLett.106.180504" target="_blank" rel="noopener">Scalable and robust randomized benchmarking of quantum processes</a>
-            <p class="docs-note">Standard <em></em>randomized benchmarking</em> reference underlying identity/echo sensitivity diagnostics in noisy gate characterization.</p>
+            <p class="docs-note">Standard <em>randomized benchmarking</em> reference underlying identity/echo sensitivity diagnostics in noisy gate characterization.</p>
             <div class="docs-tags"><span class="docs-tag">benchmarking</span><span class="docs-tag">noise</span></div>
           </div>
 
@@ -3544,6 +4177,42 @@
             <div class="docs-tags"><span class="docs-tag">ramsey</span><span class="docs-tag">spectroscopy</span></div>
           </div>
 
+          <div class="docs-entry" id="ref-naghiloo2019">
+            <div class="docs-meta">Naghiloo · 2019 ·
+              <button onclick="switchTab('learn');switchSubtab('t11')" style="background:none;border:none;color:var(--mint-dim);font-family:var(--mono);font-size:10px;cursor:pointer;padding:0;letter-spacing:0.06em">→ Tutorial 11</button>
+            </div>
+            <a class="docs-title" href="https://arxiv.org/abs/1904.09295" target="_blank" rel="noopener">Introduction to Experimental Quantum Measurement with Superconducting Qubits</a>
+            <p class="docs-note">PhD thesis: IQ demodulation, spectroscopy, Rabi calibration, and measurement statistics for transmon-style experiments — primary bring-up narrative for Tutorial 11.</p>
+            <div class="docs-tags"><span class="docs-tag">readout</span><span class="docs-tag">spectroscopy</span><span class="docs-tag">Rabi</span></div>
+          </div>
+
+          <div class="docs-entry" id="ref-krantz2019">
+            <div class="docs-meta">Krantz et al. · 2019 ·
+              <button onclick="switchTab('learn');switchSubtab('t11')" style="background:none;border:none;color:var(--mint-dim);font-family:var(--mono);font-size:10px;cursor:pointer;padding:0;letter-spacing:0.06em">→ Tutorial 11</button>
+            </div>
+            <a class="docs-title" href="https://doi.org/10.1063/1.5089550" target="_blank" rel="noopener">A quantum engineer’s guide to superconducting qubits</a>
+            <p class="docs-note">Review covering resonator modes, dispersive readout, punchout-style power sweeps, and operating-point intuition.</p>
+            <div class="docs-tags"><span class="docs-tag">transmon</span><span class="docs-tag">readout</span><span class="docs-tag">review</span></div>
+          </div>
+
+          <div class="docs-entry" id="ref-arute2019">
+            <div class="docs-meta">Arute et al. · 2019 ·
+              <button onclick="switchTab('learn');switchSubtab('t11')" style="background:none;border:none;color:var(--mint-dim);font-family:var(--mono);font-size:10px;cursor:pointer;padding:0;letter-spacing:0.06em">→ Tutorial 11</button>
+            </div>
+            <a class="docs-title" href="https://doi.org/10.1038/s41586-019-1666-5" target="_blank" rel="noopener">Quantum supremacy using a programmable superconducting processor</a>
+            <p class="docs-note">Sycamore processor paper: multi-qubit control and readout at scale; chevron / calibration figures connect Tutorial 10 physics to experimental 2D sweeps.</p>
+            <div class="docs-tags"><span class="docs-tag">experiment</span><span class="docs-tag">Rabi</span><span class="docs-tag">readout</span></div>
+          </div>
+
+          <div class="docs-entry" id="ref-kjaergaard2020">
+            <div class="docs-meta">Kjaergaard et al. · 2020 ·
+              <button onclick="switchTab('learn');switchSubtab('t11')" style="background:none;border:none;color:var(--mint-dim);font-family:var(--mono);font-size:10px;cursor:pointer;padding:0;letter-spacing:0.06em">→ Tutorial 11</button>
+            </div>
+            <a class="docs-title" href="https://doi.org/10.1146/annurev-conmatphys-031119-050605" target="_blank" rel="noopener">Superconducting Qubits: Current State of Play</a>
+            <p class="docs-note">Annual Reviews survey of SC qubit modalities, control stacks, and the path from device physics to gate-level abstraction.</p>
+            <div class="docs-tags"><span class="docs-tag">review</span><span class="docs-tag">hardware</span></div>
+          </div>
+
           <div class="docs-entry" id="ref-bylander2011">
             <div class="docs-meta">Bylander et al. · 2011 ·
               <button onclick="switchTab('learn');switchSubtab('t9')" style="background:none;border:none;color:var(--mint-dim);font-family:var(--mono);font-size:10px;cursor:pointer;padding:0;letter-spacing:0.06em">→ Tutorial 9</button>
@@ -3587,7 +4256,10 @@
 <script src="js/tutorials/tutorial-8-quantum-channels.js"></script>
 <script src="js/tutorials/tutorial-9-hardware-noise.js"></script>
 <script src="js/tutorials/tutorial-10-pulses-not-gates.js"></script>
-<script src="js/tutorials/tutorial-11-cat-codes.js"></script>
+<!-- Archived bosonic cat-code tutorial: uncomment to load alongside moving markup out of <template id="archived-tutorial-11-cat-codes">.
+<script src="js/tutorials/archived-tutorial-11-cat-codes.js"></script>
+-->
+<script src="js/tutorials/tutorial-11-chip-bringup.js"></script>
 <script src="js/tutorials/bootstrap.js"></script>
 <script type="module" src="js/auth/session-guard.js"></script>
 <script>

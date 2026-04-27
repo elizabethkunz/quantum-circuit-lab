@@ -1443,4 +1443,46 @@
     .subtabs { grid-template-columns: 1fr 1fr; }
   }
 
+  /* ── Tutorial inline glossary tips ──────────────────────────────────────── */
+  .tut-tip {
+    position: relative;
+    display: inline;
+    border-bottom: 1px dotted var(--tutorial-accent, var(--mint-dim));
+    cursor: help;
+    outline: none;
+  }
+  .tut-tip:focus-visible {
+    box-shadow: 0 0 0 2px var(--tutorial-accent, var(--cyan));
+    border-radius: 2px;
+  }
+  .tut-tip-bubble {
+    display: none;
+    position: absolute;
+    left: 50%;
+    bottom: calc(100% + 8px);
+    transform: translateX(-50%);
+    width: min(300px, 80vw);
+    padding: 0.6rem 0.78rem;
+    background: var(--bg-0);
+    border: 1px solid var(--line-bright);
+    border-left: 2px solid var(--tutorial-accent, var(--mint));
+    border-radius: 4px;
+    font-family: system-ui, -apple-system, Segoe UI, sans-serif;
+    font-size: 0.8rem;
+    line-height: 1.52;
+    color: var(--ink-dim);
+    box-shadow: 0 8px 28px rgba(0,0,0,0.3);
+    z-index: 50;
+    pointer-events: none;
+    white-space: normal;
+    font-style: normal;
+    font-weight: normal;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+  .tut-tip:hover .tut-tip-bubble,
+  .tut-tip:focus .tut-tip-bubble {
+    display: block;
+  }
+
   /* DOCS VIEW */

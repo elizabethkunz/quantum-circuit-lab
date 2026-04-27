@@ -164,6 +164,113 @@
     color: var(--mint); opacity: 0.85; margin-bottom: 1.25rem;
   }
 
+  /* ── Beginner glossary hovers + tutorial resume (hero) ── */
+  .home-beginner-tip {
+    position: relative;
+    display: inline-block;
+    border-bottom: 1px dotted var(--mint-dim);
+    cursor: help;
+    outline: none;
+  }
+  .home-beginner-tip:focus-visible {
+    box-shadow: 0 0 0 2px var(--cyan);
+    border-radius: 2px;
+  }
+  .home-beginner-tip-target {
+    font-family: var(--serif);
+  }
+  .home-beginner-tip-bubble {
+    position: absolute;
+    left: 50%;
+    bottom: calc(100% + 8px);
+    transform: translateX(-50%);
+    width: min(288px, 78vw);
+    padding: 0.55rem 0.72rem;
+    background: var(--bg-0);
+    border: 1px solid var(--line-bright);
+    border-left: 2px solid var(--mint);
+    border-radius: 4px;
+    font-family: system-ui, -apple-system, Segoe UI, sans-serif;
+    font-size: 0.78rem;
+    line-height: 1.52;
+    color: var(--ink-dim);
+    box-shadow: 0 8px 28px rgba(0,0,0,0.32);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.18s ease;
+    z-index: 40;
+  }
+  .home-beginner-tip:hover .home-beginner-tip-bubble,
+  .home-beginner-tip:focus .home-beginner-tip-bubble {
+    opacity: 1;
+  }
+  .home-beginner-bloch-hint {
+    font-size: 0.78rem;
+    line-height: 1.55;
+    color: var(--ink-faint);
+    margin: 0 0 0.65rem;
+    max-width: 300px;
+    text-align: center;
+    align-self: center;
+  }
+  .home-tutorial-resume-wrap {
+    margin-bottom: 1.35rem;
+    max-width: 720px;
+  }
+  .home-tutorial-resume {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.45rem;
+    padding: 1rem 1.15rem 1.05rem;
+    background: var(--bg-0);
+    border: 1px solid var(--line-bright);
+    border-left: 3px solid var(--cyan);
+    border-radius: 5px;
+    font-family: var(--mono);
+    font-size: 15px;
+    line-height: 1.45;
+    letter-spacing: 0.02em;
+    color: var(--ink);
+  }
+  .home-tutorial-resume-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.65rem 1rem;
+  }
+  .home-tutorial-resume-sub {
+    font-family: var(--serif);
+    font-size: 0.92rem;
+    line-height: 1.45;
+    color: var(--ink-dim);
+    font-style: italic;
+    max-width: 42rem;
+  }
+  .home-tutorial-resume-continue {
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.52rem 1rem;
+    border-radius: 4px;
+    border: 1px solid var(--mint-dim);
+    background: transparent;
+    color: var(--mint);
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+  }
+  .home-tutorial-resume-continue:hover,
+  .home-tutorial-resume-continue:focus-visible {
+    background: var(--bg-2);
+    border-color: var(--mint);
+    color: var(--phos);
+    outline: none;
+  }
+  .home-chapter-visual .home-panel {
+    overflow: visible;
+  }
+
   /* ── scroll-reveal (per-block; triggers as each block enters view) ── */
   .home-reveal {
     opacity: 0; transform: translateY(20px);
@@ -966,8 +1073,11 @@
     </div>
     <div class="home-hero-inner">
       <div class="home-eyebrow home-reveal">Quantum Circuit Lab</div>
+      <div class="home-tutorial-resume-wrap home-reveal" id="home-tutorial-resume-wrap" hidden>
+        <div class="home-tutorial-resume" id="home-tutorial-resume" aria-live="polite"></div>
+      </div>
       <h1 class="home-reveal">Quantum systems can compute in <em>fundamentally different</em><br/> ways.</h1>
-      <p class="home-reveal">THe science behind quantum computing can feel strange at first. This page gives a quick, visual path from everyday bits to superposition, measurement, and entanglement.</p>
+      <p class="home-reveal">THe science behind quantum computing can feel strange at first. This website is intended to introduce you to the concepts that power quantum computing from classical bits to superposition, measurement, and entanglement.</p>
       <div class="home-hero-actions home-reveal">
         <button type="button" class="btn primary" onclick="switchTab('learn');switchSubtab('t1');">Begin Tutorial 1 →</button>
         <button type="button" class="btn" onclick="switchTab('lab')">Open circuit lab</button>
@@ -1016,11 +1126,11 @@
       <span class="home-chapter-kicker">Interlude · Between off and on</span>
       <h2>A lamp is only dark or bright — a qubit can <em>shade</em> the gap.</h2>
       <p>A classical bit is like a wall switch: fully off or fully on.</p>
-      <p>A qubit can sit <strong>between</strong> \\(|0\\rangle\\) and \\(|1\\rangle\\). That extra space is what quantum algorithms use before measurement forces a 0 or 1.<a id="fnref-home-1" class="expert-fn-ref" href="#fn-home-1"><sup>[E1]</sup></a></p>
+      <p>A qubit can sit <strong>between</strong> <span class="home-beginner-tip" tabindex="0" aria-describedby="home-tip-ket0"><span class="home-beginner-tip-target">|0⟩</span><span class="home-beginner-tip-bubble" id="home-tip-ket0" role="tooltip">This just means &ldquo;the qubit is in state 0&rdquo; &mdash; we write it this way to distinguish quantum states from classical bits.</span></span> and \\(|1\\rangle\\). That extra space is what quantum algorithms use before measurement forces a 0 or 1.<a id="fnref-home-1" class="expert-fn-ref" href="#fn-home-1"><sup>[E1]</sup></a></p>
       <p class="rules" style="margin-top:1rem"><strong>Try both.</strong> Flip the classical switch: only pitch black or full glow. Drag the quantum slider: the bulb ramps through a continuum of “how much \\(|1\\rangle\\)‑ness” the state is carrying — a toy picture of how superposition sits between the extremes.</p>
       <div style="margin-top:1.1rem;padding:0.75rem 1rem;background:var(--bg-2);border:1px solid var(--line);border-left:2px solid var(--amber);font-size:0.82rem;line-height:1.6;color:var(--ink-dim)">
         <span style="font-family:var(--mono);font-size:9px;letter-spacing:0.14em;text-transform:uppercase;color:var(--amber);display:block;margin-bottom:0.4rem">Note &mdash; this is not analog computing</span>
-        Classical analog computers also use continuous values (voltages, currents) to represent data. A qubit is fundamentally different: its intermediate amplitudes are quantum mechanical, governed by complex probability amplitudes, not classical signals. Crucially, <strong>measuring a qubit always yields a discrete result &mdash; 0 or 1</strong>. The &ldquo;brightness&rdquo; here is a metaphor for the probability amplitude, not a continuously stored value.
+        Classical analog computers also use continuous values (voltages, currents) to represent data. A qubit is fundamentally different: its intermediate amplitudes are quantum mechanical, governed by <span class="home-beginner-tip" tabindex="0" aria-describedby="home-tip-complex-note"><span class="home-beginner-tip-target">complex probability amplitudes</span><span class="home-beginner-tip-bubble" id="home-tip-complex-note" role="tooltip">These are built from complex numbers &mdash; ordinary numbers plus a second direction (often drawn as a clock hand). Each amplitude has a length (related to probability) and an angle (phase). That extra angle is what lets quantum states carry more than a simple &ldquo;percent 0 / percent 1&rdquo; and is what makes interference possible.</span></span>, not classical signals. Crucially, <strong>measuring a qubit always yields a discrete result &mdash; 0 or 1</strong>. The &ldquo;brightness&rdquo; here is a metaphor for the probability amplitude, not a continuously stored value.
       </div>
     </div>
     <div class="home-chapter-visual home-reveal">
@@ -1041,7 +1151,7 @@
           <div class="home-lamp-fixture" aria-hidden="true">
             <div class="home-lamp-bulb home-lamp-bulb-q" id="home-lamp-q-bulb"></div>
           </div>
-          <p class="home-lamp-hint">Brightness here stands in for how strongly the state points toward \\(|1\\rangle\\); phase is another knob the sphere will show next.</p>
+          <p class="home-lamp-hint">Brightness here stands in for how strongly the state points toward \\(|1\\rangle\\); <span class="home-beginner-tip" tabindex="0" aria-describedby="home-tip-phase-lamp"><span class="home-beginner-tip-target">phase</span><span class="home-beginner-tip-bubble" id="home-tip-phase-lamp" role="tooltip">Like the timing between two waves: it controls how the |0⟩ and |1⟩ parts line up &mdash; whether they reinforce or cancel when combined. Same brightness can hide different phases.</span></span> is another knob the sphere will show next.</p>
         </div>
       </div>
     </div>
@@ -1052,10 +1162,10 @@
     <div class="home-chapter-text home-reveal">
       <span class="home-chapter-kicker">02 · The quantum bit</span>
       <h2>A qubit lives on the surface of a <em>sphere.</em></h2>
-      <p>A qubit state can be drawn on the <strong>Bloch sphere</strong>: north is \\(|0\\rangle\\), south is \\(|1\\rangle\\), and points in between are superpositions.</p>
-      <p>States on the equator can all look 50/50 when measured, but differ in <strong>phase</strong> — and phase drives interference.</p>
+      <p>A qubit state can be drawn on the <strong><span class="home-beginner-tip" tabindex="0" aria-describedby="home-tip-bloch"><span class="home-beginner-tip-target">Bloch sphere</span><span class="home-beginner-tip-bubble" id="home-tip-bloch" role="tooltip">A geometric picture of one qubit: each direction from the center to the surface is a possible state. The arrow shows the state you are viewing now; north and south are |0⟩ and |1⟩.</span></span></strong>: north is \\(|0\\rangle\\), south is \\(|1\\rangle\\), and points in between are superpositions.</p>
+      <p>States on the equator can all look 50/50 when measured, but differ in <span class="home-beginner-tip" tabindex="0" aria-describedby="home-tip-phase-eq"><span class="home-beginner-tip-target">phase</span><span class="home-beginner-tip-bubble" id="home-tip-phase-eq" role="tooltip">Picture two ripples meeting in a pond: where peaks line up the splash grows; where a peak meets a trough they cancel. Phase is that kind of alignment between the |0⟩ and |1⟩ pieces of the state. Two states can both read as 50/50 when measured yet still interfere differently in a circuit.</span></span> &mdash; and that difference drives interference.</p>
       <div class="rules" style="margin-top:1.25rem">
-        Drag the sphere to rotate your view, or click a preset. Notice that |+⟩ and |−⟩ look equally mixed but are fundamentally different states.
+        Drag the sphere to rotate your view, or click a preset. Notice that |+⟩, the <span class="home-beginner-tip" tabindex="0" aria-describedby="home-tip-cat-state"><span class="home-beginner-tip-target">Schrödinger&rsquo;s cat state</span><span class="home-beginner-tip-bubble" id="home-tip-cat-state" role="tooltip">We call |+⟩ the Schrödinger&rsquo;s cat state because, like the famous thought experiment, the qubit really is in a blend of two classical outcomes (|0⟩ and |1⟩) until you measure &mdash; not secretly one or the other all along.</span></span>, and |−⟩ look equally mixed when measured, but are fundamentally different quantum states.
       </div>
       <a href="#" class="home-continue" onclick="switchTab('learn');switchSubtab('t1');return false;">
         <span class="home-continue-tag">Tutorial 1</span>
@@ -1066,6 +1176,7 @@
     <div class="home-chapter-visual home-reveal">
       <div class="home-panel">
         <div class="home-panel-label">Bloch sphere — drag to rotate view</div>
+        <p class="home-beginner-bloch-hint">New here? The sphere is just a map of one qubit&rsquo;s possible states; drag to inspect the arrow from different angles.</p>
         <canvas id="home-bloch-canvas" width="260" height="260" aria-label="Interactive Bloch sphere showing qubit state"></canvas>
         <div class="home-bloch-presets">
           <button class="home-preset active" data-theta="0" data-phi="0">|0⟩</button>
@@ -1095,7 +1206,7 @@
           \\[|\\psi\\rangle = \\alpha\\,|0\\rangle + \\beta\\,|1\\rangle\\]
         </p>
         <p style="font-size:0.95rem;color:var(--ink-dim);line-height:1.75;margin-bottom:1rem">
-          The coefficients \\(\\alpha\\) and \\(\\beta\\) are in general complex numbers. For real amplitudes they must satisfy \\(\\alpha^2 + \\beta^2 = 1\\) (the Born rule: probabilities sum to 1). Drag the slider to explore &mdash; the Bloch sphere and probability bars update in real time.
+          The coefficients \\(\\alpha\\) and \\(\\beta\\) are in general <span class="home-beginner-tip" tabindex="0" aria-describedby="home-tip-complex"><span class="home-beginner-tip-target">complex numbers</span><span class="home-beginner-tip-bubble" id="home-tip-complex" role="tooltip">Start from ordinary numbers on a line, then add a second perpendicular direction (the &ldquo;imaginary&rdquo; axis). Each amplitude is like a little arrow: how long it is ties to probability; which way it points is phase. Two coordinates per amplitude instead of one means the state can encode more detail than a simple classical probability &mdash; that is what powers interference in quantum algorithms.</span></span>. For real amplitudes they must satisfy \\(\\alpha^2 + \\beta^2 = 1\\) (the Born rule: probabilities sum to 1). Drag the slider to explore &mdash; the Bloch sphere and probability bars update in real time.
         </p>
         <div class="home-superpos-slider-wrap">
           <div class="home-superpos-eq" id="home-sp-eq">|&psi;&rang; = 1.00 |0&rang; + 0.00 |1&rang;</div>
@@ -1142,7 +1253,7 @@
         <canvas id="home-sp-bloch-canvas" width="240" height="240" aria-label="Bloch sphere showing qubit superposition state controlled by slider"></canvas>
         <div class="home-state-text" id="home-sp-bloch-state">\\(|\\psi\\rangle = |0\\rangle\\)</div>
         <p style="font-family:var(--mono);font-size:9px;letter-spacing:0.07em;color:var(--ink-faint);line-height:1.6;text-align:center;margin:0">
-          Real amplitudes only &mdash; the state moves along the Bloch sphere meridian. Complex amplitudes introduce a phase angle &phi; that moves the state around the equator; the full interactive sphere in section 02 shows this.
+          Real amplitudes only &mdash; the state moves along the Bloch sphere meridian. <span class="home-beginner-tip" tabindex="0" aria-describedby="home-tip-complex-meridian"><span class="home-beginner-tip-target">Complex amplitudes</span><span class="home-beginner-tip-bubble" id="home-tip-complex-meridian" role="tooltip">Allow a phase angle &phi;: the same 50/50 probabilities can sit at different spots on the Bloch equator. That extra angle is the &ldquo;second knob&rdquo; complex numbers provide, so the state carries more than classical odds alone.</span></span> introduce a phase angle &phi; that moves the state around the equator; the full interactive sphere in section 02 shows this.
         </p>
       </div>
     </div>
@@ -1193,8 +1304,8 @@
     <div class="home-chapter-text">
       <span class="home-chapter-kicker home-reveal">04 · Quantum gates</span>
       <h2 class="home-reveal">Gates are <em>rotations</em> of the sphere.</h2>
-      <p class="home-reveal">Classical NOT flips 0 to 1. Quantum gates are <strong>rotations</strong> on the Bloch sphere — every gate is a unitary transformation that preserves the state vector's length.</p>
-      <p class="home-reveal">The <strong>H gate</strong> takes the north pole (\\(|0\\rangle\\)) to the equator, producing an equal superposition. The equatorial states look 50/50 when measured but differ in <strong>phase</strong>, which determines how they interfere.</p>
+      <p class="home-reveal">Classical NOT flips 0 to 1. Quantum gates are <strong>rotations</strong> on the Bloch sphere. These are an example of what are called <span class="home-beginner-tip" tabindex="0" aria-describedby="home-tip-unitary"><span class="home-beginner-tip-target">unitary transformations</span><span class="home-beginner-tip-bubble" id="home-tip-unitary" role="tooltip">Reversible, length-preserving operations: the state arrow stays a valid quantum state (total probability 1). A gate alone does not leak information out of the qubit the way measurement does &mdash; measurement is not unitary.</span></span>.</p>
+      <p class="home-reveal">The <strong>H gate</strong> takes the north pole (\\(|0\\rangle\\)) to the equator, producing an equal superposition. The equatorial states look 50/50 when measured but differ in <span class="home-beginner-tip" tabindex="0" aria-describedby="home-tip-phase-h"><span class="home-beginner-tip-target">phase</span><span class="home-beginner-tip-bubble" id="home-tip-phase-h" role="tooltip">Like the timing between two waves: it controls how the |0⟩ and |1⟩ parts line up &mdash; whether they reinforce or cancel when combined. Same 50/50 readout can still mean different physics for later gates.</span></span>, which determines how they interfere.</p>
       <p class="home-reveal">Try sequences: apply <strong>Y then H</strong>, then reset and try <strong>H then Y</strong>. The final states differ — quantum gates do not commute in general.</p>
       <a href="#" class="home-continue home-reveal" onclick="switchTab('learn');switchSubtab('t1');return false;">
         <span class="home-continue-tag">Tutorial 1</span>
@@ -1380,7 +1491,7 @@
         <p>Nine guided modules from basics to algorithms, noise, and hardware behavior.</p>
         <div class="go">Go to Tutorials →</div>
       </button>
-      <button type="button" class="home-learn-card home-reveal" onclick="switchTab('lab')">
+      <button type="button" class="home-learn-card home-reveal" onclick="openExploreWithBellFromHome()">
         <div class="tag">03 · Explore</div>
         <h3>Build and run circuits</h3>
         <p>Build circuits, add noise, and compare probability, amplitude, and density views.</p>
@@ -2221,6 +2332,56 @@
     });
   }
 
+  function initHomeResumeBanner() {
+    var wrap = document.getElementById('home-tutorial-resume-wrap');
+    var el = document.getElementById('home-tutorial-resume');
+    if (!wrap || !el) return;
+    if (typeof shouldShowTutorialResumeBanner !== 'function' || typeof getTutorialResumeSummary !== 'function') {
+      wrap.hidden = true;
+      el.textContent = '';
+      return;
+    }
+    if (!shouldShowTutorialResumeBanner()) {
+      wrap.hidden = true;
+      el.textContent = '';
+      return;
+    }
+    var info = getTutorialResumeSummary();
+    if (!info) {
+      wrap.hidden = true;
+      el.textContent = '';
+      return;
+    }
+    el.textContent = '';
+    var row = document.createElement('div');
+    row.className = 'home-tutorial-resume-row';
+    var line = document.createElement('span');
+    line.textContent = "You're on Tutorial " + info.tutorialNum + ', Step ' + info.stepNum + ' \u2192 ';
+    row.appendChild(line);
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'home-tutorial-resume-continue';
+    btn.textContent = 'Continue \u2192';
+    btn.setAttribute('aria-label', 'Continue tutorials at Tutorial ' + info.tutorialNum + ', Step ' + info.stepNum + ': ' + info.stepTitle);
+    btn.addEventListener('click', function () {
+      switchTab('learn');
+      switchSubtab(info.subtab);
+      requestAnimationFrame(function () {
+        var card = document.querySelector('[data-step="' + info.stepId + '"]');
+        if (card) card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+    row.appendChild(btn);
+    el.appendChild(row);
+    if (info.stepTitle) {
+      var sub = document.createElement('div');
+      sub.className = 'home-tutorial-resume-sub';
+      sub.textContent = info.stepTitle;
+      el.appendChild(sub);
+    }
+    wrap.hidden = false;
+  }
+
   /* ─── Init ──────────────────────────────────────────────────────────────── */
   function initHomeLanding(opts) {
     var force = opts && opts.force;
@@ -2248,6 +2409,7 @@
       wireAppsCards();
       wireSchrodingerCat();
       initScrollReveal();
+      initHomeResumeBanner();
       if (typeof global.scheduleMathRender === 'function') global.scheduleMathRender(root);
     });
 
@@ -2268,6 +2430,7 @@
     remount: remountHomeLanding,
     getTemplate: function () { return HOME_LANDING_HTML; },
   };
+  global.refreshHomeTutorialResumeBanner = initHomeResumeBanner;
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', function () { initHomeLanding(); });

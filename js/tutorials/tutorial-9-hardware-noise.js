@@ -40,6 +40,11 @@ Step 5
   t9-echo-run              <button>
 
 Step 6
+  t9-measure-buttons       buttons with [data-measure]
+  t9-measure-svg           <svg>
+  t9-measure-detail        <div>
+
+Step 7
   t9-device-buttons        buttons with [data-device]
   t9-device-out            <div>
 */
@@ -574,8 +579,170 @@ Step 6
   });
 })();
 
-/* ---- T9 Step 6: device-level intuition ---- */
-(function initT9Step6() {
+/* ---- T9 Step 6: measurement methods (Ramsey, RB, tomography) ---- */
+(function initT9Step6Measure() {
+  const wrap = document.getElementById('t9-measure-buttons');
+  const svg = document.getElementById('t9-measure-svg');
+  const detail = document.getElementById('t9-measure-detail');
+  if (!wrap || !svg || !detail) return;
+
+  const ns = 'http://www.w3.org/2000/svg';
+  function mk(tag, attrs, text) {
+    const e = document.createElementNS(ns, tag);
+    Object.entries(attrs).forEach(([k, v]) => e.setAttribute(k, v));
+    if (text) e.textContent = text;
+    return e;
+  }
+
+  function axes(W, H, padL, padB, xLabel, yLabel) {
+    svg.innerHTML = '';
+    svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+    svg.appendChild(mk('line', { x1: padL, y1: H - padB, x2: W - 12, y2: H - padB, stroke: 'var(--line-bright)', 'stroke-width': 1.2 }));
+    svg.appendChild(mk('line', { x1: padL, y1: 14, x2: padL, y2: H - padB, stroke: 'var(--line-bright)', 'stroke-width': 1.2 }));
+    svg.appendChild(mk('text', { x: W - 10, y: H - 4, fill: 'var(--ink-faint)', 'font-size': 11, 'font-family': 'var(--mono)', 'text-anchor': 'end' }, xLabel));
+    svg.appendChild(mk('text', { x: 12, y: 20, fill: 'var(--ink-faint)', 'font-size': 11, 'font-family': 'var(--mono)' }, yLabel));
+    return mk;
+  }
+
+  function pathFromPoints(points) {
+    return points.map((p, i) => `${i ? 'L' : 'M'}${p[0]},${p[1]}`).join(' ');
+  }
+
+  function drawRamseyT1() {
+    const W = 380, H = 230, padL = 44, padB = 28;
+    const mk = axes(W, H, padL, padB, 'delay (arb.)', 'signal');
+    const pts = [];
+    const ptsT1 = [];
+    for (let i = 0; i <= 140; i++) {
+      const t = i / 140;
+      const x = padL + t * (W - padL - 16);
+      const ramsey = 0.5 * (1 + Math.cos(26 * t) * Math.exp(-4.2 * t));
+      const y = (H - padB) - ramsey * (H - padB - 22);
+      pts.push([x, y]);
+      const p1 = Math.exp(-5.5 * t);
+      const y1 = (H - padB) - p1 * (H - padB - 22);
+      ptsT1.push([x, y1]);
+    }
+    svg.appendChild(mk('path', { d: pathFromPoints(ptsT1), fill: 'none', stroke: 'var(--amber)', 'stroke-width': 2, 'stroke-dasharray': '6 4', opacity: 0.85 }));
+    svg.appendChild(mk('path', { d: pathFromPoints(pts), fill: 'none', stroke: 'var(--mint)', 'stroke-width': 2.4, 'stroke-linecap': 'round' }));
+    svg.appendChild(mk('text', { x: padL + 6, y: 36, fill: 'var(--mint)', 'font-size': 10, 'font-family': 'var(--mono)' }, 'Ramsey fringe + envelope → T2*'));
+    svg.appendChild(mk('text', { x: padL + 6, y: 50, fill: 'var(--amber)', 'font-size': 10, 'font-family': 'var(--mono)' }, 'P(|1⟩) after π — T1'));
+  }
+
+  function drawRB() {
+    const W = 380, H = 230, padL = 44, padB = 28;
+    const mk = axes(W, H, padL, padB, 'Clifford depth m', 'survival / fidelity');
+    const p = 0.988;
+    const pts = [];
+    const ptsFit = [];
+    for (let m = 1; m <= 24; m++) {
+      const t = (m - 1) / 23;
+      const x = padL + t * (W - padL - 16);
+      const F = 0.5 + 0.5 * Math.pow(p, m);
+      const noise = 0.012 * Math.sin(m * 1.7);
+      const y = (H - padB) - Math.max(0.35, Math.min(1, F + noise)) * (H - padB - 22);
+      pts.push([x, y]);
+    }
+    for (let i = 0; i <= 100; i++) {
+      const t = i / 100;
+      const m = 1 + t * 23;
+      const x = padL + t * (W - padL - 16);
+      const F = 0.5 + 0.5 * Math.pow(p, m);
+      const y = (H - padB) - F * (H - padB - 22);
+      ptsFit.push([x, y]);
+    }
+    svg.appendChild(mk('path', { d: pathFromPoints(ptsFit), fill: 'none', stroke: 'var(--amber)', 'stroke-width': 2, opacity: 0.9 }));
+    pts.forEach(([cx, cy]) => {
+      svg.appendChild(mk('circle', { cx, cy, r: 3.2, fill: 'var(--mint)' }));
+    });
+    svg.appendChild(mk('text', { x: 54, y: 38, fill: 'var(--ink-dim)', 'font-size': 10, 'font-family': 'var(--mono)' }, 'Fit decay → avg. gate error (not T2 directly)'));
+  }
+
+  function drawTomography() {
+    const W = 380, H = 230, padL = 36, padB = 24;
+    svg.innerHTML = '';
+    svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+    const cell = 42;
+    const x0 = 50, y0 = 38;
+    const labels = ['I', 'X', 'Y', 'Z'];
+    for (let r = 0; r < 4; r++) {
+      for (let c = 0; c < 4; c++) {
+        const x = x0 + c * (cell + 4);
+        const y = y0 + r * (cell + 4);
+        let op = 0.12;
+        if (r === 0 && c === 0) op = 0.92;
+        if (r === c && r > 0) op = 0.35 + 0.15 * Math.sin(r);
+        svg.appendChild(mk('rect', { x, y, width: cell, height: cell, rx: 4, fill: 'var(--mint)', opacity: Math.min(1, op + 0.15) }));
+        svg.appendChild(mk('rect', { x, y, width: cell, height: cell, rx: 4, fill: 'none', stroke: 'var(--line-bright)', 'stroke-width': 1 }));
+      }
+    }
+    labels.forEach((lb, i) => {
+      svg.appendChild(mk('text', { x: x0 + i * (cell + 4) + cell / 2, y: y0 - 8, fill: 'var(--ink-faint)', 'font-size': 10, 'font-family': 'var(--mono)', 'text-anchor': 'middle' }, lb));
+      svg.appendChild(mk('text', { x: x0 - 12, y: y0 + i * (cell + 4) + cell / 2 + 4, fill: 'var(--ink-faint)', 'font-size': 10, 'font-family': 'var(--mono)', 'text-anchor': 'end' }, lb));
+    });
+    svg.appendChild(mk('text', { x: x0, y: H - 10, fill: 'var(--ink-dim)', 'font-size': 10, 'font-family': 'var(--mono)' }, 'Process matrix (schematic) — parameters map to T1, Tφ channels'));
+  }
+
+  const copy = {
+    ramsey: `
+      <b>Ramsey interferometry and \(T_1\) recovery</b><br>
+      <span style="color:var(--ink-faint)">
+        Prepare \(|+\\rangle\) with a \(\pi/2\) pulse, wait a time \(\tau\), apply a second \(\pi/2\) with variable phase, and read out in \(Z\).
+        The fringe contrast decays with an envelope set by dephasing and \(T_1\); fitting that envelope yields <b>\(T_2^\*\)</b> (inhomogeneous + fast noise).
+        A <b>Hahn echo</b> in the middle refocuses static spread and the fitted decay gives <b>\(T_2^{\\mathrm{echo}}\)</b>, closer to the intrinsic limit from Steps 1–3.
+        Separately, excite \(|1\\rangle\) with a \(\pi\) pulse and measure survival vs delay: an exponential fit gives <b>\(T_1\)</b> directly (green trace in Step 1 is this story).
+      </span>
+    `,
+    rb: `
+      <b>Randomized benchmarking (RB)</b><br>
+      <span style="color:var(--ink-faint)">
+        RB applies random Clifford sequences of length \(m\) that ideally return the qubit to a known state; any error reduces the <b>survival probability</b>.
+        The curve is fit to an exponential in \(m\) to extract an <b>average error per Clifford gate</b> — a gold-standard gate-quality number for calibration reports.
+        RB does <em>not</em> print out \(T_1\) or \(T_2\) by itself: it summarizes many error mechanisms in one fidelity.
+        Experimentalists still run Ramsey/T\(_1\) because those timescales bound how long gates can be and must be <b>consistent</b> with RB (e.g. long gates hit the \(T_1\) wall).
+        <b>Interleaved RB</b> compares a targeted gate to the average and isolates a single gate’s error.
+      </span>
+    `,
+    tomography: `
+      <b>Quantum process tomography (QPT) and gate-set tomography (GST)</b><br>
+      <span style="color:var(--ink-faint)">
+        Tomography reconstructs the <b>complete noisy channel</b> \(\Lambda\) (or a gate set) from many input states and measurement settings.
+        From the fitted process you read off <b>amplitude damping</b> and <b>dephasing</b> rates — the same objects that define \(T_1\) and \(T_\phi\) in the Markovian picture of Steps 1–2.
+        GST in particular is designed to handle <b>SPAM errors</b> and leakage-aware models so the inferred \(T_1\)-like and dephasing-like pieces are less biased than naive QPT.
+        It is heavier than a single Ramsey curve but answers “<em>what channel is the device actually implementing?</em>” rather than only one scalar time constant.
+      </span>
+    `
+  };
+
+  const drawers = { ramsey: drawRamseyT1, rb: drawRB, tomography: drawTomography };
+
+  const seen = new Set();
+
+  function show(kind) {
+    drawers[kind]();
+    detail.innerHTML = copy[kind];
+  }
+
+  wrap.querySelectorAll('[data-measure]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      wrap.querySelectorAll('[data-measure]').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      show(btn.dataset.measure);
+      seen.add(btn.dataset.measure);
+      if (seen.size >= 2) markDone('t9-6');
+    });
+  });
+
+  const first = wrap.querySelector('[data-measure]');
+  if (first) {
+    first.classList.add('active');
+    show(first.dataset.measure);
+    seen.add(first.dataset.measure);
+  }
+})();
+
+/* ---- T9 Step 7: device-level intuition ---- */
+(function initT9Step7() {
   const wrap = document.getElementById('t9-device-buttons');
   const out = document.getElementById('t9-device-out');
   if (!wrap || !out) return;
@@ -627,7 +794,7 @@ Step 6
       btn.classList.add('active');
       out.innerHTML = cards[btn.dataset.device];
       seen.add(btn.dataset.device);
-      if (seen.size >= 2) markDone('t9-6');
+      if (seen.size >= 2) markDone('t9-7');
     });
   });
 
