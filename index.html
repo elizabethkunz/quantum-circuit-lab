@@ -3353,7 +3353,7 @@
     <section class="docs-intro">
       <div>
         <h1>Glossary</h1>
-        <p>Plain-language definitions matching the hover hints on the Home page and in Tutorials 1–10. Entries are alphabetical under letter headings; citation-style links open the corresponding card on the <b>References</b> tab.</p>
+        <p>Plain-language definitions matching the hover hints on the Home page and in Tutorials 1–10. Entries are alphabetical under letter headings; citation-style links open the corresponding card on the <b>References</b> tab. Superscript <b>[E<i>n</i>]</b> on selected entries points to expert footnotes at the bottom of this page.</p>
       </div>
     </section>
     <section class="docs-glossary" id="docs-glossary" aria-label="Glossary entries">
@@ -3365,17 +3365,20 @@
             <div class="glossary-term">Amplitude amplification</div>
             <p class="glossary-def">Iteratively boosting probability on a target outcome — the core of Grover search. Each oracle-plus-diffusion step rotates the state toward the marked subspace. <a href="#ref-grover1996" class="tpl-cite" data-doc-ref="ref-grover1996">Grover (1996)</a></p>
           </div>
-          <div class="glossary-item" id="gloss-amplitude-damping">
+          <div class="glossary-item glossary-item--fig" id="gloss-amplitude-damping">
+            <div class="glossary-item__text">
             <div class="glossary-term">Amplitude damping</div>
-            <p class="glossary-def">Energy-relaxation noise: |1⟩ leaks toward |0⟩ over time — the main toy model behind <em>T</em><sub>1</sub> on hardware. See <a href="#ref-nc2000" class="tpl-cite" data-doc-ref="ref-nc2000">Nielsen &amp; Chuang</a> (noise).</p>
+            <p class="glossary-def">Models energy relaxation: the qubit spontaneously emits a photon or phonon and falls from |1⟩ toward |0⟩ at rate 1/<em>T</em><sub>1</sub>. The Kraus operators are K₀ = [[1, 0], [0, √(1−γ)]] and K₁ = [[0, √γ], [0, 0]], where γ = 1 − e<sup>−t/T₁</sup> is the decay parameter. On the <a href="#gloss-bloch-sphere">Bloch</a> ball, the affine map pulls the state toward the north pole |0⟩: in the <em>xz</em> plane, r<sub>x</sub> ↦ √(1−γ) r<sub>x</sub> and r<sub>z</sub> ↦ γ + (1−γ) r<sub>z</sub> — so the Bloch vector shortens (mixedness) while drifting upward until, as <em>t</em> → ∞, it reaches pure |0⟩ again. Unlike pure <a href="#gloss-dephasing">dephasing</a>, <a href="#gloss-populations">populations</a> change and the channel is <em>non-unital</em>. <a href="#ref-nc2000" class="tpl-cite" data-doc-ref="ref-nc2000">Nielsen &amp; Chuang</a></p>
+            </div>
+            <figure class="glossary-fig" aria-hidden="true"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><title>|+⟩ under amplitude damping: Bloch length shrinks then recovers at |0⟩</title><circle cx="50" cy="50" r="38" fill="none" stroke="var(--line-bright)" stroke-width="1.2"/><ellipse cx="50" cy="50" rx="38" ry="14" fill="none" stroke="var(--line)" stroke-width="1" opacity="0.85"/><circle cx="50" cy="50" r="32.9" fill="none" stroke="var(--ink-faint)" stroke-width="0.9" stroke-dasharray="3 3" opacity="0.55"/><line x1="50" y1="12" x2="50" y2="88" stroke="var(--ink-faint)" stroke-width="1"/><circle cx="50" cy="12" r="3" fill="var(--ink-faint)"/><circle cx="50" cy="88" r="3" fill="var(--amber)" opacity="0.7"/><text x="50" y="9" text-anchor="middle" fill="var(--mint)" font-size="8" font-family="ui-monospace,monospace">|0⟩</text><text x="50" y="98" text-anchor="middle" fill="var(--amber)" font-size="8" font-family="ui-monospace,monospace">|1⟩</text><line x1="50" y1="50" x2="88" y2="50" stroke="var(--mint)" stroke-width="1.1" stroke-linecap="round" opacity="0.28"/><line x1="50" y1="50" x2="76.87" y2="31" stroke="var(--cyan)" stroke-width="1" stroke-linecap="round" opacity="0.35"/><line x1="50" y1="50" x2="50" y2="12" stroke="var(--mint)" stroke-width="1.1" stroke-linecap="round" opacity="0.28"/><polyline points="88,50 86.07,46.2 83.97,42.4 81.81,38.6 79.45,34.8 76.87,31 74.02,27.2 70.82,23.4 67.35,19.6 63.4,15.8 50,12" fill="none" stroke="var(--cyan)" stroke-width="1.5" stroke-dasharray="4 3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="88" cy="50" r="3.6" fill="var(--mint)"/><circle cx="76.87" cy="31" r="3.2" fill="var(--cyan)" opacity="0.95"/><text x="92" y="52" text-anchor="start" fill="var(--ink-faint)" font-size="6.5" font-family="ui-monospace,monospace">|+⟩</text><text x="50" y="72" text-anchor="middle" fill="var(--ink-faint)" font-size="7" font-family="ui-monospace,monospace">T₁: mixed → |0⟩</text></svg></figure>
           </div>
           <div class="glossary-item" id="gloss-ancilla">
             <div class="glossary-term">Ancilla qubit</div>
-            <p class="glossary-def">Extra workspace qubit in a circuit — not the main answer register, but needed for tricks like phase kickback in Deutsch–Jozsa.</p>
+            <p class="glossary-def">An ancilla is a helper qubit initialized to a known state (usually |0⟩ or |−⟩) that absorbs side-effects of a computation so the main register stays clean. In <a href="#gloss-phase-kickback">phase kickback</a>, the ancilla is prepared in |−⟩; the oracle writes its output as a phase on the input register, leaving the ancilla unchanged, and it is then discarded. In quantum error correction, ancilla qubits are prepared, entangled with the data register via <a href="#gloss-stabilizer">stabilizer</a> circuits, measured to read off the syndrome, and reset — all without ever directly measuring the encoded logical qubit. The name comes from Latin <em>ancilla</em> (handmaiden): the ancilla exists to serve the computation, not to hold an answer.</p>
           </div>
           <div class="glossary-item" id="gloss-ansatz">
             <div class="glossary-term">Ansatz</div>
-            <p class="glossary-def">A parameterized circuit family (tunable rotation angles) that defines which quantum states an optimizer can reach. A poor ansatz caps performance no matter how good the classical loop is.</p>
+            <p class="glossary-def">Short for “educated guess”: a fixed circuit template with free parameters (rotation angles, layer counts) whose job is to span a useful subset of Hilbert space. A <a href="#gloss-vqe">VQE</a> or other hybrid loop only explores states your ansatz can express — if the true ground state lies outside that family, the minimum energy you find is a hard ceiling, no matter how clever the classical optimizer. Good ansätze encode problem structure (e.g. chemistry-inspired excitation gates); bad ones are too shallow (under-expressive) or too deep (hard to train, <a href="#gloss-barren-plateau">barren plateaus</a>). <a href="#ref-vqe2014" class="tpl-cite" data-doc-ref="ref-vqe2014">Peruzzo et al. (2014)</a></p>
           </div>
         </div>
       </div>
@@ -3385,15 +3388,18 @@
         <div class="glossary-list">
           <div class="glossary-item" id="gloss-barren-plateau">
             <div class="glossary-term">Barren plateau</div>
-            <p class="glossary-def">When gradients of a variational cost vanish exponentially in qubit count — optimizers lose steering signal. <a href="#ref-barren2018" class="tpl-cite" data-doc-ref="ref-barren2018">McClean et al. (2018)</a></p>
+            <p class="glossary-def">This refers to when the cost landscape of a variational algorithm becomes exponentially flat as qubit count grows. Imagine trying to find the lowest point of a vast, perfectly featureless fog-covered plain. Every direction feels equally level, so gradient-based optimizers have no signal to follow, and essentially wander at random. This is a known obstacle to scaling variational algorithms beyond small systems. <a href="#ref-barren2018" class="tpl-cite" data-doc-ref="ref-barren2018">McClean et al. (2018)</a></p>
           </div>
           <div class="glossary-item" id="gloss-black-box">
             <div class="glossary-term">Black-box function (oracle)</div>
-            <p class="glossary-def">A function you may call on inputs but cannot inspect internally — query complexity counts how many such calls an algorithm needs.</p>
+            <p class="glossary-def">A function you can call but not inspect: like a vending machine that gives you an output for every input, but whose inner mechanism is sealed. Usually, the goal is to deduce the rules of the vending machine without looking inside. Query complexity counts how many such calls an algorithm needs (i.e. how many times you need to use the vending machine in order to determine its rule), and quantum algorithms like <a href="#ref-dj1992" class="tpl-cite" data-doc-ref="ref-dj1992">Deutsch–Jozsa</a> and <a href="#ref-grover1996" class="tpl-cite" data-doc-ref="ref-grover1996">Grover</a> derive their advantage by needing far fewer calls than any classical strategy.</p>
           </div>
-          <div class="glossary-item" id="gloss-bloch-sphere">
+          <div class="glossary-item glossary-item--fig" id="gloss-bloch-sphere">
+            <div class="glossary-item__text">
             <div class="glossary-term">Bloch sphere</div>
-            <p class="glossary-def">A picture of one qubit: each direction from the center to the surface is a possible state. The arrow shows the state you are viewing; north and south are |0⟩ and |1⟩.</p>
+            <p class="glossary-def">Every pure single-qubit state α|0⟩ + β|1⟩ maps to a unique point on the surface of a unit sphere. The north pole is |0⟩, the south pole is |1⟩, and the equator contains all equal-weight superpositions such as |+⟩ (pointing along +x) and |−⟩ (pointing along −x). The latitude of the Bloch vector controls Z-basis probabilities; the longitude encodes relative <a href="#gloss-phase">phase</a> between the two amplitudes, which determines X- and Y-basis statistics. Gates act as rotations: H swaps the Z and X poles, and Rz(θ) rotates around the vertical axis by θ. Mixed states — partially decohered qubits — sit strictly <em>inside</em> the sphere; the length of the Bloch vector (between 0 and 1) is a measure of <a href="#gloss-purity">purity</a>. Noise shrinks the vector inward. <a href="#ref-nc2000" class="tpl-cite" data-doc-ref="ref-nc2000">Nielsen &amp; Chuang</a></p>
+            </div>
+            <figure class="glossary-fig" aria-hidden="true"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="38" fill="none" stroke="var(--line-bright)" stroke-width="1.25"/><ellipse cx="50" cy="50" rx="38" ry="14" fill="none" stroke="var(--line)" stroke-width="1" opacity="0.9"/><line x1="50" y1="12" x2="50" y2="88" stroke="var(--ink-faint)" stroke-width="1.1"/><line x1="50" y1="50" x2="84" y2="50" stroke="var(--ink-faint)" stroke-width="0.9" opacity="0.65"/><line x1="50" y1="50" x2="68" y2="28" stroke="var(--mint)" stroke-width="2.2" stroke-linecap="round"/><polygon points="65,30 71,26 69,33" fill="var(--mint)"/><circle cx="50" cy="12" r="3.5" fill="var(--ink-faint)"/><circle cx="50" cy="88" r="3.5" fill="var(--ink-faint)"/><text x="50" y="9" text-anchor="middle" fill="var(--mint)" font-size="8.5" font-weight="600" font-family="ui-monospace,monospace">|0⟩</text><text x="50" y="98" text-anchor="middle" fill="var(--mint)" font-size="8.5" font-weight="600" font-family="ui-monospace,monospace">|1⟩</text></svg></figure>
           </div>
         </div>
       </div>
@@ -3401,29 +3407,45 @@
       <div class="glossary-alpha">
         <h2 class="glossary-letter" id="glossary-C">C</h2>
         <div class="glossary-list">
-          <div class="glossary-item" id="gloss-chsh">
+          <div class="glossary-item glossary-item--fig" id="gloss-chsh">
+            <div class="glossary-item__text">
             <div class="glossary-term">CHSH inequality (Clauser–Horne–Shimony–Holt)</div>
-            <p class="glossary-def">A concrete Bell-type test: local hidden-variable theories score at most 2; quantum entanglement can reach ~2.83. Original: <a href="#ref-chsh1969" class="tpl-cite" data-doc-ref="ref-chsh1969">CHSH (1969)</a>; context: <a href="#ref-bell1964" class="tpl-cite" data-doc-ref="ref-bell1964">Bell (1964)</a>.</p>
+            <p class="glossary-def">A concrete experiment-friendly Bell test: two distant parties each choose one of two measurement settings; the CHSH statistic <em>S</em> combines four correlation averages. Any model where outcomes are explained by <a href="#gloss-lhv">local hidden variables</a> satisfies |<em>S</em>| ≤ 2. Quantum mechanics with a maximally entangled pair and the right angles can reach |<em>S</em>| = 2√2 ≈ 2.83 — the <a href="#gloss-tsirelson">Tsirelson bound</a> — proving the gap is real, not a detector loophole in the math. Tutorial 2’s interactive tester estimates <em>S</em> from simulated data. Original: <a href="#ref-chsh1969" class="tpl-cite" data-doc-ref="ref-chsh1969">CHSH (1969)</a>; framework: <a href="#ref-bell1964" class="tpl-cite" data-doc-ref="ref-bell1964">Bell (1964)</a>.</p>
+            </div>
+            <figure class="glossary-fig" aria-hidden="true"><svg viewBox="0 0 100 72" xmlns="http://www.w3.org/2000/svg"><line x1="14" y1="52" x2="86" y2="52" stroke="var(--line)" stroke-width="1"/><rect x="14" y="28" width="28" height="22" fill="var(--bg-2)" stroke="var(--line-bright)" stroke-width="1"/><rect x="58" y="16" width="28" height="34" fill="var(--bg-2)" stroke="var(--mint)" stroke-width="1.25"/><text x="28" y="43" text-anchor="middle" fill="var(--ink-dim)" font-size="11" font-family="system-ui,sans-serif">2</text><text x="72" y="38" text-anchor="middle" fill="var(--mint)" font-size="11" font-family="system-ui,sans-serif">2√2</text><text x="50" y="66" text-anchor="middle" fill="var(--ink-faint)" font-size="8" font-family="var(--mono),monospace">CHSH |S|</text></svg></figure>
           </div>
-          <div class="glossary-item" id="gloss-cnot">
+          <div class="glossary-item glossary-item--fig" id="gloss-cnot">
+            <div class="glossary-item__text">
             <div class="glossary-term">CNOT (controlled-NOT) gate</div>
-            <p class="glossary-def">A two-qubit gate: “if the first qubit is 1, flip the second.” On ordinary bits it is conditional logic; with superposition it can create entanglement.</p>
+            <p class="glossary-def">Flips the target qubit if and only if the control is |1⟩; on bits, reversible XOR. With <a href="#gloss-superposition">superposition</a> on the control, it creates <a href="#gloss-entanglement">entanglement</a> — e.g. (|0⟩+|1⟩)/√2 ⊗ |0⟩ maps to the Bell state (|00⟩+|11⟩)/√2. With single-qubit gates, CNOT is universal for multi-qubit <a href="#gloss-unitary">unitaries</a>; on hardware it is usually the noisiest gate. <a href="#ref-nc2000" class="tpl-cite" data-doc-ref="ref-nc2000">Nielsen &amp; Chuang</a></p>
+            </div>
+            <figure class="glossary-fig" aria-hidden="true"><svg viewBox="0 0 100 76" xmlns="http://www.w3.org/2000/svg"><line x1="30" y1="22" x2="30" y2="56" stroke="var(--line-bright)" stroke-width="1.35"/><line x1="70" y1="22" x2="70" y2="56" stroke="var(--line-bright)" stroke-width="1.35"/><line x1="30" y1="39" x2="70" y2="39" stroke="var(--line-bright)" stroke-width="1.35"/><circle cx="30" cy="39" r="5.5" fill="var(--bg-1)" stroke="var(--mint)" stroke-width="1.8"/><path d="M70 33v12M64 39h12" stroke="var(--mint)" stroke-width="1.85" stroke-linecap="round"/><text x="18" y="26" fill="var(--ink-faint)" font-size="9" font-family="var(--mono),monospace">c</text><text x="18" y="60" fill="var(--ink-faint)" font-size="9" font-family="var(--mono),monospace">t</text></svg></figure>
           </div>
           <div class="glossary-item" id="gloss-coherences">
             <div class="glossary-term">Coherences (in a density matrix)</div>
-            <p class="glossary-def">Off-diagonal entries of ρ — they carry phase between |0⟩ and |1⟩ and control interference. When they vanish, superposition fades even if Z odds stay fixed.</p>
+            <p class="glossary-def">The off-diagonal entries of ρ. They carry the phase relationship between |0⟩ and |1⟩ — the ingredient that makes interference possible. When coherences are large, the qubit can produce distinctly quantum measurement statistics (e.g., always landing on 0 in the X-basis for |+⟩). When they shrink toward zero, the qubit behaves like a classical coin flip regardless of basis. Many noise processes — especially pure dephasing — destroy coherences while leaving the diagonal probabilities (Z-basis statistics) completely unchanged, which is why a qubit can look fine in standard readout but still perform poorly in phase-sensitive algorithms.<a id="fnref-gloss-1" class="expert-fn-ref" href="#fn-gloss-1"><sup>[E1]</sup></a></p>
           </div>
-          <div class="glossary-item" id="gloss-code-distance">
+          <div class="glossary-item glossary-item--fig" id="gloss-code-distance">
+            <div class="glossary-item__text">
             <div class="glossary-term">Code distance (<em>d</em>)</div>
-            <p class="glossary-def">Rough count of independent physical errors a code can correct. Larger <em>d</em> → more protection and usually more qubits. <a href="#ref-fowler2012" class="tpl-cite" data-doc-ref="ref-fowler2012">Fowler et al.</a></p>
+            <p class="glossary-def">The distance <em>d</em> of a quantum code is the minimum weight (number of qubits) of any Pauli error that changes the logical information without being detected by the stabilizers. It determines how many physical errors can be <em>detected</em> (<em>d</em> − 1) and <em>corrected</em> (⌊(<em>d</em> − 1)/2⌋) in ideal decoding. Larger <em>d</em> means more redundancy: e.g. a planar surface code at distance <em>d</em> uses about 2<em>d</em>² − 1 physical qubits per logical qubit. Below the <a href="#gloss-threshold">fault-tolerance threshold</a>, increasing <em>d</em> suppresses logical errors exponentially. <a href="#ref-fowler2012" class="tpl-cite" data-doc-ref="ref-fowler2012">Fowler et al.</a></p>
+            </div>
+            <figure class="glossary-fig" aria-hidden="true"><svg viewBox="0 0 100 80" xmlns="http://www.w3.org/2000/svg"><rect x="18" y="14" width="64" height="52" fill="none" stroke="var(--line-bright)" stroke-width="1.2" stroke-dasharray="4 3"/><circle cx="35" cy="32" r="5" fill="var(--bg-2)" stroke="var(--mint)" stroke-width="1.2"/><circle cx="65" cy="32" r="5" fill="var(--bg-2)" stroke="var(--mint)" stroke-width="1.2"/><circle cx="50" cy="52" r="5" fill="var(--bg-2)" stroke="var(--cyan)" stroke-width="1.2"/><line x1="40" y1="32" x2="60" y2="32" stroke="var(--line)" stroke-width="1"/><line x1="38" y1="36" x2="47" y2="48" stroke="var(--line)" stroke-width="1"/><line x1="62" y1="36" x2="53" y2="48" stroke="var(--line)" stroke-width="1"/><text x="50" y="76" text-anchor="middle" fill="var(--ink-faint)" font-size="8" font-family="var(--mono),monospace">d = 3 sketch</text></svg></figure>
           </div>
-          <div class="glossary-item" id="gloss-complex-numbers">
+          <div class="glossary-item glossary-item--fig" id="gloss-complex-numbers">
+            <div class="glossary-item__text">
             <div class="glossary-term">Complex numbers and probability amplitudes</div>
-            <p class="glossary-def">Amplitudes use two coordinates (magnitude and phase), enabling interference beyond classical probability alone.</p>
+            <p class="glossary-def">Probability amplitudes are complex numbers: each has a magnitude (how “large” the contribution is) and a <a href="#gloss-phase">phase</a> (where it sits on the unit circle). Born’s rule says measurement probabilities are squared magnitudes, |α|² — but <em>relative</em> phases between amplitudes still matter before measurement, because amplitudes add before squaring. That is why quantum theory can show <a href="#gloss-interference">interference</a>; classical probabilities, which are real and non-negative, cannot cancel the way amplitudes can. <a href="#ref-nc2000" class="tpl-cite" data-doc-ref="ref-nc2000">Nielsen &amp; Chuang</a></p>
+            </div>
+            <figure class="glossary-fig" aria-hidden="true"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><line x1="50" y1="50" x2="92" y2="50" stroke="var(--line)" stroke-width="1"/><line x1="50" y1="50" x2="50" y2="12" stroke="var(--line)" stroke-width="1"/><circle cx="50" cy="50" r="36" fill="none" stroke="var(--line-bright)" stroke-width="1.2"/><line x1="50" y1="50" x2="82" y2="28" stroke="var(--mint)" stroke-width="2" stroke-linecap="round"/><circle cx="82" cy="28" r="3" fill="var(--mint)"/></svg></figure>
+          </div>
+          <div class="glossary-item" id="gloss-computational-basis">
+            <div class="glossary-term">Computational basis</div>
+            <p class="glossary-def">The standard reference frame for measuring qubits: |0⟩ and |1⟩ for one qubit, and |00⟩, |01⟩, |10⟩, |11⟩ for two, and so on. When you “measure a qubit,” you are almost always measuring in the computational basis — asking whether it is 0 or 1. Other bases (like the <a href="#gloss-z-x-basis">X-basis</a>, reached by applying H before measuring) probe different aspects of the quantum state. Many quantum algorithms work by arranging for the correct answer to appear with high probability in the computational basis after a final measurement.</p>
           </div>
           <div class="glossary-item" id="gloss-cptp">
             <div class="glossary-term">CPTP map</div>
-            <p class="glossary-def">Completely positive, trace-preserving — the mathematical guarantee that a noise process maps valid states to valid states with total probability 1. <a href="#ref-nc2000" class="tpl-cite" data-doc-ref="ref-nc2000">Nielsen &amp; Chuang</a>; <a href="#ref-kraus1983" class="tpl-cite" data-doc-ref="ref-kraus1983">Kraus</a></p>
+            <p class="glossary-def">Short for completely positive, trace-preserving. This is the mathematical guarantee that a noise process behaves like a valid physical operation: it never produces negative probabilities (“completely positive”), and the total probability always sums to 1 (“trace preserving”). Any realistic quantum noise channel must be CPTP. <a href="#ref-nc2000" class="tpl-cite" data-doc-ref="ref-nc2000">Nielsen &amp; Chuang</a>; <a href="#ref-kraus1983" class="tpl-cite" data-doc-ref="ref-kraus1983">Kraus</a></p>
           </div>
         </div>
       </div>
@@ -3433,27 +3455,40 @@
         <div class="glossary-list">
           <div class="glossary-item" id="gloss-decoder">
             <div class="glossary-term">Decoder (quantum error correction)</div>
-            <p class="glossary-def">Turns a syndrome pattern into a recovery guess — which error likely occurred — without reading the logical qubit directly.</p>
+            <p class="glossary-def">The classical algorithm that takes a syndrome — a pattern of failed parity checks — and guesses which physical errors most likely caused it, then applies corrections to undo them. The decoder never directly observes the logical qubit; it only sees which stabilizer checks failed. A good decoder is fast (real-time correction requires it to keep pace with the hardware) and accurate (wrong guesses cause logical errors). Minimum-weight perfect matching is a common decoder for the surface code.</p>
           </div>
-          <div class="glossary-item" id="gloss-density-matrix">
+          <div class="glossary-item" id="gloss-decoherence">
+            <div class="glossary-term">Decoherence</div>
+            <p class="glossary-def">The process by which a qubit loses its quantum character through interaction with its environment. A perfectly isolated qubit would evolve coherently forever; a real qubit continuously leaks phase and energy information to surrounding matter and fields, causing its Bloch vector to shrink inward from the surface toward the center. Decoherence is the fundamental engineering obstacle in quantum computing: it sets a clock on how long a circuit can run before errors overwhelm the result. <em>T</em><sub>1</sub> and <em>T</em><sub>2</sub> are its two main timescales.</p>
+          </div>
+          <div class="glossary-item glossary-item--fig" id="gloss-density-matrix">
+            <div class="glossary-item__text">
             <div class="glossary-term">Density matrix (ρ)</div>
-            <p class="glossary-def">Full quantum state description, pure or mixed; diagonals are populations, off-diagonals are coherences. <a href="#ref-nc2000" class="tpl-cite" data-doc-ref="ref-nc2000">Nielsen &amp; Chuang</a></p>
+            <p class="glossary-def">The density matrix ρ generalizes state vectors: ρ = |ψ⟩⟨ψ| for pure states, or convex combinations ∑<sub><em>k</em></sub> <em>p</em><sub><em>k</em></sub>|ψ<sub><em>k</em></sub>⟩⟨ψ<sub><em>k</em></sub>| for mixed ones. It is Hermitian, positive semidefinite, and Tr(ρ) = 1. For one qubit, the diagonal entries are <a href="#gloss-populations">populations</a> (Z outcome odds); off-diagonals are <a href="#gloss-coherences">coherences</a>. Unitary gates act as ρ ↦ UρU†; noise is generally not unitary, so you need ρ and <a href="#gloss-quantum-channel">channels</a>. <a href="#ref-nc2000" class="tpl-cite" data-doc-ref="ref-nc2000">Nielsen &amp; Chuang</a></p>
+            </div>
+            <figure class="glossary-fig" aria-hidden="true"><svg viewBox="0 0 100 90" xmlns="http://www.w3.org/2000/svg"><rect x="22" y="18" width="56" height="56" fill="var(--bg-2)" stroke="var(--line-bright)" stroke-width="1.2"/><rect x="22" y="18" width="26" height="26" fill="rgba(var(--mint-rgb),0.12)" stroke="var(--mint)" stroke-width="1"/><rect x="52" y="48" width="26" height="26" fill="rgba(var(--mint-rgb),0.12)" stroke="var(--mint)" stroke-width="1"/><rect x="52" y="18" width="26" height="26" fill="rgba(var(--cyan-rgb),0.15)" stroke="var(--cyan)" stroke-width="1"/><rect x="22" y="48" width="26" height="26" fill="rgba(var(--cyan-rgb),0.15)" stroke="var(--cyan)" stroke-width="1"/><text x="35" y="82" text-anchor="middle" fill="var(--ink-faint)" font-size="8" font-family="var(--mono),monospace">ρ (1 qubit)</text></svg></figure>
           </div>
-          <div class="glossary-item" id="gloss-dephasing">
+          <div class="glossary-item glossary-item--fig" id="gloss-dephasing">
+            <div class="glossary-item__text">
             <div class="glossary-term">Dephasing and <em>T</em><sub>2</sub></div>
-            <p class="glossary-def">Phase-scrambling noise; often shrinks coherences while Z populations stay put. <em>T</em><sub>2</sub> is the coherence timescale.</p>
+            <p class="glossary-def">Pure dephasing randomizes the <a href="#gloss-phase">phase</a> between |0⟩ and |1⟩ without swapping populations: <a href="#gloss-coherences">coherences</a> decay while the diagonal of ρ stays fixed. In the <a href="#gloss-bloch-sphere">Bloch</a> picture, the vector shrinks toward the <em>z</em>-axis. <em>T</em><sub>2</sub> (Hahn echo) and <em>T</em><sub>2</sub><sup>*</sup> (Ramsey, including static inhomogeneous broadening) quantify how fast that happens. It is often the limiting noise in algorithms that rely on <a href="#gloss-interference">interference</a>. See also <a href="#gloss-amplitude-damping">amplitude damping</a> for energy loss (<em>T</em><sub>1</sub>). <a href="#ref-nc2000" class="tpl-cite" data-doc-ref="ref-nc2000">Nielsen &amp; Chuang</a></p>
+            </div>
+            <figure class="glossary-fig" aria-hidden="true"><svg viewBox="0 0 100 88" xmlns="http://www.w3.org/2000/svg"><ellipse cx="50" cy="48" rx="40" ry="40" fill="none" stroke="var(--line-bright)" stroke-width="1.2"/><line x1="50" y1="48" x2="50" y2="12" stroke="var(--ink-faint)" stroke-width="1" stroke-dasharray="3 2"/><line x1="50" y1="48" x2="84" y2="48" stroke="var(--mint)" stroke-width="2" stroke-linecap="round"/><line x1="50" y1="48" x2="78" y2="40" stroke="var(--line)" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/><text x="50" y="82" text-anchor="middle" fill="var(--ink-faint)" font-size="8" font-family="var(--mono),monospace">Z projection kept</text></svg></figure>
           </div>
           <div class="glossary-item" id="gloss-depolarizing">
             <div class="glossary-term">Depolarizing noise</div>
-            <p class="glossary-def">Random Pauli (X/Y/Z) errors after gates with some probability — a simple symmetric error model. <a href="#ref-nc2000" class="tpl-cite" data-doc-ref="ref-nc2000">Nielsen &amp; Chuang</a></p>
+            <p class="glossary-def">Random Pauli (X/Y/Z) errors after gates with some probability — a simple symmetric error model. <a href="#ref-nc2000" class="tpl-cite" data-doc-ref="ref-nc2000">Nielsen &amp; Chuang</a><a id="fnref-gloss-2" class="expert-fn-ref" href="#fn-gloss-2"><sup>[E2]</sup></a></p>
           </div>
           <div class="glossary-item" id="gloss-deutsch-jozsa">
             <div class="glossary-term">Deutsch–Jozsa algorithm</div>
-            <p class="glossary-def">Decides constant vs balanced black-box functions in one quantum query vs exponentially many classical queries in the worst case. <a href="#ref-dj1992" class="tpl-cite" data-doc-ref="ref-dj1992">Deutsch &amp; Jozsa (1992)</a>; 1-bit precursor: <a href="#ref-deutsch1985" class="tpl-cite" data-doc-ref="ref-deutsch1985">Deutsch (1985)</a></p>
+            <p class="glossary-def">Given a Boolean function <em>f</em> : {0,1}<sup><em>n</em></sup> → {0,1} as a black box, decide whether <em>f</em> is <em>constant</em> (all 0 or all 1) or <em>balanced</em> (half 0, half 1). Classically you may need 2<sup><em>n</em>−1</sup> + 1 queries in the worst case; the quantum algorithm uses one query after a Hadamard sandwich, with <a href="#gloss-phase-kickback">phase kickback</a> writing (−1)<sup><em>f</em>(<em>x</em>)</sup> into amplitudes. Constant functions leave the register unchanged; balanced ones yield certainty of a “1” on the all-zero string after the final Hadamards. It is a clean proof of <a href="#gloss-quantum-advantage">quantum query advantage</a>, not a practical speedup for real data. <a href="#ref-dj1992" class="tpl-cite" data-doc-ref="ref-dj1992">Deutsch &amp; Jozsa (1992)</a>; precursor: <a href="#ref-deutsch1985" class="tpl-cite" data-doc-ref="ref-deutsch1985">Deutsch (1985)</a></p>
           </div>
-          <div class="glossary-item" id="gloss-diffusion-grover">
+          <div class="glossary-item glossary-item--fig" id="gloss-diffusion-grover">
+            <div class="glossary-item__text">
             <div class="glossary-term">Diffusion operator (Grover)</div>
-            <p class="glossary-def">Reflects amplitudes about the average — the second half of a Grover iteration, pairing with the oracle to rotate toward the marked item.</p>
+            <p class="glossary-def">After the oracle flips the phase of the <a href="#gloss-marked-state">marked</a> state, the diffusion (Grover) operator reflects every amplitude about the mean. One Grover iteration is “oracle → diffusion.” Geometrically, the state stays in the two-dimensional subspace spanned by the marked state and the uniform superposition; each iteration rotates by a fixed angle toward the marked state. After about (π/4)√<em>N</em> iterations for <em>N</em> items, measurement likely returns the marked index. Too many iterations “overshoot.” <a href="#ref-grover1996" class="tpl-cite" data-doc-ref="ref-grover1996">Grover (1996)</a></p>
+            </div>
+            <figure class="glossary-fig" aria-hidden="true"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="38" fill="none" stroke="var(--line-bright)" stroke-width="1.2"/><line x1="50" y1="50" x2="88" y2="50" stroke="var(--ink-faint)" stroke-width="1"/><line x1="50" y1="50" x2="72" y2="22" stroke="var(--mint)" stroke-width="2" stroke-linecap="round"/><path d="M 50 50 L 88 50 A 38 38 0 0 1 72 22 Z" fill="none" stroke="var(--cyan)" stroke-width="1.5" stroke-dasharray="5 3"/><circle cx="50" cy="50" r="3" fill="var(--ink-soft)"/></svg></figure>
           </div>
         </div>
       </div>
@@ -3461,9 +3496,12 @@
       <div class="glossary-alpha">
         <h2 class="glossary-letter" id="glossary-E">E</h2>
         <div class="glossary-list">
-          <div class="glossary-item" id="gloss-entanglement">
+          <div class="glossary-item glossary-item--fig" id="gloss-entanglement">
+            <div class="glossary-item__text">
             <div class="glossary-term">Entanglement</div>
-            <p class="glossary-def">Correlations too strong for independent classical randomness; joint states are not product states.</p>
+            <p class="glossary-def">A bipartite state is <em>entangled</em> if it cannot be written as a <a href="#gloss-product-state">product</a> |ψ⟩<sub>A</sub> ⊗ |φ⟩<sub>B</sub>, nor as a probabilistic mixture of such products. Measurements on one side then constrain statistics on the other in ways that no pre-shared classical instructions (<a href="#gloss-lhv">local hidden variables</a>) can reproduce — witnessable via <a href="#gloss-chsh">CHSH</a> violations. Entanglement is a resource for teleportation, superdense coding, and <a href="#gloss-stabilizer">stabilizer</a>-based QEC. <a href="#ref-bell1964" class="tpl-cite" data-doc-ref="ref-bell1964">Bell (1964)</a></p>
+            </div>
+            <figure class="glossary-fig" aria-hidden="true"><svg viewBox="0 0 100 72" xmlns="http://www.w3.org/2000/svg"><circle cx="28" cy="36" r="14" fill="var(--bg-2)" stroke="var(--mint)" stroke-width="1.4"/><circle cx="72" cy="36" r="14" fill="var(--bg-2)" stroke="var(--mint)" stroke-width="1.4"/><path d="M42 36 Q50 20 58 36 Q50 52 42 36" fill="none" stroke="var(--cyan)" stroke-width="1.5"/><text x="28" y="40" text-anchor="middle" fill="var(--ink-dim)" font-size="10" font-family="var(--mono),monospace">A</text><text x="72" y="40" text-anchor="middle" fill="var(--ink-dim)" font-size="10" font-family="var(--mono),monospace">B</text></svg></figure>
           </div>
         </div>
       </div>
@@ -3473,7 +3511,7 @@
         <div class="glossary-list">
           <div class="glossary-item" id="gloss-threshold">
             <div class="glossary-term">Fault-tolerance threshold</div>
-            <p class="glossary-def">Crossover physical error rate: below it, larger codes improve logical qubits; above it, scaling hurts. <a href="#ref-kitaev2003" class="tpl-cite" data-doc-ref="ref-kitaev2003">Kitaev</a></p>
+            <p class="glossary-def">The crossover physical error rate below which quantum error correction actually helps. If every physical gate has an error rate below this threshold, then using a larger code (more physical qubits per logical qubit) reliably suppresses the logical error rate. Above the threshold, the additional gates required to run error correction actually introduce <em>more</em> damage than they fix. For the surface code under standard noise models, the threshold sits near 1%. <a href="#ref-kitaev2003" class="tpl-cite" data-doc-ref="ref-kitaev2003">Kitaev</a><a id="fnref-gloss-3" class="expert-fn-ref" href="#fn-gloss-3"><sup>[E3]</sup></a></p>
           </div>
         </div>
       </div>
@@ -3481,9 +3519,12 @@
       <div class="glossary-alpha">
         <h2 class="glossary-letter" id="glossary-G">G</h2>
         <div class="glossary-list">
-          <div class="glossary-item" id="gloss-grover">
+          <div class="glossary-item glossary-item--fig" id="gloss-grover">
+            <div class="glossary-item__text">
             <div class="glossary-term">Grover's algorithm</div>
-            <p class="glossary-def">Quantum search in an unstructured list: O(√N) oracle queries vs O(N) classically — quadratic, not exponential, speedup. <a href="#ref-grover1996" class="tpl-cite" data-doc-ref="ref-grover1996">Grover (1996)</a></p>
+            <p class="glossary-def">Solves <a href="#gloss-unstructured-search">unstructured search</a> over <em>N</em> items with O(√<em>N</em>) oracle queries and poly(log <em>N</em>) overhead — optimal for the black-box model. Prepare uniform superposition, repeat Grover iterations (<a href="#gloss-marked-state">mark</a> via phase, then <a href="#gloss-diffusion-grover">diffuse</a>), measure. Quadratic speedup, not exponential like Shor’s period-finding; still huge for brute-force style problems. <a href="#ref-grover1996" class="tpl-cite" data-doc-ref="ref-grover1996">Grover (1996)</a></p>
+            </div>
+            <figure class="glossary-fig" aria-hidden="true"><svg viewBox="0 0 100 88" xmlns="http://www.w3.org/2000/svg"><rect x="10" y="34" width="22" height="22" rx="2" fill="var(--bg-2)" stroke="var(--line-bright)" stroke-width="1"/><text x="21" y="50" text-anchor="middle" fill="var(--ink-dim)" font-size="10" font-family="var(--mono),monospace">H</text><rect x="40" y="30" width="22" height="30" rx="2" fill="var(--bg-2)" stroke="var(--amber)" stroke-width="1"/><text x="51" y="50" text-anchor="middle" fill="var(--amber)" font-size="9" font-family="var(--mono),monospace">O</text><rect x="70" y="30" width="22" height="30" rx="2" fill="var(--bg-2)" stroke="var(--mint)" stroke-width="1"/><text x="81" y="50" text-anchor="middle" fill="var(--mint)" font-size="9" font-family="var(--mono),monospace">D</text><path d="M32 45h6M68 45h4" stroke="var(--line)" stroke-width="1.2"/><text x="50" y="78" text-anchor="middle" fill="var(--ink-faint)" font-size="8" font-family="var(--mono),monospace">repeat</text></svg></figure>
           </div>
         </div>
       </div>
@@ -3491,25 +3532,31 @@
       <div class="glossary-alpha">
         <h2 class="glossary-letter" id="glossary-H">H</h2>
         <div class="glossary-list">
-          <div class="glossary-item" id="gloss-hadamard">
+          <div class="glossary-item glossary-item--fig" id="gloss-hadamard">
+            <div class="glossary-item__text">
             <div class="glossary-term">Hadamard (<code>H</code>) gate</div>
-            <p class="glossary-def">Maps |0⟩ to an equal superposition — the standard way to start most quantum algorithms.</p>
+            <p class="glossary-def">Single-qubit gate: H|0⟩ = |+⟩ = (|0⟩+|1⟩)/√2 and H|1⟩ = |−⟩. It is its own inverse (H² = I). On the <a href="#gloss-bloch-sphere">Bloch</a> sphere it is a 180° rotation about the axis x̂ + ẑ (up to global phase), swapping the roles of <a href="#gloss-z-x-basis">Z and X</a> poles. Algorithms use layers of H to create <a href="#gloss-superposition">superposition</a>, convert between phase and computational-basis information, and build <a href="#gloss-interference">interference</a> patterns. <a href="#ref-nc2000" class="tpl-cite" data-doc-ref="ref-nc2000">Nielsen &amp; Chuang</a></p>
+            </div>
+            <figure class="glossary-fig" aria-hidden="true"><svg viewBox="0 0 100 64" xmlns="http://www.w3.org/2000/svg"><rect x="14" y="12" width="34" height="40" rx="3" fill="var(--bg-2)" stroke="var(--mint)" stroke-width="1.4"/><text x="31" y="38" text-anchor="middle" fill="var(--mint)" font-size="20" font-weight="600" font-family="var(--mono),monospace">H</text><path d="M54 32h26" stroke="var(--line-bright)" stroke-width="1.5"/><polygon points="86,32 78,28 78,36" fill="var(--line-bright)"/><rect x="82" y="12" width="6" height="40" fill="var(--bg-2)" stroke="var(--line-bright)" stroke-width="1"/></svg></figure>
           </div>
           <div class="glossary-item" id="gloss-hamiltonian">
             <div class="glossary-term">Hamiltonian</div>
-            <p class="glossary-def">The energy operator of a system; ground-state energy minimization (as in chemistry) is a central VQE goal.</p>
+            <p class="glossary-def">The Hamiltonian operator <em>H</em> encodes the energies of a quantum system: its eigenvalues are allowed energies, its eigenvectors are stationary states (up to <a href="#gloss-phase">phase</a>). Time evolution under a fixed <em>H</em> is unitary, <em>U</em>(<em>t</em>) = e<sup>−i<em>H</em>t/ℏ</sup>. In chemistry and materials, the goal is often the <em>ground-state energy</em> — the smallest eigenvalue — which dominates low-temperature properties. <a href="#gloss-vqe">VQE</a> estimates ⟨ψ|<em>H</em>|ψ⟩ for states |ψ⟩ prepared by a parameterized circuit, then classically minimizes over parameters. <a href="#ref-nc2000" class="tpl-cite" data-doc-ref="ref-nc2000">Nielsen &amp; Chuang</a></p>
           </div>
-          <div class="glossary-item" id="gloss-hahn-echo">
+          <div class="glossary-item glossary-item--fig" id="gloss-hahn-echo">
+            <div class="glossary-item__text">
             <div class="glossary-term">Hahn echo</div>
-            <p class="glossary-def">A π pulse midway through a wait refocuses slow phase drift, often recovering longer coherence than Ramsey alone. <a href="#ref-hahn1950" class="tpl-cite" data-doc-ref="ref-hahn1950">Hahn (1950)</a></p>
+            <p class="glossary-def">After a Ramsey-style superposition, wait time τ, apply a <a href="#gloss-pi-pulse">π pulse</a> (flip), wait another τ, then read out. Slow, quasi-static detuning that dephases the first half is refocused in the second — analogous to spin echo in NMR. Echo often restores coherence closer to the intrinsic <em>T</em><sub>2</sub> limit than <a href="#gloss-ramsey">Ramsey</a> (<em>T</em><sub>2</sub><sup>*</sup>), though fast noise still limits visibility. <a href="#ref-hahn1950" class="tpl-cite" data-doc-ref="ref-hahn1950">Hahn (1950)</a></p>
+            </div>
+            <figure class="glossary-fig" aria-hidden="true"><svg viewBox="0 0 100 56" xmlns="http://www.w3.org/2000/svg"><rect x="8" y="18" width="18" height="22" rx="2" fill="var(--bg-2)" stroke="var(--line-bright)" stroke-width="1"/><text x="17" y="34" text-anchor="middle" fill="var(--ink-dim)" font-size="9" font-family="var(--mono),monospace">π/2</text><line x1="26" y1="29" x2="38" y2="29" stroke="var(--line)" stroke-width="1.2"/><rect x="38" y="14" width="24" height="30" rx="2" fill="none" stroke="var(--ink-faint)" stroke-width="1" stroke-dasharray="4 3"/><text x="50" y="33" text-anchor="middle" fill="var(--ink-faint)" font-size="8" font-family="var(--mono),monospace">τ</text><line x1="62" y1="29" x2="66" y2="29" stroke="var(--line)" stroke-width="1.2"/><rect x="66" y="16" width="18" height="26" rx="2" fill="var(--bg-2)" stroke="var(--mint)" stroke-width="1"/><text x="75" y="33" text-anchor="middle" fill="var(--mint)" font-size="9" font-family="var(--mono),monospace">π</text><line x1="84" y1="29" x2="92" y2="29" stroke="var(--line)" stroke-width="1.2"/></svg></figure>
           </div>
           <div class="glossary-item" id="gloss-hilbert-space">
             <div class="glossary-term">Hilbert space</div>
-            <p class="glossary-def">Full state space of a quantum system; each qubit doubles the dimension.</p>
+            <p class="glossary-def">Complex vector space with inner product, complete under the induced norm — the mathematical arena of quantum theory. Pure states are unit vectors; observables are Hermitian operators. One qubit lives in ℂ²; <em>n</em> qubits live in a 2<sup><em>n</em></sup>-dimensional space — dimension doubles per qubit, the origin of exponential classical simulation cost for generic states. Subspaces, <a href="#gloss-tensor-product">tensor products</a>, and direct sums describe composite systems and symmetries. <a href="#ref-nc2000" class="tpl-cite" data-doc-ref="ref-nc2000">Nielsen &amp; Chuang</a></p>
           </div>
           <div class="glossary-item" id="gloss-hybrid">
             <div class="glossary-term">Hybrid quantum–classical algorithm</div>
-            <p class="glossary-def">Alternates quantum circuits (prepare / measure) with classical optimization — the standard NISQ pattern, e.g. VQE.</p>
+            <p class="glossary-def">Split workload: a <a href="#gloss-nisq">NISQ</a> machine prepares parameterized states and measures observables; a classical computer evaluates a cost (energy, fidelity, etc.) and updates parameters (gradient or derivative-free). The loop trades quantum depth for classical iterations — essential when coherence limits rule out long pure-quantum pipelines. Examples include <a href="#gloss-vqe">VQE</a>, QAOA, and many error-mitigation wrappers. <a href="#ref-preskill2018" class="tpl-cite" data-doc-ref="ref-preskill2018">Preskill (2018)</a></p>
           </div>
         </div>
       </div>
@@ -3517,9 +3564,12 @@
       <div class="glossary-alpha">
         <h2 class="glossary-letter" id="glossary-I">I</h2>
         <div class="glossary-list">
-          <div class="glossary-item" id="gloss-interference">
+          <div class="glossary-item glossary-item--fig" id="gloss-interference">
+            <div class="glossary-item__text">
             <div class="glossary-term">Interference (quantum)</div>
-            <p class="glossary-def">Amplitudes add like waves — reinforcing toward one outcome or canceling another — the engine behind D-J, Grover, and many algorithms.</p>
+            <p class="glossary-def">When two indistinguishable paths lead to the same outcome, amplitudes add <em>before</em> squaring: probabilities depend on |α + β|², not |α|² + |β|². <a href="#gloss-phase">Relative phase</a> between amplitudes therefore matters enormously — terms can cancel (destructive interference) or grow (constructive). That is the operational difference from classical probability. <a href="#gloss-deutsch-jozsa">Deutsch–Jozsa</a>, <a href="#gloss-grover">Grover</a>, and phase estimation all choreograph interference so “wrong” branches shrink and “right” ones grow. <a href="#ref-nc2000" class="tpl-cite" data-doc-ref="ref-nc2000">Nielsen &amp; Chuang</a></p>
+            </div>
+            <figure class="glossary-fig" aria-hidden="true"><svg viewBox="0 0 100 80" xmlns="http://www.w3.org/2000/svg"><path d="M12 60 Q35 20 50 40 T88 40" fill="none" stroke="var(--mint)" stroke-width="1.8" opacity="0.85"/><path d="M12 60 Q40 68 50 40 T88 40" fill="none" stroke="var(--cyan)" stroke-width="1.8" opacity="0.85"/><circle cx="50" cy="40" r="5" fill="var(--amber)"/><text x="50" y="74" text-anchor="middle" fill="var(--ink-faint)" font-size="8" font-family="var(--mono),monospace">amplitudes meet</text></svg></figure>
           </div>
         </div>
       </div>
@@ -3529,11 +3579,11 @@
         <div class="glossary-list">
           <div class="glossary-item" id="gloss-ket">
             <div class="glossary-term">Ket notation (e.g. |0⟩)</div>
-            <p class="glossary-def">Bracket notation for quantum state vectors — |0⟩, |1⟩, |+⟩, etc.</p>
+            <p class="glossary-def">Dirac notation: a ket |ψ⟩ is a column vector in Hilbert space; a bra ⟨ψ| is its conjugate-transpose row. Inner product ⟨φ|ψ⟩ measures overlap; outer products |ψ⟩⟨ψ| build projectors and pure <a href="#gloss-density-matrix">density matrices</a>. Bases are written as kets: <a href="#gloss-computational-basis">computational</a> |0⟩, |1⟩; <a href="#gloss-z-x-basis">X-basis</a> |±⟩. The notation keeps linear algebra readable in multi-qubit expressions. <a href="#ref-nc2000" class="tpl-cite" data-doc-ref="ref-nc2000">Nielsen &amp; Chuang</a></p>
           </div>
           <div class="glossary-item" id="gloss-kraus">
             <div class="glossary-term">Kraus operators</div>
-            <p class="glossary-def">Matrices Kₖ such that ρ′ = Σ Kₖ ρ Kₖ† describes a CPTP noise channel. <a href="#ref-kraus1983" class="tpl-cite" data-doc-ref="ref-kraus1983">Kraus (1983)</a></p>
+            <p class="glossary-def">Any <a href="#gloss-cptp">CPTP</a> channel admits Kraus operators {K<sub><em>k</em></sub>} with ∑<sub><em>k</em></sub> K<sub><em>k</em></sub>K<sub><em>k</em></sub>† = I such that ρ ↦ ∑<sub><em>k</em></sub> K<sub><em>k</em></sub>ρK<sub><em>k</em></sub>†. Each K<sub><em>k</em></sub> can be read as an “what happened if outcome <em>k</em> occurred” operator when the environment is traced out. Examples: single Kraus for unitary; two Kraus ops for <a href="#gloss-amplitude-damping">amplitude damping</a>; Pauli mixture for <a href="#gloss-depolarizing">depolarizing</a>. <a href="#ref-kraus1983" class="tpl-cite" data-doc-ref="ref-kraus1983">Kraus (1983)</a></p>
           </div>
         </div>
       </div>
@@ -3543,15 +3593,15 @@
         <div class="glossary-list">
           <div class="glossary-item" id="gloss-lindblad">
             <div class="glossary-term">Lindblad master equation</div>
-            <p class="glossary-def">Continuous-time differential equation for ρ under Markovian noise — linked to common <em>T</em><sub>1</sub>/<em>T</em><sub>2</sub> models. <a href="#ref-lindblad1976" class="tpl-cite" data-doc-ref="ref-lindblad1976">Lindblad (1976)</a></p>
+            <p class="glossary-def">Markovian <a href="#gloss-open-system">open-system</a> evolution: dρ/d<em>t</em> = −(i/ℏ)[<em>H</em>, ρ] + ∑<sub><em>j</em></sub> (L<sub><em>j</em></sub>ρL<sub><em>j</em></sub>† − ½{L<sub><em>j</em></sub>†L<sub><em>j</em></sub>, ρ}), with Lindblad jump operators L<sub><em>j</em></sub> encoding noise. Choices of L<sub><em>j</em></sub> reproduce exponential <a href="#gloss-t1"><em>T</em><sub>1</sub></a> and <a href="#gloss-dephasing"><em>T</em><sub>2</sub></a> decay of matrix elements. Non-Markovian noise needs memory kernels or enlarged system–bath models. <a href="#ref-lindblad1976" class="tpl-cite" data-doc-ref="ref-lindblad1976">Lindblad (1976)</a></p>
           </div>
           <div class="glossary-item" id="gloss-lhv">
             <div class="glossary-term">Local hidden variables</div>
-            <p class="glossary-def">Classical pre-agreed instructions meant to fake quantum randomness — ruled out by Bell/CHSH violations. <a href="#ref-bell1964" class="tpl-cite" data-doc-ref="ref-bell1964">Bell (1964)</a></p>
+            <p class="glossary-def">A classical story for correlated outcomes: each particle carries local instructions (hidden variables) decided at the source; measuring one side cannot signal faster than light, so outcomes must satisfy <a href="#gloss-chsh">Bell-type</a> inequalities. Quantum <a href="#gloss-entanglement">entanglement</a> violates those bounds (e.g. CHSH &gt; 2), so no such local classical model reproduces all quantum predictions. <a href="#ref-bell1964" class="tpl-cite" data-doc-ref="ref-bell1964">Bell (1964)</a></p>
           </div>
           <div class="glossary-item" id="gloss-logical-qubit">
             <div class="glossary-term">Logical qubit</div>
-            <p class="glossary-def">Error-corrected qubit spread across many physical qubits — what an algorithm “sees” after QEC.</p>
+            <p class="glossary-def">One logical degree of freedom encoded redundantly across many physical qubits so that <a href="#gloss-stabilizer">stabilizer</a> measurements (<a href="#gloss-syndrome">syndromes</a>) reveal errors without reading the encoded information. A <a href="#gloss-decoder">decoder</a> maps syndromes to corrections. Increasing <a href="#gloss-code-distance">code distance</a> trades qubit count for lower logical error rates below the <a href="#gloss-threshold">threshold</a>. Algorithms eventually target logical gates; today’s prototypes mostly expose noisy physical qubits. <a href="#ref-kitaev2003" class="tpl-cite" data-doc-ref="ref-kitaev2003">Kitaev</a></p>
           </div>
         </div>
       </div>
@@ -3563,9 +3613,12 @@
             <div class="glossary-term">Marked state</div>
             <p class="glossary-def">The single basis state (the “needle”) that the search oracle tags — usually by a phase flip (−1) — before diffusion rotates amplitude onto it. <a href="#ref-grover1996" class="tpl-cite" data-doc-ref="ref-grover1996">Grover (1996)</a></p>
           </div>
-          <div class="glossary-item" id="gloss-maximally-mixed">
+          <div class="glossary-item glossary-item--fig" id="gloss-maximally-mixed">
+            <div class="glossary-item__text">
             <div class="glossary-term">Maximally mixed state</div>
-            <p class="glossary-def">50/50 Z odds with zero coherence — total single-qubit ignorance.</p>
+            <p class="glossary-def">For one qubit, ρ = ½<em>I</em>: equal <a href="#gloss-populations">populations</a> (50% |0⟩, 50% |1⟩) and zero <a href="#gloss-coherences">coherences</a>. It is the state of maximum ignorance compatible with those marginals — you are not secretly in |0⟩ or |1⟩, and you have no <a href="#gloss-phase">phase</a> information either. Purity Tr(ρ²) = ½ (minimum for a qubit). It is the <a href="#gloss-bloch-sphere">Bloch</a> ball center. Result of tracing out half of a Bell pair, or of strong <a href="#gloss-dephasing">dephasing</a> without bias. <a href="#ref-nc2000" class="tpl-cite" data-doc-ref="ref-nc2000">Nielsen &amp; Chuang</a></p>
+            </div>
+            <figure class="glossary-fig" aria-hidden="true"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><ellipse cx="50" cy="50" rx="34" ry="34" fill="var(--bg-2)" stroke="var(--line-bright)" stroke-width="1.2" opacity="0.45"/><ellipse cx="50" cy="50" rx="34" ry="13" fill="none" stroke="var(--line-bright)" stroke-width="1"/><line x1="50" y1="16" x2="50" y2="84" stroke="var(--line-bright)" stroke-width="0.9" opacity="0.7"/><line x1="16" y1="50" x2="84" y2="50" stroke="var(--line-bright)" stroke-width="0.9" opacity="0.7"/><circle cx="50" cy="50" r="7" fill="var(--ink-soft)" stroke="var(--mint)" stroke-width="1.4"/><text x="50" y="96" text-anchor="middle" fill="var(--ink-faint)" font-size="9" font-family="ui-monospace,monospace">ρ = ½I (origin)</text></svg></figure>
           </div>
         </div>
       </div>
@@ -3579,7 +3632,7 @@
           </div>
           <div class="glossary-item" id="gloss-no-cloning">
             <div class="glossary-term">No-cloning theorem</div>
-            <p class="glossary-def">Unknown quantum states cannot be copied perfectly — forcing QEC to use entanglement, not classical duplication. <a href="#ref-noclone1982" class="tpl-cite" data-doc-ref="ref-noclone1982">Wootters &amp; Zurek (1982)</a></p>
+            <p class="glossary-def">Unknown quantum states cannot be copied perfectly — forcing QEC to use entanglement, not classical duplication. <a href="#ref-noclone1982" class="tpl-cite" data-doc-ref="ref-noclone1982">Wootters &amp; Zurek (1982)</a><a id="fnref-gloss-5" class="expert-fn-ref" href="#fn-gloss-5"><sup>[E5]</sup></a></p>
           </div>
         </div>
       </div>
@@ -3587,9 +3640,12 @@
       <div class="glossary-alpha">
         <h2 class="glossary-letter" id="glossary-O">O</h2>
         <div class="glossary-list">
-          <div class="glossary-item" id="gloss-open-system">
+          <div class="glossary-item glossary-item--fig" id="gloss-open-system">
+            <div class="glossary-item__text">
             <div class="glossary-term">Open quantum system</div>
-            <p class="glossary-def">A qubit coupled to an environment — information leaks out, so ρ and channels, not just unitary evolution on a pure state, are required.</p>
+            <p class="glossary-def">Real qubits are never perfectly isolated: they couple to electromagnetic fields, phonons, defects, and control electronics. If you keep the full joint state of <em>system + bath</em>, evolution can still be <a href="#gloss-unitary">unitary</a> — but experimentally you only access the system. Tracing out the bath yields a <a href="#gloss-density-matrix">reduced density matrix</a> that generally becomes mixed and evolves through <a href="#gloss-quantum-channel">quantum channels</a> (or <a href="#gloss-lindblad">Lindblad</a> dynamics in the Markovian limit), not a single Schrödinger equation on a pure |ψ⟩ alone. That is the mathematical meaning of <a href="#gloss-decoherence">decoherence</a>. <a href="#ref-nc2000" class="tpl-cite" data-doc-ref="ref-nc2000">Nielsen &amp; Chuang</a></p>
+            </div>
+            <figure class="glossary-fig" aria-hidden="true"><svg viewBox="0 0 110 78" xmlns="http://www.w3.org/2000/svg"><rect x="8" y="24" width="40" height="32" rx="4" fill="var(--bg-2)" stroke="var(--mint)" stroke-width="1.4"/><text x="28" y="45" text-anchor="middle" fill="var(--mint)" font-size="12" font-weight="600" font-family="ui-monospace,monospace">S</text><line x1="50" y1="40" x2="66" y2="40" stroke="var(--line-bright)" stroke-width="1.6"/><polygon points="52,36 48,40 52,44" fill="var(--line-bright)"/><polygon points="64,36 68,40 64,44" fill="var(--line-bright)"/><path d="M70 22c12-2 22 8 28 20 6 14 4 28-6 34-10 6-24 2-32-10-8-12-6-28 4-36 6-4 14-6 22-6" fill="var(--bg-2)" stroke="var(--cyan)" stroke-width="1.25"/><path d="M78 30q8 10 6 22M88 34q4 8 2 18M74 48q10 4 18 2" stroke="var(--cyan)" stroke-width="0.85" fill="none" opacity="0.9"/><text x="89" y="46" text-anchor="middle" fill="var(--cyan)" font-size="10" font-weight="600" font-family="ui-monospace,monospace">bath</text></svg></figure>
           </div>
         </div>
       </div>
@@ -3597,33 +3653,45 @@
       <div class="glossary-alpha">
         <h2 class="glossary-letter" id="glossary-P">P</h2>
         <div class="glossary-list">
-          <div class="glossary-item" id="gloss-phase">
+          <div class="glossary-item glossary-item--fig" id="gloss-phase">
+            <div class="glossary-item__text">
             <div class="glossary-term">Phase</div>
-            <p class="glossary-def">Relative alignment of |0⟩ and |1⟩ amplitudes — controls interference; invisible in a simple Z readout alone.</p>
+            <p class="glossary-def">Write α|0⟩ + β|1⟩ with β = |β|<em>e</em><sup>iφ</sup>: φ is the <em>relative phase</em> between the two amplitudes. Global phase (multiplying the whole state by <em>e</em><sup>iθ</sup>) is unobservable, but relative phase controls <a href="#gloss-interference">interference</a> in any basis where both branches contribute — e.g. it moves the <a href="#gloss-bloch-sphere">Bloch</a> vector’s azimuth. A <a href="#gloss-computational-basis">Z measurement</a> alone only sees |α|² and |β|², not φ; <a href="#gloss-z-x-basis">X/Y measurements</a> probe φ. <a href="#gloss-dephasing">Dephasing</a> randomizes φ over time. <a href="#ref-nc2000" class="tpl-cite" data-doc-ref="ref-nc2000">Nielsen &amp; Chuang</a></p>
+            </div>
+            <figure class="glossary-fig" aria-hidden="true"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="38" fill="none" stroke="var(--line-bright)" stroke-width="1.2"/><line x1="50" y1="50" x2="50" y2="16" stroke="var(--ink-faint)" stroke-width="1"/><line x1="50" y1="50" x2="82" y2="62" stroke="var(--mint)" stroke-width="2" stroke-linecap="round"/><path d="M50 50 A 20 20 0 0 1 68 38" fill="none" stroke="var(--cyan)" stroke-width="1.4"/></svg></figure>
           </div>
           <div class="glossary-item" id="gloss-phase-estimation">
             <div class="glossary-term">Phase estimation</div>
-            <p class="glossary-def">Extracts hidden eigenphases from unitaries — core subroutine inside Shor's algorithm and many others.</p>
+            <p class="glossary-def">Given a unitary <em>U</em> and eigenstate |<em>u</em>⟩ with <em>U</em>|<em>u</em>⟩ = e<sup>2πiθ</sup>|<em>u</em>⟩, estimate θ. Standard QPE uses ancillas, controlled-<em>U</em><sup>2<sup><em>k</em></sup></sup>, and an inverse QFT to read θ in binary. It is the workhorse behind Shor’s factoring (order finding) and many chemistry simulations. Finite ancilla count yields an approximation; errors propagate if <em>U</em> is noisy. <a href="#ref-nc2000" class="tpl-cite" data-doc-ref="ref-nc2000">Nielsen &amp; Chuang</a></p>
           </div>
-          <div class="glossary-item" id="gloss-phase-kickback">
+          <div class="glossary-item glossary-item--fig" id="gloss-phase-kickback">
+            <div class="glossary-item__text">
             <div class="glossary-term">Phase kickback</div>
-            <p class="glossary-def">Oracle action on an ancilla in |−⟩ becomes a phase on the control register — key to D-J and beyond. <a href="#ref-dj1992" class="tpl-cite" data-doc-ref="ref-dj1992">Deutsch &amp; Jozsa (1992)</a></p>
+            <p class="glossary-def">If the target qubit sits in an eigenstate of the gate the oracle applies, the eigenvalue (a phase) can appear on the <em>control</em> register instead. In <a href="#gloss-deutsch-jozsa">Deutsch–Jozsa</a>, the <a href="#gloss-ancilla">ancilla</a> is |−⟩ (eigenstate of X); a controlled-X from the input encodes <em>f</em>(<em>x</em>) as a (−1)<sup><em>f</em>(<em>x</em>)</sup> phase on the input superposition. The same pattern appears in many oracle constructions. <a href="#ref-dj1992" class="tpl-cite" data-doc-ref="ref-dj1992">Deutsch &amp; Jozsa (1992)</a></p>
+            </div>
+            <figure class="glossary-fig" aria-hidden="true"><svg viewBox="0 0 100 72" xmlns="http://www.w3.org/2000/svg"><line x1="24" y1="24" x2="76" y2="24" stroke="var(--line-bright)" stroke-width="1.2"/><line x1="24" y1="48" x2="76" y2="48" stroke="var(--line-bright)" stroke-width="1.2"/><line x1="50" y1="24" x2="50" y2="48" stroke="var(--line-bright)" stroke-width="1.2"/><circle cx="50" cy="24" r="5" fill="var(--bg-1)" stroke="var(--mint)" stroke-width="1.5"/><text x="14" y="28" fill="var(--ink-faint)" font-size="8" font-family="var(--mono),monospace">ctrl</text><text x="14" y="52" fill="var(--ink-faint)" font-size="8" font-family="var(--mono),monospace">tgt</text><path d="M50 48v8" stroke="var(--cyan)" stroke-width="1.5"/><text x="58" y="60" fill="var(--cyan)" font-size="8" font-family="var(--mono),monospace">eigen</text></svg></figure>
           </div>
-          <div class="glossary-item" id="gloss-pi-pulse">
+          <div class="glossary-item glossary-item--fig" id="gloss-pi-pulse">
+            <div class="glossary-item__text">
             <div class="glossary-term">π-pulse</div>
-            <p class="glossary-def">Microwave pulse area calibrated for a 180° Bloch rotation — physical implementation of an X-like gate on many platforms.</p>
+            <p class="glossary-def">On resonant drive, a pulse of duration <em>t</em><sub>π</sub> (π “area”) rotates the <a href="#gloss-bloch-sphere">Bloch</a> vector by 180° about an axis in the <em>xy</em> plane — implementing an effective X (or Y, depending on phase) on the computational subspace. Calibrated via <a href="#gloss-rabi">Rabi</a> oscillations. Used in <a href="#gloss-hahn-echo">Hahn echo</a>, dynamical decoupling, and as the physical layer beneath digital gate compilations on superconducting and atomic platforms.</p>
+            </div>
+            <figure class="glossary-fig" aria-hidden="true"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="36" fill="none" stroke="var(--line-bright)" stroke-width="1.2"/><line x1="50" y1="14" x2="50" y2="86" stroke="var(--ink-faint)" stroke-width="1" stroke-dasharray="3 2"/><circle cx="50" cy="14" r="4" fill="var(--ink-faint)"/><circle cx="50" cy="86" r="4" fill="var(--mint)"/><text x="50" y="11" text-anchor="middle" fill="var(--ink-dim)" font-size="9" font-family="ui-monospace,monospace">|0⟩</text><text x="50" y="97" text-anchor="middle" fill="var(--ink-dim)" font-size="9" font-family="ui-monospace,monospace">|1⟩</text><path d="M 50 14 A 36 36 0 1 1 50 86" fill="none" stroke="var(--mint)" stroke-width="2.4" stroke-linecap="round"/><polygon points="46,84 54,84 50,92" fill="var(--mint)"/><text x="88" y="52" fill="var(--mint)" font-size="11" font-weight="600" font-family="ui-serif,Georgia,serif">π</text></svg></figure>
           </div>
           <div class="glossary-item" id="gloss-populations">
             <div class="glossary-term">Populations (in a density matrix)</div>
-            <p class="glossary-def">Diagonal entries of ρ — Z-basis outcome probabilities.</p>
+            <p class="glossary-def">Diagonal entries ρ₀₀ and ρ₁₁ in the <a href="#gloss-computational-basis">computational basis</a> — probabilities of outcomes 0 and 1 when measuring Z. They sum to 1. Many channels change populations (e.g. <a href="#gloss-amplitude-damping">amplitude damping</a> moves weight from |1⟩ to |0⟩); pure <a href="#gloss-dephasing">dephasing</a> leaves them fixed while killing off-diagonals. Z-basis <a href="#gloss-shots">shots</a> estimate populations statistically. <a href="#ref-nc2000" class="tpl-cite" data-doc-ref="ref-nc2000">Nielsen &amp; Chuang</a></p>
           </div>
-          <div class="glossary-item" id="gloss-product-state">
+          <div class="glossary-item glossary-item--fig" id="gloss-product-state">
+            <div class="glossary-item__text">
             <div class="glossary-term">Product state</div>
-            <p class="glossary-def">Independent qubits: joint state factors as A ⊗ B.</p>
+            <p class="glossary-def">A pure multi-qubit state |ψ⟩ = |ψ₁⟩ ⊗ |ψ₂⟩ ⊗ ⋯ factors into single-qubit kets — subsystems are uncorrelated in the sense that every local observable expectation factorizes. Mixed product states are tensor products of single-qubit <a href="#gloss-density-matrix">density matrices</a>. If no such factorization exists, the state is <a href="#gloss-entanglement">entangled</a>. <a href="#ref-nc2000" class="tpl-cite" data-doc-ref="ref-nc2000">Nielsen &amp; Chuang</a></p>
+            </div>
+            <figure class="glossary-fig" aria-hidden="true"><svg viewBox="0 0 100 56" xmlns="http://www.w3.org/2000/svg"><rect x="8" y="14" width="32" height="30" rx="2" fill="var(--bg-2)" stroke="var(--line-bright)" stroke-width="1"/><text x="24" y="34" text-anchor="middle" fill="var(--ink-dim)" font-size="12" font-family="var(--mono),monospace">A</text><text x="50" y="34" text-anchor="middle" fill="var(--ink-soft)" font-size="14" font-family="serif">⊗</text><rect x="60" y="14" width="32" height="30" rx="2" fill="var(--bg-2)" stroke="var(--line-bright)" stroke-width="1"/><text x="76" y="34" text-anchor="middle" fill="var(--ink-dim)" font-size="12" font-family="var(--mono),monospace">B</text></svg></figure>
           </div>
           <div class="glossary-item" id="gloss-purity">
             <div class="glossary-term">Purity (Tr(ρ²))</div>
-            <p class="glossary-def">1 for pure states, lower for mixed; ½ is maximally mixed for one qubit. <a href="#ref-nc2000" class="tpl-cite" data-doc-ref="ref-nc2000">Nielsen &amp; Chuang</a></p>
+            <p class="glossary-def">A single number between ½ and 1 that measures how “quantum” a state is. A pure state — one that is a definite superposition with full coherence — has purity 1 and sits on the surface of the Bloch ball. A maximally mixed state — total classical ignorance, no coherence at all — has purity ½ for a single qubit, sitting at the center. Noise shrinks purity by collapsing the Bloch vector inward from the surface toward the origin. <a href="#ref-nc2000" class="tpl-cite" data-doc-ref="ref-nc2000">Nielsen &amp; Chuang</a><a id="fnref-gloss-4" class="expert-fn-ref" href="#fn-gloss-4"><sup>[E4]</sup></a></p>
           </div>
         </div>
       </div>
@@ -3631,9 +3699,16 @@
       <div class="glossary-alpha">
         <h2 class="glossary-letter" id="glossary-Q">Q</h2>
         <div class="glossary-list">
-          <div class="glossary-item" id="gloss-quantum-channel">
+          <div class="glossary-item" id="gloss-quantum-advantage">
+            <div class="glossary-term">Quantum advantage</div>
+            <p class="glossary-def">The condition where a quantum algorithm solves a problem with provably fewer resources — queries, time, or memory — than any possible classical algorithm. <a href="#ref-dj1992" class="tpl-cite" data-doc-ref="ref-dj1992">Deutsch–Jozsa</a> demonstrates an exponential query advantage; <a href="#ref-grover1996" class="tpl-cite" data-doc-ref="ref-grover1996">Grover</a> demonstrates a quadratic one for unstructured search. Quantum advantage does not mean “always faster on a stopwatch” — circuit overhead, measurement time, and noise can erode theoretical gains on real hardware, especially in the <a href="#ref-preskill2018" class="tpl-cite" data-doc-ref="ref-preskill2018">NISQ</a> era.</p>
+          </div>
+          <div class="glossary-item glossary-item--fig" id="gloss-quantum-channel">
+            <div class="glossary-item__text">
             <div class="glossary-term">Quantum channel</div>
-            <p class="glossary-def">A CPTP map describing noise: input ρ → output ρ′, possibly mixed. Channels compose gate-by-gate in a circuit.</p>
+            <p class="glossary-def">A linear map ℰ on <a href="#gloss-density-matrix">density matrices</a> that is trace-preserving and completely positive — exactly the class of dynamics allowed when a system couples to a bath and the bath is discarded (<a href="#gloss-cptp">CPTP</a>). Composition of gates and noise steps in a circuit is a channel (sometimes a <a href="#gloss-unitary">unitary</a> channel, sometimes noisy). See <a href="#gloss-kraus">Kraus operators</a> for a concrete parameterization. <a href="#ref-nc2000" class="tpl-cite" data-doc-ref="ref-nc2000">Nielsen &amp; Chuang</a></p>
+            </div>
+            <figure class="glossary-fig" aria-hidden="true"><svg viewBox="0 0 100 48" xmlns="http://www.w3.org/2000/svg"><text x="8" y="30" fill="var(--ink-dim)" font-size="12" font-family="var(--mono),monospace">ρ</text><path d="M22 26h14" stroke="var(--line-bright)" stroke-width="1.2"/><polygon points="38,26 34,22 34,30" fill="var(--line-bright)"/><rect x="40" y="12" width="28" height="28" rx="2" fill="var(--bg-2)" stroke="var(--mint)" stroke-width="1.2"/><text x="54" y="30" text-anchor="middle" fill="var(--mint)" font-size="9" font-family="var(--mono),monospace">ℰ</text><path d="M70 26h14" stroke="var(--line-bright)" stroke-width="1.2"/><polygon points="88,26 84,22 84,30" fill="var(--line-bright)"/><text x="92" y="30" fill="var(--ink-dim)" font-size="12" font-family="var(--mono),monospace">ρ′</text></svg></figure>
           </div>
         </div>
       </div>
@@ -3641,17 +3716,23 @@
       <div class="glossary-alpha">
         <h2 class="glossary-letter" id="glossary-R">R</h2>
         <div class="glossary-list">
-          <div class="glossary-item" id="gloss-rabi">
+          <div class="glossary-item glossary-item--fig" id="gloss-rabi">
+            <div class="glossary-item__text">
             <div class="glossary-term">Rabi oscillation</div>
-            <p class="glossary-def">|0⟩ ↔ |1⟩ oscillation as pulse duration increases under a drive — used to calibrate π-pulse length.</p>
+            <p class="glossary-def">Under a resonant sinusoidal drive, a two-level system’s excitation probability oscillates versus pulse duration <em>t</em> as sin²(Ω<em>t</em>/2) (Rabi frequency Ω). Measuring P(|1⟩) vs length yields a sine wave; the first peak defines a π-pulse, the first minimum a 2π rotation, etc. Off-resonant drives reduce effective Rabi rate and add extra <a href="#gloss-phase">phase</a> evolution — the <a href="#gloss-bloch-sphere">Bloch</a> picture is precession about a tilted axis. <a href="#ref-nc2000" class="tpl-cite" data-doc-ref="ref-nc2000">Nielsen &amp; Chuang</a></p>
+            </div>
+            <figure class="glossary-fig" aria-hidden="true"><svg viewBox="0 0 100 64" xmlns="http://www.w3.org/2000/svg"><line x1="8" y1="34" x2="92" y2="34" stroke="var(--line)" stroke-width="1"/><path d="M8 52 Q22 8 36 34 T64 34 T92 34" fill="none" stroke="var(--mint)" stroke-width="1.8"/><circle cx="36" cy="34" r="3" fill="var(--amber)"/><text x="36" y="58" text-anchor="middle" fill="var(--ink-faint)" font-size="8" font-family="var(--mono),monospace">t_π</text></svg></figure>
           </div>
           <div class="glossary-item" id="gloss-randomized-benchmarking">
             <div class="glossary-term">Randomized benchmarking</div>
             <p class="glossary-def">Random gate sequences of varying depth to estimate an average gate error rate. <a href="#ref-rb2011" class="tpl-cite" data-doc-ref="ref-rb2011">Magesan et al. (2011)</a></p>
           </div>
-          <div class="glossary-item" id="gloss-ramsey">
+          <div class="glossary-item glossary-item--fig" id="gloss-ramsey">
+            <div class="glossary-item__text">
             <div class="glossary-term">Ramsey interference</div>
-            <p class="glossary-def">π/2–wait–π/2 sequence producing fringes vs wait time; measures detuning and short coherence (<em>T</em><sub>2</sub><sup>*</sup>). <a href="#ref-ramsey1950" class="tpl-cite" data-doc-ref="ref-ramsey1950">Ramsey (1950)</a></p>
+            <p class="glossary-def">π/2 — free evolution for time τ — π/2: the first pulse creates a superposition, τ lets it accrue <a href="#gloss-phase">phase</a> 2πΔ<em>f</em>·τ (detuning Δ<em>f</em>), the second pulse maps that phase to measurable Z excitation. Fringes vs τ reveal frequency offset and <em>T</em><sub>2</sub><sup>*</sup> decay from inhomogeneous broadening. <a href="#gloss-hahn-echo">Echo</a> refocuses static spread to probe intrinsic <a href="#gloss-dephasing"><em>T</em><sub>2</sub></a>. <a href="#ref-ramsey1950" class="tpl-cite" data-doc-ref="ref-ramsey1950">Ramsey (1950)</a></p>
+            </div>
+            <figure class="glossary-fig" aria-hidden="true"><svg viewBox="0 0 100 56" xmlns="http://www.w3.org/2000/svg"><rect x="6" y="16" width="16" height="26" rx="2" fill="var(--bg-2)" stroke="var(--line-bright)" stroke-width="1"/><text x="14" y="33" text-anchor="middle" fill="var(--ink-dim)" font-size="8" font-family="var(--mono),monospace">π/2</text><line x1="22" y1="29" x2="30" y2="29" stroke="var(--line)" stroke-width="1"/><rect x="30" y="12" width="40" height="34" rx="2" fill="none" stroke="var(--ink-faint)" stroke-width="1" stroke-dasharray="4 3"/><text x="50" y="32" text-anchor="middle" fill="var(--ink-faint)" font-size="9" font-family="var(--mono),monospace">τ</text><line x1="70" y1="29" x2="78" y2="29" stroke="var(--line)" stroke-width="1"/><rect x="78" y="16" width="16" height="26" rx="2" fill="var(--bg-2)" stroke="var(--line-bright)" stroke-width="1"/><text x="86" y="33" text-anchor="middle" fill="var(--ink-dim)" font-size="8" font-family="var(--mono),monospace">π/2</text></svg></figure>
           </div>
         </div>
       </div>
@@ -3659,29 +3740,41 @@
       <div class="glossary-alpha">
         <h2 class="glossary-letter" id="glossary-S">S</h2>
         <div class="glossary-list">
-          <div class="glossary-item" id="gloss-schrodinger-cat">
+          <div class="glossary-item glossary-item--fig" id="gloss-schrodinger-cat">
+            <div class="glossary-item__text">
             <div class="glossary-term">Schrödinger's cat state (|+⟩)</div>
-            <p class="glossary-def">Equal superposition of |0⟩ and |1⟩ before measurement — genuinely both, not secretly one.</p>
+            <p class="glossary-def">|+⟩ = (|0⟩+|1⟩)/√2 is an equal <a href="#gloss-superposition">superposition</a>: not a classical mixture (which would be <a href="#gloss-maximally-mixed">maximally mixed</a> ρ = ½<em>I</em>), but a coherent blend with a definite <a href="#gloss-phase">relative phase</a>. Measuring in Z yields 50/50, yet measuring in X is deterministic — a hallmark of coherence. Macroscopic “cat” thought experiments scale this idea to large systems; in algorithms, |+⟩ is usually the state after H|0⟩. <a href="#ref-nc2000" class="tpl-cite" data-doc-ref="ref-nc2000">Nielsen &amp; Chuang</a></p>
+            </div>
+            <figure class="glossary-fig" aria-hidden="true"><svg viewBox="0 0 100 72" xmlns="http://www.w3.org/2000/svg"><circle cx="32" cy="36" r="10" fill="var(--bg-2)" stroke="var(--mint)" stroke-width="1.3"/><text x="32" y="40" text-anchor="middle" fill="var(--mint)" font-size="11" font-family="var(--mono),monospace">0</text><text x="50" y="40" text-anchor="middle" fill="var(--ink-soft)" font-size="14" font-family="serif">+</text><circle cx="68" cy="36" r="10" fill="var(--bg-2)" stroke="var(--mint)" stroke-width="1.3"/><text x="68" y="40" text-anchor="middle" fill="var(--mint)" font-size="11" font-family="var(--mono),monospace">1</text><path d="M32 22 Q50 8 68 22" fill="none" stroke="var(--cyan)" stroke-width="1.5"/></svg></figure>
           </div>
-          <div class="glossary-item" id="gloss-shots">
+          <div class="glossary-item glossary-item--fig" id="gloss-shots">
+            <div class="glossary-item__text">
             <div class="glossary-term">Shots (measurement repetitions)</div>
-            <p class="glossary-def">Independent circuit runs whose 0/1 outcomes are averaged — more shots reduce statistical noise in estimates.</p>
+            <p class="glossary-def">Each shot runs the full circuit from standard |0⟩<sup>⊗<em>n</em></sup> initialization through gates to <a href="#gloss-computational-basis">measurement</a>, recording one (or a small register of) bitstrings. Expectation values and probabilities are estimated as sample means; statistical error scales ~1/√<em>S</em> for <em>S</em> shots. On hardware, shots dominate time cost and interact with <a href="#gloss-depolarizing">noise</a> calibration. More shots cannot fix systematic errors — only averaging random noise. <a href="#ref-nc2000" class="tpl-cite" data-doc-ref="ref-nc2000">Nielsen &amp; Chuang</a></p>
+            </div>
+            <figure class="glossary-fig" aria-hidden="true"><svg viewBox="0 0 100 64" xmlns="http://www.w3.org/2000/svg"><rect x="18" y="38" width="16" height="22" fill="var(--mint)" opacity="0.35" stroke="var(--mint)" stroke-width="1"/><rect x="42" y="22" width="16" height="38" fill="var(--mint)" opacity="0.55" stroke="var(--mint)" stroke-width="1"/><rect x="66" y="30" width="16" height="30" fill="var(--mint)" opacity="0.4" stroke="var(--mint)" stroke-width="1"/><line x1="10" y1="60" x2="90" y2="60" stroke="var(--line)" stroke-width="1"/><text x="26" y="14" text-anchor="middle" fill="var(--ink-faint)" font-size="7" font-family="var(--mono),monospace">0</text><text x="50" y="14" text-anchor="middle" fill="var(--ink-faint)" font-size="7" font-family="var(--mono),monospace">1</text><text x="74" y="14" text-anchor="middle" fill="var(--ink-faint)" font-size="7" font-family="var(--mono),monospace">0</text></svg></figure>
           </div>
-          <div class="glossary-item" id="gloss-spectral-density">
+          <div class="glossary-item glossary-item--fig" id="gloss-spectral-density">
+            <div class="glossary-item__text">
             <div class="glossary-term">Spectral density</div>
-            <p class="glossary-def">Noise power vs frequency — predicts whether relaxation or dephasing dominates and how echo vs Ramsey behaves. <a href="#ref-redfield1957" class="tpl-cite" data-doc-ref="ref-redfield1957">Redfield (1957)</a></p>
+            <p class="glossary-def">The bath noise spectrum <em>S</em>(ω) describes how much fluctuation power couples to the qubit at angular frequency ω. Low-frequency 1/<em>f</em> tails dominate pure <a href="#gloss-dephasing">dephasing</a> in many solid-state devices; Markovian white noise approximations simplify to constant rates in <a href="#gloss-lindblad">Lindblad</a> models. <a href="#gloss-hahn-echo">Echo</a> sequences filter low-frequency noise; sensitivity to ω ≈ 0 vs ω ≈ qubit splitting shapes whether <a href="#gloss-ramsey">Ramsey</a> or echo sees faster decay. <a href="#ref-redfield1957" class="tpl-cite" data-doc-ref="ref-redfield1957">Redfield (1957)</a></p>
+            </div>
+            <figure class="glossary-fig" aria-hidden="true"><svg viewBox="0 0 100 64" xmlns="http://www.w3.org/2000/svg"><line x1="10" y1="52" x2="90" y2="52" stroke="var(--line)" stroke-width="1"/><line x1="10" y1="12" x2="10" y2="52" stroke="var(--line)" stroke-width="1"/><path d="M12 48 Q40 44 50 28 Q65 10 88 18" fill="none" stroke="var(--cyan)" stroke-width="1.5"/><text x="72" y="8" fill="var(--ink-faint)" font-size="7" font-family="var(--mono),monospace">S(ω)</text><text x="78" y="58" fill="var(--ink-faint)" font-size="7" font-family="var(--mono),monospace">ω</text></svg></figure>
           </div>
           <div class="glossary-item" id="gloss-stabilizer">
             <div class="glossary-term">Stabilizer (check operator)</div>
-            <p class="glossary-def">Multi-qubit parity measurement for QEC. <a href="#ref-kitaev2003" class="tpl-cite" data-doc-ref="ref-kitaev2003">Kitaev</a>, <a href="#ref-fowler2012" class="tpl-cite" data-doc-ref="ref-fowler2012">Fowler et al.</a></p>
+            <p class="glossary-def">A multi-qubit parity measurement used in quantum error correction. Rather than reading the logical qubit directly (which would destroy it), a stabilizer asks a narrower yes/no question about a small group of physical qubits — “do these four qubits have even parity?” — whose answer should always be “yes” in a healthy code block. When an error occurs, it flips some of these answers. The pattern of flipped answers is called the syndrome, and it points to where the error likely occurred without ever revealing the logical qubit’s value. Think of it like a building’s smoke detectors: each one monitors a small zone, and the pattern of which ones triggered tells you where the fire is. <a href="#ref-kitaev2003" class="tpl-cite" data-doc-ref="ref-kitaev2003">Kitaev</a>, <a href="#ref-fowler2012" class="tpl-cite" data-doc-ref="ref-fowler2012">Fowler et al.</a></p>
           </div>
-          <div class="glossary-item" id="gloss-superposition">
+          <div class="glossary-item glossary-item--fig" id="gloss-superposition">
+            <div class="glossary-item__text">
             <div class="glossary-term">Superposition</div>
-            <p class="glossary-def">Coherent blend of basis states until measurement.</p>
+            <p class="glossary-def">A pure state α|0⟩ + β|1⟩ with |α|² + |β|² = 1 is a <em>coherent</em> combination: unlike a classical coin you have not yet flipped, there is no hidden definite bit — interference experiments (e.g. <a href="#gloss-hadamard">Hadamard</a> then H) can distinguish superpositions from <a href="#gloss-maximally-mixed">mixed</a> states. Measurement in the <a href="#gloss-computational-basis">computational basis</a> collapses to |0⟩ or |1⟩ with probabilities |α|², |β|². <a href="#gloss-interference">Interference</a> before measurement is what algorithms exploit. <a href="#ref-nc2000" class="tpl-cite" data-doc-ref="ref-nc2000">Nielsen &amp; Chuang</a></p>
+            </div>
+            <figure class="glossary-fig" aria-hidden="true"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="38" fill="none" stroke="var(--line-bright)" stroke-width="1.2"/><ellipse cx="50" cy="50" rx="38" ry="15" fill="none" stroke="var(--line)" stroke-width="0.9" opacity="0.85"/><line x1="50" y1="12" x2="50" y2="88" stroke="var(--mint)" stroke-width="1.8"/><line x1="12" y1="50" x2="88" y2="50" stroke="var(--cyan)" stroke-width="1.8" opacity="0.85"/><line x1="50" y1="50" x2="82" y2="50" stroke="var(--amber)" stroke-width="2.4" stroke-linecap="round"/><polygon points="80,46 88,50 80,54" fill="var(--amber)"/><circle cx="50" cy="12" r="4.5" fill="var(--ink-faint)"/><circle cx="50" cy="88" r="4.5" fill="var(--ink-faint)"/><text x="50" y="10" text-anchor="middle" fill="var(--mint)" font-size="9" font-weight="600" font-family="ui-monospace,monospace">|0⟩</text><text x="50" y="98" text-anchor="middle" fill="var(--mint)" font-size="9" font-weight="600" font-family="ui-monospace,monospace">|1⟩</text><text x="86" y="42" text-anchor="middle" fill="var(--amber)" font-size="8" font-weight="600" font-family="ui-monospace,monospace">|+⟩</text></svg></figure>
           </div>
           <div class="glossary-item" id="gloss-syndrome">
             <div class="glossary-term">Syndrome</div>
-            <p class="glossary-def">Pattern of failed stabilizer checks pointing to likely errors.</p>
+            <p class="glossary-def">The pattern of failed stabilizer checks that results from one or more physical errors. Each check is a parity measurement that should return +1 in a healthy code block; an error flips some checks to −1. The syndrome is the list of which checks failed — it is the only information a decoder is given. A good syndrome uniquely points to the most likely error without revealing anything about the logical qubit being protected. See also: <a href="#gloss-stabilizer">Stabilizer</a>, <a href="#gloss-decoder">Decoder</a>.</p>
           </div>
         </div>
       </div>
@@ -3689,17 +3782,27 @@
       <div class="glossary-alpha">
         <h2 class="glossary-letter" id="glossary-T">T</h2>
         <div class="glossary-list">
-          <div class="glossary-item" id="gloss-t1">
+          <div class="glossary-item glossary-item--fig" id="gloss-t1">
+            <div class="glossary-item__text">
             <div class="glossary-term"><em>T</em><sub>1</sub> relaxation</div>
-            <p class="glossary-def">Energy decay timescale — how long |1⟩ survives before leaking toward |0⟩.</p>
+            <p class="glossary-def">Exponential energy relaxation: P(|1⟩) decays as e<sup>−<em>t</em>/<em>T</em><sub>1</sub></sup> toward thermal equilibrium (often near |0⟩ at millikelvin). Sets how long excited states survive — gate times and circuit depth must stay ≪ <em>T</em><sub>1</sub> for high fidelity. Quantum <a href="#gloss-dephasing"><em>T</em><sub>2</sub></a> obeys <em>T</em><sub>2</sub> ≤ 2<em>T</em><sub>1</sub>. Modeled by <a href="#gloss-amplitude-damping">amplitude damping</a>. <a href="#ref-nc2000" class="tpl-cite" data-doc-ref="ref-nc2000">Nielsen &amp; Chuang</a></p>
+            </div>
+            <figure class="glossary-fig" aria-hidden="true"><svg viewBox="0 0 100 72" xmlns="http://www.w3.org/2000/svg"><line x1="14" y1="56" x2="88" y2="56" stroke="var(--line)" stroke-width="1"/><line x1="14" y1="16" x2="14" y2="56" stroke="var(--line)" stroke-width="1"/><path d="M14 20 C 32 52 58 58 88 52" fill="none" stroke="var(--amber)" stroke-width="2"/><text x="50" y="14" text-anchor="middle" fill="var(--ink-faint)" font-size="8.5" font-family="ui-monospace,monospace">P(|1⟩)</text><text x="50" y="68" text-anchor="middle" fill="var(--ink-faint)" font-size="8.5" font-family="ui-monospace,monospace">time t →</text><text x="52" y="34" text-anchor="middle" fill="var(--ink-faint)" font-size="8" font-family="ui-monospace,monospace">∝ exp(−t/T₁)</text></svg></figure>
           </div>
-          <div class="glossary-item" id="gloss-tensor-product">
+          <div class="glossary-item glossary-item--fig" id="gloss-tensor-product">
+            <div class="glossary-item__text">
             <div class="glossary-term">Tensor product (ρ<sub>A</sub> ⊗ ρ<sub>B</sub>)</div>
-            <p class="glossary-def">Combines independent subsystems; entangled states are not tensor products of separate one-qubit states.</p>
+            <p class="glossary-def">The joint Hilbert space of non-interacting subsystems is the tensor product ℋ<sub>A</sub> ⊗ ℋ<sub>B</sub>; dimensions multiply. States of the form |ψ⟩<sub>A</sub> ⊗ |φ⟩<sub>B</sub> are <a href="#gloss-product-state">products</a>; <a href="#gloss-entanglement">entangled</a> states are sums of such tensors, not a single tensor. Density matrices combine as ρ<sub>AB</sub> = ρ<sub>A</sub> ⊗ ρ<sub>B</sub> only for uncorrelated noise across subsystems. <a href="#ref-nc2000" class="tpl-cite" data-doc-ref="ref-nc2000">Nielsen &amp; Chuang</a></p>
+            </div>
+            <figure class="glossary-fig" aria-hidden="true"><svg viewBox="0 0 100 70" xmlns="http://www.w3.org/2000/svg"><rect x="6" y="18" width="34" height="36" rx="2" fill="var(--bg-2)" stroke="var(--line-bright)" stroke-width="1"/><text x="23" y="42" text-anchor="middle" fill="var(--ink-dim)" font-size="11" font-family="var(--mono),monospace">A</text><text x="50" y="42" text-anchor="middle" fill="var(--ink-soft)" font-size="16" font-family="serif">⊗</text><rect x="60" y="18" width="34" height="36" rx="2" fill="var(--bg-2)" stroke="var(--line-bright)" stroke-width="1"/><text x="77" y="42" text-anchor="middle" fill="var(--ink-dim)" font-size="11" font-family="var(--mono),monospace">B</text></svg></figure>
+          </div>
+          <div class="glossary-item" id="gloss-toffoli">
+            <div class="glossary-term">Toffoli gate (CCX)</div>
+            <p class="glossary-def">A three-qubit gate that flips the target qubit if and only if both control qubits are |1⟩. On classical bits it is a reversible AND gate. On superpositions it extends this conditional logic coherently. The Toffoli gate is universal for reversible classical computation and appears as a building block in many quantum oracles and arithmetic circuits. <a href="#ref-nc2000" class="tpl-cite" data-doc-ref="ref-nc2000">Nielsen &amp; Chuang</a></p>
           </div>
           <div class="glossary-item" id="gloss-tsirelson">
             <div class="glossary-term">Tsirelson bound</div>
-            <p class="glossary-def">Quantum CHSH maximum 2√2. <a href="#ref-nc2000" class="tpl-cite" data-doc-ref="ref-nc2000">Nielsen &amp; Chuang</a></p>
+            <p class="glossary-def">For the <a href="#gloss-chsh">CHSH</a> inequality, quantum mechanics allows |<em>S</em>| ≤ 2√2 ≈ 2.828, even though the algebraic maximum of the same expression would be 4. This “Tsirelson” limit is achieved by a maximally entangled pair and suitable local measurement angles. It separates quantum theory from both classical (≤ 2) and hypothetical “super-quantum” PR-box correlations. <a href="#ref-nc2000" class="tpl-cite" data-doc-ref="ref-nc2000">Nielsen &amp; Chuang</a></p>
           </div>
         </div>
       </div>
@@ -3709,15 +3812,18 @@
         <div class="glossary-list">
           <div class="glossary-item" id="gloss-unital">
             <div class="glossary-term">Unital channel</div>
-            <p class="glossary-def">Noise that leaves the maximally mixed state fixed — pure “blurring” without a preferred energy direction.</p>
+            <p class="glossary-def">A channel ℰ with ℰ(<em>I</em>/<em>d</em>) = <em>I</em>/<em>d</em> — the <a href="#gloss-maximally-mixed">maximally mixed</a> state stays at the center of the <a href="#gloss-bloch-sphere">Bloch</a> ball in qubit terms. <a href="#gloss-depolarizing">Depolarizing</a> and pure <a href="#gloss-dephasing">dephasing</a> are unital; <a href="#gloss-amplitude-damping">amplitude damping</a> is not (it pulls toward |0⟩). Unital channels never increase the eigenvalues of ρ in the majorization sense; they are “noisier” mixes of unitaries in finite dimensions (Birkhoff-type intuition, with caveats). <a href="#ref-nc2000" class="tpl-cite" data-doc-ref="ref-nc2000">Nielsen &amp; Chuang</a></p>
           </div>
           <div class="glossary-item" id="gloss-unstructured-search">
             <div class="glossary-term">Unstructured search</div>
             <p class="glossary-def">Finding one marked item in a list with no extra structure (no sorted order or hash lookup): classically Θ(N) queries in the worst case; Grover achieves O(√N) oracle calls. <a href="#ref-grover1996" class="tpl-cite" data-doc-ref="ref-grover1996">Grover (1996)</a></p>
           </div>
-          <div class="glossary-item" id="gloss-unitary">
+          <div class="glossary-item glossary-item--fig" id="gloss-unitary">
+            <div class="glossary-item__text">
             <div class="glossary-term">Unitary transformation</div>
-            <p class="glossary-def">Reversible gate on quantum states; preserves total probability.</p>
+            <p class="glossary-def">A matrix <em>U</em> with <em>U</em>†<em>U</em> = <em>I</em> acts on kets as |ψ⟩ ↦ <em>U</em>|ψ⟩ and on density matrices as ρ ↦ <em>U</em>ρ<em>U</em>†. It preserves inner products and eigenvalues of ρ — pure stays pure, <a href="#gloss-purity">purity</a> is unchanged. Ideal quantum gates are unitaries; <a href="#gloss-open-system">open-system</a> noise is not. Any finite gate set generating a dense subgroup of SU(2<sup><em>n</em></sup>) is approximately universal. <a href="#ref-nc2000" class="tpl-cite" data-doc-ref="ref-nc2000">Nielsen &amp; Chuang</a></p>
+            </div>
+            <figure class="glossary-fig" aria-hidden="true"><svg viewBox="0 0 100 92" xmlns="http://www.w3.org/2000/svg"><rect x="18" y="10" width="64" height="56" rx="6" fill="var(--bg-2)" stroke="var(--line-bright)" stroke-width="1.25"/><text x="50" y="46" text-anchor="middle" dominant-baseline="middle" fill="var(--mint)" font-size="26" font-weight="600" font-family="ui-serif,Georgia,serif">U</text><path d="M 34 54 A 16 16 0 1 1 66 54" fill="none" stroke="var(--mint)" stroke-width="1.8" stroke-linecap="round"/><polygon points="64,52 68,54 64,57" fill="var(--mint)"/><text x="50" y="82" text-anchor="middle" fill="var(--ink-faint)" font-size="8.5" font-family="ui-monospace,monospace">U†U = I</text></svg></figure>
           </div>
         </div>
       </div>
@@ -3727,7 +3833,7 @@
         <div class="glossary-list">
           <div class="glossary-item" id="gloss-vqe">
             <div class="glossary-term">Variational Quantum Eigensolver (VQE)</div>
-            <p class="glossary-def">Hybrid minimization of energy over a parameterized circuit — key NISQ approach to chemistry and materials. <a href="#ref-vqe2014" class="tpl-cite" data-doc-ref="ref-vqe2014">Peruzzo et al. (2014)</a></p>
+            <p class="glossary-def">Prepare |ψ(θ)⟩ with a parameterized <a href="#gloss-ansatz">ansatz</a>, measure Pauli strings to estimate ⟨ψ(θ)|<a href="#gloss-hamiltonian"><em>H</em></a>|ψ(θ)⟩, classically update θ to lower that energy. The variational principle guarantees you never undershoot the ground energy, only approach it from above. Practical challenges: measurement shot noise, <a href="#gloss-barren-plateau">barren plateaus</a>, circuit depth vs <a href="#gloss-decoherence">decoherence</a>, and encoding fermionic <em>H</em> into qubits. <a href="#ref-vqe2014" class="tpl-cite" data-doc-ref="ref-vqe2014">Peruzzo et al. (2014)</a></p>
           </div>
         </div>
       </div>
@@ -3735,14 +3841,28 @@
       <div class="glossary-alpha">
         <h2 class="glossary-letter" id="glossary-Z">Z</h2>
         <div class="glossary-list">
-          <div class="glossary-item" id="gloss-z-x-basis">
+          <div class="glossary-item glossary-item--fig" id="gloss-z-x-basis">
+            <div class="glossary-item__text">
             <div class="glossary-term">Z-basis and X-basis</div>
-            <p class="glossary-def">Different measurement axes — Z is standard 0/1; X probes superposition structure (often via H before measure).</p>
+            <p class="glossary-def">The <a href="#gloss-computational-basis">computational</a> (Z) basis diagonalizes σ<sub>z</sub>: outcomes ±1 correspond to projectors |0⟩⟨0|, |1⟩⟨1|. The X basis diagonalizes σ<sub>x</sub> with eigenvectors |±⟩ = (|0⟩ ± |1⟩)/√2. Experimentally, an X measurement is implemented as <a href="#gloss-hadamard">H</a> then Z-measure. Conjugate bases cannot be measured simultaneously with arbitrary precision (uncertainty). <a href="#ref-nc2000" class="tpl-cite" data-doc-ref="ref-nc2000">Nielsen &amp; Chuang</a></p>
+            </div>
+            <figure class="glossary-fig" aria-hidden="true"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="36" fill="none" stroke="var(--line-bright)" stroke-width="1.2"/><line x1="50" y1="14" x2="50" y2="86" stroke="var(--mint)" stroke-width="2"/><line x1="14" y1="50" x2="86" y2="50" stroke="var(--cyan)" stroke-width="2"/><text x="50" y="12" text-anchor="middle" fill="var(--mint)" font-size="11" font-weight="700" font-family="ui-monospace,monospace">Z</text><text x="82" y="50" text-anchor="start" dominant-baseline="middle" fill="var(--cyan)" font-size="11" font-weight="700" font-family="ui-monospace,monospace">X</text></svg></figure>
           </div>
         </div>
       </div>
 
     </section>
+
+    <details class="expert-footnotes" style="margin-top:1.25rem;max-width:52rem;">
+      <summary>Expert Footnotes (Hidden)</summary>
+      <ol>
+        <li id="fn-gloss-1"><strong>Coherences.</strong> A common misconception is that decoherence “destroys” coherences. More precisely, decoherence transfers them into correlations between the qubit and the environment. The reduced density matrix of the qubit loses its off-diagonals, but the joint system remains in a pure state (assuming unitary evolution). <a class="expert-fn-ref" href="#fnref-gloss-1">↩</a></li>
+        <li id="fn-gloss-2"><strong>Depolarizing noise.</strong> The depolarizing channel is symmetric by construction — it treats \(X\), \(Y\), and \(Z\) errors as equally likely. Real hardware is rarely this well-behaved. Superconducting qubits typically experience more dephasing (\(Z\)-type) than relaxation (\(X/Y\)-type) errors, particularly at low frequencies where \(1/f\) charge noise dominates. Trapped-ion devices have different error structures again. Using a depolarizing model for resource estimation therefore tends to underestimate the circuit depth required to stay below a given logical error rate on actual hardware, because structured correlated errors are harder to correct than independent symmetric ones. <a class="expert-fn-ref" href="#fnref-gloss-2">↩</a></li>
+        <li id="fn-gloss-3"><strong>Fault-tolerance threshold.</strong> The threshold theorem is sometimes stated as “if physical error rates are below a certain %, fault-tolerant computation is possible.” However this is technically a statement about asymptotic behavior: below threshold, increasing code distance drives logical error rates exponentially toward zero. But the theorem requires that every single operation in the syndrome extraction circuit, including measurements, ancilla preparation, and classical decoding, also operate below threshold. Thus, the practically relevant threshold for a surface code with realistic syndrome circuits is typically lower than naive gate-only estimates suggest. <a class="expert-fn-ref" href="#fnref-gloss-3">↩</a></li>
+        <li id="fn-gloss-4"><strong>Purity.</strong> Purity is a convenient scalar but it conflates different types of mixedness. Two states with the same purity can have very different physical origins: one might be a slightly decohered superposition (off-diagonals reduced), another a slight thermal mixture (populations shifted). They produce identical purity values but will behave differently under subsequent gates. For diagnosing what kind of noise a system has experienced, more advanced techniques, or access to the full density matrix, is often needed. <a class="expert-fn-ref" href="#fnref-gloss-4">↩</a></li>
+        <li id="fn-gloss-5"><strong>No-cloning theorem.</strong> The theorem is sometimes overstated as “quantum states cannot be copied.” The precise claim is that no unitary operation can copy an arbitrary unknown state — known states can be prepared in many copies trivially, and classical information about a state can be extracted and broadcast freely. This is exactly what syndrome measurement in error correction does: it extracts parity information about the encoded state without learning anything about the logical qubit it protects. The proof follows in one line from linearity: a map that correctly clones two orthogonal states cannot correctly clone their superposition, because the output of cloning a superposition is not the superposition of cloned outputs. <a class="expert-fn-ref" href="#fnref-gloss-5">↩</a></li>
+      </ol>
+    </details>
   </div><!-- /#view-glossary -->
 
   <!-- ============================================================
@@ -3761,121 +3881,128 @@
     <section style="margin-bottom:52px">
       <div style="font-family:var(--mono);font-size:10px;letter-spacing:0.18em;text-transform:uppercase;color:var(--mint-dim);margin-bottom:20px;padding-bottom:10px;border-bottom:1px solid var(--line)">Landmark papers</div>
 
-      <div id="timeline-container" style="position:relative;padding-left:40px">
-        <div style="position:absolute;left:14px;top:8px;bottom:8px;width:2px;background:linear-gradient(180deg,var(--mint),var(--phos),var(--amber),var(--cyan),var(--magenta),var(--mint),var(--phos),var(--amber),var(--cyan));border-radius:2px;opacity:0.5"></div>
+      <p class="tl2-scroll-hint">Scroll the axis horizontally if it extends past the edge — every dot is a paper you can open.</p>
+      <div id="tl2-track-outer" class="tl2-track-outer">
+        <div id="tl2-track-wrap" class="tl2-track-wrap" role="group" aria-label="Timeline of landmark papers">
+          <div class="tl2-axis-line"></div>
+          <div class="tl2-axis-progress" id="tl2-progress"></div>
+          <div class="tl2-range-label tl2-range-start">1960s</div>
+          <div class="tl2-range-label tl2-range-end">2020s</div>
+        </div>
+      </div>
+      <div id="tl2-detail" class="tl2-detail" aria-live="polite"></div>
 
+      <div hidden id="tl2-data">
         <div class="tl-entry" data-tl="0">
           <div class="tl-dot" style="background:var(--mint);border-color:var(--mint)"></div>
-          <div class="tl-card">
-            <div class="tl-header">
-              <div class="tl-year" style="color:var(--mint)">1964</div>
-              <div class="tl-title">Bell — On the Einstein Podolsky Rosen Paradox</div>
-              <div class="tl-chevron">›</div>
-            </div>
-            <div class="tl-authors">J. S. Bell · <em>Physics</em> 1, 195 (1964)</div>
-            <div class="tl-body">
-              <p>Proves that no local hidden-variable theory can reproduce all predictions of quantum mechanics. The inequality that bears his name separates quantum correlations from any classical probabilistic explanation. Every quantum networking and cryptography protocol in existence depends on the physical reality this paper established. The CHSH test in Tutorial 2 Step 4 is a direct implementation of Bell's argument, and the 2022 Nobel Prize in Physics was awarded for its experimental confirmation.</p>
-              <a href="https://cds.cern.ch/record/111654/files/vol1p195-200_001.pdf" target="_blank" rel="noopener" class="tl-link">Read paper →</a>
-            </div>
+          <div class="tl-year" style="color:var(--mint)">1964</div>
+          <div class="tl-title">Bell — On the Einstein Podolsky Rosen Paradox</div>
+          <div class="tl-authors">J. S. Bell · <em>Physics</em> 1, 195 (1964)</div>
+          <div class="tl-body">
+            <p>Proves that no local hidden-variable theory can reproduce all predictions of quantum mechanics. The inequality that bears his name separates quantum correlations from any classical probabilistic explanation. Every quantum networking and cryptography protocol in existence depends on the physical reality this paper established. The CHSH test in Tutorial 2 Step 4 is a direct implementation of Bell's argument, and the 2022 Nobel Prize in Physics was awarded for its experimental confirmation.</p>
+            <a href="https://cds.cern.ch/record/111654/files/vol1p195-200_001.pdf" target="_blank" rel="noopener" class="tl-link">Read paper →</a>
           </div>
         </div>
-
         <div class="tl-entry" data-tl="1">
-          <div class="tl-dot" style="background:var(--amber);border-color:var(--amber)"></div>
-          <div class="tl-card">
-            <div class="tl-header">
-              <div class="tl-year" style="color:var(--amber)">1985</div>
-              <div class="tl-title">Deutsch — Quantum Theory, the Church–Turing Principle and the Universal Quantum Computer</div>
-              <div class="tl-chevron">›</div>
-            </div>
-            <div class="tl-authors">D. Deutsch · <em>Proc. R. Soc. Lond.</em> A 400 (1985)</div>
-            <div class="tl-body">
-              <p>The founding paper of quantum computation. Deutsch formalises the quantum Turing machine and introduces the first quantum algorithm — a single-bit problem (is this function constant or balanced?) solved in one oracle query where any classical algorithm needs two. The circuit idiom of "prepare superposition → query oracle → interfere → measure" originates here, and every algorithm in this site's Templates section is a descendant. Tutorial 5 explores the n-bit generalisation of this paper's core circuit.</p>
-              <a href="https://royalsocietypublishing.org/doi/10.1098/rspa.1985.0070" target="_blank" rel="noopener" class="tl-link">Read paper →</a>
-            </div>
+          <div class="tl-dot" style="background:var(--phos);border-color:var(--phos)"></div>
+          <div class="tl-year" style="color:var(--phos)">1982</div>
+          <div class="tl-title">Wootters &amp; Zurek — A Single Quantum Cannot Be Cloned</div>
+          <div class="tl-authors">W. K. Wootters, W. H. Zurek · <em>Nature</em> 299, 802–803 (1982)</div>
+          <div class="tl-body">
+            <p>Independently of Dieks' contemporaneous note, this letter proves the no-cloning theorem: there is no unitary that copies an unknown pure qubit state onto a blank ancilla. That is why classical redundancy cannot implement quantum error correction by simple repetition — entanglement and syndrome measurement are mandatory. Tutorial 4 Step 2 ("why you can't just copy") is grounded in this result.</p>
+            <a href="https://www.nature.com/articles/299802a0" target="_blank" rel="noopener" class="tl-link">Read paper →</a>
           </div>
         </div>
-
         <div class="tl-entry" data-tl="2">
-          <div class="tl-dot" style="background:var(--cyan);border-color:var(--cyan)"></div>
-          <div class="tl-card">
-            <div class="tl-header">
-              <div class="tl-year" style="color:var(--cyan)">1992</div>
-              <div class="tl-title">Deutsch &amp; Jozsa — Rapid Solution of Problems by Quantum Computation</div>
-              <div class="tl-chevron">›</div>
-            </div>
-            <div class="tl-authors">D. Deutsch, R. Jozsa · <em>Proc. R. Soc. Lond.</em> A 439 (1992)</div>
-            <div class="tl-body">
-              <p>Extends Deutsch's algorithm to n input bits: determine whether a function is constant or balanced using a single oracle query, versus the 2<sup>n−1</sup>+1 queries needed classically in the worst case. The circuit built and studied in Tutorial 5 is exactly the one in this paper. It introduces phase kickback as an explicit mechanism — the ancilla qubit in state |−⟩ absorbs the oracle's action as a phase on the input register, which the final Hadamard layer then converts to a readable measurement result.</p>
-              <a href="https://royalsocietypublishing.org/doi/10.1098/rspa.1992.0167" target="_blank" rel="noopener" class="tl-link">Read paper →</a>
-            </div>
-          </div>
-        </div>
-
-        <div class="tl-entry" data-tl="3">
           <div class="tl-dot" style="background:var(--magenta);border-color:var(--magenta)"></div>
-          <div class="tl-card">
-            <div class="tl-header">
-              <div class="tl-year" style="color:var(--magenta)">1994</div>
-              <div class="tl-title">Shor — Algorithms for Quantum Computation: Discrete Logarithms and Factoring</div>
-              <div class="tl-chevron">›</div>
-            </div>
-            <div class="tl-authors">P. W. Shor · <em>FOCS 1994</em> / <em>SIAM J. Comput.</em> 26 (1997)</div>
-            <div class="tl-body">
-              <p>Exponential speedup for integer factorisation and discrete logarithm — the paper that made governments pay attention to quantum computing. At its core is quantum phase estimation, which uses the same Hadamard–oracle–Hadamard structure as Deutsch–Jozsa, combined with a quantum Fourier transform. If a large fault-tolerant machine is ever built at scale, RSA encryption becomes obsolete. The gate set used in this site's Lab (H, CNOT, Rz, T, S) is exactly what Shor's algorithm requires.</p>
-              <a href="https://arxiv.org/abs/quant-ph/9508027" target="_blank" rel="noopener" class="tl-link">Read paper →</a>
-            </div>
+          <div class="tl-year" style="color:var(--magenta)">1984</div>
+          <div class="tl-title">Bennett &amp; Brassard — Quantum Cryptography: Public Key Distribution and Coin Tossing</div>
+          <div class="tl-authors">C. H. Bennett, G. Brassard · <em>Proc. IEEE Int. Conf. Computers, Systems and Signal Processing</em> (1984)</div>
+          <div class="tl-body">
+            <p>Introduces BB84, the protocol that turned Bell's non-classical correlations into a practical resource: two parties establish a shared secret key from quantum states and public classical discussion, secure against eavesdroppers limited by quantum mechanics. It is the ancestor of essentially all quantum key distribution deployed today and a flagship application of single-qubit non-orthogonality.</p>
+            <a href="https://doi.org/10.1109/ICCSSP.1984.6212865" target="_blank" rel="noopener" class="tl-link">Read paper →</a>
           </div>
         </div>
-
-        <div class="tl-entry" data-tl="4">
-          <div class="tl-dot" style="background:var(--mint);border-color:var(--mint)"></div>
-          <div class="tl-card">
-            <div class="tl-header">
-              <div class="tl-year" style="color:var(--mint)">1995</div>
-              <div class="tl-title">Shor — Scheme for Reducing Decoherence in Quantum Computer Memory</div>
-              <div class="tl-chevron">›</div>
-            </div>
-            <div class="tl-authors">P. W. Shor · <em>Phys. Rev. A</em> 52, R2493 (1995)</div>
-            <div class="tl-body">
-              <p>The first quantum error-correcting code: one logical qubit encoded in nine physical qubits, resistant to arbitrary single-qubit errors. Proves that fault-tolerant quantum computation is not in principle impossible. The mechanism — measuring syndrome qubits without disturbing the encoded state — is the same mechanism demonstrated in Tutorial 4's bit-flip encoder and conceptually extended in the surface code grid. The repetition code in Tutorial 4 Step 3 is a simplified version of one building block of this paper.</p>
-              <a href="https://arxiv.org/abs/quant-ph/9605011" target="_blank" rel="noopener" class="tl-link">Read paper →</a>
-            </div>
-          </div>
-        </div>
-
-        <div class="tl-entry" data-tl="5">
+        <div class="tl-entry" data-tl="3">
           <div class="tl-dot" style="background:var(--amber);border-color:var(--amber)"></div>
-          <div class="tl-card">
-            <div class="tl-header">
-              <div class="tl-year" style="color:var(--amber)">2000</div>
-              <div class="tl-title">Nielsen &amp; Chuang — Quantum Computation and Quantum Information</div>
-              <div class="tl-chevron">›</div>
-            </div>
-            <div class="tl-authors">M. A. Nielsen, I. L. Chuang · <em>Cambridge University Press</em> (2000)</div>
-            <div class="tl-body">
-              <p>The standard textbook. Universally known as "Mike and Ike." Every gate definition, density matrix convention, Bloch sphere notation, and noise model in this site follows Nielsen &amp; Chuang's conventions. Chapter 2 (linear algebra and qubits), Chapter 4 (quantum circuits), Chapter 8 (noise and decoherence), and Chapter 10 (quantum error correction) are the most directly relevant sections for understanding what the tutorials and simulator are doing. If any notation here seems unfamiliar, this book will resolve it.</p>
-              <a href="https://www.cambridge.org/highereducation/books/quantum-computation-and-quantum-information/01E10196D0A682A6AEFFEA52D53BE9AE" target="_blank" rel="noopener" class="tl-link">View / buy →</a>
-            </div>
+          <div class="tl-year" style="color:var(--amber)">1985</div>
+          <div class="tl-title">Deutsch — Quantum Theory, the Church–Turing Principle and the Universal Quantum Computer</div>
+          <div class="tl-authors">D. Deutsch · <em>Proc. R. Soc. Lond.</em> A 400 (1985)</div>
+          <div class="tl-body">
+            <p>The founding paper of quantum computation. Deutsch formalises the quantum Turing machine and introduces the first quantum algorithm — a single-bit problem (is this function constant or balanced?) solved in one oracle query where any classical algorithm needs two. The circuit idiom of "prepare superposition → query oracle → interfere → measure" originates here, and every algorithm in this site's Templates section is a descendant. Tutorial 5 explores the n-bit generalisation of this paper's core circuit.</p>
+            <a href="https://royalsocietypublishing.org/doi/10.1098/rspa.1985.0070" target="_blank" rel="noopener" class="tl-link">Read paper →</a>
           </div>
         </div>
-
-        <div class="tl-entry" data-tl="6">
+        <div class="tl-entry" data-tl="4">
           <div class="tl-dot" style="background:var(--cyan);border-color:var(--cyan)"></div>
-          <div class="tl-card">
-            <div class="tl-header">
-              <div class="tl-year" style="color:var(--cyan)">2019</div>
-              <div class="tl-title">Google Quantum AI — Quantum supremacy using a programmable superconducting processor</div>
-              <div class="tl-chevron">›</div>
-            </div>
-            <div class="tl-authors">Arute et al. · <em>Nature</em> 574, 505–510 (2019)</div>
-            <div class="tl-body">
-              <p>First claimed quantum computational advantage: a 53-qubit Sycamore processor runs a random circuit sampling task in 200 seconds, estimated to take 10,000 years on the best classical computers available at the time (though subsequent classical advances have narrowed that gap). The gate set — Hadamard, CNOT, single-qubit rotations — is exactly the palette in this site's Lab. The depolarizing noise model used throughout this site is a simplified version of the per-gate error model characterised and reported in this experiment.</p>
-              <a href="https://www.nature.com/articles/s41586-019-1666-5" target="_blank" rel="noopener" class="tl-link">Read paper →</a>
-            </div>
+          <div class="tl-year" style="color:var(--cyan)">1992</div>
+          <div class="tl-title">Deutsch &amp; Jozsa — Rapid Solution of Problems by Quantum Computation</div>
+          <div class="tl-authors">D. Deutsch, R. Jozsa · <em>Proc. R. Soc. Lond.</em> A 439 (1992)</div>
+          <div class="tl-body">
+            <p>Extends Deutsch's algorithm to n input bits: determine whether a function is constant or balanced using a single oracle query, versus the 2<sup>n−1</sup>+1 queries needed classically in the worst case. The circuit built and studied in Tutorial 5 is exactly the one in this paper. It introduces phase kickback as an explicit mechanism — the ancilla qubit in state |−⟩ absorbs the oracle's action as a phase on the input register, which the final Hadamard layer then converts to a readable measurement result.</p>
+            <a href="https://royalsocietypublishing.org/doi/10.1098/rspa.1992.0167" target="_blank" rel="noopener" class="tl-link">Read paper →</a>
           </div>
         </div>
-
+        <div class="tl-entry" data-tl="5">
+          <div class="tl-dot" style="background:var(--mint);border-color:var(--mint)"></div>
+          <div class="tl-year" style="color:var(--mint)">1994</div>
+          <div class="tl-title">Shor — Algorithms for Quantum Computation: Discrete Logarithms and Factoring</div>
+          <div class="tl-authors">P. W. Shor · <em>FOCS 1994</em> / <em>SIAM J. Comput.</em> 26 (1997)</div>
+          <div class="tl-body">
+            <p>Exponential speedup for integer factorisation and discrete logarithm — the paper that made governments pay attention to quantum computing. At its core is quantum phase estimation, which uses the same Hadamard–oracle–Hadamard structure as Deutsch–Jozsa, combined with a quantum Fourier transform. If a large fault-tolerant machine is ever built at scale, RSA encryption becomes obsolete. The gate set used in this site's Lab (H, CNOT, Rz, T, S) is exactly what Shor's algorithm requires.</p>
+            <a href="https://arxiv.org/abs/quant-ph/9508027" target="_blank" rel="noopener" class="tl-link">Read paper →</a>
+          </div>
+        </div>
+        <div class="tl-entry" data-tl="6">
+          <div class="tl-dot" style="background:var(--phos);border-color:var(--phos)"></div>
+          <div class="tl-year" style="color:var(--phos)">1995</div>
+          <div class="tl-title">Shor — Scheme for Reducing Decoherence in Quantum Computer Memory</div>
+          <div class="tl-authors">P. W. Shor · <em>Phys. Rev. A</em> 52, R2493 (1995)</div>
+          <div class="tl-body">
+            <p>The first quantum error-correcting code: one logical qubit encoded in nine physical qubits, resistant to arbitrary single-qubit errors. Proves that fault-tolerant quantum computation is not in principle impossible. The mechanism — measuring syndrome qubits without disturbing the encoded state — is the same mechanism demonstrated in Tutorial 4's bit-flip encoder and conceptually extended in the surface code grid. The repetition code in Tutorial 4 Step 3 is a simplified version of one building block of this paper.</p>
+            <a href="https://arxiv.org/abs/quant-ph/9605011" target="_blank" rel="noopener" class="tl-link">Read paper →</a>
+          </div>
+        </div>
+        <div class="tl-entry" data-tl="7">
+          <div class="tl-dot" style="background:var(--magenta);border-color:var(--magenta)"></div>
+          <div class="tl-year" style="color:var(--magenta)">1996</div>
+          <div class="tl-title">Grover — A Fast Quantum Mechanical Algorithm for Database Search</div>
+          <div class="tl-authors">L. K. Grover · <em>Proc. STOC</em> '96 / <em>Phys. Rev. Lett.</em> 79, 325 (1997)</div>
+          <div class="tl-body">
+            <p>Gives a quadratic speedup for unstructured search: roughly √N oracle calls find a marked item among N possibilities, whereas classical search needs order N in the worst case. The algorithm is a repeated sequence of oracle reflection and "Grover diffusion" about the uniform superposition — the circuit family explored in Tutorial 7. Unlike Shor's period-finding, Grover's is provably optimal for this black-box model.</p>
+            <a href="https://arxiv.org/abs/quant-ph/9605043" target="_blank" rel="noopener" class="tl-link">Read paper →</a>
+          </div>
+        </div>
+        <div class="tl-entry" data-tl="8">
+          <div class="tl-dot" style="background:var(--amber);border-color:var(--amber)"></div>
+          <div class="tl-year" style="color:var(--amber)">2000</div>
+          <div class="tl-title">Nielsen &amp; Chuang — Quantum Computation and Quantum Information</div>
+          <div class="tl-authors">M. A. Nielsen, I. L. Chuang · <em>Cambridge University Press</em> (2000)</div>
+          <div class="tl-body">
+            <p>The standard textbook. Universally known as "Mike and Ike." Every gate definition, density matrix convention, Bloch sphere notation, and noise model in this site follows Nielsen &amp; Chuang's conventions. Chapter 2 (linear algebra and qubits), Chapter 4 (quantum circuits), Chapter 8 (noise and decoherence), and Chapter 10 (quantum error correction) are the most directly relevant sections for understanding what the tutorials and simulator are doing. If any notation here seems unfamiliar, this book will resolve it.</p>
+            <a href="https://www.cambridge.org/highereducation/books/quantum-computation-and-quantum-information/01E10196D0A682A6AEFFEA52D53BE9AE" target="_blank" rel="noopener" class="tl-link">View / buy →</a>
+          </div>
+        </div>
+        <div class="tl-entry" data-tl="9">
+          <div class="tl-dot" style="background:var(--cyan);border-color:var(--cyan)"></div>
+          <div class="tl-year" style="color:var(--cyan)">2009</div>
+          <div class="tl-title">Harrow, Hassidim &amp; Lloyd — Quantum Algorithm for Linear Systems of Equations</div>
+          <div class="tl-authors">A. W. Harrow, A. Hassidim, S. Lloyd · <em>Phys. Rev. Lett.</em> 103, 150502 (2009)</div>
+          <div class="tl-body">
+            <p>The HHL algorithm prepares a quantum state proportional to <em>x</em> for a sparse, well-conditioned linear system <em>Ax</em> = <em>b</em> in poly(log <em>N</em>) time under appropriate oracles — an exponential improvement in dimension over classical matrix inversion for certain input models. It helped crystallise the idea that quantum computers can accelerate linear-algebra subroutines inside larger pipelines, and it remains a reference point for quantum machine learning proposals (with caveats about readout and data loading).</p>
+            <a href="https://arxiv.org/abs/0811.3171" target="_blank" rel="noopener" class="tl-link">Read paper →</a>
+          </div>
+        </div>
+        <div class="tl-entry" data-tl="10">
+          <div class="tl-dot" style="background:var(--mint);border-color:var(--mint)"></div>
+          <div class="tl-year" style="color:var(--mint)">2019</div>
+          <div class="tl-title">Google Quantum AI — Quantum supremacy using a programmable superconducting processor</div>
+          <div class="tl-authors">Arute et al. · <em>Nature</em> 574, 505–510 (2019)</div>
+          <div class="tl-body">
+            <p>First claimed quantum computational advantage: a 53-qubit Sycamore processor runs a random circuit sampling task in 200 seconds, estimated to take 10,000 years on the best classical computers available at the time (though subsequent classical advances have narrowed that gap). The gate set — Hadamard, CNOT, single-qubit rotations — is exactly the palette in this site's Lab. The depolarizing noise model used throughout this site is a simplified version of the per-gate error model characterised and reported in this experiment.</p>
+            <a href="https://www.nature.com/articles/s41586-019-1666-5" target="_blank" rel="noopener" class="tl-link">Read paper →</a>
+          </div>
+        </div>
       </div>
     </section>
 
