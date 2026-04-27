@@ -44,11 +44,12 @@ body {
 
 .lab-hero {
   border: 1px solid var(--line) !important;
-  border-left: 2px solid var(--line-bright) !important;
+  border-left: 2px solid var(--mint-dim) !important;
   padding: 30px 26px !important;
   margin: 24px 0 34px !important;
   background:
     radial-gradient(ellipse at 72% 0%, rgba(var(--cyan-rgb), 0.08), transparent 55%),
+    radial-gradient(ellipse at 12% 60%, rgba(var(--mint-rgb), 0.06), transparent 50%),
     linear-gradient(180deg, rgba(var(--phos-rgb), 0.03), transparent 82%) !important;
 }
 

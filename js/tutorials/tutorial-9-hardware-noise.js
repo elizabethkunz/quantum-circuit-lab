@@ -90,7 +90,7 @@ Step 6
     svg.appendChild(mk('path', {
       d: pathFromPoints(points),
       fill: 'none',
-      stroke: 'var(--phos)',
+      stroke: 'var(--mint)',
       'stroke-width': 2.6,
       'stroke-linecap': 'round',
       'stroke-linejoin': 'round'
@@ -125,7 +125,7 @@ Step 6
     svg.appendChild(mk('path', {
       d: pathFromPoints(makePts(f1)),
       fill: 'none',
-      stroke: 'var(--phos)',
+      stroke: 'var(--mint)',
       'stroke-width': 2.6
     }));
     svg.appendChild(mk('path', {
@@ -135,7 +135,7 @@ Step 6
       'stroke-width': 2.6
     }));
 
-    svg.appendChild(mk('text', { x: 16, y: 18, fill: 'var(--phos)', 'font-size': 11, 'font-family': 'var(--mono)' }, labels[0]));
+    svg.appendChild(mk('text', { x: 16, y: 18, fill: 'var(--mint)', 'font-size': 11, 'font-family': 'var(--mono)' }, labels[0]));
     svg.appendChild(mk('text', { x: 16, y: 34, fill: 'var(--amber)', 'font-size': 11, 'font-family': 'var(--mono)' }, labels[1]));
     svg.appendChild(mk('text', { x: W - 14, y: H - 8, fill: 'var(--ink-faint)', 'font-size': 11, 'font-family': 'var(--mono)', 'text-anchor': 'end' }, 'time'));
   }
@@ -171,7 +171,7 @@ Step 6
     svg.appendChild(mk('path', {
       d: pathFromPoints(pts),
       fill: 'none',
-      stroke: 'var(--phos)',
+      stroke: 'var(--mint)',
       'stroke-width': 2.4
     }));
 
@@ -199,9 +199,9 @@ Step 6
         <div style="border:1px solid var(--line);border-radius:8px;padding:8px;background:var(--bg-2);">
           <div style="font-family:var(--mono);font-size:10px;color:var(--ink-faint);">Ground |0⟩</div>
           <div style="height:10px;background:var(--line);border-radius:999px;margin-top:6px;overflow:hidden;">
-            <div style="height:100%;width:${100 * pG}%;background:linear-gradient(90deg,var(--cyan),var(--phos));"></div>
+            <div style="height:100%;width:${100 * pG}%;background:linear-gradient(90deg,var(--cyan),var(--mint));"></div>
           </div>
-          <div style="font-family:var(--mono);font-size:11px;color:var(--phos);margin-top:5px;">${fmt(100 * pG, 1)}%</div>
+          <div style="font-family:var(--mono);font-size:11px;color:var(--mint);margin-top:5px;">${fmt(100 * pG, 1)}%</div>
         </div>
       </div>
     `;
@@ -226,10 +226,10 @@ Step 6
     svg.appendChild(mk('circle', { cx, cy, r: R, fill: 'none', stroke: 'var(--line-bright)', 'stroke-width': 1.2 }));
     svg.appendChild(mk('line', { x1: cx - R - 6, y1: cy, x2: cx + R + 6, y2: cy, stroke: 'var(--line)', 'stroke-width': 1 }));
     svg.appendChild(mk('line', { x1: cx, y1: cy - R - 6, x2: cx, y2: cy + R + 6, stroke: 'var(--line)', 'stroke-width': 1 }));
-    svg.appendChild(mk('line', { x1: cx, y1: cy, x2: tipX, y2: tipY, stroke: 'var(--phos)', 'stroke-width': 3, 'stroke-linecap': 'round' }));
-    svg.appendChild(mk('circle', { cx: tipX, cy: tipY, r: 4.2, fill: 'var(--phos)' }));
+    svg.appendChild(mk('line', { x1: cx, y1: cy, x2: tipX, y2: tipY, stroke: 'var(--mint)', 'stroke-width': 3, 'stroke-linecap': 'round' }));
+    svg.appendChild(mk('circle', { cx: tipX, cy: tipY, r: 4.2, fill: 'var(--mint)' }));
     svg.appendChild(mk('text', { x: 148, y: 62, fill: 'var(--ink-faint)', 'font-size': 10, 'font-family': 'var(--mono)' }, '|ρ01|'));
-    svg.appendChild(mk('text', { x: 148, y: 80, fill: 'var(--phos)', 'font-size': 16, 'font-family': 'var(--mono)' }, fmt(coh, 3)));
+    svg.appendChild(mk('text', { x: 148, y: 80, fill: 'var(--mint)', 'font-size': 16, 'font-family': 'var(--mono)' }, fmt(coh, 3)));
     svg.appendChild(mk('text', { x: 148, y: 102, fill: 'var(--ink-dim)', 'font-size': 10, 'font-family': 'var(--mono)' }, coh < 0.35 ? 'phase mostly scrambled' : 'phase still trackable'));
   }
 
@@ -247,14 +247,14 @@ Step 6
       return e;
     }
     svg.appendChild(mk('line', { x1: 24, y1: 86, x2: W - 16, y2: 86, stroke: 'var(--line-bright)', 'stroke-width': 1.2 }));
-    svg.appendChild(mk('rect', { x: 36, y: 58, width: 22, height: 28, rx: 4, fill: 'var(--phos)', opacity: 0.95 }));
-    svg.appendChild(mk('text', { x: 47, y: 52, fill: 'var(--phos)', 'font-size': 10, 'text-anchor': 'middle', 'font-family': 'var(--mono)' }, 'π/2'));
+    svg.appendChild(mk('rect', { x: 36, y: 58, width: 22, height: 28, rx: 4, fill: 'var(--mint)', opacity: 0.95 }));
+    svg.appendChild(mk('text', { x: 47, y: 52, fill: 'var(--mint)', 'font-size': 10, 'text-anchor': 'middle', 'font-family': 'var(--mono)' }, 'π/2'));
     if (kind === 'oneoverf') {
       svg.appendChild(mk('rect', { x: 152, y: 50, width: 24, height: 36, rx: 4, fill: 'var(--amber)', opacity: 0.95 }));
       svg.appendChild(mk('text', { x: 164, y: 44, fill: 'var(--amber)', 'font-size': 10, 'text-anchor': 'middle', 'font-family': 'var(--mono)' }, 'π'));
     }
-    svg.appendChild(mk('rect', { x: 272, y: 58, width: 22, height: 28, rx: 4, fill: 'var(--phos)', opacity: 0.95 }));
-    svg.appendChild(mk('text', { x: 283, y: 52, fill: 'var(--phos)', 'font-size': 10, 'text-anchor': 'middle', 'font-family': 'var(--mono)' }, 'π/2'));
+    svg.appendChild(mk('rect', { x: 272, y: 58, width: 22, height: 28, rx: 4, fill: 'var(--mint)', opacity: 0.95 }));
+    svg.appendChild(mk('text', { x: 283, y: 52, fill: 'var(--mint)', 'font-size': 10, 'text-anchor': 'middle', 'font-family': 'var(--mono)' }, 'π/2'));
     const px = 36 + Math.max(0, Math.min(1, probe)) * 258;
     svg.appendChild(mk('line', { x1: px, y1: 24, x2: px, y2: 96, stroke: 'var(--magenta)', 'stroke-width': 1.5, 'stroke-dasharray': '4 4' }));
     svg.appendChild(mk('text', { x: px + 5, y: 22, fill: 'var(--magenta)', 'font-size': 10, 'font-family': 'var(--mono)' }, 'probe t'));

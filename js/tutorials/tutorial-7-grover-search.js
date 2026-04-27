@@ -28,9 +28,9 @@
           const isHi = i === highlightIndex;
           return `
             <div class="prob-row${p < 0.01 ? ' zero' : ''}">
-              <div class="prob-label" style="font-size:11px; ${isHi ? 'color:var(--phos);' : ''}">${label}</div>
+              <div class="prob-label" style="font-size:11px; ${isHi ? 'color:var(--mint);' : ''}">${label}</div>
               <div class="prob-bar-wrap">
-                <div class="prob-bar" style="width:${p * 100}%; ${isHi ? 'background: linear-gradient(90deg, var(--phos), var(--magenta));' : ''}"></div>
+                <div class="prob-bar" style="width:${p * 100}%; ${isHi ? 'background: linear-gradient(90deg, var(--mint), var(--magenta));' : ''}"></div>
               </div>
               <div class="prob-val">${pct}%</div>
             </div>
@@ -85,7 +85,7 @@
 
     const bars = [
       { label: 'Classical', value: classical, color: 'var(--amber)' },
-      { label: 'Grover', value: quantum, color: 'var(--phos)' },
+      { label: 'Grover', value: quantum, color: 'var(--mint)' },
     ];
 
     const bw = 90;
@@ -129,7 +129,7 @@
     if (cmpEl) {
       cmpEl.innerHTML =
         `<span style="color:var(--amber)">Classical average: ~${classical} checks</span> · ` +
-        `<span style="color:var(--phos)">Grover: ~${grover} oracle calls</span> · ` +
+        `<span style="color:var(--mint)">Grover: ~${grover} oracle calls</span> · ` +
         `Advantage grows like <b>√N</b>`;
     }
     if (bestEl) {
@@ -208,7 +208,7 @@
 
     svg.appendChild(mkEl('text', {
       x: cx + 8, y: cy - 118, 'font-family': 'var(--serif)',
-      'font-size': 15, fill: 'var(--phos)'
+      'font-size': 15, fill: 'var(--mint)'
     }, '|w⟩'));
 
     // guide arc
@@ -245,10 +245,10 @@
     const p = pol(R, a);
     svg.appendChild(mkEl('line', {
       x1: cx, y1: cy, x2: p.x, y2: p.y,
-      stroke: 'var(--phos)', 'stroke-width': 4, 'stroke-linecap': 'round'
+      stroke: 'var(--mint)', 'stroke-width': 4, 'stroke-linecap': 'round'
     }));
     svg.appendChild(mkEl('circle', {
-      cx: p.x, cy: p.y, r: 6, fill: 'var(--phos)'
+      cx: p.x, cy: p.y, r: 6, fill: 'var(--mint)'
     }));
 
     // angle marker
@@ -307,7 +307,7 @@
             min-width:72px; min-height:62px; margin:6px; border-radius:10px;
             border:1px solid var(--line-bright);
             background:${active ? (flash ? 'rgba(66, 245, 194, 0.18)' : 'rgba(66,245,194,0.10)') : 'var(--bg-2)'};
-            color:${active ? 'var(--phos)' : 'var(--ink)'};
+            color:${active ? 'var(--mint)' : 'var(--ink)'};
             box-shadow:none;
             font-family:var(--mono);
             cursor:pointer;
@@ -324,7 +324,7 @@
         window.t7GroverData.targetIndex = selected;
         renderGrid(false);
         if (explainEl) {
-          explainEl.innerHTML = `Marked item set to <b style="color:var(--phos)">${window.t7GroverData.labels[selected]}</b>. The oracle will flip the phase of this state only.`;
+          explainEl.innerHTML = `Marked item set to <b style="color:var(--mint)">${window.t7GroverData.labels[selected]}</b>. The oracle will flip the phase of this state only.`;
         }
       });
     });
@@ -346,7 +346,7 @@
     if (explainEl) {
       explainEl.innerHTML =
         `This is the subtle part of Grover: right after the oracle, the bars still look flat. ` +
-        `The state <b style="color:var(--phos)">${window.t7GroverData.labels[selected]}</b> is "special" in phase, not yet in probability.`;
+        `The state <b style="color:var(--mint)">${window.t7GroverData.labels[selected]}</b> is "special" in phase, not yet in probability.`;
     }
 
     markDone('t7-3');
@@ -382,12 +382,12 @@
                 width:52px;
                 height:${h}px;
                 border-radius:10px 10px 4px 4px;
-                background:${active ? 'linear-gradient(180deg, var(--phos), var(--magenta))' : 'linear-gradient(180deg, var(--line-bright), var(--line))'};
+                background:${active ? 'linear-gradient(180deg, var(--mint), var(--magenta))' : 'linear-gradient(180deg, var(--line-bright), var(--line))'};
                 opacity:${active ? 1 : 0.75};
                 ${glow}
                 transition:all .2s ease;
               "></div>
-              <div style="font-family:var(--mono); font-size:12px; margin-top:8px; color:${active ? 'var(--phos)' : 'var(--ink)'}">${label}</div>
+              <div style="font-family:var(--mono); font-size:12px; margin-top:8px; color:${active ? 'var(--mint)' : 'var(--ink)'}">${label}</div>
               <div style="font-family:var(--mono); font-size:11px; color:var(--ink-faint)">${(p * 100).toFixed(0)}%</div>
             </div>
           `;
@@ -405,7 +405,7 @@
 
     if (valEl) valEl.textContent = k;
     if (targetBadge) {
-      targetBadge.innerHTML = `Marked item: <b style="color:var(--phos)">${window.t7GroverData.labels[targetIndex]}</b>`;
+      targetBadge.innerHTML = `Marked item: <b style="color:var(--mint)">${window.t7GroverData.labels[targetIndex]}</b>`;
     }
 
     window.t7RenderProbList('grover-iter-probs', probs, targetIndex);
@@ -480,7 +480,7 @@
     svg.appendChild(mkEl('path', {
       d,
       fill: 'none',
-      stroke: 'var(--phos)',
+      stroke: 'var(--mint)',
       'stroke-width': 3,
       'stroke-linecap': 'round'
     }));
@@ -571,7 +571,7 @@
     const success = noisy[targetIndex] * 100;
     if (summaryEl) {
       if (noise < 10) {
-        summaryEl.innerHTML = `<b style="color:var(--phos)">Still strong:</b> the marked item remains the dominant outcome at ${success.toFixed(0)}%.`;
+        summaryEl.innerHTML = `<b style="color:var(--mint)">Still strong:</b> the marked item remains the dominant outcome at ${success.toFixed(0)}%.`;
       } else if (noise < 35) {
         summaryEl.innerHTML = `<b style="color:var(--amber)">Degrading:</b> Grover still helps, but the amplification is getting washed out by noise. Success is ${success.toFixed(0)}%.`;
       } else {

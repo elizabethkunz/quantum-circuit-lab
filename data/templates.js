@@ -87,6 +87,117 @@ const EXAMPLES = {
       return c;
     }
   },
+  'swap-route': {
+    nQubits: 2,
+    noisePreset: 0,
+    place: (c) => {
+      c.columns = Array(MIN_COLUMNS).fill(0).map(() => new Array(2).fill(null));
+      c.columns[0][0] = { type: 'single', gate: 'X' };
+      c.columns[1][0] = { type: 'swap2', gate: 'SWAP', partner: 1 };
+      c.columns[1][1] = { type: 'swap2', gate: 'SWAP', partner: 0 };
+      c.columns[3][0] = { type: 'meas' };
+      c.columns[3][1] = { type: 'meas' };
+      return c;
+    }
+  },
+  'iswap-hop': {
+    nQubits: 2,
+    noisePreset: 0,
+    place: (c) => {
+      c.columns = Array(MIN_COLUMNS).fill(0).map(() => new Array(2).fill(null));
+      c.columns[0][0] = { type: 'single', gate: 'X' };
+      c.columns[1][0] = { type: 'swap2', gate: 'iSWAP', partner: 1 };
+      c.columns[1][1] = { type: 'swap2', gate: 'iSWAP', partner: 0 };
+      c.columns[3][0] = { type: 'meas' };
+      c.columns[3][1] = { type: 'meas' };
+      return c;
+    }
+  },
+  'ising-iswap': {
+    nQubits: 3,
+    noisePreset: 0,
+    place: (c) => {
+      c.columns = Array(12).fill(0).map(() => new Array(3).fill(null));
+      c.columns[0][0] = { type: 'single', gate: 'RY', angleDeg: 90 };
+      c.columns[0][1] = { type: 'single', gate: 'RY', angleDeg: 90 };
+      c.columns[0][2] = { type: 'single', gate: 'RY', angleDeg: 90 };
+      c.columns[1][0] = { type: 'swap2', gate: 'iSWAP', partner: 1 };
+      c.columns[1][1] = { type: 'swap2', gate: 'iSWAP', partner: 0 };
+      c.columns[2][1] = { type: 'swap2', gate: 'iSWAP', partner: 2 };
+      c.columns[2][2] = { type: 'swap2', gate: 'iSWAP', partner: 1 };
+      c.columns[4][0] = { type: 'meas' };
+      c.columns[4][1] = { type: 'meas' };
+      c.columns[4][2] = { type: 'meas' };
+      return c;
+    }
+  },
+  'ccx-toffoli': {
+    nQubits: 3,
+    noisePreset: 0,
+    place: (c) => {
+      c.columns = Array(12).fill(0).map(() => new Array(3).fill(null));
+      const tof = { type: 'ccx', ctrl0: 0, ctrl1: 1, target: 2 };
+      c.columns[0][0] = { type: 'single', gate: 'X' };
+      c.columns[0][1] = { type: 'single', gate: 'X' };
+      c.columns[1][0] = tof;
+      c.columns[1][1] = tof;
+      c.columns[1][2] = tof;
+      c.columns[3][0] = { type: 'meas' };
+      c.columns[3][1] = { type: 'meas' };
+      c.columns[3][2] = { type: 'meas' };
+      return c;
+    }
+  },
+  'cswap-fredkin': {
+    nQubits: 3,
+    noisePreset: 0,
+    place: (c) => {
+      c.columns = Array(12).fill(0).map(() => new Array(3).fill(null));
+      const fr = { type: 'cswap', control: 2, swap0: 0, swap1: 1 };
+      c.columns[0][2] = { type: 'single', gate: 'X' };
+      c.columns[0][0] = { type: 'single', gate: 'X' };
+      c.columns[1][0] = fr;
+      c.columns[1][1] = fr;
+      c.columns[1][2] = fr;
+      c.columns[3][0] = { type: 'meas' };
+      c.columns[3][1] = { type: 'meas' };
+      c.columns[3][2] = { type: 'meas' };
+      return c;
+    }
+  },
+  'sqrtx-twice': {
+    nQubits: 1,
+    noisePreset: 0,
+    place: (c) => {
+      c.columns = Array(MIN_COLUMNS).fill(0).map(() => new Array(1).fill(null));
+      c.columns[0][0] = { type: 'single', gate: 'SX' };
+      c.columns[1][0] = { type: 'single', gate: 'SX' };
+      c.columns[3][0] = { type: 'meas' };
+      return c;
+    }
+  },
+  'sqrty-twice': {
+    nQubits: 1,
+    noisePreset: 0,
+    place: (c) => {
+      c.columns = Array(MIN_COLUMNS).fill(0).map(() => new Array(1).fill(null));
+      c.columns[0][0] = { type: 'single', gate: 'SY' };
+      c.columns[1][0] = { type: 'single', gate: 'SY' };
+      c.columns[3][0] = { type: 'meas' };
+      return c;
+    }
+  },
+  'sqrtz-twice': {
+    nQubits: 1,
+    noisePreset: 0,
+    place: (c) => {
+      c.columns = Array(MIN_COLUMNS).fill(0).map(() => new Array(1).fill(null));
+      c.columns[0][0] = { type: 'single', gate: 'SZ' };
+      c.columns[1][0] = { type: 'single', gate: 'SZ' };
+      c.columns[3][0] = { type: 'meas' };
+      return c;
+    }
+  },
   teleport: {
     nQubits: 3,
     noisePreset: 0,
@@ -420,6 +531,97 @@ const TEMPLATE_CONTEXT = {
     color: 'var(--cyan)',
     why: `On most <b>superconducting qubit</b> processors (Google, IBM, Rigetti), the CZ gate is native — meaning it's directly implemented by the hardware without any overhead. CNOT is not native; it's emulated as \\((I\\otimes H)\\cdot CZ\\cdot(I\\otimes H)\\). This circuit shows exactly that decomposition, producing an identical Bell state via the hardware-preferred route. Understanding native gate sets is essential for low-overhead quantum compilation.`,
     facts: ['Same Bell state as CNOT version', 'CZ is native on superconducting hardware', 'Relevant for circuit compilation & optimization']
+  },
+  'swap-route': {
+    eyebrow: 'Entanglement · E·04',
+    title: 'SWAP: move an excitation across wires',
+    color: 'var(--cyan)',
+    why: `A <b>SWAP</b> exchanges the two qubit state vectors — the quantum version of physically crossing two wires. Here X flips the lower-index qubit to <code>|1⟩</code> while the partner stays in <code>|0⟩</code> — state <code>|01⟩</code> — and SWAP exchanges them to <code>|10⟩</code> with unit probability. On hardware with limited connectivity, long-range logical interactions are often emulated with a sequence of SWAPs that route qubits next to their partners.`,
+    facts: ['Final state: |10⟩ (always)', 'Classically, three CNOTs build a SWAP', 'Routing for limited qubit connectivity'],
+    variations: [
+      { label: 'NISQ-like noise (2%)', action: { type: 'set-noise', value: 2 } }
+    ]
+  },
+  'iswap-hop': {
+    eyebrow: 'Entanglement · E·05',
+    title: 'iSWAP: hop with a built-in relative phase',
+    color: 'var(--cyan)',
+    why: `The <b>iSWAP</b> is the natural two-qubit interaction on many <b>superconducting</b> coplanar architectures: it implements <code>|01⟩↔|10⟩</code> and multiplies the swapped amplitude by <code>i</code>. The measurement outcomes match what a plain SWAP would give, but the relative phase is not idle — in longer circuits, that phase is what <em>enables interference</em> on equal computational outcomes. Check the <b>Amplitudes</b> view: the <code>|10⟩</code> entry is purely imaginary after this hop. <a href="#ref-nc2000" class="ctx-cite" data-doc-ref="ref-nc2000">[Nielsen & Chuang]</a>`,
+    facts: [
+      'Measurement shows |10⟩; amplitude is +i in the comp. basis',
+      'Common native gate on transmon lattices',
+      'Phase matters in longer circuits'
+    ]
+  },
+  'ising-iswap': {
+    eyebrow: 'Variational · V·04',
+    title: 'Linear iSWAP layer (hardware-style brick)',
+    color: 'var(--magenta)',
+    why: `This is a stylized <b>brick</b> of the kind used on linear-topology superconducting chips: local <code>Ry</code> mixers followed by an odd-even pair of <b>iSWAPs</b> on adjacent couplers. The pattern resembles one cost-style interaction pass in QAOA or a hardware-efficient layer where <code>iSWAP + Rz</code> is native. Tweak the RY angles with the rotation slider, re-run, and watch how entanglement spreads along the line.`,
+    facts: [
+      'Mimics a linear QAOA / HEA entangling brick',
+      'Heavy-hex and line topologies use this idea',
+      'Compare ideal vs noisy density'
+    ],
+    variations: [
+      { label: 'Clean (0% noise)', action: { type: 'set-noise', value: 0 } },
+      { label: 'NISQ-like (2% noise)', action: { type: 'set-noise', value: 2 } }
+    ]
+  },
+  'ccx-toffoli': {
+    eyebrow: 'Algorithms · A·09',
+    title: 'Toffoli: controlled-controlled-NOT',
+    color: 'var(--magenta)',
+    why: `Wires (low → high) are the two <b>controls</b> then the <b>target</b>. Two X gates prepare <code>|11⟩</code> on the controls, so the Toffoli <em>does</em> fire: the target flips from <code>|0⟩</code> to <code>|1⟩</code> and the joint result is always <code>|111⟩</code> in the computational basis. This is a standard building block for reversible arithmetic, Grover diffusion, and many oracles. <a href="#ref-nc2000" class="ctx-cite" data-doc-ref="ref-nc2000">[Nielsen & Chuang]</a>`,
+    facts: [
+      'Classical AND on controls = flip target',
+      'Universal for classical computation with H and S',
+      'Often decomposed into CNOTs + T on actual hardware'
+    ]
+  },
+  'cswap-fredkin': {
+    eyebrow: 'Algorithms · A·10',
+    title: 'Fredkin: controlled swap',
+    color: 'var(--magenta)',
+    why: `The <b>control</b> (here the top wire) is set to <code>1</code>, and a <code>1</code> is prepared on the lower swap line with X — so the two swap qubits are <code>|10⟩</code> before the CSWAP. The gate exchanges them, yielding <code>|110⟩</code> with certainty: the excitation on the LSB has moved. With control <code>0</code>, the swap is skipped entirely.`,
+    facts: [
+      'Conserves Hamming weight (0 and 1 bits swap)',
+      'Useful in comparator and routing circuits',
+      'Decomposes into 2 Toffoli + 1 CNOT in common textbooks'
+    ]
+  },
+  'sqrtx-twice': {
+    eyebrow: 'Foundations · F·06',
+    title: 'Two √X ≈ one X',
+    color: 'var(--phos)',
+    why: `Each <b>√X</b> is a 90° rotation about the x-axis. Two in a row give a 180° rotation, which in the Z basis is the <b>NOT</b> up to a global phase — so you always read out <code>|1⟩</code>. This is the same gate IBM and others label <code>sx</code> in their native set.`,
+    facts: [
+      'Measurement: |1⟩ with certainty',
+      'Matches RX(90°) in this simulator',
+      'Clifford gate: composer of many surface-code gadgets'
+    ]
+  },
+  'sqrty-twice': {
+    eyebrow: 'Foundations · F·07',
+    title: 'Two √Y ≈ one Y (bit flip in Y eigenbasis path)',
+    color: 'var(--phos)',
+    why: `Two <b>√Y</b> (90° about y) compose to a 180° y-rotation, which flips <code>|0⟩</code> to <code>|1⟩</code> with the same probability pattern as a single Pauli <b>X</b> in this measurement view — the outcome is <code>1</code> with certainty. Compare to the √X template: different path on the Bloch sphere, same readout for this initial state.`,
+    facts: [
+      'R_y(π) is an X in the Y basis, but in Z it flips the bit from |0⟩ to |1⟩',
+      'SY matches R_y(90°) here',
+      'Useful in VQE and hardware-efficient Y-native stacks'
+    ]
+  },
+  'sqrtz-twice': {
+    eyebrow: 'Foundations · F·08',
+    title: '√Z as S: (SZ)² = Z on the |1⟩ component',
+    color: 'var(--phos)',
+    why: `Here <b>√Z</b> is implemented as the <b>S</b> phase gate (π/2 on the <code>|1⟩</code> branch). Starting from <code>|0⟩</code>, a single S leaves the state fixed; <b>two S gates equal one Z</b> on the logical state — but on <code>|0⟩</code> that is still a global phase, so the measurement is still <code>0</code> with 100% probability. Load <b>√X</b> to see a π rotation built from two halves that <em>does</em> show a bit flip. <a href="#ref-nc2000" class="ctx-cite" data-doc-ref="ref-nc2000">[Nielsen & Chuang]</a>`,
+    facts: [
+      'Two S gates = Z, invisible on |0⟩ in Z-basis',
+      'Visible when applied to |1⟩ or superpositions',
+      'Third root of a Pauli is a non-Clifford (T) — try T, T, T, T = S'
+    ]
   },
   teleport: {
     eyebrow: 'Algorithms · A·01',

@@ -27,7 +27,7 @@
     padding: 0.55rem 0.95rem 0.55rem 0.75rem;
     background: var(--bg-0);
     border: 1px solid var(--line-bright);
-    border-left: 2px solid var(--phos);
+    border-left: 2px solid var(--mint);
     border-radius: 3px;
     font-family: var(--mono);
     font-size: 11px;
@@ -40,10 +40,10 @@
   .home-continue:hover,
   .home-continue:focus-visible {
     background: var(--bg-2);
-    border-color: var(--phos-dim);
-    border-left-color: var(--phos);
+    border-color: var(--mint-dim);
+    border-left-color: var(--mint);
     color: var(--phos);
-    box-shadow: 0 0 16px rgba(var(--phos-rgb), 0.12);
+    box-shadow: 0 0 16px rgba(var(--mint-rgb), 0.16);
     outline: none;
     transform: translateX(2px);
   }
@@ -68,8 +68,10 @@
     pointer-events: none; opacity: 0.5;
   }
 
-  /* ── hero wave-function layer (scroll-reactive) ── */
+  /* ── hero wave-function layer (scroll-reactive) ──
+     HIDDEN for now — remove the "display: none" line below to show the animated waves again. */
   #home-hero-waves {
+    display: none;
     position: absolute; inset: 0; width: 100%; height: 100%;
     pointer-events: none; opacity: 0.55;
   }
@@ -105,12 +107,12 @@
     50%     { transform: translateY(-10px) rotate(var(--tilt, 0deg)); opacity: 0.7; }
   }
 
-  /* ── hero section ── */
+  /* ── hero section (~0.75 of previous vertical footprint) ── */
   .home-hero-wrap {
     position: relative; overflow: hidden;
-    padding: 5rem 2rem 4rem;
+    padding: 3.75rem 1.5rem 3rem;
     border-bottom: 1px solid var(--line);
-    min-height: 72vh;
+    min-height: 54vh;
     display: flex;
     align-items: center;
   }
@@ -159,7 +161,7 @@
   .home-eyebrow {
     font-family: var(--mono); font-size: 10px;
     letter-spacing: 0.18em; text-transform: uppercase;
-    color: var(--phos); opacity: 0.7; margin-bottom: 1.25rem;
+    color: var(--mint); opacity: 0.85; margin-bottom: 1.25rem;
   }
 
   /* ── scroll-reveal (per-block; triggers as each block enters view) ── */
@@ -179,6 +181,56 @@
   .home-learn-grid .home-reveal:nth-child(3) { transition-delay: 0.1s; }
   .home-learn-grid .home-reveal:nth-child(4) { transition-delay: 0.15s; }
   .home-learn-grid .home-reveal:nth-child(5) { transition-delay: 0.2s; }
+
+  /* ── Superposition amplitude slider section ── */
+  .home-superpos-slider-wrap {
+    padding: 1rem 1.1rem 1.1rem;
+    background: var(--bg-0);
+    border: 1px solid var(--line-bright);
+    border-left: 2px solid var(--cyan);
+    border-radius: 3px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .home-superpos-eq {
+    font-family: var(--serif);
+    font-size: 1rem;
+    color: var(--ink);
+    margin-bottom: 0.85rem;
+    line-height: 1.5;
+    min-height: 1.5rem;
+  }
+  .home-superpos-amp-row {
+    display: grid;
+    grid-template-columns: 1.8rem 1fr 3rem;
+    align-items: center;
+    gap: 0.55rem;
+    margin-bottom: 0.42rem;
+  }
+  .home-superpos-amp-label {
+    font-family: var(--serif);
+    font-size: 1.05rem;
+    text-align: center;
+    user-select: none;
+  }
+  .home-superpos-bar-wrap {
+    height: 10px;
+    background: var(--bg-2);
+    border: 1px solid var(--line);
+    overflow: hidden;
+  }
+  .home-superpos-bar { height: 100%; transition: width 0.08s; }
+  .home-superpos-amp-val {
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    text-align: right;
+    white-space: nowrap;
+  }
+  .home-superpos-prob-row2 {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
 
   /* ── Bell state formula box ── */
   .home-bell-formula-box {
@@ -244,8 +296,8 @@
     outline-offset: 2px;
   }
   .home-gate-card:hover {
-    border-color: var(--phos-dim);
-    box-shadow: 0 0 14px rgba(var(--phos-rgb), 0.08);
+    border-color: var(--mint);
+    box-shadow: 0 0 14px rgba(var(--mint-rgb), 0.1);
   }
   .home-gate-card-reset .home-gate-icon {
     font-family: var(--mono);
@@ -265,7 +317,7 @@
   .home-gate-card:hover .home-gate-icon {
     border-color: var(--phos);
     color: var(--phos);
-    box-shadow: 0 0 10px rgba(var(--phos-rgb), 0.15);
+    box-shadow: 0 0 10px rgba(var(--mint-rgb), 0.2);
   }
   .home-gate-card-body .home-gate-card-name {
     font-family: var(--mono);
@@ -331,7 +383,7 @@
     transition: top 0.18s ease, background 0.18s;
   }
   .home-lamp-switch.on {
-    border-color: var(--phos-dim);
+    border-color: var(--phos);
     box-shadow: 0 0 16px rgba(var(--phos-rgb), 0.12);
   }
   .home-lamp-switch.on::after {
@@ -379,7 +431,7 @@
     border-color: rgba(140, 235, 230, calc(0.28 + 0.62 * var(--q-glow)));
     box-shadow:
       inset 0 0 16px rgba(255, 255, 255, calc(0.05 + 0.28 * var(--q-glow))),
-      0 0 calc(10px + 42px * var(--q-glow)) rgba(127, 255, 196, calc(0.22 + 0.58 * var(--q-glow))),
+      0 0 calc(10px + 42px * var(--q-glow)) rgba(92, 190, 156, calc(0.22 + 0.58 * var(--q-glow))),
       0 0 calc(4px + 28px * var(--q-glow)) rgba(160, 240, 255, calc(0.15 + 0.35 * var(--q-glow)));
     transition: box-shadow 0.12s ease-out, border-color 0.12s ease-out;
   }
@@ -438,7 +490,7 @@
     color: var(--ink-dim); margin-bottom: 0.9rem;
   }
   .home-chapter strong { color: var(--ink); }
-  .home-chapter em { color: var(--phos); font-style: italic; }
+  .home-chapter em { color: var(--mint); font-style: italic; }
   .home-chapter-visual {
     display: flex; flex-direction: column;
     align-items: center; gap: 1rem;
@@ -473,7 +525,7 @@
     cursor: pointer; transition: background 0.15s, color 0.15s;
   }
   .home-preset:hover, .home-preset.active {
-    background: var(--bg-2); color: var(--phos); border-color: var(--phos-dim);
+    background: var(--bg-2); color: var(--mint); border-color: var(--mint-dim);
   }
   .home-state-text {
     font-family: var(--mono); font-size: 11px;
@@ -484,7 +536,7 @@
     font-family: var(--mono); font-size: 10px;
     color: var(--ink-faint); text-align: center; min-height: 1.4em;
   }
-  .home-gate-history .gh-gate { color: var(--phos); }
+  .home-gate-history .gh-gate { color: var(--mint); }
 
   /* ── spin measurement visual (replaces cat) ── */
   .home-spin-wrap {
@@ -498,7 +550,7 @@
     color: var(--cyan); text-align: center; min-height: 1.4em;
     transition: color 0.35s;
   }
-  .home-spin-state.settled { color: var(--phos); }
+  .home-spin-state.settled { color: var(--mint); }
   .home-spin-btns { display: flex; gap: 0.75rem; flex-wrap: wrap; justify-content: center; }
   .home-mini-quote {
     max-width: 860px; margin: 0 auto 1.2rem; padding: 0.55rem 1rem 0.75rem;
@@ -527,8 +579,8 @@
     animation: coinPop 0.18s ease-out;
   }
   .home-coin.one {
-    background: rgba(var(--phos-rgb), 0.08);
-    border-color: var(--phos-dim); color: var(--phos);
+    background: rgba(var(--mint-rgb), 0.1);
+    border-color: var(--mint-dim); color: var(--mint);
   }
   .home-coin.zero {
     background: rgba(var(--magenta-rgb), 0.08);
@@ -561,13 +613,13 @@
     box-shadow: 0 0 14px rgba(var(--magenta-rgb), 0.12);
   }
   .home-bell-orb.result-1 {
-    border-color: var(--phos); color: var(--phos);
-    background: rgba(var(--phos-rgb), 0.07);
-    box-shadow: 0 0 14px rgba(var(--phos-rgb), 0.12);
+    border-color: var(--mint); color: var(--mint);
+    background: rgba(var(--mint-rgb), 0.1);
+    box-shadow: 0 0 14px rgba(var(--mint-rgb), 0.15);
   }
   .home-bell-wire {
     width: 52px; height: 2px;
-    background: linear-gradient(to right, var(--magenta), var(--phos));
+    background: linear-gradient(to right, var(--magenta), var(--phos), var(--mint));
     opacity: 0; transition: opacity 0.6s; position: relative; overflow: hidden;
   }
   .home-bell-wire.active { opacity: 0.5; }
@@ -596,7 +648,7 @@
   .home-bell-fill {
     height: 100%; width: 0; border-radius: 2px; transition: width 0.55s ease-out;
   }
-  .home-bell-fill.corr { background: var(--phos); opacity: 0.65; }
+  .home-bell-fill.corr { background: var(--mint); opacity: 0.7; }
   .home-bell-fill.anti { background: var(--magenta); opacity: 0.4; }
   .home-bell-pct {
     font-family: var(--mono); font-size: 10px; color: var(--ink-faint);
@@ -621,7 +673,7 @@
     line-height: 1.65; text-align: center;
     border-bottom: 1px solid var(--line);
   }
-  .home-pullquote-lg em { color: var(--phos); font-style: normal; }
+  .home-pullquote-lg em { color: var(--mint); font-style: normal; }
 
   /* ── 3D spin Bloch panel (replaces 2D spin box) ── */
   .home-spin3d-wrap {
@@ -643,7 +695,7 @@
     width: 30px; height: 30px;
     border-radius: 50%;
     transform: translate(-50%, -50%) scale(1);
-    border: 2px solid var(--phos);
+    border: 2px solid var(--mint);
     opacity: 0;
   }
   .home-spin3d-collapse-ripple.go {
@@ -691,8 +743,8 @@
   }
   .home-app-card:hover,
   .home-app-card.show-details {
-    border-color: var(--phos-dim);
-    box-shadow: 0 0 18px rgba(var(--phos-rgb), 0.1);
+    border-color: var(--mint);
+    box-shadow: 0 0 18px rgba(var(--mint-rgb), 0.12);
   }
   .home-app-head {
     position: absolute;
@@ -712,9 +764,9 @@
   }
   .home-app-card:hover .home-app-icon {
     border-color: var(--phos);
-    box-shadow: 0 0 12px rgba(var(--phos-rgb), 0.25);
+    box-shadow: 0 0 12px rgba(var(--phos-rgb), 0.2);
   }
-  .home-app-icon svg { width: 24px; height: 24px; stroke: var(--phos); fill: none; stroke-width: 1.5; }
+  .home-app-icon svg { width: 24px; height: 24px; stroke: var(--mint); fill: none; stroke-width: 1.5; }
   .home-app-title {
     font-family: var(--serif);
     font-size: 1.18rem;
@@ -739,7 +791,7 @@
     left: 0; right: 0; bottom: 0;
     padding: 0.95rem 1rem 1rem;
     border-top: 1px solid rgba(var(--phos-rgb), 0.24);
-    background: linear-gradient(to top, rgba(var(--bg-0-rgb, 10, 14, 12), 0.98), rgba(var(--bg-0-rgb, 10, 14, 12), 0.9) 65%, rgba(var(--bg-0-rgb, 10, 14, 12), 0.06));
+    background: linear-gradient(to top, rgba(var(--bg-0-rgb), 0.98), rgba(var(--bg-0-rgb), 0.9) 65%, rgba(var(--bg-0-rgb), 0.06));
     transform: translateY(68%);
     transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
   }
@@ -864,7 +916,7 @@
     z-index: 4;
     white-space: nowrap;
   }
-  .home-cat-stage.resolved-alive .home-cat-state-label { color: var(--phos); }
+  .home-cat-stage.resolved-alive .home-cat-state-label { color: var(--mint); }
   .home-cat-stage.resolved-dead  .home-cat-state-label { color: var(--magenta); }
 
   .home-cat-btns {
@@ -880,7 +932,7 @@
   @media (max-width: 680px) {
     .home-chapter { grid-template-columns: 1fr; padding: 2.5rem 1.25rem; }
     .home-chapter.flip { direction: ltr; }
-    .home-hero-wrap { padding: 3rem 1.25rem 2.5rem; min-height: auto; }
+    .home-hero-wrap { padding: 2.25rem 1.25rem 1.85rem; min-height: auto; }
     .home-floating-arrow { font-size: 15px; opacity: 0.14; }
     .home-coin-section {
     background: var(--bg-1);
@@ -913,8 +965,8 @@
       <span class="home-hero-arrow"      style="left:3%;  top:48%; --tilt:  9deg; animation-delay: -2.4s; font-size:16px;">↓</span>
     </div>
     <div class="home-hero-inner">
-      <div class="home-eyebrow home-reveal">Quantum &amp; Lab · Interactive introduction</div>
-      <h1 class="home-reveal">Quantum systems compute in ways<br/>that feel <em>impossible.</em></h1>
+      <div class="home-eyebrow home-reveal">Quantum Circuit Lab · Interactive introduction</div>
+      <h1 class="home-reveal">Quantum algorithms rely on state evolution in <em>Hilbert space</em>:<br/>unitary dynamics, interference, and measurement.</h1>
       <p class="home-reveal">Quantum ideas can feel strange at first. This page gives a quick, visual path from everyday bits to superposition, measurement, and entanglement.</p>
       <div class="home-hero-actions home-reveal">
         <button type="button" class="btn primary" onclick="switchTab('learn');switchSubtab('t1');">Begin Tutorial 1 →</button>
@@ -966,6 +1018,10 @@
       <p>A classical bit is like a wall switch: fully off or fully on.</p>
       <p>A qubit can sit <strong>between</strong> \\(|0\\rangle\\) and \\(|1\\rangle\\). That extra space is what quantum algorithms use before measurement forces a 0 or 1.<a id="fnref-home-1" class="expert-fn-ref" href="#fn-home-1"><sup>[E1]</sup></a></p>
       <p class="rules" style="margin-top:1rem"><strong>Try both.</strong> Flip the classical switch: only pitch black or full glow. Drag the quantum slider: the bulb ramps through a continuum of “how much \\(|1\\rangle\\)‑ness” the state is carrying — a toy picture of how superposition sits between the extremes.</p>
+      <div style="margin-top:1.1rem;padding:0.75rem 1rem;background:var(--bg-2);border:1px solid var(--line);border-left:2px solid var(--amber);font-size:0.82rem;line-height:1.6;color:var(--ink-dim)">
+        <span style="font-family:var(--mono);font-size:9px;letter-spacing:0.14em;text-transform:uppercase;color:var(--amber);display:block;margin-bottom:0.4rem">Note &mdash; this is not analog computing</span>
+        Classical analog computers also use continuous values (voltages, currents) to represent data. A qubit is fundamentally different: its intermediate amplitudes are quantum mechanical, governed by complex probability amplitudes, not classical signals. Crucially, <strong>measuring a qubit always yields a discrete result &mdash; 0 or 1</strong>. The &ldquo;brightness&rdquo; here is a metaphor for the probability amplitude, not a continuously stored value.
+      </div>
     </div>
     <div class="home-chapter-visual home-reveal">
       <div class="home-lamp-pair">
@@ -1024,7 +1080,75 @@
     </div>
   </div>
 
-  <div class="home-mini-quote home-reveal">"If quantum mechanics hasn't profoundly shocked you, you haven't understood it yet." <b>— Niels Bohr</b></div>
+  <!-- ══ SUPERPOSITION: amplitude sliders ══════════════════════════════════ -->
+  <div class="home-section-full" id="home-superpos-section">
+    <div class="analysis-head home-reveal">
+      <h3>Superposition is a linear combination of the basis states.</h3>
+      <div class="num">Superposition</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:2.5rem;align-items:start">
+      <div class="home-reveal">
+        <p style="font-size:0.95rem;color:var(--ink-dim);line-height:1.75;margin-bottom:0.9rem">
+          Any qubit state is a <strong style="color:var(--ink)">superposition</strong> &mdash; a weighted sum of the two basis states \\(|0\\rangle\\) and \\(|1\\rangle\\):
+        </p>
+        <p style="font-size:1.05rem;color:var(--ink);line-height:2;margin-bottom:0.9rem;font-family:var(--serif)">
+          \\[|\\psi\\rangle = \\alpha\\,|0\\rangle + \\beta\\,|1\\rangle\\]
+        </p>
+        <p style="font-size:0.95rem;color:var(--ink-dim);line-height:1.75;margin-bottom:1rem">
+          The coefficients \\(\\alpha\\) and \\(\\beta\\) are in general complex numbers. For real amplitudes they must satisfy \\(\\alpha^2 + \\beta^2 = 1\\) (the Born rule: probabilities sum to 1). Drag the slider to explore &mdash; the Bloch sphere and probability bars update in real time.
+        </p>
+        <div class="home-superpos-slider-wrap">
+          <div class="home-superpos-eq" id="home-sp-eq">|&psi;&rang; = 1.00 |0&rang; + 0.00 |1&rang;</div>
+          <div class="home-superpos-amp-row">
+            <span class="home-superpos-amp-label" style="color:var(--cyan)">\\(\\alpha\\)</span>
+            <div class="home-superpos-bar-wrap"><div class="home-superpos-bar" id="home-sp-bar-a" style="width:100%;background:linear-gradient(90deg,var(--phos),var(--cyan))"></div></div>
+            <span class="home-superpos-amp-val" style="color:var(--cyan)" id="home-sp-val-a">1.00</span>
+          </div>
+          <div class="home-superpos-amp-row">
+            <span class="home-superpos-amp-label" style="color:var(--mint)">\\(\\beta\\)</span>
+            <div class="home-superpos-bar-wrap"><div class="home-superpos-bar" id="home-sp-bar-b" style="width:0%;background:linear-gradient(90deg,var(--mint-dim),var(--mint))"></div></div>
+            <span class="home-superpos-amp-val" style="color:var(--mint)" id="home-sp-val-b">0.00</span>
+          </div>
+          <div style="margin-top:1rem">
+            <label class="home-panel-label" for="home-sp-slider" style="display:block;margin-bottom:0.45rem">Polar angle \\(\\theta/2\\) on Bloch sphere</label>
+            <input type="range" id="home-sp-slider" min="0" max="100" value="0" style="width:100%;accent-color:var(--mint)" />
+            <div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:9px;color:var(--ink-faint);margin-top:0.3rem">
+              <span>|0&rang; (&alpha;=1, &beta;=0)</span>
+              <span>|+&rang; (&alpha;=&beta;=1/&radic;2)</span>
+              <span>|1&rang; (&alpha;=0, &beta;=1)</span>
+            </div>
+          </div>
+          <div style="margin-top:0.9rem;display:flex;flex-direction:column;gap:0.45rem">
+            <div class="home-superpos-prob-row2">
+              <span style="font-family:var(--mono);font-size:10px;color:var(--cyan);min-width:6.5rem">P(|0&rang;) = &alpha;&sup2;</span>
+              <div style="flex:1;height:8px;background:var(--bg-2);border:1px solid var(--line);overflow:hidden"><div id="home-sp-prob0" style="height:100%;width:100%;background:linear-gradient(90deg,var(--phos),var(--cyan));transition:width 0.08s"></div></div>
+              <span style="font-family:var(--mono);font-size:10px;color:var(--cyan);min-width:2.5rem;text-align:right" id="home-sp-pct0">100%</span>
+            </div>
+            <div class="home-superpos-prob-row2">
+              <span style="font-family:var(--mono);font-size:10px;color:var(--mint);min-width:6.5rem">P(|1&rang;) = &beta;&sup2;</span>
+              <div style="flex:1;height:8px;background:var(--bg-2);border:1px solid var(--line);overflow:hidden"><div id="home-sp-prob1" style="height:100%;width:0%;background:linear-gradient(90deg,var(--mint-dim),var(--mint));transition:width 0.08s"></div></div>
+              <span style="font-family:var(--mono);font-size:10px;color:var(--mint);min-width:2.5rem;text-align:right" id="home-sp-pct1">0%</span>
+            </div>
+          </div>
+        </div>
+        <a href="#" class="home-continue" onclick="switchTab('learn');switchSubtab('t1');return false;" style="margin-top:1.25rem">
+          <span class="home-continue-tag">Tutorial 1</span>
+          <span>Amplitudes, measurement &amp; the Born rule</span>
+          <span class="home-continue-arrow">&rarr;</span>
+        </a>
+      </div>
+      <div class="home-panel home-reveal">
+        <div class="home-panel-label">Bloch sphere &mdash; updates with slider (real amplitudes, &phi;=0)</div>
+        <canvas id="home-sp-bloch-canvas" width="240" height="240" aria-label="Bloch sphere showing qubit superposition state controlled by slider"></canvas>
+        <div class="home-state-text" id="home-sp-bloch-state">\\(|\\psi\\rangle = |0\\rangle\\)</div>
+        <p style="font-family:var(--mono);font-size:9px;letter-spacing:0.07em;color:var(--ink-faint);line-height:1.6;text-align:center;margin:0">
+          Real amplitudes only &mdash; the state moves along the Bloch sphere meridian. Complex amplitudes introduce a phase angle &phi; that moves the state around the equator; the full interactive sphere in section 02 shows this.
+        </p>
+      </div>
+    </div>
+  </div>
+
+    <div class="home-mini-quote home-reveal">"If quantum mechanics hasn't profoundly shocked you, you haven't understood it yet." <b>— Niels Bohr</b></div>
 
   <!-- ══ 03: SPIN MEASUREMENT ═══════════════════════════════════════════════ -->
   <div class="home-section-full" id="home-spin-section">
@@ -1065,14 +1189,14 @@
   <div class="home-mini-quote home-reveal">"Nature isn't classical... and if you want to make a simulation of nature, you'd better make it quantum mechanical." <b>— Richard Feynman</b></div>
 
   <!-- ══ 04: GATES ARE ROTATIONS ═══════════════════════════════════════════ -->
-  <div class="home-chapter">
-    <div class="home-chapter-text home-reveal">
-      <span class="home-chapter-kicker">04 · Quantum gates</span>
-      <h2>Gates are <em>rotations</em> of the sphere.</h2>
-      <p>Classical NOT flips 0 to 1. Quantum gates are <strong>rotations</strong> on the Bloch sphere.</p>
-      <p>The <strong>H gate</strong> moves \\(|0\\rangle\\) to an equal superposition, which appears everywhere in quantum algorithms.</p>
-      <p>Try gate sequences below. Order matters: H then X is different from X then H.</p>
-      <a href="#" class="home-continue" onclick="switchTab('learn');switchSubtab('t1');return false;">
+  <div class="home-chapter" style="align-items:start">
+    <div class="home-chapter-text">
+      <span class="home-chapter-kicker home-reveal">04 · Quantum gates</span>
+      <h2 class="home-reveal">Gates are <em>rotations</em> of the sphere.</h2>
+      <p class="home-reveal">Classical NOT flips 0 to 1. Quantum gates are <strong>rotations</strong> on the Bloch sphere — every gate is a unitary transformation that preserves the state vector's length.</p>
+      <p class="home-reveal">The <strong>H gate</strong> takes the north pole (\\(|0\\rangle\\)) to the equator, producing an equal superposition. The equatorial states look 50/50 when measured but differ in <strong>phase</strong>, which determines how they interfere.</p>
+      <p class="home-reveal">Try sequences: apply <strong>Y then H</strong>, then reset and try <strong>H then Y</strong>. The final states differ — quantum gates do not commute in general.</p>
+      <a href="#" class="home-continue home-reveal" onclick="switchTab('learn');switchSubtab('t1');return false;">
         <span class="home-continue-tag">Tutorial 1</span>
         <span>Build intuition for gate dynamics</span>
         <span class="home-continue-arrow">→</span>
@@ -1102,7 +1226,7 @@
             <div class="home-gate-icon" aria-hidden="true">Y</div>
             <div class="home-gate-card-body">
               <div class="home-gate-card-name">Pauli-Y</div>
-              <p>A π rotation about the y-axis that mixes |0⟩ and |1⟩ while inserting a relative phase between the components.</p>
+              <p>A π rotation about the y-axis. Like X it swaps the poles, but takes a perpendicular path — mapping |+⟩ to |−⟩ and vice versa, where X leaves them fixed.</p>
             </div>
           </button>
           <button type="button" class="home-gate-card home-gate-card-reset" data-gate="RESET">
@@ -1154,7 +1278,7 @@
         <div class="home-panel-label" style="margin-bottom:0.5rem">Results — each circle is one shot</div>
         <div class="home-coin-row" id="home-coin-row"></div>
         <div style="display:flex;gap:1rem;margin-top:0.5rem">
-          <span style="font-family:var(--mono);font-size:10px;color:var(--phos)">■ \\(|1\\rangle\\)</span>
+          <span style="font-family:var(--mono);font-size:10px;color:var(--mint)">■ \\(|1\\rangle\\)</span>
           <span style="font-family:var(--mono);font-size:10px;color:var(--magenta)">■ \\(|0\\rangle\\)</span>
         </div>
       </div>
@@ -1163,36 +1287,31 @@
 
   <div class="home-mini-quote home-reveal">"I think I can safely say that nobody understands quantum mechanics." <b>— Richard Feynman</b></div>
 
-  <!-- ══ PULLQUOTE ══════════════════════════════════════════════════════════ -->
-  <div class="home-pullquote-lg home-reveal">
-    Einstein called entanglement 'spooky action at a distance' and argued for years that quantum mechanics must be incomplete — that hidden variables, not genuine nonlocality, had to explain the correlations. Bell's theorem, and the experiments it inspired, proved he was wrong.
-  </div>
-
   <!-- ══ 06: ENTANGLEMENT / BELL STATES ════════════════════════════════════ -->
   <div class="home-section-full">
     <div class="analysis-head home-reveal">
-      <h3>Two qubits, one shared fate.</h3>
-      <div class="num">06 · Entanglement</div>
+      <h3>Two qubits, one shared fate &mdash; <em>entanglement.</em></h3>
+      <div class="num">06 &middot; Entanglement</div>
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:2.5rem;align-items:start">
       <div class="home-reveal">
         <p style="font-size:0.95rem;color:var(--ink-dim);line-height:1.75;margin-bottom:0.9rem">
-          Bell tests compare correlations between distant measurements. Classical hidden-variable models have a hard limit.
+          When two qubits interact in the right way, their states become <strong style="color:var(--ink)">entangled</strong>: neither qubit has a definite individual state, but together they form a single joint quantum state that cannot be factored into two separate parts.
         </p>
         <p style="font-size:0.95rem;color:var(--ink-dim);line-height:1.75;margin-bottom:0.9rem">
-          Bell states can exceed that limit, showing behavior classical rules cannot explain.<a id="fnref-home-3" class="expert-fn-ref" href="#fn-home-3"><sup>[E3]</sup></a>
+          The state below is a <strong style="color:var(--ink)">maximally entangled state</strong> &mdash; a Bell state. Every measurement of qubit A is individually random (50/50), and so is qubit B&rsquo;s. Yet they are perfectly correlated: measuring one instantly determines the other, regardless of separation. This is not a hidden list of pre-agreed answers; the randomness is genuine.
         </p>
         <p style="font-size:0.95rem;color:var(--ink-dim);line-height:1.75;margin-bottom:0.9rem">
-          Here you first see the Bell-pair signature, then jump to labs for full Bell/CHSH experiments.
+          Run the experiment below. You will only ever see |00&rangle; or |11&rangle; &mdash; never |01&rangle; or |10&rangle;.
         </p>
         <div class="home-bell-formula-box" id="home-bell-formula-box">
-          <div class="home-bell-formula-label">Bell state (maximally entangled)</div>
+          <div class="home-bell-formula-label">Bell state |Φ⁺⟩ &mdash; maximally entangled</div>
           <div class="home-bell-formula-katex">\\(|\\Phi^+\\rangle = \\dfrac{|00\\rangle + |11\\rangle}{\\sqrt{2}}\\)</div>
         </div>
-        <a href="#" class="home-continue" onclick="switchTab('labs');return false;">
-          <span class="home-continue-tag">Lab</span>
-          <span>Recreate the bell tests</span>
-          <span class="home-continue-arrow">→</span>
+        <a href="#" class="home-continue" onclick="switchTab('learn');switchSubtab('t2');return false;">
+          <span class="home-continue-tag">Tutorial 2</span>
+          <span>Entanglement &amp; Bell states</span>
+          <span class="home-continue-arrow">&rarr;</span>
         </a>
       </div>
       <div class="home-panel home-reveal">
@@ -1240,103 +1359,8 @@
     </div>
   </div>
 
-  <div class="home-mini-quote home-reveal">"The result of an observation may reasonably depend not only on the state of the system but also on the complete disposition of the apparatus." <b>— John S. Bell</b></div>
-
-  <!-- ══ 07: APPLICATIONS (hover-reveal icon cards) ═════════════════════════ -->
-  <section class="home-apps-section">
-    <div class="analysis-head home-reveal">
-      <h3>What all this can actually do.</h3>
-      <div class="num">07 · Applications</div>
-    </div>
-    <div class="home-apps-intro home-reveal">
-      <p>These ideas are practical tools, not just theory. Hover a card to see where each one shows up.</p>
-    </div>
-    <div class="home-apps-grid">
-      <article class="home-app-card home-reveal" aria-label="Application: Grover search">
-        <div class="home-app-head">
-          <div class="home-app-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24"><path d="M5 5h14v14H5z"/><path d="M9 9h6v6H9z"/><path d="M12 3v4M21 12h-4M12 21v-4M3 12h4"/></svg>
-          </div>
-          <div class="home-app-title">Cryptography</div>
-        </div>
-        <div class="home-app-reveal">
-          <p>Shor's algorithm can factor large integers exponentially faster than known classical methods, which is why RSA-style cryptography is vulnerable to fault-tolerant quantum machines.</p>
-          <a href="#" class="home-app-open" onclick="switchTab('learn');switchSubtab('t7');return false;">Open Tutorial 7 →</a>
-        </div>
-        <span class="home-app-hint">hover ↑</span>
-      </article>
-
-      <article class="home-app-card home-reveal" aria-label="Application: VQE chemistry">
-        <div class="home-app-head">
-          <div class="home-app-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24"><circle cx="7" cy="9" r="2.2"/><circle cx="17" cy="9" r="2.2"/><circle cx="12" cy="17" r="2.2"/><path d="M8.8 10.3L11 15.2M15.2 10.3L13 15.2M9 9h6"/></svg>
-          </div>
-          <div class="home-app-title">Chemistry</div>
-        </div>
-        <div class="home-app-reveal">
-          <p>VQE uses tunable circuits to estimate molecular energies.</p>
-          <a href="#" class="home-app-open" onclick="switchTab('learn');switchSubtab('t6');return false;">Open Tutorial 6 →</a>
-        </div>
-        <span class="home-app-hint">hover ↑</span>
-      </article>
-
-      <article class="home-app-card home-reveal" aria-label="Application: QAOA optimization">
-        <div class="home-app-head">
-          <div class="home-app-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24"><path d="M3 20h18"/><path d="M5 20V9M10 20V6M15 20V12M20 20V4"/></svg>
-          </div>
-          <div class="home-app-title">Optimization</div>
-        </div>
-        <div class="home-app-reveal">
-          <p>QAOA alternates two simple steps to bias outcomes toward better solutions.</p>
-          <a href="#" class="home-app-open" onclick="switchTab('templates');return false;">Open QAOA template →</a>
-        </div>
-        <span class="home-app-hint">hover ↑</span>
-      </article>
-
-      <article class="home-app-card home-reveal" aria-label="Application: VQE ansatz in machine learning">
-        <div class="home-app-head">
-          <div class="home-app-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24"><circle cx="5" cy="7" r="1.7"/><circle cx="5" cy="17" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="19" cy="7" r="1.7"/><circle cx="19" cy="17" r="1.7"/><path d="M6.5 7.7l4 3.6M6.5 16.3l4-3.6M13.5 11.3l4-3.6M13.5 12.7l4 3.6"/></svg>
-          </div>
-          <div class="home-app-title">Machine learning</div>
-        </div>
-        <div class="home-app-reveal">
-          <p>The same tunable circuits can also be used as trainable quantum ML models.</p>
-          <a href="#" class="home-app-open" onclick="switchTab('learn');switchSubtab('t6');return false;">Open ansatz tutorial →</a>
-        </div>
-        <span class="home-app-hint">hover ↑</span>
-      </article>
-
-      <article class="home-app-card home-reveal" aria-label="Application: GHZ sensing template">
-        <div class="home-app-head">
-          <div class="home-app-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/><path d="M12 12l5-3" stroke-linecap="round"/></svg>
-          </div>
-          <div class="home-app-title">Sensing</div>
-        </div>
-        <div class="home-app-reveal">
-          <p>Entangled GHZ states can improve phase sensitivity in sensing tasks.</p>
-          <a href="#" class="home-app-open" onclick="switchTab('templates');return false;">Open GHZ template →</a>
-        </div>
-        <span class="home-app-hint">hover ↑</span>
-      </article>
-
-      <article class="home-app-card home-reveal" aria-label="Application: Teleportation lab">
-        <div class="home-app-head">
-          <div class="home-app-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="6" cy="18" r="2"/><circle cx="18" cy="18" r="2"/><circle cx="12" cy="12" r="2"/><path d="M7.4 7.4l3.2 3.2M16.6 7.4l-3.2 3.2M7.4 16.6l3.2-3.2M16.6 16.6l-3.2-3.2"/></svg>
-          </div>
-          <div class="home-app-title">Networks</div>
-        </div>
-        <div class="home-app-reveal">
-          <p>Teleportation-style protocols move quantum states across network links.</p>
-          <a href="#" class="home-app-open" onclick="switchTab('labs');return false;">Open teleportation lab →</a>
-        </div>
-        <span class="home-app-hint">hover ↑</span>
-      </article>
-    </div>
-  </section>
+  <!-- Sentinel: scroll / intersection target for auth gate (session-guard.js) -->
+  <div id="home-auth-gate-sentinel" class="home-auth-gate-sentinel" aria-hidden="true"></div>
 
   <!-- ══ WHAT'S NEXT ════════════════════════════════════════════════════════ -->
   <div class="home-pullquote home-reveal" style="margin-top:0">
@@ -1350,17 +1374,17 @@
     </div>
     <p class="home-learn-sub home-reveal">Each card maps to a major part of the platform.</p>
     <div class="home-learn-grid">
-      <button type="button" class="home-learn-card home-reveal" onclick="switchTab('lab')">
-        <div class="tag">02 · Explore</div>
-        <h3>Build and run circuits</h3>
-        <p>Build circuits, add noise, and compare probability, amplitude, and density views.</p>
-        <div class="go">Go to Explore →</div>
-      </button>
       <button type="button" class="home-learn-card home-reveal" onclick="switchTab('learn');switchSubtab('t1');">
-        <div class="tag">03 · Tutorials</div>
+        <div class="tag">02 · Tutorials</div>
         <h3>Step-by-step interactives</h3>
         <p>Nine guided modules from basics to algorithms, noise, and hardware behavior.</p>
         <div class="go">Go to Tutorials →</div>
+      </button>
+      <button type="button" class="home-learn-card home-reveal" onclick="switchTab('lab')">
+        <div class="tag">03 · Explore</div>
+        <h3>Build and run circuits</h3>
+        <p>Build circuits, add noise, and compare probability, amplitude, and density views.</p>
+        <div class="go">Go to Explore →</div>
       </button>
       <button type="button" class="home-learn-card home-reveal" onclick="switchTab('templates')">
         <div class="tag">04 · Template library</div>
@@ -1394,7 +1418,8 @@
     const ctx = canvas.getContext('2d');
     let W, H, particles;
 
-    /* scroll-reactive wave-function SVG paths */
+    /* scroll-reactive wave-function SVG paths (disabled while #home-hero-waves is hidden in CSS) */
+    var HOME_HERO_WAVES_ENABLED = false; /* set true when you remove display:none on #home-hero-waves */
     var svg   = document.getElementById('home-hero-waves');
     var path0 = document.getElementById('wf-wave-0');
     var path1 = document.getElementById('wf-wave-1');
@@ -1469,7 +1494,7 @@
         p.x = (p.x + p.vx + W) % W;
         p.y = (p.y + p.vy + H) % H;
         var alpha = 0.22 + 0.32 * Math.sin(t * p.speed * 60 + p.phase);
-        var col = (p.phase < 1.0) ? rgbaVar('--phos-rgb', alpha, '127,255,196')
+        var col = (p.phase < 1.0) ? rgbaVar('--mint-rgb', alpha, '92,190,156')
                 : (p.phase < 2.1) ? rgbaVar('--cyan-rgb', alpha, '111,212,224')
                 :                   rgbaVar('--magenta-rgb', alpha, '230,127,184');
         ctx.beginPath();
@@ -1480,7 +1505,7 @@
 
       /* Update wave-function SVG paths. Scroll shifts phase & spreads envelope
          (wave-packet delocalisation as you move down the page). */
-      if (path0 && path1 && pathE) {
+      if (HOME_HERO_WAVES_ENABLED && path0 && path1 && pathE) {
         var centerY = H * 0.58;
         var baseAmp = Math.min(42, H * 0.09);
         var scrollAmp = baseAmp * (1 - Math.min(1, scrollPhase * 0.6));
@@ -1500,6 +1525,54 @@
     window.addEventListener('resize', resize);
     window.addEventListener('resize', queueScrollUpdate);
     draw();
+  }
+
+  /* ─── Superposition amplitude slider ─────────────────────────────────────────── */
+  function initSuperpositionSlider() {
+    var slider  = document.getElementById('home-sp-slider');
+    if (!slider) return;
+    var sphere  = createBlochRenderer('home-sp-bloch-canvas');
+    var stateEl = document.getElementById('home-sp-bloch-state');
+    var eqEl    = document.getElementById('home-sp-eq');
+    var barA    = document.getElementById('home-sp-bar-a');
+    var barB    = document.getElementById('home-sp-bar-b');
+    var valA    = document.getElementById('home-sp-val-a');
+    var valB    = document.getElementById('home-sp-val-b');
+    var prob0   = document.getElementById('home-sp-prob0');
+    var prob1   = document.getElementById('home-sp-prob1');
+    var pct0    = document.getElementById('home-sp-pct0');
+    var pct1    = document.getElementById('home-sp-pct1');
+
+    function update() {
+      var t         = parseInt(slider.value, 10) / 100;
+      var halfTheta = t * Math.PI / 2;
+      var alpha     = Math.cos(halfTheta);
+      var beta      = Math.sin(halfTheta);
+      var theta     = halfTheta * 2;
+
+      if (barA) barA.style.width = (alpha * 100).toFixed(1) + '%';
+      if (barB) barB.style.width = (beta  * 100).toFixed(1) + '%';
+      if (valA) valA.textContent = alpha.toFixed(2);
+      if (valB) valB.textContent = beta.toFixed(2);
+
+      var p0 = alpha * alpha, p1 = beta * beta;
+      if (prob0) prob0.style.width = (p0 * 100).toFixed(1) + '%';
+      if (prob1) prob1.style.width = (p1 * 100).toFixed(1) + '%';
+      if (pct0)  pct0.textContent  = Math.round(p0 * 100) + '%';
+      if (pct1)  pct1.textContent  = Math.round(p1 * 100) + '%';
+
+      if (eqEl) {
+        eqEl.textContent = '|ψ⟩ = ' + alpha.toFixed(2) + ' |0⟩ + ' + beta.toFixed(2) + ' |1⟩';
+      }
+      if (sphere) sphere.animateTo(theta, 0);
+      if (stateEl) {
+        stateEl.textContent = stateLabel(theta, 0);
+        if (typeof global.scheduleMathRender === 'function') global.scheduleMathRender(stateEl);
+      }
+    }
+
+    slider.addEventListener('input', update);
+    update();
   }
 
   /* ─── Classical bit ──────────────────────────────────────────────────────── */
@@ -1578,7 +1651,7 @@
       var bg = ctx.createRadialGradient(CX - R * 0.22, CY - R * 0.3, R * 0.1, CX, CY, R * 1.08);
       bg.addColorStop(0, rgbaVar('--cyan-rgb', 0.38, '111,212,224'));
       bg.addColorStop(0.45, rgbaVar('--cyan-rgb', 0.16, '111,212,224'));
-      bg.addColorStop(0.78, rgbaVar('--line-bright-rgb', 0.12, '54,80,68'));
+      bg.addColorStop(0.78, rgbaVar('--line-bright-rgb', 0.12, '61,77,92'));
       bg.addColorStop(1, 'rgba(0,0,0,0)');
       ctx.fillStyle = bg;
       ctx.beginPath(); ctx.arc(CX, CY, R, 0, Math.PI * 2); ctx.fill();
@@ -1622,9 +1695,9 @@
       // x / y reference axes (drawn under the state vector)
       var axes = [
         { d:[0,0, 0.95], lbl:'|0⟩', col:rgbaVar('--cyan-rgb', 1, '111,212,224'), line:rgbaVar('--cyan-rgb', 0.98, '111,212,224'), pole: true },
-        { d:[0,0,-0.88], lbl:'|1⟩', col:rgbaVar('--phos-rgb', 1, '127,255,196'), line:rgbaVar('--phos-rgb', 0.95, '127,255,196'), pole: true },
+        { d:[0,0,-0.88], lbl:'|1⟩', col:rgbaVar('--mint-rgb', 1, '92,190,156'), line:rgbaVar('--mint-rgb', 0.95, '92,190,156'), pole: true },
         { d:[0.9,0,0], lbl:'x', col:rgbaVar('--magenta-rgb', 0.95, '230,127,184'), line:rgbaVar('--magenta-rgb', 0.88, '230,127,184'), pole: false },
-        { d:[0,0.9,0], lbl:'y', col:rgbaVar('--amber-rgb', 0.95, '255,184,101'), line:rgbaVar('--amber-rgb', 0.88, '255,184,101'), pole: false },
+        { d:[0,0.9,0], lbl:'y', col:rgbaVar('--amber-rgb', 0.95, '224,133,208'), line:rgbaVar('--amber-rgb', 0.88, '224,133,208'), pole: false },
       ];
       axes.filter(function (ax) { return !ax.pole; }).forEach(function (ax) {
         var o = proj(0,0,0), e = proj(ax.d[0],ax.d[1],ax.d[2]);
@@ -1646,14 +1719,14 @@
 
       // glow
       var grd = ctx.createRadialGradient(tp.sx,tp.sy,0,tp.sx,tp.sy,15);
-      grd.addColorStop(0, rgbaVar('--phos-rgb', 0.55, '127,255,196'));
-      grd.addColorStop(1, rgbaVar('--phos-rgb', 0, '127,255,196'));
+      grd.addColorStop(0, rgbaVar('--mint-rgb', 0.55, '92,190,156'));
+      grd.addColorStop(1, rgbaVar('--mint-rgb', 0, '92,190,156'));
       ctx.fillStyle = grd; ctx.beginPath();
       ctx.arc(tp.sx,tp.sy,15,0,Math.PI*2); ctx.fill();
 
       // shaft
       ctx.beginPath(); ctx.moveTo(o.sx,o.sy); ctx.lineTo(tp.sx,tp.sy);
-      ctx.strokeStyle = rgbaVar('--phos-rgb', 0.95, '127,255,196');
+      ctx.strokeStyle = rgbaVar('--mint-rgb', 0.95, '92,190,156');
       ctx.lineWidth = 2.35;
       ctx.lineCap = 'round';
       ctx.globalAlpha = 1;
@@ -1668,12 +1741,12 @@
       ctx.lineTo(tp.sx-ux*9+(-uy)*4.5, tp.sy-uy*9+ux*4.5);
       ctx.lineTo(tp.sx-ux*9-(-uy)*4.5, tp.sy-uy*9-ux*4.5);
       ctx.closePath();
-      ctx.fillStyle = rgbaVar('--phos-rgb', 0.98, '127,255,196');
+      ctx.fillStyle = rgbaVar('--mint-rgb', 0.98, '92,190,156');
       ctx.fill();
 
       // tip dot
       ctx.beginPath(); ctx.arc(tp.sx,tp.sy,4,0,Math.PI*2);
-      ctx.fillStyle = rgbaVar('--ink-rgb', 0.98, '212,228,219');
+      ctx.fillStyle = rgbaVar('--ink-rgb', 0.98, '220,226,234');
       ctx.fill();
 
       // |0⟩, |1⟩ poles on top of glow + state arrow
@@ -1879,7 +1952,7 @@
       if (state === 'plus') {
         ctx.beginPath();
         ctx.arc(CX, CY, ORB_R + 7 + 2.8 * Math.sin(performance.now() * 0.004), 0, Math.PI * 2);
-        ctx.strokeStyle = rgbaVar('--phos-rgb', 0.22, '127,255,196');
+        ctx.strokeStyle = rgbaVar('--mint-rgb', 0.22, '92,190,156');
         ctx.lineWidth = 1.1;
         ctx.stroke();
       }
@@ -1889,21 +1962,33 @@
       var uy = Math.sin(spinAngle);
       var tip = { x: CX + ux * len, y: CY + uy * len };
       var tail = { x: CX - ux * len, y: CY - uy * len };
-      var shaftCol = (state === '1') ? rgbaVar('--magenta-rgb', 0.96, '230,127,184') : rgbaVar('--phos-rgb', 0.96, '127,255,196');
+      var shaftCol = (state === '1') ? rgbaVar('--magenta-rgb', 0.96, '230,127,184') : rgbaVar('--mint-rgb', 0.96, '92,190,156');
 
-      ctx.beginPath();
-      ctx.moveTo(tail.x, tail.y);
-      ctx.lineTo(tip.x, tip.y);
-      ctx.strokeStyle = shaftCol;
-      ctx.lineWidth = 3.2;
-      ctx.lineCap = 'round';
-      ctx.stroke();
-
-      var dx = tip.x - tail.x, dy = tip.y - tail.y;
-      var vlen = Math.sqrt(dx * dx + dy * dy) || 1;
-      var vx = dx / vlen, vy = dy / vlen;
-      drawHead(tip.x, tip.y, vx, vy, shaftCol);
-      drawHead(tail.x, tail.y, -vx, -vy, shaftCol);
+      /* Measured |0⟩ / |1⟩: single arrow from center outward (not a line through the sphere). */
+      if (state === '0' || state === '1') {
+        ctx.beginPath();
+        ctx.moveTo(CX, CY);
+        ctx.lineTo(tip.x, tip.y);
+        ctx.strokeStyle = shaftCol;
+        ctx.lineWidth = 3.2;
+        ctx.lineCap = 'round';
+        ctx.stroke();
+        var vx = ux, vy = uy;
+        drawHead(tip.x, tip.y, vx, vy, shaftCol);
+      } else {
+        ctx.beginPath();
+        ctx.moveTo(tail.x, tail.y);
+        ctx.lineTo(tip.x, tip.y);
+        ctx.strokeStyle = shaftCol;
+        ctx.lineWidth = 3.2;
+        ctx.lineCap = 'round';
+        ctx.stroke();
+        var dx = tip.x - tail.x, dy = tip.y - tail.y;
+        var vlen = Math.sqrt(dx * dx + dy * dy) || 1;
+        var vx2 = dx / vlen, vy2 = dy / vlen;
+        drawHead(tip.x, tip.y, vx2, vy2, shaftCol);
+        drawHead(tail.x, tail.y, -vx2, -vy2, shaftCol);
+      }
 
       ctx.beginPath();
       ctx.arc(CX, CY, 4 + pulse * 2.5, 0, Math.PI * 2);
@@ -2155,6 +2240,7 @@
       wireClassicalBit();
       wireHomeLampBridge();
       wireBlochSphere();
+      initSuperpositionSlider();
       wireGateBloch();
       initSpinDemo();
       initCoinFlip();

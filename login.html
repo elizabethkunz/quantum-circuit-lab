@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quantum Circuit Lab — Login</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cabin:wght@400;500;600;700&family=Gelasio:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inconsolata:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles/base.css" />
+  <link rel="stylesheet" href="styles/auth.css" />
+</head>
+<body>
+  <main class="auth-page">
+    <section class="auth-card">
+      <div class="auth-brand">Quantum <span>&amp;</span> Lab</div>
+      <h1 id="auth-title">Login</h1>
+      <p class="auth-sub">Sign in with your Firebase account to access the simulator and tutorials.</p>
+      <p class="auth-note" id="auth-setup-note" hidden>
+        Firebase is not configured yet. Update <code>js/auth/firebase-config.js</code> with your project values.
+      </p>
+
+      <form id="auth-form" class="auth-form">
+        <label for="email">Email</label>
+        <input id="email" name="email" type="email" autocomplete="email" required />
+
+        <label for="password">Password</label>
+        <input id="password" name="password" type="password" autocomplete="current-password" minlength="6" required />
+
+        <button id="auth-submit" class="btn primary" type="submit">Sign In</button>
+      </form>
+
+      <p id="auth-error" class="auth-error" role="alert"></p>
+      <p class="auth-toggle">
+        <span id="auth-toggle-label">Need an account?</span>
+        <button id="auth-toggle-btn" type="button">Create one</button>
+      </p>
+
+      <p class="auth-back"><a href="index.html">Back to site</a></p>
+    </section>
+  </main>
+
+  <script type="module" src="js/auth/login.js"></script>
+</body>
+</html>

@@ -55,7 +55,14 @@ const TAG_MAP = {
   maxcut: 'variational',
   hea: 'variational',
   'native gates': 'hardware',
-  'barren plateaus': 'variational'
+  'barren plateaus': 'variational',
+  swap: 'compilation',
+  iswap: 'hardware',
+  routing: 'compilation',
+  toffoli: 'algorithms',
+  fredkin: 'algorithms',
+  'pauli roots': 'gates',
+  'clifford group': 'gates'
 };
 
 const TEMPLATE_REF = {
@@ -79,7 +86,15 @@ const TEMPLATE_REF = {
   bv: 'ref-bv1993',
   'ry-ansatz': 'ref-vqe2014',
   'qaoa-layer': 'ref-qaoa2014',
-  hea: 'ref-kandala2017'
+  hea: 'ref-kandala2017',
+  'swap-route': 'ref-nc2000',
+  'iswap-hop': 'ref-nc2000',
+  'ising-iswap': 'ref-kandala2017',
+  'ccx-toffoli': 'ref-nc2000',
+  'cswap-fredkin': 'ref-nc2000',
+  'sqrtx-twice': 'ref-nc2000',
+  'sqrty-twice': 'ref-nc2000',
+  'sqrtz-twice': 'ref-nc2000'
 };
 
 const FACT_DETAILS = {
@@ -187,6 +202,46 @@ const FACT_DETAILS = {
     'Only native gates (Ry, Rz, CNOT)': 'Native-gate ansatze reduce decomposition overhead and can better align with calibration envelopes on specific hardware families.',
     'Used by IBM, Google, Rigetti': 'Hardware-efficient templates are widely used in NISQ experiments because they are straightforward to compile on superconducting architectures.',
     'Known issue: barren plateaus at depth': 'As depth increases, gradients can vanish exponentially in system size for many random initializations, making training unstable without mitigation strategies.'
+  },
+  'swap-route': {
+    'Final state: |10⟩ (always)': 'A classical XOR route would not preserve quantum amplitudes; SWAP is the unitary that exchanges full two-qubit state vectors, so a single 1 in the |01⟩ subspace must land entirely on the swapped basis after measurement.',
+    'Classically, three CNOTs build a SWAP': 'The textbook decomposition is SWAP(0,1) = CNOT(0,1) CNOT(1,0) CNOT(0,1) — a standard identity in universal gate sets.',
+    'Routing for limited qubit connectivity': 'When a hardware graph cannot CNOT two distant qubits directly, compilers insert SWAPs (or a cheaper equivalent) along paths between them.'
+  },
+  'iswap-hop': {
+    'Measurement shows |10⟩; amplitude is +i in the comp. basis': 'iSWAP maps |01⟩ to i|10⟩; the factor i is a relative phase in the 2D subspace spanned by |01⟩ and |10⟩. Squared magnitudes for measurement match SWAP, so ideal Z readout always returns |10⟩ here.',
+    'Common native gate on transmon lattices': 'Many superconducting chips calibrate a full or partial iSWAP (or √iSWAP) as the entangling unitary between nearest neighbors, often paired with single-qubit Z rotations in firmware.',
+    'Phase matters in longer circuits': 'When you sum multiple paths that end in the same basis state, that i is exactly what can produce constructive or destructive interference — relevant for Trotter and variational cost layers.'
+  },
+  'ising-iswap': {
+    'Mimics a linear QAOA / HEA entangling brick': 'Alternating RY and nearest-neighbor iSWAP layers form a family of state preparations used when iSWAP (or a related XY interaction) is the primary native 2Q gate on the coupler graph.',
+    'Heavy-hex and line topologies use this idea': 'IBM and other vendors route circuits so long-range CNOTs decompose into chains of iSWAP/CZ plus 1Q gates when that yields lower depth or error.',
+    'Compare ideal vs noisy density': 'With depolarizing noise, off-diagonals in ρ across the 8-dimensional space decay — try the template at 0% then 2–3% to see the contrast in the density-matrix view.'
+  },
+  'ccx-toffoli': {
+    'Classical AND on controls = flip target': 'In the computational basis, the Toffoli maps |ab0⟩ to |ab0⟩ and |ab1⟩ to |ab( a∧b ⊕ 1)⟩ in the target — it is the reversible AND gate (with the target as XOR of the and).',
+    'Universal for classical computation with H and S': 'The set {H, S, Toffoli} is approximately universal; with magic-state distillation for T, you get fault-tolerant universal QC.',
+    'Often decomposed into CNOTs + T on actual hardware': 'Surface-code and transmon control stacks use long CNOT and CCZ product expansions; depth matters for fidelity.'
+  },
+  'cswap-fredkin': {
+    'Conserves Hamming weight (0 and 1 bits swap)': 'The Fredkin never changes the number of 1s in a basis state, only reorders the two target bits when control=1 — useful for “compare and route” style classical logic in reversible form.',
+    'Useful in comparator and routing circuits': 'Controlling swap of two wires is a multiplexer primitive; Fredkin is the quantum coherent version with one control line.',
+    'Decomposes into 2 Toffoli + 1 CNOT in common textbooks': 'Nielsen & Chuang and many other texts give an explicit 3-gate Toffoli-based circuit for CSWAP.'
+  },
+  'sqrtx-twice': {
+    'Measurement: |1⟩ with certainty': 'Two 90° x-rotations compose to 180°: R_x(π) takes |0⟩ to |1⟩; global phase e^{-iπ/2} is invisible in measurement.',
+    'Matches RX(90°) in this simulator': 'The simulator’s SX is exactly makeRxGate(90°) — a common but not the only “principal” √X in the literature (global phases can differ by convention).',
+    'Clifford gate: composer of many surface-code gadgets': 'S and Hadamard with Clifford two-qubit gates form the stabilizer group; non-Clifford T or CCZ injection enables universality.'
+  },
+  'sqrty-twice': {
+    'R_y(π) is an X in the Y basis, but in Z it flips the bit from |0⟩ to |1⟩': 'The π rotation about y acting on the north pole of the Bloch sphere sends it to the south pole, giving deterministic |1⟩ in Z-basis readout here.',
+    'SY matches R_y(90°) here': 'The simulator’s √Y is makeRyGate(90°) — a square root of the full Y Pauli in the same sense as for X.',
+    'Useful in VQE and hardware-efficient Y-native stacks': 'Some trapped-ion and neutral-atom toolchains privilege Y rotations in calibration; √Y is a native-style primitive.'
+  },
+  'sqrtz-twice': {
+    'Two S gates = Z, invisible on |0⟩ in Z-basis': 'S²=Z, but S adds only global phase to |0⟩; Z|0⟩=|0⟩ so the composition is a global phase and readout is unchanged at 0%.',
+    'Visible when applied to |1⟩ or superpositions': 'S|+⟩ and SS on superpositions change relative phases that show up in interference later — try prepending an H in the Lab.',
+    'Third root of a Pauli is a non-Clifford (T) — try T, T, T, T = S': 'Four T gates in a row (up to global phase) implement S, linking third roots to T-count in fault-tolerant schemes.'
   }
 };
 

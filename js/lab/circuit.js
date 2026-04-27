@@ -8,6 +8,9 @@
      null | {type:'single', gate:'H'|'X'|...} | 
      {type:'ctrl', partner:number} |
      {type:'target', gate:'X'|'Z', partner:number} |
+     {type:'swap2', gate:'SWAP'|'iSWAP', partner:number} |
+     {type:'ccx', ctrl0, ctrl1, target} (same ref on three wires) |
+     {type:'cswap', control, swap0, swap1} (same ref on three wires) |
      {type:'meas'}
    ======================================================================= */
 
@@ -47,8 +50,14 @@ function resizeQubits(n) {
       // dropping qubits — remove any gates referencing them
       const trimmed = col.slice(0, n);
       return trimmed.map(entry => {
-        if (entry && (entry.type === 'ctrl' || entry.type === 'target')) {
+        if (entry && (entry.type === 'ctrl' || entry.type === 'target' || entry.type === 'swap2')) {
           if (entry.partner >= n) return null;
+        }
+        if (entry && entry.type === 'ccx') {
+          if (entry.ctrl0 >= n || entry.ctrl1 >= n || entry.target >= n) return null;
+        }
+        if (entry && entry.type === 'cswap') {
+          if (entry.control >= n || entry.swap0 >= n || entry.swap1 >= n) return null;
         }
         return entry;
       });
@@ -131,7 +140,13 @@ function renderGate(entry, q, c) {
     const el = document.createElement('div');
     el.className = 'placed';
     const g = entry.gate;
-    if (g === 'RX' || g === 'RY' || g === 'RZ') {
+    if (g === 'SX' || g === 'SY' || g === 'SZ') {
+      el.classList.add('sqrt-pauli');
+      el.style.fontSize = '11px';
+      const ax = g[1];
+      el.innerHTML = `<span style="font-size:9px">√</span><span style="font-weight:600">${ax}</span>`;
+      el.title = `√${ax} — click to remove`;
+    } else if (g === 'RX' || g === 'RY' || g === 'RZ') {
       el.classList.add('rot');
       el.style.fontSize = '10px';
       const sub = g[1].toLowerCase();
@@ -172,6 +187,41 @@ function renderGate(entry, q, c) {
     el.addEventListener('click', () => removePair(q, c));
     return el;
   }
+  if (entry.type === 'swap2') {
+    const el = document.createElement('div');
+    el.className = 'placed swap-pair' + (entry.gate === 'iSWAP' ? ' iswap' : '');
+    const label = entry.gate === 'SWAP' ? 'SW' : 'iSW';
+    el.textContent = label;
+    el.title = (entry.gate === 'SWAP' ? 'SWAP' : 'iSWAP') + ' · click to remove';
+    el.addEventListener('click', () => removePair(q, c));
+    return el;
+  }
+  if (entry.type === 'ccx') {
+    const el = document.createElement('div');
+    if (q === entry.target) {
+      el.className = 'placed target-x';
+      el.textContent = '⊕';
+      el.title = 'Toffoli target · click to remove';
+    } else {
+      el.className = 'placed ctrl-dot';
+      el.title = 'Toffoli control · click to remove';
+    }
+    el.addEventListener('click', () => removeCCXOrCSWAP(c));
+    return el;
+  }
+  if (entry.type === 'cswap') {
+    const el = document.createElement('div');
+    if (q === entry.control) {
+      el.className = 'placed ctrl-dot';
+      el.title = 'Fredkin control · click to remove';
+    } else {
+      el.className = 'placed cswap-end';
+      el.textContent = '⇄';
+      el.title = 'CSWAP swap line · click to remove';
+    }
+    el.addEventListener('click', () => removeCCXOrCSWAP(c));
+    return el;
+  }
   if (entry.type === 'meas') {
     const el = document.createElement('div');
     el.className = 'placed meas';
@@ -197,9 +247,11 @@ function drawCtrlLinks() {
     const col = circuit.columns[c];
     const ctrlQs = [];
     const tgtQs = [];
+    const swapPair = [];
     col.forEach((e, q) => {
       if (e && e.type === 'ctrl') ctrlQs.push(q);
       if (e && e.type === 'target') tgtQs.push(q);
+      if (e && e.type === 'swap2' && e.partner > q) swapPair.push([q, e.partner]);
     });
     if (ctrlQs.length && tgtQs.length) {
       const qA = Math.min(...ctrlQs, ...tgtQs);
@@ -220,7 +272,54 @@ function drawCtrlLinks() {
         circuitEl.appendChild(link);
       }
     }
+    for (const [qLo, qHi] of swapPair) {
+      const slotA = document.querySelector(`.slot[data-col="${c}"][data-qubit="${qLo}"]`);
+      const slotB = document.querySelector(`.slot[data-col="${c}"][data-qubit="${qHi}"]`);
+      if (slotA && slotB) {
+        const rA = slotA.getBoundingClientRect();
+        const rB = slotB.getBoundingClientRect();
+        const link = document.createElement('div');
+        link.className = 'ctrl-link';
+        const topY = Math.min(rA.top, rB.top) - circuitRect.top + rA.height / 2;
+        const bottomY = Math.max(rA.top, rB.top) - circuitRect.top + rA.height / 2;
+        link.style.top = topY + 'px';
+        link.style.height = (bottomY - topY) + 'px';
+        link.style.left = (rA.left - circuitRect.left + rA.width / 2) + 'px';
+        link.style.transform = 'translateX(-50%)';
+        circuitEl.appendChild(link);
+      }
+    }
+    for (let q = 0; q < circuit.nQubits; q++) {
+      const e = col[q];
+      if (!e) continue;
+      if (e.type === 'ccx' && q === Math.min(e.ctrl0, e.ctrl1, e.target)) {
+        const lo = Math.min(e.ctrl0, e.ctrl1, e.target);
+        const hi = Math.max(e.ctrl0, e.ctrl1, e.target);
+        drawVerticalLink(circuitEl, circuitRect, c, lo, hi);
+      } else if (e.type === 'cswap' && q === Math.min(e.control, e.swap0, e.swap1)) {
+        const lo = Math.min(e.control, e.swap0, e.swap1);
+        const hi = Math.max(e.control, e.swap0, e.swap1);
+        drawVerticalLink(circuitEl, circuitRect, c, lo, hi);
+      }
+    }
   }
+}
+
+function drawVerticalLink(circuitEl, circuitRect, col, qLo, qHi) {
+  const slotA = document.querySelector(`.slot[data-col="${col}"][data-qubit="${qLo}"]`);
+  const slotB = document.querySelector(`.slot[data-col="${col}"][data-qubit="${qHi}"]`);
+  if (!slotA || !slotB) return;
+  const rA = slotA.getBoundingClientRect();
+  const rB = slotB.getBoundingClientRect();
+  const link = document.createElement('div');
+  link.className = 'ctrl-link';
+  const topY = Math.min(rA.top, rB.top) - circuitRect.top + rA.height / 2;
+  const bottomY = Math.max(rA.top, rB.top) - circuitRect.top + rA.height / 2;
+  link.style.top = topY + 'px';
+  link.style.height = (bottomY - topY) + 'px';
+  link.style.left = (rA.left - circuitRect.left + rA.width / 2) + 'px';
+  link.style.transform = 'translateX(-50%)';
+  circuitEl.appendChild(link);
 }
 
 /* ---------------- PLACE / REMOVE ---------------- */
@@ -252,6 +351,70 @@ function placeGate(gate, qubit, col) {
     return;
   }
 
+  if (gate === 'SWAP' || gate === 'iSWAP') {
+    let target = -1;
+    const candidates = [];
+    for (let q = 0; q < circuit.nQubits; q++) {
+      if (q !== qubit) candidates.push(q);
+    }
+    candidates.sort((a, b) => Math.abs(a - qubit) - Math.abs(b - qubit));
+    for (const q of candidates) {
+      if (circuit.columns[col][q] === null) { target = q; break; }
+    }
+    if (target === -1) { toast('No free qubit in this column for a 2-qubit gate.', true); return; }
+    if (existing !== null) { toast('Slot is occupied.', true); return; }
+
+    const gname = gate === 'SWAP' ? 'SWAP' : 'iSWAP';
+    circuit.columns[col][qubit] = { type: 'swap2', gate: gname, partner: target };
+    circuit.columns[col][target] = { type: 'swap2', gate: gname, partner: qubit };
+    ensureColumns();
+    render();
+    return;
+  }
+
+  if (gate === 'CCX') {
+    if (circuit.nQubits < 3) { toast('CCX (Toffoli) needs at least 3 qubits.', true); return; }
+    if (existing !== null) { toast('Slot is occupied.', true); return; }
+    const free = [];
+    for (let q = 0; q < circuit.nQubits; q++) {
+      if (circuit.columns[col][q] === null) free.push(q);
+    }
+    free.sort((a, b) => a - b);
+    if (free.length < 3) { toast('Need 3 free qubits in this column for CCX.', true); return; }
+    const a = free[0], b = free[1], c0 = free[2];
+    if (qubit !== a && qubit !== b && qubit !== c0) {
+      toast('For CCX, drop on one of the three lowest free wires in this column.', true);
+      return;
+    }
+    const cell = { type: 'ccx', ctrl0: a, ctrl1: b, target: c0 };
+    circuit.columns[col][a] = cell;
+    circuit.columns[col][b] = cell;
+    circuit.columns[col][c0] = cell;
+    ensureColumns();
+    render();
+    return;
+  }
+
+  if (gate === 'CSWAP') {
+    if (circuit.nQubits < 3) { toast('CSWAP (Fredkin) needs at least 3 qubits.', true); return; }
+    if (existing !== null) { toast('Slot is occupied.', true); return; }
+    const free = [];
+    for (let q = 0; q < circuit.nQubits; q++) {
+      if (circuit.columns[col][q] === null) free.push(q);
+    }
+    if (free.length < 3) { toast('Need 3 free qubits in this column for CSWAP.', true); return; }
+    if (!free.includes(qubit)) { toast('Slot is occupied.', true); return; }
+    const rest = free.filter(q => q !== qubit).sort((a, b) => a - b);
+    if (rest.length < 2) { toast('CSWAP needs two more free qubits in this column.', true); return; }
+    const cell = { type: 'cswap', control: qubit, swap0: rest[0], swap1: rest[1] };
+    circuit.columns[col][qubit] = cell;
+    circuit.columns[col][rest[0]] = cell;
+    circuit.columns[col][rest[1]] = cell;
+    ensureColumns();
+    render();
+    return;
+  }
+
   if (existing !== null) { toast('Slot occupied — click to remove first.', true); return; }
 
   if (gate === 'M') {
@@ -268,7 +431,11 @@ function placeGate(gate, qubit, col) {
 function removeGate(q, c) {
   const e = circuit.columns[c][q];
   if (!e) return;
-  if (e.type === 'ctrl' || e.type === 'target') {
+  if (e.type === 'ccx' || e.type === 'cswap') {
+    removeCCXOrCSWAP(c);
+    return;
+  }
+  if (e.type === 'ctrl' || e.type === 'target' || e.type === 'swap2') {
     removePair(q, c);
     return;
   }
@@ -284,6 +451,31 @@ function removePair(q, c) {
   circuit.columns[c][q] = null;
   ensureColumns();
   render();
+}
+
+function removeCCXOrCSWAP(c) {
+  const col = circuit.columns[c];
+  if (!col) return;
+  for (let q = 0; q < circuit.nQubits; q++) {
+    const e = col[q];
+    if (!e) continue;
+    if (e.type === 'ccx') {
+      col[e.ctrl0] = null;
+      col[e.ctrl1] = null;
+      col[e.target] = null;
+      ensureColumns();
+      render();
+      return;
+    }
+    if (e.type === 'cswap') {
+      col[e.control] = null;
+      col[e.swap0] = null;
+      col[e.swap1] = null;
+      ensureColumns();
+      render();
+      return;
+    }
+  }
 }
 
 /* ---------------- SIMULATE ---------------- */
@@ -324,6 +516,45 @@ function runOnce(p) {
             if (Math.random() < p) state = applySingle(state, randomPauli(), target, circuit.nQubits);
           }
         }
+      } else if (e.type === 'swap2') {
+        const target = e.partner;
+        const other = col[target];
+        if (other && other.type === 'swap2' && other.gate === e.gate && other.partner === q) {
+          const mat = e.gate === 'SWAP' ? SWAP4 : ISWAP4;
+          state = applyTwoQubit(state, mat, q, target, circuit.nQubits);
+          processed.add(q);
+          processed.add(target);
+          if (p > 0) {
+            if (Math.random() < p) state = applySingle(state, randomPauli(), q, circuit.nQubits);
+            if (Math.random() < p) state = applySingle(state, randomPauli(), target, circuit.nQubits);
+          }
+        }
+      } else if (e.type === 'ccx') {
+        const c0 = e.ctrl0, c1 = e.ctrl1, t = e.target;
+        if (q === Math.min(c0, c1, t)) {
+          state = applyToffoli(state, c0, c1, t, circuit.nQubits);
+          processed.add(c0);
+          processed.add(c1);
+          processed.add(t);
+          if (p > 0) {
+            if (Math.random() < p) state = applySingle(state, randomPauli(), c0, circuit.nQubits);
+            if (Math.random() < p) state = applySingle(state, randomPauli(), c1, circuit.nQubits);
+            if (Math.random() < p) state = applySingle(state, randomPauli(), t, circuit.nQubits);
+          }
+        }
+      } else if (e.type === 'cswap') {
+        const C = e.control, s0 = e.swap0, s1 = e.swap1;
+        if (q === Math.min(C, s0, s1)) {
+          state = applyCSWAP(state, C, s0, s1, circuit.nQubits);
+          processed.add(C);
+          processed.add(s0);
+          processed.add(s1);
+          if (p > 0) {
+            if (Math.random() < p) state = applySingle(state, randomPauli(), C, circuit.nQubits);
+            if (Math.random() < p) state = applySingle(state, randomPauli(), s0, circuit.nQubits);
+            if (Math.random() < p) state = applySingle(state, randomPauli(), s1, circuit.nQubits);
+          }
+        }
       }
     }
     // single-qubit gates
@@ -360,10 +591,65 @@ function sampleOutcome(state) {
   return probs.length - 1;
 }
 
+/* Logical gate order per column (matches simulation semantics). */
+function buildLogicalTrace(columns, nQubits) {
+  const trace = [];
+  for (let c = 0; c < columns.length; c++) {
+    const col = columns[c];
+    if (!col) continue;
+    const processed = new Set();
+    for (let q = 0; q < nQubits; q++) {
+      const e = col[q];
+      if (!e || processed.has(q)) continue;
+      if (e.type === 'ctrl') {
+        const target = e.partner;
+        const tgtEntry = col[target];
+        if (tgtEntry && tgtEntry.type === 'target') {
+          trace.push({ kind: 'controlled', gate: tgtEntry.gate === 'X' ? 'CNOT' : 'CZ', control: q, target });
+          processed.add(q); processed.add(target);
+        }
+      } else if (e.type === 'swap2') {
+        const target = e.partner;
+        const other = col[target];
+        if (other && other.type === 'swap2' && other.gate === e.gate && other.partner === q) {
+          const a = Math.min(q, target);
+          const b = Math.max(q, target);
+          trace.push({ kind: 'swap2', gate: e.gate, a, b });
+          processed.add(q);
+          processed.add(target);
+        }
+      } else if (e.type === 'ccx') {
+        if (q === Math.min(e.ctrl0, e.ctrl1, e.target)) {
+          trace.push({ kind: 'ccx', ctrl0: e.ctrl0, ctrl1: e.ctrl1, target: e.target });
+          processed.add(e.ctrl0);
+          processed.add(e.ctrl1);
+          processed.add(e.target);
+        }
+      } else if (e.type === 'cswap') {
+        if (q === Math.min(e.control, e.swap0, e.swap1)) {
+          trace.push({ kind: 'cswap', control: e.control, swap0: e.swap0, swap1: e.swap1 });
+          processed.add(e.control);
+          processed.add(e.swap0);
+          processed.add(e.swap1);
+        }
+      }
+    }
+    for (let q = 0; q < nQubits; q++) {
+      if (processed.has(q)) continue;
+      const e = col[q];
+      if (!e) continue;
+      if (e.type === 'single') {
+        trace.push({ kind: 'single', gate: e.gate, qubit: q, angleDeg: e.angleDeg });
+      } else if (e.type === 'meas') {
+        trace.push({ kind: 'meas', qubit: q });
+      }
+    }
+  }
+  return trace;
+}
+
 function simulate() {
   const p = currentNoise(); // 0..0.10
-  const trace = [];
-
   const hasGates = circuit.columns.some(col => col.some(e => e !== null));
   if (!hasGates) {
     const state = initState(circuit.nQubits);
@@ -377,34 +663,7 @@ function simulate() {
     };
   }
 
-  // Build trace (order-preserving description of what the circuit does,
-  // independent of any particular stochastic realization).
-  for (let c = 0; c < circuit.columns.length; c++) {
-    const col = circuit.columns[c];
-    const processed = new Set();
-    for (let q = 0; q < circuit.nQubits; q++) {
-      const e = col[q];
-      if (!e || processed.has(q)) continue;
-      if (e.type === 'ctrl') {
-        const target = e.partner;
-        const tgtEntry = col[target];
-        if (tgtEntry && tgtEntry.type === 'target') {
-          trace.push({ kind: 'controlled', gate: tgtEntry.gate === 'X' ? 'CNOT' : 'CZ', control: q, target });
-          processed.add(q); processed.add(target);
-        }
-      }
-    }
-    for (let q = 0; q < circuit.nQubits; q++) {
-      if (processed.has(q)) continue;
-      const e = col[q];
-      if (!e) continue;
-      if (e.type === 'single') {
-        trace.push({ kind: 'single', gate: e.gate, qubit: q, angleDeg: e.angleDeg });
-      } else if (e.type === 'meas') {
-        trace.push({ kind: 'meas', qubit: q });
-      }
-    }
-  }
+  const trace = buildLogicalTrace(circuit.columns, circuit.nQubits);
 
   // p = 0: run once, report exact results
   if (p === 0) {
@@ -794,17 +1053,16 @@ function renderDensityMatrix(result, n) {
 }
 
 function densityColor(t, isDiagonal) {
-  // t ∈ [0,1]. Use a palette that works with the dark theme: fade from bg-2 to phosphor green.
-  // Diagonal entries (populations) get phosphor; off-diagonals (coherences) get a subtle cyan tint.
+  // t ∈ [0,1]. Fade from bg-2 to accent blue; diagonals use phos-rgb, off-diagonals a cyan tint.
   if (t < 0.01) return 'var(--bg-2)';
-  const r = isDiagonal ? 127 : 111;
-  const g = isDiagonal ? 255 : 212;
-  const b = isDiagonal ? 196 : 224;
-  // blend from bg-2 (#161e1a = 22,30,26) to (r,g,b) as t goes 0→1
+  const r = isDiagonal ? 120 : 111;
+  const g = isDiagonal ? 212 : 212;
+  const b = isDiagonal ? 255 : 224;
+  // blend from bg-2 to (r,g,b) as t goes 0→1
   const mix = (a, b, t) => Math.round(a + (b - a) * t);
-  const R = mix(22, r, t);
-  const G = mix(30, g, t);
-  const B = mix(26, b, t);
+  const R = mix(20, r, t);
+  const G = mix(26, g, t);
+  const B = mix(34, b, t);
   return `rgb(${R},${G},${B})`;
 }
 
@@ -855,6 +1113,12 @@ function renderNarrative(result, n) {
       } else if (g === 'RZ') {
         const deg = t.angleDeg !== undefined ? t.angleDeg : 90;
         text = `An <b>R_z(${deg}°)</b> gate rotates <code>q${t.qubit}</code> by ${deg}° around the z-axis — a pure phase rotation. Like Z, S, and T, it's invisible to a Z-basis measurement but rotates interference patterns.`;
+      } else if (g === 'SX') {
+        text = `A <b>√X</b> (SX) on <code>q${t.qubit}</code> — a 90° rotation about the x-axis, so two in a row act like a Pauli <b>X</b> (up to global phase). Standard in the Clifford+T and native transmon layer.`;
+      } else if (g === 'SY') {
+        text = `A <b>√Y</b> (SY) on <code>q${t.qubit}</code> — a 90° rotation about the y-axis, the natural “half power” of Y.`;
+      } else if (g === 'SZ') {
+        text = `A <b>√Z</b> (SZ) on <code>q${t.qubit}</code> — in this lab it is the <b>S</b> gate, which applies a <code>π/2</code> phase to <code>|1⟩</code> (so (SZ)² = Z on the subspace, up to global phase).`;
       }
     } else if (t.kind === 'controlled') {
       if (t.gate === 'CNOT') {
@@ -862,6 +1126,16 @@ function renderNarrative(result, n) {
       } else {
         text = `A <b>CZ</b> (controlled-Z) between <code>q${t.control}</code> and <code>q${t.target}</code>. The phase of the target flips only when the control is 1 — another way to entangle.`;
       }
+    } else if (t.kind === 'swap2') {
+      if (t.gate === 'SWAP') {
+        text = `A <b>SWAP</b> exchanges the two qubit states on <code>q${t.a}</code> and <code>q${t.b}</code> — the quantum analogue of swapping two wires.`;
+      } else {
+        text = `An <b>iSWAP</b> on <code>q${t.a}</code> and <code>q${t.b}</code> swaps the two qubits and multiplies the <code>|01⟩↔|10⟩</code> swap by <code>i</code> — a natural native gate on many superconducting processors.`;
+      }
+    } else if (t.kind === 'ccx') {
+      text = `A <b>Toffoli (CCX)</b>: the target <code>q${t.target}</code> is flipped <em>only if</em> both controls <code>q${t.ctrl0}</code> and <code>q${t.ctrl1}</code> are <code>1</code> — a universal three-qubit gate for reversible logic and oracles.`;
+    } else if (t.kind === 'cswap') {
+      text = `A <b>Fredkin (CSWAP)</b>: the two data lines <code>q${t.swap0}</code> and <code>q${t.swap1}</code> are swapped <em>only if</em> the control <code>q${t.control}</code> is <code>1</code>. Classically, it is controlled routing of bits.`;
     } else if (t.kind === 'meas') {
       text = `<b>Measurement</b> on <code>q${t.qubit}</code>. The qubit is forced to commit — whatever superposition it was in collapses to a definite 0 or 1, with probabilities set by the earlier gates.`;
     }
@@ -877,7 +1151,7 @@ function renderNarrative(result, n) {
 
   // Noise commentary, if applicable
   if (noise > 0) {
-    const gateCount = trace.filter(t => t.kind === 'single' || t.kind === 'controlled').length;
+    const gateCount = trace.filter(t => t.kind === 'single' || t.kind === 'controlled' || t.kind === 'swap2' || t.kind === 'ccx' || t.kind === 'cswap').length;
     paragraphs.push(`<p><span class="step">Noise</span>Every gate has a <code>${(noise*100).toFixed(1)}%</code> chance of misfiring — randomly applying an unwanted X, Y, or Z error. Across ${gateCount} gate${gateCount===1?'':'s'} and ${result.shots} shots, you're seeing the <span class="punch">smeared</span> version of your ideal circuit. This is roughly what today's real quantum hardware looks like before error correction kicks in.</p>`);
   }
 
@@ -953,7 +1227,7 @@ function interpretResult(probs, n, noise = 0) {
 /* ---------------- CIRCUIT-TO-PULSE ANALYSIS ---------------- */
 const PULSE_LIBRARY = {
   superconducting: {
-    X: [{ label: 'Gaussian/DRAG π', duration: 32, color: 'var(--phos)' }],
+    X: [{ label: 'Gaussian/DRAG π', duration: 32, color: 'var(--mint)' }],
     Y: [{ label: 'IQ phase-shifted π', duration: 32, color: 'var(--cyan)' }],
     Z: [{ label: 'virtual Z frame update', duration: 1, color: 'var(--amber)' }],
     H: [
@@ -962,7 +1236,7 @@ const PULSE_LIBRARY = {
     ],
     S: [{ label: 'virtual Z(π/2)', duration: 1, color: 'var(--amber)' }],
     T: [{ label: 'virtual Z(π/4)', duration: 1, color: 'var(--amber)' }],
-    RX: [{ label: 'resonant drive (θ)', duration: 28, color: 'var(--phos)' }],
+    RX: [{ label: 'resonant drive (θ)', duration: 28, color: 'var(--mint)' }],
     RY: [{ label: 'quadrature drive (θ)', duration: 28, color: 'var(--cyan)' }],
     RZ: [{ label: 'virtual Z(θ)', duration: 1, color: 'var(--amber)' }],
     CZ: [
@@ -976,10 +1250,29 @@ const PULSE_LIBRARY = {
       { label: '1Q correction', duration: 35, color: 'var(--cyan)' },
       { label: 'virtual Z', duration: 1, color: 'var(--amber)' }
     ],
+    SWAP: [
+      { label: 'flux entangler (3×)', duration: 280, color: 'var(--magenta)' },
+      { label: 'single-qubit trims', duration: 24, color: 'var(--cyan)' }
+    ],
+    iSWAP: [
+      { label: 'parametric iSWAP', duration: 260, color: 'var(--magenta)' },
+      { label: 'phase frame', duration: 1, color: 'var(--amber)' }
+    ],
+    SX: [{ label: 'DRAG π/2 (sqrt-X)', duration: 18, color: 'var(--mint)' }],
+    SY: [{ label: 'quadrature π/2', duration: 18, color: 'var(--cyan)' }],
+    SZ: [{ label: 'virtual Z(π/2)', duration: 1, color: 'var(--amber)' }],
+    CCX: [
+      { label: '6× CNOT / phase', duration: 1200, color: 'var(--magenta)' },
+      { label: 'single-qubit trim', duration: 20, color: 'var(--cyan)' }
+    ],
+    CSWAP: [
+      { label: '2× Toffoli / ancilla', duration: 1400, color: 'var(--magenta)' },
+      { label: 'virtual Z', duration: 1, color: 'var(--amber)' }
+    ],
     M: [{ label: 'dispersive readout', duration: 400, color: 'var(--amber)' }]
   },
   trapped_ion: {
-    X: [{ label: 'resonant Raman pulse', duration: 18000, color: 'var(--phos)' }],
+    X: [{ label: 'resonant Raman pulse', duration: 18000, color: 'var(--mint)' }],
     Y: [{ label: 'phase-shifted Raman pulse', duration: 18000, color: 'var(--cyan)' }],
     Z: [{ label: 'phase advance', duration: 5, color: 'var(--amber)' }],
     H: [
@@ -988,25 +1281,39 @@ const PULSE_LIBRARY = {
     ],
     S: [{ label: 'phase advance (π/2)', duration: 5, color: 'var(--amber)' }],
     T: [{ label: 'phase advance (π/4)', duration: 5, color: 'var(--amber)' }],
-    RX: [{ label: 'carrier rotation (θ)', duration: 16000, color: 'var(--phos)' }],
+    RX: [{ label: 'carrier rotation (θ)', duration: 16000, color: 'var(--mint)' }],
     RY: [{ label: 'carrier rotation (θ)', duration: 16000, color: 'var(--cyan)' }],
     RZ: [{ label: 'phase advance (θ)', duration: 5, color: 'var(--amber)' }],
     CZ: [{ label: 'Mølmer-Sørensen entangler + phases', duration: 120000, color: 'var(--magenta)' }],
     CNOT: [{ label: 'MS entangler + local rotations', duration: 150000, color: 'var(--magenta)' }],
+    SWAP: [{ label: 'ion transport + MS', duration: 180000, color: 'var(--magenta)' }],
+    iSWAP: [{ label: 'bichromatic MS (iSWAP)', duration: 160000, color: 'var(--magenta)' }],
+    SX: [{ label: 'Raman π/2', duration: 12000, color: 'var(--mint)' }],
+    SY: [{ label: 'phase-shifted Raman π/2', duration: 12000, color: 'var(--cyan)' }],
+    SZ: [{ label: 'phase advance (π/2)', duration: 5, color: 'var(--amber)' }],
+    CCX: [{ label: 'MS / CNOT chain', duration: 900000, color: 'var(--magenta)' }],
+    CSWAP: [{ label: 'multi-qubit MS sequence', duration: 950000, color: 'var(--magenta)' }],
     M: [{ label: 'state-dependent fluorescence', duration: 250000, color: 'var(--amber)' }]
   },
   photonic: {
-    X: [{ label: 'waveplate/interferometer unitary', duration: 100, color: 'var(--phos)' }],
+    X: [{ label: 'waveplate/interferometer unitary', duration: 100, color: 'var(--mint)' }],
     Y: [{ label: 'phase shifter + beamsplitter', duration: 120, color: 'var(--cyan)' }],
     Z: [{ label: 'phase shifter', duration: 50, color: 'var(--amber)' }],
     H: [{ label: '50:50 beamsplitter transform', duration: 110, color: 'var(--cyan)' }],
     S: [{ label: 'quarter-wave phase element', duration: 50, color: 'var(--amber)' }],
     T: [{ label: 'eighth-wave phase element', duration: 55, color: 'var(--amber)' }],
-    RX: [{ label: 'programmable interferometer (θ)', duration: 120, color: 'var(--phos)' }],
+    RX: [{ label: 'programmable interferometer (θ)', duration: 120, color: 'var(--mint)' }],
     RY: [{ label: 'programmable interferometer (θ)', duration: 120, color: 'var(--cyan)' }],
     RZ: [{ label: 'phase shifter (θ)', duration: 50, color: 'var(--amber)' }],
     CZ: [{ label: 'measurement-induced entangler', duration: 2000, color: 'var(--magenta)' }],
     CNOT: [{ label: 'linear-optical CNOT + ancilla', duration: 2500, color: 'var(--magenta)' }],
+    SWAP: [{ label: 'reconfigurable coupler', duration: 2200, color: 'var(--magenta)' }],
+    iSWAP: [{ label: 'cavity-mediated iSWAP', duration: 2000, color: 'var(--magenta)' }],
+    SX: [{ label: 'waveplate π/4', duration: 70, color: 'var(--mint)' }],
+    SY: [{ label: 'tunable plate π/4', duration: 75, color: 'var(--cyan)' }],
+    SZ: [{ label: 'phase shifter π/2', duration: 45, color: 'var(--amber)' }],
+    CCX: [{ label: 'KLM-style block', duration: 8000, color: 'var(--magenta)' }],
+    CSWAP: [{ label: 'controlled coupler', duration: 8500, color: 'var(--magenta)' }],
     M: [{ label: 'single-photon detector window', duration: 800, color: 'var(--amber)' }]
   }
 };
@@ -1051,6 +1358,27 @@ function buildPulseScheduleFromCircuit(hardware) {
         if (tgtEntry && tgtEntry.type === 'target') {
           ops.push({ gate: tgtEntry.gate === 'X' ? 'CNOT' : 'CZ', qubits: [q, target] });
           seen.add(target);
+        }
+      } else if (e.type === 'swap2') {
+        const target = e.partner;
+        const other = col[target];
+        if (other && other.type === 'swap2' && other.gate === e.gate && other.partner === q) {
+          if (q < target) ops.push({ gate: e.gate, qubits: [q, target] });
+          seen.add(target);
+        }
+      } else if (e.type === 'ccx') {
+        if (q === Math.min(e.ctrl0, e.ctrl1, e.target)) {
+          ops.push({ gate: 'CCX', qubits: [e.ctrl0, e.ctrl1, e.target] });
+          seen.add(e.ctrl0);
+          seen.add(e.ctrl1);
+          seen.add(e.target);
+        }
+      } else if (e.type === 'cswap') {
+        if (q === Math.min(e.control, e.swap0, e.swap1)) {
+          ops.push({ gate: 'CSWAP', qubits: [e.control, e.swap0, e.swap1] });
+          seen.add(e.control);
+          seen.add(e.swap0);
+          seen.add(e.swap1);
         }
       }
     }
@@ -1204,7 +1532,7 @@ function renderPulseTimelineFromSchedule(schedule) {
           x: 268, y: y + 4, 'text-anchor': 'middle', 'font-family': 'var(--mono)', 'font-size': 9, fill: 'var(--ink-faint)'
         }, 'direct'));
       }
-      pulseBox(334, y, 58, 'M_z', 'var(--phos)');
+      pulseBox(334, y, 58, 'M_z', 'var(--mint)');
     });
   }
 
@@ -1260,6 +1588,230 @@ function currentNoise() {
   return slider ? parseFloat(slider.value) / 100 : 0;
 }
 
+/* ---------------- EXPORT (JSON / QASM / LaTeX / Markdown) ---------------- */
+function trimExportColumns(columns, nQubits) {
+  let last = -1;
+  for (let c = 0; c < columns.length; c++) {
+    const col = columns[c];
+    if (!col) continue;
+    for (let q = 0; q < nQubits; q++) {
+      if (q < col.length && col[q]) {
+        last = c;
+        break;
+      }
+    }
+  }
+  if (last < 0) return [];
+  return columns.slice(0, last + 1).map(col =>
+    col.slice(0, nQubits).map(cell =>
+      cell === null ? null : JSON.parse(JSON.stringify(cell))
+    )
+  );
+}
+
+function exportCircuitPayload() {
+  const cols = trimExportColumns(circuit.columns, circuit.nQubits);
+  return {
+    format: 'quantum-lab-circuit',
+    version: 1,
+    nQubits: circuit.nQubits,
+    columns: cols,
+    simulator: {
+      depolarizingProbabilityAfterGate: currentNoise()
+    }
+  };
+}
+
+function downloadExportBlob(filename, text, mime) {
+  const blob = new Blob([text], { type: `${mime};charset=utf-8` });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.rel = 'noopener';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
+function exportTimestampSlug() {
+  return new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-');
+}
+
+function singleGateToQASM(gate, qubit, angleDeg) {
+  const q = `q[${qubit}]`;
+  if (gate === 'RX' || gate === 'RY' || gate === 'RZ') {
+    const deg = angleDeg !== undefined ? angleDeg : 90;
+    const theta = (deg * Math.PI) / 180;
+    return `${gate.toLowerCase()}(${theta}) ${q};`;
+  }
+  if (gate === 'SX') return `sx ${q};`;
+  if (gate === 'SY') return `ry(1.5707963267948966) ${q};`;
+  if (gate === 'SZ') return `s ${q};`;
+  return `${gate.toLowerCase()} ${q};`;
+}
+
+function exportOpenQASM2() {
+  const n = circuit.nQubits;
+  const cols = trimExportColumns(circuit.columns, n);
+  const trace = buildLogicalTrace(cols, n);
+  let nMeas = 0;
+  for (let i = 0; i < trace.length; i++) {
+    if (trace[i].kind === 'meas') nMeas++;
+  }
+  const lines = [
+    'OPENQASM 2.0;',
+    'include "qelib1.inc";',
+    `qreg q[${n}];`
+  ];
+  if (nMeas > 0) lines.push(`creg c[${nMeas}];`);
+  let mi = 0;
+  for (let i = 0; i < trace.length; i++) {
+    const op = trace[i];
+    if (op.kind === 'controlled') {
+      if (op.gate === 'CNOT') lines.push(`cx q[${op.control}], q[${op.target}];`);
+      else lines.push(`cz q[${op.control}], q[${op.target}];`);
+    } else if (op.kind === 'swap2' && op.gate === 'SWAP') {
+      const a = op.a, b = op.b;
+      lines.push(`cx q[${a}], q[${b}];`);
+      lines.push(`cx q[${b}], q[${a}];`);
+      lines.push(`cx q[${a}], q[${b}];`);
+    } else if (op.kind === 'swap2' && op.gate === 'iSWAP') {
+      const a = op.a, b = op.b;
+      lines.push(`// iSWAP on q[${a}], q[${b}] (no standard OpenQASM 2 built-in; use a native or decomposed sequence)`);
+    } else if (op.kind === 'ccx') {
+      lines.push(`ccx q[${op.ctrl0}], q[${op.ctrl1}], q[${op.target}];`);
+    } else if (op.kind === 'cswap') {
+      lines.push(`cswap q[${op.control}], q[${op.swap0}], q[${op.swap1}];`);
+    } else if (op.kind === 'single') {
+      lines.push(singleGateToQASM(op.gate, op.qubit, op.angleDeg));
+    } else if (op.kind === 'meas') {
+      lines.push(`measure q[${op.qubit}] -> c[${mi}];`);
+      mi++;
+    }
+  }
+  return lines.join('\n') + '\n';
+}
+
+function exportLaTeXSchedule() {
+  const cols = trimExportColumns(circuit.columns, circuit.nQubits);
+  const trace = buildLogicalTrace(cols, circuit.nQubits);
+  const lines = [];
+  lines.push('\\documentclass{article}');
+  lines.push('\\usepackage{amsmath}');
+  lines.push('\\usepackage{amssymb}');
+  lines.push('\\begin{document}');
+  lines.push('');
+  lines.push('\\section*{Circuit export (gate schedule)}');
+  lines.push(`\\paragraph{Lab layout.} ${circuit.nQubits} qubit(s), wires drawn with \\texttt{q_{n-1}} at the top through \\texttt{q_0} at the bottom (matching the simulator canvas).`);
+  lines.push('\\begin{enumerate}');
+  for (let i = 0; i < trace.length; i++) {
+    const op = trace[i];
+    let item = '';
+    if (op.kind === 'controlled' && op.gate === 'CNOT') {
+      item = `$\\mathrm{CNOT}$ with control $q_{${op.control}}$, target $q_{${op.target}}$`;
+    } else if (op.kind === 'controlled' && op.gate === 'CZ') {
+      item = `$\\mathrm{CZ}$ on $q_{${op.control}}$ and $q_{${op.target}}$`;
+    } else if (op.kind === 'swap2' && op.gate === 'SWAP') {
+      item = `$\\mathrm{SWAP}$ on $q_{${op.a}}$ and $q_{${op.b}}$`;
+    } else if (op.kind === 'swap2' && op.gate === 'iSWAP') {
+      item = `$\\mathrm{iSWAP}$ on $q_{${op.a}}$ and $q_{${op.b}}$`;
+    } else if (op.kind === 'ccx') {
+      item = `$\\mathrm{Toffoli}$ ($\\mathrm{CCX}$): controls $q_{${op.ctrl0}}$, $q_{${op.ctrl1}}$, target $q_{${op.target}}$`;
+    } else if (op.kind === 'cswap') {
+      item = `$\\mathrm{Fredkin}$ ($\\mathrm{CSWAP}$): control $q_{${op.control}}$, swap $q_{${op.swap0}}$, $q_{${op.swap1}}$`;
+    } else if (op.kind === 'single') {
+      const g = op.gate;
+      if (g === 'RX' || g === 'RY' || g === 'RZ') {
+        const axis = g[1].toLowerCase();
+        const deg = op.angleDeg !== undefined ? op.angleDeg : 90;
+        item = `$R_${axis}(${deg}^\\circ)$ on $q_{${op.qubit}}$`;
+      } else if (g === 'SX' || g === 'SY' || g === 'SZ') {
+        const ax = g[1].toLowerCase();
+        item = `$\\sqrt{${ax.toUpperCase()}}$ on $q_{${op.qubit}}$`;
+      } else {
+        item = `$\\mathrm{${g}}$ on $q_{${op.qubit}}$`;
+      }
+    } else if (op.kind === 'meas') {
+      item = `Measurement in the computational basis on $q_{${op.qubit}}$`;
+    }
+    lines.push(`  \\item ${item}`);
+  }
+  lines.push('\\end{enumerate}');
+  lines.push('');
+  lines.push('\\paragraph{Noise model (simulator UI).} Depolarizing probability per gate after unitary steps: ' + currentNoise().toFixed(4) + '.');
+  lines.push('\\end{document}');
+  lines.push('');
+  return lines.join('\n');
+}
+
+function exportMarkdownSchedule() {
+  const cols = trimExportColumns(circuit.columns, circuit.nQubits);
+  const trace = buildLogicalTrace(cols, circuit.nQubits);
+  const lines = [];
+  lines.push('# Circuit export');
+  lines.push('');
+  lines.push(`- **Qubits:** ${circuit.nQubits}`);
+  lines.push(`- **Depolarizing $p$ per gate (UI):** ${currentNoise().toFixed(4)}`);
+  lines.push('');
+  lines.push('| Step | Operation |');
+  lines.push('| ---: | --- |');
+  for (let i = 0; i < trace.length; i++) {
+    const op = trace[i];
+    let desc = '';
+    if (op.kind === 'controlled' && op.gate === 'CNOT') {
+      desc = `CNOT · control q_${op.control} → target q_${op.target}`;
+    } else if (op.kind === 'controlled' && op.gate === 'CZ') {
+      desc = `CZ · q_${op.control}, q_${op.target}`;
+    } else if (op.kind === 'swap2' && op.gate === 'SWAP') {
+      desc = `SWAP · q_${op.a}, q_${op.b}`;
+    } else if (op.kind === 'swap2' && op.gate === 'iSWAP') {
+      desc = `iSWAP · q_${op.a}, q_${op.b}`;
+    } else if (op.kind === 'ccx') {
+      desc = `CCX (Toffoli) · c q_${op.ctrl0}, q_${op.ctrl1} → t q_${op.target}`;
+    } else if (op.kind === 'cswap') {
+      desc = `CSWAP (Fredkin) · ctl q_${op.control}, swap q_${op.swap0}, q_${op.swap1}`;
+    } else if (op.kind === 'single') {
+      const g = op.gate;
+      if (g === 'RX' || g === 'RY' || g === 'RZ') {
+        const deg = op.angleDeg !== undefined ? op.angleDeg : 90;
+        desc = `${g}(${deg}°) · q_${op.qubit}`;
+      } else {
+        desc = `${g} · q_${op.qubit}`;
+      }
+    } else if (op.kind === 'meas') {
+      desc = `Measure · q_${op.qubit}`;
+    }
+    lines.push(`| ${i + 1} | ${desc} |`);
+  }
+  lines.push('');
+  return lines.join('\n');
+}
+
+function runCircuitExport(kind) {
+  const cols = trimExportColumns(circuit.columns, circuit.nQubits);
+  const has = cols.some(col => col.some(e => e !== null));
+  if (!has) {
+    toast('Nothing to export — add at least one gate.', true);
+    return;
+  }
+  const slug = exportTimestampSlug();
+  if (kind === 'json') {
+    downloadExportBlob(`circuit-export-${slug}.json`, JSON.stringify(exportCircuitPayload(), null, 2), 'application/json');
+    toast('Downloaded JSON');
+  } else if (kind === 'qasm') {
+    downloadExportBlob(`circuit-export-${slug}.qasm`, exportOpenQASM2(), 'text/plain');
+    toast('Downloaded OpenQASM 2');
+  } else if (kind === 'latex') {
+    downloadExportBlob(`circuit-export-${slug}.tex`, exportLaTeXSchedule(), 'text/plain');
+    toast('Downloaded LaTeX');
+  } else if (kind === 'markdown') {
+    downloadExportBlob(`circuit-export-${slug}.md`, exportMarkdownSchedule(), 'text/markdown');
+    toast('Downloaded Markdown');
+  }
+}
+
 const noiseSlider = document.getElementById('noise-slider');
 const noiseCtrl = document.getElementById('noise-ctrl');
 const noiseVal = document.getElementById('noise-val');
@@ -1277,6 +1829,16 @@ function updateNoiseLabel() {
 }
 noiseSlider.addEventListener('input', updateNoiseLabel);
 updateNoiseLabel();
+
+const exportFormatSelect = document.getElementById('export-format');
+if (exportFormatSelect) {
+  exportFormatSelect.addEventListener('change', () => {
+    const v = exportFormatSelect.value;
+    if (!v) return;
+    runCircuitExport(v);
+    exportFormatSelect.value = '';
+  });
+}
 
 /* Narrative toggle */
 document.getElementById('narrative-toggle').addEventListener('click', () => {

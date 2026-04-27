@@ -21,7 +21,7 @@
     const ns2 = Math.pow(2,n-1)+1;
     const bars = [
       {label:'Classical', val:ns2, color:'var(--amber)'},
-      {label:'Quantum',   val:1,   color:'var(--phos)'},
+      {label:'Quantum',   val:1,   color:'var(--mint)'},
     ];
     const maxV = ns2;
     const bw = 60, gap = 30;
@@ -39,7 +39,7 @@
     const n = parseInt(slider.value);
     if (valEl) valEl.textContent = n;
     const worst = Math.pow(2, n-1)+1;
-    if (cmpEl) cmpEl.innerHTML = `<span style="color:var(--amber)">Classical worst case: ${worst} queries</span>  ·  <span style="color:var(--phos)">Quantum: 1 query</span>  ·  Speedup: ${worst}×`;
+    if (cmpEl) cmpEl.innerHTML = `<span style="color:var(--amber)">Classical worst case: ${worst} queries</span>  ·  <span style="color:var(--mint)">Quantum: 1 query</span>  ·  Speedup: ${worst}×`;
     drawChart(n);
     interacted = true;
     markDone('t5-1');
@@ -76,8 +76,8 @@
     if(step>=1){
       [0,1,2].forEach(i=>{
         const y=30+i*qH, x=90;
-        svg.appendChild(mkEl('rect',{x:x-14,y:y-12,width:28,height:24,fill:'var(--bg-2)',stroke:'var(--phos)','stroke-width':1.5,rx:2}));
-        svg.appendChild(mkEl('text',{x,y:y+5,'font-family':'var(--serif)','font-size':15,fill:'var(--phos)','text-anchor':'middle'},'H'));
+        svg.appendChild(mkEl('rect',{x:x-14,y:y-12,width:28,height:24,fill:'var(--bg-2)',stroke:'var(--mint)','stroke-width':1.5,rx:2}));
+        svg.appendChild(mkEl('text',{x,y:y+5,'font-family':'var(--serif)','font-size':15,fill:'var(--mint)','text-anchor':'middle'},'H'));
       });
     }
     // Oracle box (step>=2)
@@ -90,8 +90,8 @@
     if(step>=3){
       [0,1].forEach(i=>{
         const y=30+i*qH, x=290;
-        svg.appendChild(mkEl('rect',{x:x-14,y:y-12,width:28,height:24,fill:'var(--bg-2)',stroke:'var(--phos)','stroke-width':1.5,rx:2}));
-        svg.appendChild(mkEl('text',{x,y:y+5,'font-family':'var(--serif)','font-size':15,fill:'var(--phos)','text-anchor':'middle'},'H'));
+        svg.appendChild(mkEl('rect',{x:x-14,y:y-12,width:28,height:24,fill:'var(--bg-2)',stroke:'var(--mint)','stroke-width':1.5,rx:2}));
+        svg.appendChild(mkEl('text',{x,y:y+5,'font-family':'var(--serif)','font-size':15,fill:'var(--mint)','text-anchor':'middle'},'H'));
       });
       // Measurement
       [0,1].forEach(i=>{
@@ -100,7 +100,7 @@
         svg.appendChild(mkEl('text',{x,y:y+5,'font-family':'var(--mono)','font-size':11,fill:'var(--amber)','text-anchor':'middle'},'◎'));
       });
       // Output labels
-      svg.appendChild(mkEl('text',{x:375,y:34,'font-family':'var(--serif)','font-style':'italic','font-size':12,fill:'var(--phos)'},'0 → constant'));
+      svg.appendChild(mkEl('text',{x:375,y:34,'font-family':'var(--serif)','font-style':'italic','font-size':12,fill:'var(--mint)'},'0 → constant'));
       svg.appendChild(mkEl('text',{x:375,y:79,'font-family':'var(--serif)','font-style':'italic','font-size':12,fill:'var(--amber)'},'1 → balanced'));
     }
   }
@@ -139,8 +139,8 @@
     }
     gates.forEach(g=>{
       const y=25+g.q*44;
-      svg.appendChild(mkEl('rect',{x:g.x-12,y:y-11,width:24,height:22,fill:'var(--bg-2)',stroke:g.color||'var(--phos)','stroke-width':1.5,rx:2}));
-      svg.appendChild(mkEl('text',{x:g.x,y:y+4,'font-family':'var(g.f||--serif)','font-size':11,fill:g.color||'var(--phos)','text-anchor':'middle'},g.label));
+      svg.appendChild(mkEl('rect',{x:g.x-12,y:y-11,width:24,height:22,fill:'var(--bg-2)',stroke:g.color||'var(--mint)','stroke-width':1.5,rx:2}));
+      svg.appendChild(mkEl('text',{x:g.x,y:y+4,'font-family':'var(g.f||--serif)','font-size':11,fill:g.color||'var(--mint)','text-anchor':'middle'},g.label));
     });
     el.innerHTML=''; el.appendChild(svg);
   }
@@ -149,7 +149,7 @@
     // Constant oracle: output always |00⟩
     renderMiniProbs(containerId, {0:1,1:0,2:0,3:0});
     const v=document.getElementById(verdictId);
-    if(v) { v.innerHTML='<b style="color:var(--phos)">All-zero output → CONSTANT</b><br>Interference cancels all non-zero terms.'; }
+    if(v) { v.innerHTML='<b style="color:var(--mint)">All-zero output → CONSTANT</b><br>Interference cancels all non-zero terms.'; }
     markDone('t5-3');
   }
   function runDJBal(containerId, verdictId) {
@@ -179,7 +179,7 @@
   ], 3);
   drawMini('dj-bal-circuit',[
     {q:0,x:50,label:'H'},{q:1,x:50,label:'H'},{q:2,x:50,label:'H'},
-    {q:0,x:160,label:'●',color:'var(--phos)'},{q:2,x:160,label:'⊕',color:'var(--phos)'},
+    {q:0,x:160,label:'●',color:'var(--mint)'},{q:2,x:160,label:'⊕',color:'var(--mint)'},
     {q:0,x:250,label:'H'},{q:1,x:250,label:'H'},{q:0,x:290,label:'◎',color:'var(--amber)'},{q:1,x:290,label:'◎',color:'var(--amber)'}
   ], 3);
 
@@ -240,10 +240,10 @@
     if(vEl) {
       const isConst = o.type==='constant';
       if(cur==='mystery'){
-        vEl.innerHTML = `<b style="color:var(--phos)">The oracle was ${isConst?'CONSTANT':'BALANCED'}.</b> D-J determined this in 1 shot.`;
+        vEl.innerHTML = `<b style="color:var(--mint)">The oracle was ${isConst?'CONSTANT':'BALANCED'}.</b> D-J determined this in 1 shot.`;
       } else {
         vEl.innerHTML = isConst
-          ? '<b style="color:var(--phos)">CONSTANT</b> — output register is all zeros.'
+          ? '<b style="color:var(--mint)">CONSTANT</b> — output register is all zeros.'
           : '<b style="color:var(--amber)">BALANCED</b> — output register has at least one 1.';
       }
     }
@@ -303,12 +303,12 @@
     if(cEl) {
       const q0 = noiseLevel<0.01?'0':noiseLevel<0.05?'0 (likely)':'0 or 1 (noisy)';
       const q1 = noiseLevel<0.01?'1':noiseLevel<0.05?'1 (likely)':'0 or 1 (noisy)';
-      cEl.innerHTML = `Query 1: f(00) = 0 <br>Query 2: f(10) = 1 <br>→ <b style="color:${classicalOk?'var(--phos)':'var(--red)'}">Answer: ${classicalOk?'BALANCED (certain)':'Uncertain due to noise'}</b>`;
+      cEl.innerHTML = `Query 1: f(00) = 0 <br>Query 2: f(10) = 1 <br>→ <b style="color:${classicalOk?'var(--mint)':'var(--red)'}">Answer: ${classicalOk?'BALANCED (certain)':'Uncertain due to noise'}</b>`;
     }
     const qvEl=document.getElementById('dj-quantum-vs-classical');
     if(qvEl) {
       if(noiseLevel < 0.02) {
-        qvEl.innerHTML = '<b style="color:var(--phos)">Quantum advantage clear.</b> Both agree, but quantum needed 1 query vs classical 2.';
+        qvEl.innerHTML = '<b style="color:var(--mint)">Quantum advantage clear.</b> Both agree, but quantum needed 1 query vs classical 2.';
       } else if(noiseLevel < 0.1) {
         qvEl.innerHTML = '<b style="color:var(--amber)">Quantum degrading.</b> Classical still accurate with 2 queries. Quantum advantage is eroding.';
       } else {

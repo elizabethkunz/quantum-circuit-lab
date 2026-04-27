@@ -227,13 +227,13 @@ Step 6
     const ox = cx + outputVec.x * R;
     const oz = cy - outputVec.z * R;
 
-    svg.appendChild(mk('line', { x1: cx, y1: cy, x2: ix, y2: iz, stroke: 'var(--phos)', 'stroke-width': 3, 'stroke-linecap': 'round' }));
-    svg.appendChild(mk('circle', { cx: ix, cy: iz, r: 4.5, fill: 'var(--phos)' }));
+    svg.appendChild(mk('line', { x1: cx, y1: cy, x2: ix, y2: iz, stroke: 'var(--mint)', 'stroke-width': 3, 'stroke-linecap': 'round' }));
+    svg.appendChild(mk('circle', { cx: ix, cy: iz, r: 4.5, fill: 'var(--mint)' }));
 
     svg.appendChild(mk('line', { x1: cx, y1: cy, x2: ox, y2: oz, stroke: 'var(--amber)', 'stroke-width': 3, 'stroke-linecap': 'round' }));
     svg.appendChild(mk('circle', { cx: ox, cy: oz, r: 4.5, fill: 'var(--amber)' }));
 
-    svg.appendChild(mk('text', { x: 16, y: 24, fill: 'var(--phos)', 'font-size': 12, 'font-family': 'var(--mono)' }, labelTop));
+    svg.appendChild(mk('text', { x: 16, y: 24, fill: 'var(--mint)', 'font-size': 12, 'font-family': 'var(--mono)' }, labelTop));
     svg.appendChild(mk('text', { x: 16, y: 42, fill: 'var(--amber)', 'font-size': 12, 'font-family': 'var(--mono)' }, labelBottom));
   }
 
@@ -282,11 +282,11 @@ Step 6
 
     const pin = proj(inputVec);
     const pout = proj(outputVec);
-    svg.appendChild(mk('line', { x1: cx, y1: cy, x2: pin.x, y2: pin.y, stroke: 'var(--phos)', 'stroke-width': 3, 'stroke-linecap': 'round' }));
-    svg.appendChild(mk('circle', { cx: pin.x, cy: pin.y, r: 4.4, fill: 'var(--phos)' }));
+    svg.appendChild(mk('line', { x1: cx, y1: cy, x2: pin.x, y2: pin.y, stroke: 'var(--mint)', 'stroke-width': 3, 'stroke-linecap': 'round' }));
+    svg.appendChild(mk('circle', { cx: pin.x, cy: pin.y, r: 4.4, fill: 'var(--mint)' }));
     svg.appendChild(mk('line', { x1: cx, y1: cy, x2: pout.x, y2: pout.y, stroke: 'var(--amber)', 'stroke-width': 3, 'stroke-linecap': 'round' }));
     svg.appendChild(mk('circle', { cx: pout.x, cy: pout.y, r: 4.4, fill: 'var(--amber)' }));
-    svg.appendChild(mk('text', { x: 16, y: 24, fill: 'var(--phos)', 'font-size': 11, 'font-family': 'var(--mono)' }, 'input'));
+    svg.appendChild(mk('text', { x: 16, y: 24, fill: 'var(--mint)', 'font-size': 11, 'font-family': 'var(--mono)' }, 'input'));
     svg.appendChild(mk('text', { x: 16, y: 40, fill: 'var(--amber)', 'font-size': 11, 'font-family': 'var(--mono)' }, 'after channel'));
   }
 
@@ -475,7 +475,7 @@ Step 6
       coh.innerHTML = `
         <div style="display:grid; gap:8px;">
           <div><b>Coherence |ρ₀₁|</b></div>
-          <div>Input: <span style="color:var(--phos)">${t8Utils.fmt(cIn, 3)}</span></div>
+          <div>Input: <span style="color:var(--mint)">${t8Utils.fmt(cIn, 3)}</span></div>
           <div>After ${activeChannel}: <span style="color:var(--amber)">${t8Utils.fmt(cPrimary, 3)}</span></div>
           <div>After depolarizing: <span style="color:var(--amber)">${t8Utils.fmt(cRef, 3)}</span></div>
           <div style="padding-top:4px;border-top:1px solid var(--line)">
@@ -731,7 +731,7 @@ Step 6
         const hi = i === focusIndex;
         html += `
           <div style="display:flex;flex-direction:column;align-items:center;">
-            <div style="width:100%;max-width:42px;height:${h}px;border-radius:8px 8px 4px 4px;background:${hi ? 'linear-gradient(180deg,var(--phos),var(--magenta))' : 'linear-gradient(180deg,var(--line-bright),var(--line))'};opacity:${hi ? 1 : 0.8};"></div>
+            <div style="width:100%;max-width:42px;height:${h}px;border-radius:8px 8px 4px 4px;background:${hi ? 'linear-gradient(180deg,var(--mint),var(--magenta))' : 'linear-gradient(180deg,var(--line-bright),var(--line))'};opacity:${hi ? 1 : 0.8};"></div>
             <div style="font-family:var(--mono);font-size:10px;color:${hi ? 'var(--phos)' : 'var(--ink-faint)'};margin-top:5px;">${labelBits(i, n)}</div>
             <div style="font-family:var(--mono);font-size:10px;color:var(--ink-dim);">${Math.round(100 * p)}%</div>
           </div>

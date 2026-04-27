@@ -26,6 +26,50 @@ const GATES = {
   T: [[{re:1,im:0},{re:0,im:0}],[{re:0,im:0},{re:Math.SQRT1_2,im:Math.SQRT1_2}]]
 };
 
+// 4×4 two-qubit unitaries, row/column order |b₀ b₁⟩ with b₀ the lower-index qubit, then b₁
+const SWAP4 = [
+  [{re:1,im:0},{re:0,im:0},{re:0,im:0},{re:0,im:0}],
+  [{re:0,im:0},{re:0,im:0},{re:1,im:0},{re:0,im:0}],
+  [{re:0,im:0},{re:1,im:0},{re:0,im:0},{re:0,im:0}],
+  [{re:0,im:0},{re:0,im:0},{re:0,im:0},{re:1,im:0}]
+];
+const ISWAP4 = [
+  [{re:1,im:0},{re:0,im:0},{re:0,im:0},{re:0,im:0}],
+  [{re:0,im:0},{re:0,im:0},{re:0,im:1},{re:0,im:0}],
+  [{re:0,im:0},{re:0,im:1},{re:0,im:0},{re:0,im:0}],
+  [{re:0,im:0},{re:0,im:0},{re:0,im:0},{re:1,im:0}]
+];
+
+// Apply a 4×4 gate on the qubit pair (qA, qB) in any order; lower index is the
+// LSB in the 2-bit local subspace (matches applySingle / CNOT layout).
+function applyTwoQubit(state, gate4, qA, qB, nQubits) {
+  const p0 = Math.min(qA, qB);
+  const p1 = Math.max(qA, qB);
+  const m0 = 1 << p0;
+  const m1 = 1 << p1;
+  const dim = 1 << nQubits;
+  const out = state.map(a => ({ re: a.re, im: a.im }));
+  for (let base = 0; base < dim; base++) {
+    if ((base & m0) !== 0 || (base & m1) !== 0) continue;
+    const i0 = base;
+    const i1 = base | m0;
+    const i2 = base | m1;
+    const i3 = base | m0 | m1;
+    const v = [state[i0], state[i1], state[i2], state[i3]];
+    for (let r = 0; r < 4; r++) {
+      let sum = C.zero;
+      for (let c = 0; c < 4; c++) {
+        sum = C.add(sum, C.mul(gate4[r][c], v[c]));
+      }
+      if (r === 0) out[i0] = sum;
+      else if (r === 1) out[i1] = sum;
+      else if (r === 2) out[i2] = sum;
+      else out[i3] = sum;
+    }
+  }
+  return out;
+}
+
 // Build rotation gate matrix Rx(θ), Ry(θ), Rz(θ) for given angle in degrees
 function makeRxGate(deg) {
   const t = deg * Math.PI / 180;
@@ -93,6 +137,53 @@ function applyControlled(state, gate, control, target, nQubits) {
   }
   return out;
 }
+
+// Toffoli: X on target iff both controls are |1⟩
+function applyToffoli(state, ctrl0, ctrl1, target, nQubits) {
+  const dim = 1 << nQubits;
+  const out = state.map(a => ({ re: a.re, im: a.im }));
+  const m0 = 1 << ctrl0;
+  const m1 = 1 << ctrl1;
+  const mt = 1 << target;
+  for (let i = 0; i < dim; i++) {
+    if ((i & m0) && (i & m1) && ((i & mt) === 0)) {
+      const j = i | mt;
+      out[i] = state[j];
+      out[j] = state[i];
+    }
+  }
+  return out;
+}
+
+// Fredkin (CSWAP): swap t0,t1 amplitudes iff control is |1⟩
+function applyCSWAP(state, ctrl, t0, t1, nQubits) {
+  const dim = 1 << nQubits;
+  const mC = 1 << ctrl;
+  const m0 = 1 << t0;
+  const m1 = 1 << t1;
+  function f(i) {
+    if ((i & mC) === 0) return i;
+    const ba = (i & m0) ? 1 : 0;
+    const bb = (i & m1) ? 1 : 0;
+    let j = i & ~m0 & ~m1;
+    if (ba) j |= m1;
+    if (bb) j |= m0;
+    return j;
+  }
+  const out = new Array(dim);
+  for (let i = 0; i < dim; i++) {
+    out[f(i)] = state[i];
+  }
+  return out;
+}
+
+// √X, √Y as π/2 rotations; √Z ≡ S (principal Pauli square root on the |1⟩ branch)
+GATES.SX = makeRxGate(90);
+GATES.SY = makeRyGate(90);
+GATES.SZ = [
+  [{ re: 1, im: 0 }, { re: 0, im: 0 }],
+  [{ re: 0, im: 0 }, { re: 0, im: 1 }]
+]; // √Z = S = diag(1, i)
 
 // Probabilities per basis state
 function probabilities(state) {

@@ -96,7 +96,7 @@
     chart.appendChild(mk('path', {
       d,
       fill: 'none',
-      stroke: 'var(--phos)',
+      stroke: 'var(--mint)',
       'stroke-width': 2
     }));
 
@@ -160,7 +160,7 @@
         </thead>
         <tbody>
           ${sampled.map(row => `
-            <tr${row.theta === best.theta ? ' style="background:rgba(127,255,196,0.05)"' : ''}>
+            <tr${row.theta === best.theta ? ' style="background:rgba(120,212,255,0.05)"' : ''}>
               <td class="basis">${row.label}</td>
               <td class="num">${row.z.toFixed(3)}</td>
               <td class="num">${row.x.toFixed(3)}</td>
@@ -170,7 +170,7 @@
         </tbody>
       </table>`;
     if (verdict) {
-      verdict.innerHTML = `<b style="color:var(--phos)">Current best sample:</b> θ = ${best.label}, energy = ${best.energy.toFixed(3)}. ` +
+      verdict.innerHTML = `<b style="color:var(--mint)">Current best sample:</b> θ = ${best.label}, energy = ${best.energy.toFixed(3)}. ` +
         `This is the core VQE idea: try parameters, estimate energy, keep the lowest one.`;
     }
   }
@@ -258,7 +258,7 @@
       const x = xScale(i), y = yScale(r.energy);
       d += (i === 0 ? 'M ' : ' L ') + x + ' ' + y;
     });
-    chart.appendChild(mk('path', { d, fill: 'none', stroke: 'var(--phos)', 'stroke-width': 2 }));
+    chart.appendChild(mk('path', { d, fill: 'none', stroke: 'var(--mint)', 'stroke-width': 2 }));
 
     rows.forEach((r, i) => {
       const x = xScale(i), y = yScale(r.energy);
@@ -290,7 +290,7 @@
     renderChart(rows);
     if (verdict) {
       const err = finalRow.energy - window.t6GroundEnergy();
-      verdict.innerHTML = `<b style="color:var(--phos)">Optimizer result:</b> θ ≈ ${finalRow.theta.toFixed(3)}, E ≈ ${finalRow.energy.toFixed(3)}. ` +
+      verdict.innerHTML = `<b style="color:var(--mint)">Optimizer result:</b> θ ≈ ${finalRow.theta.toFixed(3)}, E ≈ ${finalRow.energy.toFixed(3)}. ` +
         `The exact ground energy is ${window.t6GroundEnergy().toFixed(3)}, so the optimizer is off by only ${err.toFixed(3)}.`;
     }
     markDone('t6-3');
@@ -360,7 +360,7 @@
         </table>`;
       if (verdict) {
         const gap = res.energy - window.t6GroundEnergy();
-        verdict.innerHTML = `<b style="color:${gap < 0.02 ? 'var(--phos)' : 'var(--amber)'}">Ansatz lesson:</b> ${res.explain} ` +
+        verdict.innerHTML = `<b style="color:${gap < 0.02 ? 'var(--mint)' : 'var(--amber)'}">Ansatz lesson:</b> ${res.explain} ` +
           `Energy gap to exact ground state: ${gap.toFixed(3)}. <span style="color:var(--ink-faint)">For deeper hardware-efficient ansatze, also watch for barren plateaus (flat gradients), not just expressivity limits.</span>`;
       }
       if (seen.size >= 2) markDone('t6-4');
@@ -430,7 +430,7 @@
     if (verdict) {
       const err = Math.abs(measE - exactE);
       if (shots >= 512) {
-        verdict.innerHTML = `<b style="color:var(--phos)">High-shot estimate:</b> the measured energy is very stable (error ${err.toFixed(3)}). The optimizer sees a smooth cost landscape.`;
+        verdict.innerHTML = `<b style="color:var(--mint)">High-shot estimate:</b> the measured energy is very stable (error ${err.toFixed(3)}). The optimizer sees a smooth cost landscape.`;
       } else if (shots >= 128) {
         verdict.innerHTML = `<b style="color:var(--amber)">Moderate-shot estimate:</b> the optimizer can still work, but the landscape is visibly noisy (error ${err.toFixed(3)}).`;
       } else {

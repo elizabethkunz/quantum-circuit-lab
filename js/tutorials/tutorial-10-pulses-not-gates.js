@@ -73,11 +73,11 @@
     // shaft
     svg.appendChild(mkEl('line', {
       x1: cx, y1: cy, x2: vx, y2: vy,
-      stroke: 'var(--phos)', 'stroke-width': 3.5, 'stroke-linecap': 'round'
+      stroke: 'var(--mint)', 'stroke-width': 3.5, 'stroke-linecap': 'round'
     }));
     svg.appendChild(mkEl('circle', {
       cx: vx, cy: vy, r: 6,
-      fill: 'var(--phos)', stroke: 'var(--bg-0)', 'stroke-width': 2
+      fill: 'var(--mint)', stroke: 'var(--bg-0)', 'stroke-width': 2
     }));
 
     // purity ring (length of bloch vector)
@@ -179,7 +179,7 @@
     const piArea = Math.PI;
     pulseSvg.appendChild(mkEl('text', {
       x: W - padR, y: padT + 12, 'font-family': 'var(--mono)',
-      'font-size': 10, fill: 'var(--phos)', 'text-anchor': 'end'
+      'font-size': 10, fill: 'var(--mint)', 'text-anchor': 'end'
     }, `π-pulse target: area = π ≈ ${piArea.toFixed(2)}`));
   }
 
@@ -215,7 +215,7 @@
     if (readoutEl) {
       let msg;
       if (Math.abs(theta - Math.PI) < 0.08) {
-        msg = `<b style="color:var(--phos)">π-pulse.</b> This is a calibrated X gate — the qubit has flipped to |1⟩. P(|1⟩) = ${(p1 * 100).toFixed(0)}%.`;
+        msg = `<b style="color:var(--mint)">π-pulse.</b> This is a calibrated X gate — the qubit has flipped to |1⟩. P(|1⟩) = ${(p1 * 100).toFixed(0)}%.`;
       } else if (Math.abs(theta - Math.PI / 2) < 0.08) {
         msg = `<b style="color:var(--cyan)">π/2-pulse.</b> The qubit sits on the equator — equal superposition. P(|1⟩) = ${(p1 * 100).toFixed(0)}%.`;
       } else {
@@ -297,7 +297,7 @@
       d += i === 0 ? `M ${X} ${Y}` : ` L ${X} ${Y}`;
     }
     svg.appendChild(mkEl('path', {
-      d, fill: 'none', stroke: 'var(--phos)', 'stroke-width': 2.5, 'stroke-linecap': 'round'
+      d, fill: 'none', stroke: 'var(--mint)', 'stroke-width': 2.5, 'stroke-linecap': 'round'
     }));
 
     // The first zero-crossing (= P(1) peak) is the π-pulse: θ = π → amp·t = π
@@ -362,7 +362,7 @@
     }
     const err = Math.abs(pickedTime - piTime);
     if (err < 0.15) {
-      foundEl.innerHTML = `<b style="color:var(--phos)">Calibrated.</b> You found the π-pulse at t ≈ ${pickedTime.toFixed(2)} (units of 1/Ω). <span style="color:var(--ink-faint)">This is day 1 of every superconducting qubit lab: sweep duration, fit the sinusoid, pick the first peak. Once this point is known, every X-style gate built from this channel becomes much more reliable.</span>`;
+      foundEl.innerHTML = `<b style="color:var(--mint)">Calibrated.</b> You found the π-pulse at t ≈ ${pickedTime.toFixed(2)} (units of 1/Ω). <span style="color:var(--ink-faint)">This is day 1 of every superconducting qubit lab: sweep duration, fit the sinusoid, pick the first peak. Once this point is known, every X-style gate built from this channel becomes much more reliable.</span>`;
       markDone('t10-2');
     } else if (err < 0.5) {
       foundEl.innerHTML = `Close — you're at P(|1⟩) = ${(rabi(pickedTime, amp) * 100).toFixed(0)}%. The true π-pulse is at t ≈ ${piTime.toFixed(2)} ns.`;
@@ -458,7 +458,7 @@
       d += i === 0 ? `M ${X} ${Y}` : ` L ${X} ${Y}`;
     }
     svg.appendChild(mkEl('path', {
-      d, fill: 'none', stroke: 'var(--phos)', 'stroke-width': 2.5, 'stroke-linecap': 'round'
+      d, fill: 'none', stroke: 'var(--mint)', 'stroke-width': 2.5, 'stroke-linecap': 'round'
     }));
 
     // ceiling line: max P at this detuning
@@ -488,7 +488,7 @@
     const maxP = 1 / (1 + delta * delta);
     if (descEl) {
       if (Math.abs(delta) < 0.05) {
-        descEl.innerHTML = `<b style="color:var(--phos)">On resonance.</b> Clean Rabi. P(|1⟩) reaches 100% at the π-pulse. "On resonance" simply means your microwave tone matches the qubit transition frequency.<a id="fnref-t10-1" class="expert-fn-ref" href="#fn-t10-1"><sup>[E1]</sup></a><br><span id="fn-t10-1" style="display:block;margin-top:6px;color:var(--ink-faint)">[E1] This description is exact for an ideal two-level system. Real superconducting qubits — transmons in particular — are weakly anharmonic: the |1⟩→|2⟩ transition sits only 100–300 MHz below the |0⟩→|1⟩ transition, close enough that a resonant drive also has partial spectral overlap with the leakage transition. So "on resonance with the qubit" does not mean "off resonance with everything else." This is why detuning alone is insufficient to suppress leakage on transmons, and why pulse shaping (Step 6) is necessary even when your drive frequency is perfectly calibrated.</span>`;
+        descEl.innerHTML = `<b style="color:var(--mint)">On resonance.</b> Clean Rabi. P(|1⟩) reaches 100% at the π-pulse. "On resonance" simply means your microwave tone matches the qubit transition frequency.<a id="fnref-t10-1" class="expert-fn-ref" href="#fn-t10-1"><sup>[E1]</sup></a><br><span id="fn-t10-1" style="display:block;margin-top:6px;color:var(--ink-faint)">[E1] This description is exact for an ideal two-level system. Real superconducting qubits — transmons in particular — are weakly anharmonic: the |1⟩→|2⟩ transition sits only 100–300 MHz below the |0⟩→|1⟩ transition, close enough that a resonant drive also has partial spectral overlap with the leakage transition. So "on resonance with the qubit" does not mean "off resonance with everything else." This is why detuning alone is insufficient to suppress leakage on transmons, and why pulse shaping (Step 6) is necessary even when your drive frequency is perfectly calibrated.</span>`;
       } else if (Math.abs(delta) < 1.0) {
         descEl.innerHTML = `<b style="color:var(--amber)">Small detuning.</b> Oscillations are <i>faster</i> (generalized Rabi Ω' = √(Ω² + δ²)) but don't reach the top — the ceiling is ${(maxP * 100).toFixed(0)}%. So you can still wiggle the qubit, but you cannot fully flip it with this mistuned drive.`;
       } else {
@@ -585,7 +585,7 @@
       d += i === 0 ? `M ${xMap(t)} ${yMap(p)}` : ` L ${xMap(t)} ${yMap(p)}`;
     }
     svg.appendChild(mkEl('path', {
-      d, fill: 'none', stroke: 'var(--phos)', 'stroke-width': 2.3, 'stroke-linecap': 'round'
+      d, fill: 'none', stroke: 'var(--mint)', 'stroke-width': 2.3, 'stroke-linecap': 'round'
     }));
 
     // marker at current τ
@@ -693,7 +693,7 @@
     }
     svg.appendChild(mkEl('path', {
       d: dR, fill: 'none',
-      stroke: mode === 'echo' ? 'var(--line-bright)' : 'var(--phos)',
+      stroke: mode === 'echo' ? 'var(--line-bright)' : 'var(--mint)',
       'stroke-width': mode === 'echo' ? 1.5 : 2.3,
       'stroke-linecap': 'round',
       opacity: mode === 'echo' ? 0.55 : 1
@@ -716,7 +716,7 @@
     } else {
       svg.appendChild(mkEl('text', {
         x: W - padR - 4, y: padT + 14, 'font-family': 'var(--mono)',
-        'font-size': 10, fill: 'var(--phos)', 'text-anchor': 'end'
+        'font-size': 10, fill: 'var(--mint)', 'text-anchor': 'end'
       }, 'Ramsey: fringes under T2* envelope'));
     }
 
@@ -778,7 +778,7 @@
     if (!descEl) return;
     if (mode !== 'echo') {
       descEl.innerHTML =
-        `<b style="color:var(--phos)">Ramsey (echo off).</b> Fringes damp under the T2* envelope. ` +
+        `<b style="color:var(--mint)">Ramsey (echo off).</b> Fringes damp under the T2* envelope. ` +
         `Every slow frequency wobble shows up as dephasing, so phase errors add rather than cancel.`;
     } else {
       descEl.innerHTML =
@@ -960,7 +960,7 @@
     }
     svg.appendChild(mkEl('path', {
       d, fill: 'none',
-      stroke: shape === 'square' ? 'var(--amber)' : (shape === 'gaussian' ? 'var(--cyan)' : 'var(--phos)'),
+      stroke: shape === 'square' ? 'var(--amber)' : (shape === 'gaussian' ? 'var(--cyan)' : 'var(--mint)'),
       'stroke-width': 2.5, 'stroke-linecap': 'round'
     }));
 
@@ -1032,7 +1032,7 @@
     });
     specSvg.appendChild(mkEl('path', {
       d, fill: 'none',
-      stroke: shape === 'square' ? 'var(--amber)' : (shape === 'gaussian' ? 'var(--cyan)' : 'var(--phos)'),
+      stroke: shape === 'square' ? 'var(--amber)' : (shape === 'gaussian' ? 'var(--cyan)' : 'var(--mint)'),
       'stroke-width': 2.3, 'stroke-linecap': 'round'
     }));
 
@@ -1048,7 +1048,7 @@
     if (!leakEl) return;
     const score = leakScore[shape];
     const pct = (score * 100).toFixed(0);
-    const color = score > 0.5 ? 'var(--magenta)' : (score > 0.1 ? 'var(--amber)' : 'var(--phos)');
+    const color = score > 0.5 ? 'var(--magenta)' : (score > 0.1 ? 'var(--amber)' : 'var(--mint)');
     leakEl.innerHTML = `Relative leakage to |2⟩: <b style="color:${color}">${pct}%</b> <span style="color:var(--ink-faint)">(toy score; real leakage depends on chip & calibration).</span>`;
   }
 
@@ -1139,7 +1139,7 @@
     });
 
     const bars = [
-      { label: '|0⟩', p: p0, color: 'var(--phos)' },
+      { label: '|0⟩', p: p0, color: 'var(--mint)' },
       { label: '|1⟩', p: p1, color: 'var(--magenta)' }
     ];
     bars.forEach((b, i) => {
@@ -1177,7 +1177,7 @@
     if (descEl) {
       const { p0 } = xxOutcomes(epsilon / 100);
       if (epsilon < 0.5) {
-        descEl.innerHTML = `<b style="color:var(--phos)">Pulse infidelity ${epsilon.toFixed(1)}%</b> → X·X returns |0⟩ with ${(p0 * 100).toFixed(1)}% probability. Basically indistinguishable from a perfect gate at this scale.`;
+        descEl.innerHTML = `<b style="color:var(--mint)">Pulse infidelity ${epsilon.toFixed(1)}%</b> → X·X returns |0⟩ with ${(p0 * 100).toFixed(1)}% probability. Basically indistinguishable from a perfect gate at this scale.`;
       } else if (epsilon < 3) {
         descEl.innerHTML = `<b style="color:var(--amber)">Pulse infidelity ${epsilon.toFixed(1)}%</b> → ${(p0 * 100).toFixed(1)}%. This is where many current devices operate, though leading systems are pushing toward 0.1-0.5%, and it is why calibration loops run continuously.`;
       } else {

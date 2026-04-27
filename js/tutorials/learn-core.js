@@ -72,7 +72,7 @@ document.querySelectorAll('.step-next').forEach(btn => {
 });
 
 function updateProgressPills() {
-  const totals = { t1: 8, t2: 5, t3: 5, t4: 5, t5: 6, t6: 6, t7: 7, t8: 6, t9: 6, t10: 8 };
+  const totals = { t1: 8, t2: 5, t3: 7, t4: 6, t5: 6, t6: 6, t7: 7, t8: 6, t9: 6, t10: 8 };
   const done = { t1: 0, t2: 0, t3: 0, t4: 0, t5: 0, t6: 0, t7: 0, t8: 0, t9: 0, t10: 0 };
   for (const id in stepProgress) {
     const prefix = id.split('-')[0];

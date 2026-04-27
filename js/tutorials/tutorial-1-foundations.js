@@ -136,8 +136,8 @@ function createBloch(hostId, readoutId, options = {}) {
 
     // Key points to draw: axis endpoints
     const axes = [
-      { name:'|0⟩', x:0, y:0, z:1,  color:'var(--phos)',    isPole:true },
-      { name:'|1⟩', x:0, y:0, z:-1, color:'var(--phos)',    isPole:true },
+      { name:'|0⟩', x:0, y:0, z:1,  color:'var(--cyan)',    isPole:true },
+      { name:'|1⟩', x:0, y:0, z:-1, color:'var(--mint)',    isPole:true },
       { name:'|+⟩', x:1, y:0, z:0,  color:'var(--cyan)',    isPole:false },
       { name:'|−⟩', x:-1,y:0, z:0,  color:'var(--cyan)',    isPole:false },
       { name:'|+i⟩',x:0, y:1, z:0,  color:'var(--magenta)', isPole:false },
@@ -190,7 +190,7 @@ function createBloch(hostId, readoutId, options = {}) {
     const stateInFront = vp.depth >= 0;
 
     // Arrow color based on proximity to |0> or |1>
-    const arrowColor = 'var(--amber)';
+    const arrowColor = 'var(--mint)';
 
     let svg = `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">
       <!-- back hemisphere glow -->
@@ -198,7 +198,7 @@ function createBloch(hostId, readoutId, options = {}) {
       <circle cx="${cx}" cy="${cy}" r="${R}" fill="url(#bloch-glow-${hostId})" opacity="0.35" />
       <defs>
         <radialGradient id="bloch-glow-${hostId}" cx="50%" cy="40%" r="60%">
-          <stop offset="0%" stop-color="rgba(127,255,196,0.08)" />
+          <stop offset="0%" style="stop-color: var(--mint); stop-opacity: 0.1" />
           <stop offset="100%" stop-color="rgba(0,0,0,0)" />
         </radialGradient>
       </defs>
@@ -594,7 +594,7 @@ function renderMiniProbs(containerId, probs, n, maxShow = 6) {
   document.getElementById('mini-coin-reset').addEventListener('click', () => {
     history.length = 0;
     shotEl.textContent = '—';
-    shotEl.style.color = 'var(--phos)';
+    shotEl.style.color = 'var(--mint)';
     histEl.innerHTML = '';
   });
 })();
@@ -727,10 +727,10 @@ document.querySelectorAll('.wrap-card').forEach(card => {
 });
 
 /* =========================================================================
-   TUTORIAL 2
+   TUTORIAL 4
    ========================================================================= */
 
-/* Step t2-1: X·X under noise */
+/* Step t4-1: X·X under noise */
 (function initT4Step1() {
   const slider = document.getElementById('t4-noise-slider');
   const valEl  = document.getElementById('t4-noise-val');
@@ -750,44 +750,244 @@ document.querySelectorAll('.wrap-card').forEach(card => {
     ]
   };
 
+  function renderNoiseNote(p, probs) {
+    let note = document.getElementById('t4-xx-noise-note');
+    if (!note) {
+      note = document.createElement('div');
+      note.id = 't4-xx-noise-note';
+      note.style.cssText = 'margin-top:10px;padding:9px 13px;background:var(--bg-0);' +
+        'border-left:3px solid var(--amber);font-family:var(--serif);font-size:12px;' +
+        'color:var(--ink-dim);line-height:1.65;border-radius:0 4px 4px 0;transition:opacity 0.3s;';
+      const probsEl = document.getElementById('t4-xx-probs');
+      if (probsEl) probsEl.parentNode.insertBefore(note, probsEl.nextSibling);
+    }
+    const p0 = probs[0] != null ? probs[0] : 0;
+    note.style.opacity = 0;
+    note.textContent = p < 0.01
+      ? 'At 0% noise the two X gates cancel perfectly: |0⟩ → |1⟩ → |0⟩. You should see 100% probability on |0⟩ above.'
+      : `At ${(p*100).toFixed(1)}% noise, each X gate can suffer a random Pauli error. The two X operations no longer cancel cleanly — P(|0⟩) is about ${(p0*100).toFixed(1)}% in this run. This is the core problem quantum error correction must solve.`;
+    setTimeout(() => { note.style.opacity = 1; }, 20);
+  }
+
   document.getElementById('t4-xx-run').addEventListener('click', () => {
     const p = parseFloat(slider.value) / 100;
     const probs = simulateConfig(cfg, p, 1024);
     renderMiniProbs('t4-xx-probs', probs, 1, 2);
+    renderNoiseNote(p, probs);
     usedLevels.add(slider.value);
     if (usedLevels.size >= 2) markDone('t4-1');
   });
 })();
 
-/* Step t2-2: reading step — unlocked by button, no task */
-// marked done when user clicks "I got it" which auto-unlocks t2-3
-document.querySelector('[data-step="t4-2"] .step-next').addEventListener('click', () => {
-  markDone('t4-2');
-});
+/* Step t4-2: reading step + no-cloning diagram */
+(function initT4Step2() {
+  const btn = document.querySelector('[data-step="t4-2"] .step-next');
+  if (btn) btn.addEventListener('click', () => markDone('t4-2'));
 
-/* Step t2-3: repetition code (GHZ-style encoding) */
-(function initT4Step3() {
-  const cfg = {
-    nQubits: 3,
-    columns: [
-      [null, null, null],
-      [{type:'single',gate:'H'}, null, null],   // put logical qubit in superposition
-      [{type:'ctrl',partner:1}, {type:'target',gate:'X',partner:0}, null],
-      [{type:'ctrl',partner:2}, null, {type:'target',gate:'X',partner:0}],
-      [null, null, null],
-      [{type:'meas'}, {type:'meas'}, {type:'meas'}],
-    ]
-  };
-  renderMiniCircuit('mini-repcode-circuit', cfg);
-
-  document.getElementById('mini-repcode-run').addEventListener('click', () => {
-    const probs = simulateConfig(cfg, 0);
-    renderMiniProbs('mini-repcode-probs', probs, 3, 8);
-    markDone('t4-3');
+  const svg = document.getElementById('t4-noclone-svg');
+  if (!svg) return;
+  const ns = 'http://www.w3.org/2000/svg';
+  function el(tag, attrs, text) {
+    const e = document.createElementNS(ns, tag);
+    for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, v);
+    if (text !== undefined) e.textContent = text;
+    return e;
+  }
+  svg.innerHTML = '';
+  const defs = el('defs', {});
+  const m = el('marker', { id: 't4noclone-arr', markerWidth: 6, markerHeight: 6, refX: 4, refY: 3, orient: 'auto' });
+  m.appendChild(el('path', { d: 'M0,0 L6,3 L0,6 Z', fill: 'var(--line-bright)' }));
+  defs.appendChild(m);
+  svg.appendChild(defs);
+  const panels = [
+    { x: 8,  title: 'Clone |0⟩',  ok: true,  in: '|0⟩',  out: '|0⟩|0⟩', sub: 'OK' },
+    { x: 192, title: 'Clone |1⟩',  ok: true,  in: '|1⟩',  out: '|1⟩|1⟩', sub: 'OK' },
+    { x: 376, title: 'Clone |+⟩', ok: false, in: '|+⟩', out: 'not |+⟩|+⟩', sub: 'FORBIDDEN' }
+  ];
+  panels.forEach(p => {
+    svg.appendChild(el('rect', { x: p.x, y: 6, width: 168, height: 118, fill: 'var(--bg-0)', stroke: 'var(--line)', 'stroke-width': 1, rx: 4 }));
+    svg.appendChild(el('text', { x: p.x + 84, y: 22, 'font-family': 'var(--mono)', 'font-size': 8, fill: 'var(--ink-faint)', 'text-anchor': 'middle', 'letter-spacing': '0.08em' }, p.title));
+    svg.appendChild(el('text', { x: p.x + 20, y: 52, 'font-family': 'var(--serif)', 'font-style': 'italic', 'font-size': 13, fill: 'var(--ink-dim)' }, p.in));
+    svg.appendChild(el('path', { d: `M ${p.x + 58} 48 L ${p.x + 100} 48`, stroke: 'var(--line-bright)', 'stroke-width': 1.2, 'marker-end': 'url(#t4noclone-arr)' }));
+    const outX = p.ok ? p.x + 80 : p.x + 84;
+    svg.appendChild(el('text', { x: outX, y: 78, 'font-family': 'var(--serif)', 'font-style': 'italic', 'font-size': 11, fill: p.ok ? 'var(--mint)' : 'var(--red)', 'text-anchor': 'middle' }, p.out));
+    const subColor = p.ok ? 'var(--mint)' : 'var(--red)';
+    svg.appendChild(el('text', { x: p.x + 84, y: 108, 'font-family': 'var(--mono)', 'font-size': 8, fill: subColor, 'text-anchor': 'middle', 'letter-spacing': '0.12em' }, p.sub));
   });
 })();
 
-/* Step t4-4 done is handled by the surface code grid interaction above */
+/* Step t4-3: genuine repetition + superposition block encoding (3-qubit) */
+(function initT4Step3() {
+  let mode = 'L0';
+  let errQ = 'none';
+  let runCount = 0;
+
+  function S(g) { return { type: 'single', gate: g }; }
+  function buildColumns() {
+    const base = {
+      L0: [
+        [null, null, null],
+      ],
+      L1: [
+        [S('X'), S('X'), S('X')],
+      ],
+      super: [
+        [null, null, null],
+        [S('H'), null, null],
+        [{ type: 'ctrl', partner: 1 }, { type: 'target', gate: 'X', partner: 0 }, null],
+        [{ type: 'ctrl', partner: 2 }, null, { type: 'target', gate: 'X', partner: 0 }],
+        [null, null, null],
+      ],
+    }[mode];
+    const cols = base.map(c => c.slice());
+    if (errQ !== 'none') {
+      const q = parseInt(errQ, 10);
+      const errCol = [null, null, null];
+      errCol[q] = S('X');
+      cols.push(errCol);
+    }
+    return cols;
+  }
+
+  function currentCfg() {
+    return { nQubits: 3, columns: buildColumns() };
+  }
+
+  function renderRepcodeCircuit() {
+    renderMiniCircuit('mini-repcode-circuit', currentCfg());
+  }
+
+  function renderRepcodeNote() {
+    let note = document.getElementById('t4-repcode-note');
+    if (!note) {
+      note = document.createElement('div');
+      note.id = 't4-repcode-note';
+      note.style.cssText = 'margin-top:10px;padding:9px 13px;background:var(--bg-0);' +
+        'border-left:3px solid var(--cyan);font-family:var(--serif);font-size:12px;' +
+        'color:var(--ink-dim);line-height:1.65;border-radius:0 4px 4px 0;transition:opacity 0.3s;';
+      const probsEl = document.getElementById('mini-repcode-probs');
+      if (probsEl) probsEl.parentNode.insertBefore(note, probsEl.nextSibling);
+    }
+    const eq = (mode) => {
+      if (mode === 'L0') return 'Logical 0: three physical |0⟩ qubits (|000⟩). A classical repetition of “0”.';
+      if (mode === 'L1') return 'Logical 1: three |1⟩ qubits (|111⟩). Same idea as classical triple redundancy, implemented with X gates.';
+      return 'Superposition block: H on the control, then CNOTs copy the |0⟩/|1⟩ amplitudes onto the other two lines — the state (|000⟩+|111⟩)/√2, not a tensor product of three separate |+⟩.';
+    };
+    const er = errQ === 'none'
+      ? ' No injected error — outcomes stay in the code space (for L0/L1) or a superposition of the two valid patterns (super mode).'
+      : ` A bit flip on q${errQ} moves you off the intended codeword; with one error you can still spot the mismatch (majority on each classical pattern) and would flip that wire back.`;
+    note.style.opacity = 0;
+    note.textContent = eq(mode) + er;
+    setTimeout(() => { note.style.opacity = 1; }, 20);
+  }
+
+  function syncModeButtons() {
+    document.querySelectorAll('.t4-repcode-mode').forEach(b => {
+      b.classList.toggle('active', b.getAttribute('data-t4-repcode') === mode);
+    });
+  }
+  function syncErrButtons() {
+    document.querySelectorAll('.t4-repcode-err').forEach(b => {
+      b.classList.toggle('active', b.getAttribute('data-err') === errQ);
+    });
+  }
+
+  document.querySelectorAll('.t4-repcode-mode').forEach(b => {
+    b.addEventListener('click', () => {
+      mode = b.getAttribute('data-t4-repcode');
+      syncModeButtons();
+      renderRepcodeCircuit();
+    });
+  });
+  document.querySelectorAll('.t4-repcode-err').forEach(b => {
+    b.addEventListener('click', () => {
+      errQ = b.getAttribute('data-err') || 'none';
+      syncErrButtons();
+      renderRepcodeCircuit();
+    });
+  });
+
+  syncModeButtons();
+  syncErrButtons();
+  renderRepcodeCircuit();
+  renderRepcodeNote();
+
+  const runBtn = document.getElementById('mini-repcode-run');
+  if (runBtn) {
+    runBtn.addEventListener('click', () => {
+      const probs = simulateConfig(currentCfg(), 0);
+      renderMiniProbs('mini-repcode-probs', probs, 3, 8);
+      renderRepcodeNote();
+      runCount++;
+      if (runCount >= 2) markDone('t4-3');
+    });
+  }
+})();
+
+/* Step t4-4: surface code intro schematic + markDone on Next (see initT4Step4SurfaceIntro) */
+/* Step t4-5: surface code grid + overhead — tutorial-4-noise-qec.js */
+
+(function initT4Step4SurfaceIntro() {
+  const btn = document.querySelector('[data-step="t4-4"] .step-next');
+  if (btn) btn.addEventListener('click', () => markDone('t4-4'));
+
+  const svg = document.getElementById('t4-surface-intro-svg');
+  if (!svg) return;
+  const ns = 'http://www.w3.org/2000/svg';
+  function el(tag, attrs, text) {
+    const e = document.createElementNS(ns, tag);
+    for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, v);
+    if (text !== undefined) e.textContent = text;
+    return e;
+  }
+  svg.innerHTML = '';
+  const gap = 50;
+  const off = 36;
+  for (let r = 0; r < 2; r++) {
+    for (let c = 0; c < 2; c++) {
+      const isZ = (r + c) % 2 === 0;
+      const color = isZ ? 'rgba(224,133,208,0.22)' : 'rgba(111,212,224,0.22)';
+      const stroke = isZ ? 'var(--amber)' : 'var(--cyan)';
+      svg.appendChild(el('rect', {
+        x: off + c * gap + 2, y: off + r * gap + 2, width: gap - 4, height: gap - 4,
+        fill: color, stroke, 'stroke-width': 1, rx: 2
+      }));
+      const cx = off + c * gap + gap / 2;
+      const cy = off + r * gap + gap / 2;
+      svg.appendChild(el('text', {
+        x: cx, y: cy + 3, 'font-family': 'var(--mono)', 'font-size': 9,
+        fill: isZ ? 'var(--amber)' : 'var(--cyan)', 'text-anchor': 'middle'
+      }, isZ ? 'Z' : 'X'));
+    }
+  }
+  for (let q = 0; q < 9; q++) {
+    const row = Math.floor(q / 3);
+    const col = q % 3;
+    const qx = off + col * gap;
+    const qy = off + row * gap;
+    const g = el('g', { transform: `translate(${qx},${qy})` });
+    g.appendChild(el('circle', { cx: 0, cy: 0, r: 8, fill: 'var(--bg-0)', stroke: 'var(--mint)', 'stroke-width': 1.5 }));
+    g.appendChild(el('text', {
+      x: 0, y: 3, 'font-family': 'var(--mono)', 'font-size': 8,
+      fill: 'var(--mint)', 'text-anchor': 'middle'
+    }, String(q)));
+    svg.appendChild(g);
+  }
+  svg.appendChild(el('text', {
+    x: 180, y: 158, 'font-family': 'var(--mono)', 'font-size': 8, fill: 'var(--ink-faint)',
+    'text-anchor': 'middle', 'letter-spacing': '0.06em'
+  }, 'nine data qubits, four face checks (compare Step 5)'));
+})();
+
+/* Step t4-6: wrap-up — mark done when the card unlocks (reading-only) */
+(function initT4Step6Wrap() {
+  const card = document.querySelector('[data-step="t4-6"]');
+  if (!card) return;
+  const obs = new MutationObserver(() => {
+    if (!card.classList.contains('locked')) { markDone('t4-6'); obs.disconnect(); }
+  });
+  obs.observe(card, { attributes: true, attributeFilter: ['class'] });
+})();
 
 /* ---------------- Initial render passes ---------------- */
 // make sure mini ctrl links get drawn even if hidden at first
