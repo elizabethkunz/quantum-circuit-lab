@@ -282,6 +282,7 @@
     align-items: flex-start;
     justify-content: space-between;
     gap: 14px 22px;
+    min-width: 0;
   }
   .glossary-item__text {
     flex: 1 1 17rem;
@@ -290,8 +291,12 @@
   .glossary-item--fig .glossary-term { margin-bottom: 8px; }
   .glossary-item--fig .glossary-term:first-child { margin-top: 0; }
   .glossary-fig {
-    flex: 0 0 auto;
+    /* min-width:0 + definite flex-basis: inline SVGs often report ~300px intrinsic
+       min-width on some browsers; without this the figure blows up the row (esp. Windows). */
+    flex: 0 0 132px;
     width: 132px;
+    max-width: 132px;
+    min-width: 0;
     margin: 0;
     padding: 0;
     align-self: center;
@@ -299,13 +304,17 @@
   .glossary-fig svg {
     display: block;
     width: 100%;
+    max-width: 100%;
+    min-width: 0;
     height: auto;
     overflow: visible;
   }
   @media (max-width: 640px) {
     .glossary-item--fig .glossary-fig {
+      flex: 0 1 148px;
       width: 100%;
       max-width: 148px;
+      min-width: 0;
       margin-left: auto;
       margin-right: auto;
     }
